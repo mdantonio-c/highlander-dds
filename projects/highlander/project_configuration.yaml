@@ -1,0 +1,31 @@
+---
+project:
+  title: YourProject
+  description: "Your project"
+  version: "1.1"
+  rapydo: "1.1"
+  
+
+variables:
+  # roles:
+  #   normal_user: YourCustomName
+  #   staff_user: YourCustomName
+  #   # staff_user: disabled
+  #   group_coordinator: YourCustomName
+  #   admin_root: YourCustomName
+  #   extra_role: YourExtraRole
+
+  env:
+
+    FRONTEND_FRAMEWORK: angular
+    AUTH_SERVICE: sqlalchemy
+    ACTIVATE_ALCHEMY: 1
+    ACTIVATE_POSTGRES: 1
+    ACTIVATE_RABBIT: 1
+    ACTIVATE_REDIS: 1
+    ACTIVATE_CELERY: 1
+    ACTIVATE_CELERYUI: 0
+    ACTIVATE_CELERYBEAT: 1
+    CELERY_BROKER: RABBIT
+    CELERY_BACKEND: REDIS
+     
