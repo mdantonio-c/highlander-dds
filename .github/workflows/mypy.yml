@@ -1,0 +1,35 @@
+name: MyPy
+
+env:
+  PROJECT: highlander 
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  mypy:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - uses: rapydo/actions/install@v1
+        with:
+          project: ${PROJECT}
+          submodule: http-api
+      - uses: rapydo/actions/mypy@v1
+        with:
+          project: ${PROJECT}
+          # install: 
+          # ignore: 
+      - name: Save Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: mypy-report
+          path: report
+
