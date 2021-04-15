@@ -1,0 +1,11 @@
+.brand-title {
+  display: inline-block !important;
+  margin-left: 0.5rem;
+}
+.brand-title h3 {
+  margin-bottom: 0;
+}
+.brand-title small {
+  position: relative;
+  top: -0.4rem;
+}
