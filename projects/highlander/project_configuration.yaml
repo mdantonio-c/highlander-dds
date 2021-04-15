@@ -1,10 +1,9 @@
 ---
 project:
-  title: YourProject
-  description: "Your project"
-  version: "1.1"
+  title: Highlander
+  description: "Data Delivery System"
+  version: "0.1"
   rapydo: "1.1"
-  
 
 variables:
   # roles:
@@ -16,7 +15,6 @@ variables:
   #   extra_role: YourExtraRole
 
   env:
-
     FRONTEND_FRAMEWORK: angular
     AUTH_SERVICE: sqlalchemy
     ACTIVATE_ALCHEMY: 1
@@ -28,4 +26,3 @@ variables:
     ACTIVATE_CELERYBEAT: 1
     CELERY_BROKER: RABBIT
     CELERY_BACKEND: REDIS
-     
