@@ -8,3 +8,5 @@ export interface MyType {
   optional?: Date;
 }
 **/
+
+export interface Dataset {}

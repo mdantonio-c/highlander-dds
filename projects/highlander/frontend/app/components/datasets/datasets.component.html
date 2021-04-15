@@ -1,0 +1,15 @@
+<ngx-spinner
+  bdColor="rgba(255,255,255,0.8)"
+  color="#6c757d"
+  zIndex="1000"
+  [fullScreen]="false"
+  type="ball-clip-rotate-multiple"
+  size="medium"
+></ngx-spinner>
+<div class="container-fluid">
+  <!-- no datasets -->
+  <div class="no-results" *ngIf="!loading && datasets.length === 0">
+    <h2>No Datasets</h2>
+    <p>we are sorry but no dataset is available yet</p>
+  </div>
+</div>
