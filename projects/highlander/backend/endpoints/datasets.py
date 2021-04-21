@@ -1,10 +1,9 @@
-from typing import Any, List
+from typing import Any, Dict, List
 
 from dds_backend import DataBroker
 from restapi import decorators
 from restapi.rest.definition import EndpointResource, Response
-
-# from restapi.utilities.logs import log
+from restapi.utilities.logs import log
 
 broker = DataBroker(
     catalog_path="/catalog/catalog.yaml",  # Place where catalog YAML file is located
@@ -26,7 +25,9 @@ class Datasets(EndpointResource):
     )
     def get(self) -> Response:
         # get the list of datasets
-        datasets: List[Any] = broker.list_datasets()
-
-        # TODO retrieve all available datasets
+        datasets: List[Any] = []
+        for ds in broker.list_datasets():
+            log.debug("get details for dataset <{}>", ds)
+            details = broker.get_details(ds)
+            datasets.append(details.get("dataset_info"))
         return self.response(datasets)

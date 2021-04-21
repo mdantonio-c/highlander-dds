@@ -7,9 +7,32 @@
   size="medium"
 ></ngx-spinner>
 <div class="container-fluid">
-  <!-- no datasets -->
-  <div class="no-results" *ngIf="!loading && datasets.length === 0">
-    <h2>No Datasets</h2>
-    <p>we are sorry but no dataset is available yet</p>
+  <h2>Datasets</h2>
+  <div class="row no-gutters justify-content-md-center mt-3">
+    <!-- no datasets -->
+    <div class="no-results" *ngIf="!loading && datasets.length === 0">
+      <h2>No Datasets</h2>
+      <p>we are sorry but no dataset is available yet</p>
+    </div>
+    <!-- view datasets -->
+    <div class="col" *ngIf="!loading && datasets.length > 0">
+      <div class="search-result" *ngFor="let dataset of datasets">
+        <div class="row">
+          <div class="col-xs-1 d-none d-sm-block col-sm-1 text-center">
+            <span
+              class="fa fa-database fa-2x fa-blue"
+              aria-hidden="true"
+            ></span>
+          </div>
+          <div class="search-result-details col-xs-11 col-12 col-sm-11">
+            <h3>{{ dataset.label }}</h3>
+            <p class="text" *ngIf="dataset.description">
+              <i class="fa fa-quote-left fa-gray"></i>
+              {{ dataset.description }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

@@ -3,6 +3,7 @@ import { DataService } from "@app/services/data.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 import { Dataset } from "@app/types";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "app-datasets",
@@ -32,6 +33,7 @@ export class DatasetsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.datasets = data;
+          console.log(this.datasets);
         },
         (error) => {
           this.notify.showError(error);

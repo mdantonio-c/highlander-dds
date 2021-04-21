@@ -1,0 +1,15 @@
+.search-result {
+  border-bottom: 1px solid #ddd;
+  padding: 15px 0;
+}
+
+.search-result:first-child {
+  border-top: 1px solid #ddd;
+}
+
+.fa-gray {
+  color: #bbb;
+}
+.fa-blue {
+  color: #1a7dc1;
+}
