@@ -8,14 +8,16 @@
 ></ngx-spinner>
 <div class="container-fluid">
   <h2>Datasets</h2>
-  <div class="row no-gutters justify-content-md-center mt-3">
+  <div class="row no-gutters justify-content-md-center mt-3" *ngIf="datasets">
     <!-- no datasets -->
-    <div class="no-results" *ngIf="!loading && datasets.length === 0">
-      <h2>No Datasets</h2>
-      <p>we are sorry but no dataset is available yet</p>
-    </div>
+    <ng-template #noResults>
+      <div class="no-results">
+        <h2>No Datasets</h2>
+        <p>we are sorry but no dataset is available yet</p>
+      </div>
+    </ng-template>
     <!-- view datasets -->
-    <div class="col" *ngIf="!loading && datasets.length > 0">
+    <div class="col" *ngIf="datasets.length > 0; else noResults">
       <div class="search-result" *ngFor="let dataset of datasets">
         <div class="row">
           <div class="col-xs-1 d-none d-sm-block col-sm-1 text-center">
