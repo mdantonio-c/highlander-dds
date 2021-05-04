@@ -15,4 +15,12 @@ export class DataService {
   getDatasets(): Observable<Dataset[]> {
     return this.api.get("datasets");
   }
+
+  /**
+   * Get a dataset by name.
+   * @param name
+   */
+  getDataset(name: string): Observable<Dataset> {
+    return this.api.get(`datasets/${name}`);
+  }
 }

@@ -1,0 +1,44 @@
+<div class="container">
+  <div class="row" *ngIf="dataset">
+    <div class="col-md-8 mb-5">
+      <h2>{{ dataset.label }}</h2>
+      <hr />
+      <p>{{ dataset.description }}</p>
+      <h3>Attribution</h3>
+      <p>{{ dataset.attribution }}</p>
+      <a class="btn btn-primary btn-lg" [routerLink]="" (click)="jobSubmit()"
+        >Job Submit »</a
+      >
+    </div>
+    <div class="col-md-4 mb-5">
+      <h2>&nbsp;</h2>
+      <hr />
+      <h3>Contact</h3>
+      <address>
+        <strong>{{ dataset.contact.name }}</strong>
+        <br />
+        <span>
+          <i class="fas fa-envelope"></i>
+          {{ dataset.contact.email }}
+        </span>
+        <br />
+        <ng-container *ngIf="dataset.contact.webpage">
+          <i class="fas fa-globe"></i>
+          <a [href]="dataset.contact.webpage" target="_blank" class="ml-1">{{
+            dataset.contact.webpage
+          }}</a>
+        </ng-container>
+        <br />
+      </address>
+      <h3>Publication Date</h3>
+      <p>{{ dataset.publication_date | date }}</p>
+      <h3>License</h3>
+      <p>{{ dataset.license.name }}</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col mb-5">
+      <!-- TODO put here extraction request parameters -->
+    </div>
+  </div>
+</div>
