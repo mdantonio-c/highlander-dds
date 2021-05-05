@@ -1,4 +1,4 @@
-FROM rapydo/backend:1.1
+FROM rapydo/backend:1.2
 
 COPY packages/*.whl /tmp/
 
