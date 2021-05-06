@@ -1,11 +1,11 @@
 <div class="container">
   <div class="row" *ngIf="dataset">
     <div class="col-md-8 mb-5">
-      <h2>{{ dataset.label }}</h2>
+      <h2>{{ dataset.info.label }}</h2>
       <hr />
-      <p>{{ dataset.description }}</p>
+      <p>{{ dataset.info.description }}</p>
       <h3>Attribution</h3>
-      <p>{{ dataset.attribution }}</p>
+      <p>{{ dataset.info.attribution }}</p>
       <a class="btn btn-primary btn-lg" [routerLink]="" (click)="jobSubmit()"
         >Job Submit »</a
       >
@@ -15,25 +15,28 @@
       <hr />
       <h3>Contact</h3>
       <address>
-        <strong>{{ dataset.contact.name }}</strong>
+        <strong>{{ dataset.info.contact.name }}</strong>
         <br />
         <span>
           <i class="fas fa-envelope"></i>
-          {{ dataset.contact.email }}
+          {{ dataset.info.contact.email }}
         </span>
         <br />
-        <ng-container *ngIf="dataset.contact.webpage">
+        <ng-container *ngIf="dataset.info.contact.webpage">
           <i class="fas fa-globe"></i>
-          <a [href]="dataset.contact.webpage" target="_blank" class="ml-1">{{
-            dataset.contact.webpage
-          }}</a>
+          <a
+            [href]="dataset.info.contact.webpage"
+            target="_blank"
+            class="ml-1"
+            >{{ dataset.info.contact.webpage }}</a
+          >
         </ng-container>
         <br />
       </address>
       <h3>Publication Date</h3>
-      <p>{{ dataset.publication_date | date }}</p>
+      <p>{{ dataset.info.publication_date | date }}</p>
       <h3>License</h3>
-      <p>{{ dataset.license.name }}</p>
+      <p>{{ dataset.info.license.name }}</p>
     </div>
   </div>
   <div class="row">

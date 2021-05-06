@@ -10,6 +10,12 @@ export interface MyType {
 **/
 
 export interface Dataset {
+  name: string;
+  info: DatasetInfo;
+  products: any[];
+}
+
+export interface DatasetInfo {
   label: string;
   description: string;
   attribution: string;

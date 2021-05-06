@@ -3,6 +3,7 @@ from typing import Any, Dict, List
 
 import dds_backend.core.base.ex as ex
 from dds_backend import DataBroker
+from highlander.models.schemas import DatasetSchema
 from restapi import decorators
 from restapi.exceptions import NotFound, ServiceUnavailable
 from restapi.rest.definition import EndpointResource, Response
@@ -27,13 +28,15 @@ class Datasets(EndpointResource):
             200: "Datasets successfully retrieved",
         },
     )
+    @decorators.marshal_with(DatasetSchema(many=True), code=200)
     def get(self) -> Response:
         # get the list of datasets
         datasets: List[Any] = []
         for ds in broker.list_datasets():
             log.debug("get details for dataset <{}>", ds)
-            details = broker.get_details(ds)
-            datasets.append(to_response(ds, details))
+            details = broker.get_details(ds, extended=True)
+            details["name"] = ds
+            datasets.append(details)
         return self.response(datasets)
 
 
@@ -49,16 +52,12 @@ class Dataset(EndpointResource):
             404: "Dataset does not exist",
         },
     )
+    @decorators.marshal_with(DatasetSchema, code=200)
     def get(self, dataset_name: str) -> Response:
         log.debug("Get dataset <{}>", dataset_name)
         try:
-            details = broker.get_details(dataset_name)
+            details = broker.get_details(dataset_name, extended=True)
+            details["name"] = dataset_name
         except ex.DMSKeyError as e:
             raise NotFound(str(e)[1:-1])
-        return self.response(to_response(dataset_name, details))
-
-
-def to_response(dataset_name, details):
-    meta = details.get("dataset_info")
-    meta["name"] = dataset_name
-    return meta
+        return self.response(details)

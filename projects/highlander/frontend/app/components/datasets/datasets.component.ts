@@ -1,8 +1,8 @@
 import { Component, OnInit } from "@angular/core";
-import { DataService } from "@app/services/data.service";
+import { DataService } from "../../services/data.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
-import { Dataset } from "@app/types";
+import { Dataset } from "../../types";
 import { Observable } from "rxjs";
 
 @Component({
