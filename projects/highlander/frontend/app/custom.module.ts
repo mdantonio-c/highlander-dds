@@ -5,9 +5,11 @@ import { SharedModule } from "@rapydo/shared.module";
 import { AuthGuard } from "@rapydo/app.auth.guard";
 
 import { DatasetsComponent } from "./components/datasets/datasets.component";
+import { DatasetComponent } from "./components/dataset/dataset.component";
 
 const routes: Routes = [
   { path: "app/datasets", component: DatasetsComponent },
+  { path: "app/datasets/:ds_name", component: DatasetComponent },
   {
     path: "",
     redirectTo: "/app/datasets",
@@ -30,7 +32,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [SharedModule, RouterModule.forChild(routes)],
-  declarations: [DatasetsComponent],
+  declarations: [DatasetsComponent, DatasetComponent],
 
   providers: [],
 

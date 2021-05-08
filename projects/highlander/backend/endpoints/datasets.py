@@ -1,16 +1,21 @@
+import os
 from typing import Any, Dict, List
 
+import dds_backend.core.base.ex as ex
 from dds_backend import DataBroker
+from highlander.models.schemas import DatasetSchema
 from restapi import decorators
+from restapi.exceptions import NotFound, ServiceUnavailable
 from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
 
+CATALOG_DIR = os.environ.get("CATALOG_DIR", "/catalog")
 broker = DataBroker(
-    catalog_path="/catalog/catalog.yaml",  # Place where catalog YAML file is located
-    cache_dir="/catalog/cache",  # Directory where cache files should be stored
+    catalog_path=f"{CATALOG_DIR}/catalog.yaml",  # Place where catalog YAML file is located
+    cache_dir=f"{CATALOG_DIR}/cache",  # Directory where cache files should be stored
     cache_details=True,  # If details should be cached as well
-    storage="/catalog/download",  # Directory where retrieved data are persisted
-    log_path="/catalog/logs",  # Directory where logs should be saved
+    storage=f"{CATALOG_DIR}/download",  # Directory where retrieved data are persisted
+    log_path=f"{CATALOG_DIR}/logs",  # Directory where logs should be saved
 )
 
 
@@ -23,11 +28,36 @@ class Datasets(EndpointResource):
             200: "Datasets successfully retrieved",
         },
     )
+    @decorators.marshal_with(DatasetSchema(many=True), code=200)
     def get(self) -> Response:
         # get the list of datasets
         datasets: List[Any] = []
         for ds in broker.list_datasets():
             log.debug("get details for dataset <{}>", ds)
-            details = broker.get_details(ds)
-            datasets.append(details.get("dataset_info"))
+            details = broker.get_details(ds, extended=True)
+            details["name"] = ds
+            datasets.append(details)
         return self.response(datasets)
+
+
+class Dataset(EndpointResource):
+    labels = ["dataset"]
+
+    @decorators.endpoint(
+        path="/datasets/<dataset_name>",
+        summary="Get a dataset by name",
+        description="Return the dataset filtered by unique name, if it exists",
+        responses={
+            200: "Dataset successfully retrieved",
+            404: "Dataset does not exist",
+        },
+    )
+    @decorators.marshal_with(DatasetSchema, code=200)
+    def get(self, dataset_name: str) -> Response:
+        log.debug("Get dataset <{}>", dataset_name)
+        try:
+            details = broker.get_details(dataset_name, extended=True)
+            details["name"] = dataset_name
+        except ex.DMSKeyError as e:
+            raise NotFound(str(e)[1:-1])
+        return self.response(details)
