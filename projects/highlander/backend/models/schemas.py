@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 
-from restapi.models import Schema, fields
+from restapi.models import ISO8601UTC, Schema, fields
 
 
 class ContactInfo(Schema):
@@ -23,7 +23,7 @@ class DatasetInfo(Schema):
     doi = fields.Str()
     # update_frequency = fields.Str()
     license = fields.Nested(License)
-    # publication_date =
+    publication_date = fields.DateTime(allow_none=True, format=ISO8601UTC)
     # related_data = fields.List()
 
 

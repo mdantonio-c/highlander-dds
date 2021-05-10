@@ -3,12 +3,28 @@
     <div class="col-md-8 mb-5">
       <h2>{{ dataset.info.label }}</h2>
       <hr />
-      <p>{{ dataset.info.description }}</p>
+      <div class="d-inline-flex mb-4">
+        <img
+          [src]="dataset.info.image"
+          alt="no img"
+          class="pull-left mr-md-4 w-50"
+          *ngIf="dataset.info.image"
+        />
+        <p>{{ dataset.info.description }}</p>
+      </div>
+      <ng-container *ngFor="let product of dataset.products | keyvalue">
+        <h3>{{ product.key }}</h3>
+        <table class="table table-sm table-hover table-condensed">
+          <tbody>
+            <tr *ngFor="let v of product.value[0].variables | keyvalue">
+              <th>{{ v.value.label }}</th>
+              <td>{{ v.value.units }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </ng-container>
       <h3>Attribution</h3>
       <p>{{ dataset.info.attribution }}</p>
-      <a class="btn btn-primary btn-lg" [routerLink]="" (click)="jobSubmit()"
-        >Job Submit »</a
-      >
     </div>
     <div class="col-md-4 mb-5">
       <h2>&nbsp;</h2>
@@ -39,9 +55,12 @@
       <p>{{ dataset.info.license.name }}</p>
     </div>
   </div>
-  <div class="row">
+  <div class="row" *ngIf="user">
     <div class="col mb-5">
       <!-- TODO put here extraction request parameters -->
+      <a class="btn btn-primary btn-lg" [routerLink]="" (click)="jobSubmit()"
+        >Job Submit »</a
+      >
     </div>
   </div>
 </div>
