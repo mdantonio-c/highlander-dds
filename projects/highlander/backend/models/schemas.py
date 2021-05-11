@@ -66,3 +66,7 @@ class DatasetSchema(Schema):
     products = fields.Dict(
         keys=fields.Str(), values=fields.List(fields.Nested(ProductSchema))
     )
+
+
+class DataExtraction(Schema):
+    pass
