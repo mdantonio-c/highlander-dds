@@ -1,17 +1,19 @@
 <div class="container">
   <div class="row" *ngIf="dataset">
-    <div class="col-md-8 mb-5">
+    <div class="col-md-8">
       <h2>{{ dataset.info.label }}</h2>
       <hr />
-      <div class="d-inline-flex mb-4">
+      <p class="text-justify">
         <img
           [src]="dataset.info.image"
           alt="no img"
-          class="pull-left mr-md-4 w-50"
+          style="float: left"
+          class="mr-md-4 w-50"
           *ngIf="dataset.info.image"
         />
-        <p>{{ dataset.info.description }}</p>
-      </div>
+        {{ dataset.info.description }}
+      </p>
+
       <ng-container *ngFor="let product of dataset.products | keyvalue">
         <h3>{{ product.key }}</h3>
         <table class="table table-sm table-hover table-condensed">
@@ -55,7 +57,7 @@
       <p>{{ dataset.info.license.name }}</p>
     </div>
   </div>
-  <div class="row" *ngIf="user">
+  <div class="row mt-4" *ngIf="user">
     <div class="col mb-5">
       <!-- TODO put here extraction request parameters -->
       <a class="btn btn-primary btn-lg" [routerLink]="" (click)="jobSubmit()"
