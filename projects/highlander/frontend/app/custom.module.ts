@@ -6,6 +6,7 @@ import { AuthGuard } from "@rapydo/app.auth.guard";
 
 import { DatasetsComponent } from "./components/datasets/datasets.component";
 import { DatasetComponent } from "./components/dataset/dataset.component";
+import { DataExtractionModalComponent } from "./components/data-extraction-modal/data-extraction-modal.component";
 
 const routes: Routes = [
   { path: "app/datasets", component: DatasetsComponent },
@@ -32,10 +33,12 @@ const routes: Routes = [
 
 @NgModule({
   imports: [SharedModule, RouterModule.forChild(routes)],
-  declarations: [DatasetsComponent, DatasetComponent],
-
+  declarations: [
+    DatasetsComponent,
+    DatasetComponent,
+    DataExtractionModalComponent,
+  ],
   providers: [],
-
   exports: [RouterModule],
 })
 export class CustomModule {}

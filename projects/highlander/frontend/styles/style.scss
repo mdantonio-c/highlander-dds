@@ -36,3 +36,59 @@ h3 {
   width: 80%;
   padding: 1.6rem 1.5%;
 }
+
+.btn:focus,
+.btn:active,
+.form-control:focus,
+.btn-reset:focus,
+.btn-reset:active,
+input[type="file"]:focus {
+  outline: none !important;
+  box-shadow: none;
+}
+
+.modal:not([class*="bg-"]) .modal-header,
+.card:not([class*="bg-"]) .card-header {
+  color: #0061f2;
+}
+
+.modal .modal-header {
+  padding: 1rem 1.35rem;
+  background-color: rgba(33, 40, 50, 0.03);
+  .modal-title {
+    font-weight: 600;
+  }
+}
+
+.hl-preview {
+  border-radius: 0.35rem;
+  border: 0.25rem solid #e0e5ec;
+  .hl-preview-content {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e0e5ec;
+    position: relative;
+  }
+}
+
+.custom-control {
+  position: relative;
+  z-index: 1;
+  display: block;
+  min-height: 1.5rem;
+  padding-left: 1.5rem;
+  -webkit-print-color-adjust: exact;
+  color-adjust: exact;
+}
+input[type="checkbox"],
+input[type="radio"] {
+  box-sizing: border-box;
+  padding: 0;
+}
+.custom-control-input {
+  position: absolute;
+  left: 0;
+  z-index: -1;
+  width: 1rem;
+  height: 1.25rem;
+  opacity: 0;
+}

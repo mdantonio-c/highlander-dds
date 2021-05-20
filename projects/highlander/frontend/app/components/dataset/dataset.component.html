@@ -1,4 +1,11 @@
 <div class="container">
+  <ngx-spinner
+    bdColor="rgba(255,255,255,0.8)"
+    color="#6c757d"
+    zIndex="1000"
+    type="ball-clip-rotate-multiple"
+    size="medium"
+  ></ngx-spinner>
   <div class="row" *ngIf="dataset">
     <div class="col-md-8">
       <h2>{{ dataset.info.label }}</h2>
@@ -55,14 +62,15 @@
       <p>{{ dataset.info.publication_date | date }}</p>
       <h3>License</h3>
       <p>{{ dataset.info.license.name }}</p>
-    </div>
-  </div>
-  <div class="row mt-4" *ngIf="user">
-    <div class="col mb-5">
-      <!-- TODO put here extraction request parameters -->
-      <a class="btn btn-primary btn-lg" [routerLink]="" (click)="jobSubmit()"
-        >Job Submit »</a
+      <hr />
+      <button
+        type="button"
+        class="btn btn-primary btn-lg"
+        *ngIf="user"
+        (click)="openDataExtractionModal()"
       >
+        Get Data »
+      </button>
     </div>
   </div>
 </div>

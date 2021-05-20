@@ -23,4 +23,8 @@ export class DataService {
   getDataset(name: string): Observable<Dataset> {
     return this.api.get(`datasets/${name}`);
   }
+
+  submit(dataset: string): Observable<any> {
+    return this.api.post(`requests/${dataset}`);
+  }
 }

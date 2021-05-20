@@ -47,9 +47,9 @@ class Requests(EndpointResource):
     )
     def post(self, dataset_name):
         # TODO
-        log.debug("Request submitted")
         c = celery.get_instance()
         task = c.celery_app.send_task("data_extract", args=[])
+        log.debug("Request submitted")
         return self.response(task.id, code=202)
 
 

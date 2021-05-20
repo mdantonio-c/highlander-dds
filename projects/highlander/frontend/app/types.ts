@@ -9,10 +9,15 @@ export interface MyType {
 }
 **/
 
+export interface KeyValue {
+  /** @nullable */
+  [key: string]: any;
+}
+
 export interface Dataset {
   name: string;
   info: DatasetInfo;
-  products: any[];
+  products: KeyValue;
 }
 
 export interface DatasetInfo {

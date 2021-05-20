@@ -69,4 +69,4 @@ class DatasetSchema(Schema):
 
 
 class DataExtraction(Schema):
-    pass
+    variables = fields.List(fields.Str())

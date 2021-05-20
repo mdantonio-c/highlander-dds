@@ -6,6 +6,9 @@ import { AuthService } from "@rapydo/services/auth";
 import { DataService } from "../../services/data.service";
 import { Observable } from "rxjs";
 import { User } from "@rapydo/types";
+import { NgxSpinnerService } from "ngx-spinner";
+import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
+import { DataExtractionModalComponent } from "../data-extraction-modal/data-extraction-modal.component";
 
 @Component({
   selector: "app-dataset",
@@ -22,7 +25,9 @@ export class DatasetComponent implements OnInit {
     public route: ActivatedRoute,
     private router: Router,
     private notify: NotificationService,
-    private ref: ChangeDetectorRef
+    private ref: ChangeDetectorRef,
+    private spinner: NgxSpinnerService,
+    private modalService: NgbModal
   ) {
     this.dataset = this.router.getCurrentNavigation().extras.state as Dataset;
   }
@@ -60,6 +65,33 @@ export class DatasetComponent implements OnInit {
   }
 
   jobSubmit() {
-    console.warn("not yet implemented");
+    this.spinner.show();
+    console.log(`submit job request for dataset <${this.dataset.name}>`);
+    this.dataService
+      .submit(this.dataset.name)
+      .subscribe(
+        (ack) => {
+          this.notify.showSuccess("Request Accepted");
+        },
+        (error) => {
+          this.notify.showError(error);
+        }
+      )
+      .add(() => {
+        this.spinner.hide();
+      });
+  }
+
+  openDataExtractionModal() {
+    console.log("open data extraction", this.dataset);
+    const modalRef = this.modalService.open(DataExtractionModalComponent, {
+      backdrop: "static",
+      size: "lg",
+      keyboard: false,
+    });
+    modalRef.componentInstance.dataset = this.dataset;
+    modalRef.componentInstance.passEntry.subscribe((req: any) => {
+      this.jobSubmit();
+    });
   }
 }
