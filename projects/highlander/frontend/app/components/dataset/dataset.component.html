@@ -10,17 +10,18 @@
     <div class="col-md-8">
       <h2>{{ dataset.info.label }}</h2>
       <hr />
-      <p class="text-justify">
-        <img
-          src="{{ backendURI + '/api/datasets/' + dataset.name + '/image' }}"
-          alt="no img"
-          style="float: left"
-          class="mr-md-4 w-50"
-          *ngIf="dataset.info.image"
-        />
-        {{ dataset.info.description }}
-      </p>
-
+      <div class="mb-4 d-flex">
+        <p class="text-justify mb-0">
+          <img
+            src="{{ backendURI + '/api/datasets/' + dataset.name + '/image' }}"
+            alt="no img"
+            style="float: left"
+            class="mr-md-4 w-50"
+            *ngIf="dataset.info.image"
+          />
+          {{ dataset.info.description }}
+        </p>
+      </div>
       <ng-container *ngFor="let product of dataset.products | keyvalue">
         <h3>{{ product.key }}</h3>
         <table class="table table-sm table-hover table-condensed">
