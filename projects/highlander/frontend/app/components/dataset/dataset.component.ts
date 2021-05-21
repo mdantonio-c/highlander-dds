@@ -55,14 +55,20 @@ export class DatasetComponent implements OnInit {
 
     if (!this.dataset) {
       // console.log(`load dataset <${dataset_name}>`);
-      this.dataService.getDataset(datasetName).subscribe(
-        (data) => {
-          this.dataset = data;
-        },
-        (error) => {
-          this.notify.showError(error);
-        }
-      );
+      this.spinner.show();
+      this.dataService
+        .getDataset(datasetName)
+        .subscribe(
+          (data) => {
+            this.dataset = data;
+          },
+          (error) => {
+            this.notify.showError(error);
+          }
+        )
+        .add(() => {
+          this.spinner.hide();
+        });
     }
   }
 

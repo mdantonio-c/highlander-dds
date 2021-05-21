@@ -13,7 +13,7 @@ export class DataService {
    * Get all the available datasets.
    */
   getDatasets(): Observable<Dataset[]> {
-    return this.api.get("datasets");
+    return this.api.get("/api/datasets");
   }
 
   /**
@@ -21,10 +21,10 @@ export class DataService {
    * @param name
    */
   getDataset(name: string): Observable<Dataset> {
-    return this.api.get(`datasets/${name}`);
+    return this.api.get(`/api/datasets/${name}`);
   }
 
   submit(dataset: string): Observable<any> {
-    return this.api.post(`requests/${dataset}`);
+    return this.api.post(`/api/requests/${dataset}`);
   }
 }
