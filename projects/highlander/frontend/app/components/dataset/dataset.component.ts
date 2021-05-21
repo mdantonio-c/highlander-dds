@@ -9,6 +9,7 @@ import { User } from "@rapydo/types";
 import { NgxSpinnerService } from "ngx-spinner";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import { DataExtractionModalComponent } from "../data-extraction-modal/data-extraction-modal.component";
+import { environment } from "@rapydo/../environments/environment";
 
 @Component({
   selector: "app-dataset",
@@ -18,6 +19,7 @@ export class DatasetComponent implements OnInit {
   dataset: Dataset;
   // dataset$: Observable<Dataset>;
   user: User;
+  readonly backendURI = environment.backendURI;
 
   constructor(
     private dataService: DataService,

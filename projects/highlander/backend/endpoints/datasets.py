@@ -3,6 +3,7 @@ from typing import Any, Dict, List
 
 import dds_backend.core.base.ex as ex
 from dds_backend import DataBroker
+from flask import send_from_directory
 from highlander.models.schemas import DatasetSchema
 from restapi import decorators
 from restapi.exceptions import NotFound, ServiceUnavailable
@@ -61,3 +62,28 @@ class Dataset(EndpointResource):
         except ex.DMSKeyError as e:
             raise NotFound(str(e)[1:-1])
         return self.response(details)
+
+
+class DatasetImage(EndpointResource):
+    @decorators.endpoint(
+        path="/datasets/<dataset_name>/image",
+        summary="Get dataset image",
+        description="Return the dataset thumbnail image",
+        responses={
+            200: "Dataset image successfully retrieved",
+            404: "Dataset Image not found",
+        },
+    )
+    def get(self, dataset_name: str) -> Response:
+        log.debug("Get image for dataset <{}>", dataset_name)
+        try:
+            details = broker.get_details(dataset_name, extended=True)
+            image_filename = details["dataset_info"]["image"]
+            if not image_filename:
+                raise ex.DMSKeyError("Dataset image is missing")
+            images_dir = f"{CATALOG_DIR}/images"
+            if not os.path.exists(os.path.join(images_dir, image_filename)):
+                raise ex.DMSKeyError("Dataset image not found")
+            return send_from_directory(images_dir, image_filename)
+        except ex.DMSKeyError as e:
+            raise NotFound(str(e)[1:-1])

@@ -12,7 +12,7 @@
       <hr />
       <p class="text-justify">
         <img
-          [src]="dataset.info.image"
+          src="{{ backendURI + '/api/datasets/' + dataset.name + '/image' }}"
           alt="no img"
           style="float: left"
           class="mr-md-4 w-50"
