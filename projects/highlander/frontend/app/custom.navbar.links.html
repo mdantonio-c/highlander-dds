@@ -25,6 +25,15 @@
       Applications
     </a>
   </li>
+  <li class="nav-item" *ngIf="user">
+    <a
+      class="nav-link text-nowrap"
+      routerLink="app/requests"
+      routerLinkActive="active"
+      (click)="collapse()"
+      >My Requests</a
+    >
+  </li>
 
   <!--
     <li class="nav-item">

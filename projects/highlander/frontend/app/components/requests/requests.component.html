@@ -1,0 +1,31 @@
+<ngx-spinner [fullScreen]="false"></ngx-spinner>
+<!-- no data -->
+<div class="row" *ngIf="!loading && !data?.length">
+  <div class="col">
+    <div class="no-results">
+      <h2>No Data</h2>
+      <p>You have not submitted any requests yet</p>
+    </div>
+  </div>
+</div>
+<!-- load requests in the table -->
+<div class="table-responsive mb-2" *ngIf="data?.length" #tableWrapper>
+  <ngx-datatable
+    #myRequestsTable
+    class="bootstrap expandable"
+    [rows]="data"
+    [columns]="columns"
+    [columnMode]="ColumnMode.flex"
+    [headerHeight]="40"
+    [footerHeight]="40"
+    [externalPaging]="true"
+    [count]="paging.dataLength"
+    [limit]="paging.itemsPerPage"
+    [offset]="paging.page"
+    (page)="serverSidePagination($event)"
+    [rowHeight]="'auto'"
+  >
+    <!-- Column Templates -->
+  </ngx-datatable>
+  <ng-template #noValue>-</ng-template>
+</div>

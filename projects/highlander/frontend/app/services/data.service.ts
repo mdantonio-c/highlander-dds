@@ -24,7 +24,24 @@ export class DataService {
     return this.api.get(`/api/datasets/${name}`);
   }
 
+  /**
+   *
+   * @param dataset
+   */
   submit(dataset: string): Observable<any> {
     return this.api.post(`/api/requests/${dataset}`);
+  }
+
+  /**
+   * Download data for a completed extraction request
+   */
+  downloadData(filename): Observable<any> {
+    const options = {
+      conf: {
+        responseType: "blob",
+        observe: "response",
+      },
+    };
+    return this.api.get(`/api/download/${filename}`, {}, options);
   }
 }
