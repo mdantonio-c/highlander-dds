@@ -3,6 +3,7 @@ import { DataService } from "../../services/data.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 import { Dataset } from "../../types";
+import { SSRService } from "@rapydo/services/ssr";
 import { Observable } from "rxjs";
 
 @Component({
@@ -16,7 +17,8 @@ export class DatasetsComponent implements OnInit {
   constructor(
     private dataService: DataService,
     private notify: NotificationService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    public ssr: SSRService
   ) {}
 
   ngOnInit() {

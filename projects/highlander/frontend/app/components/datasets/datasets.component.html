@@ -1,12 +1,21 @@
-<ngx-spinner
-  bdColor="rgba(255,255,255,0.8)"
-  color="#6c757d"
-  zIndex="1000"
-  [fullScreen]="false"
-  type="ball-clip-rotate-multiple"
-  size="medium"
-></ngx-spinner>
-<div class="container">
+<div class="container" *ngIf="ssr.isServer">
+  <div class="row">
+    <div class="col-12 p-5 text-center" *ngIf="ssr.isServer">
+      <div class="spinner-grow" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container" *ngIf="ssr.isBrowser">
+  <ngx-spinner
+    bdColor="rgba(255,255,255,0.8)"
+    color="#6c757d"
+    zIndex="1000"
+    [fullScreen]="false"
+    type="ball-clip-rotate-multiple"
+    size="medium"
+  ></ngx-spinner>
   <h2>Datasets</h2>
   <div class="row no-gutters justify-content-md-center mt-3" *ngIf="datasets">
     <!-- no datasets -->
