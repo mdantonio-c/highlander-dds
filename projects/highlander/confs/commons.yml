@@ -6,8 +6,20 @@ services:
     image: hl-dds/backend:${RAPYDO_VERSION}
     volumes:
       - ${VANILLA_DIR}/data/catalog:/catalog
+    environment:
+      BROKER_ENABLE: ${ACTIVATE_BROKER}
+      BROKER_ENABLE_CONNECTOR: ${BROKER_ENABLE_CONNECTOR}
+      BROKER_HOST: ${BROKER_HOST}
+      BROKER_PORT: ${BROKER_PORT}
+      BROKER_CATALOG_DIR: ${BROKER_CATALOG_DIR}
   celery:
     build: ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/backend
     image: hl-dds/backend:${RAPYDO_VERSION}
     volumes:
       - ${VANILLA_DIR}/data/catalog:/catalog
+    environment:
+      BROKER_ENABLE: ${ACTIVATE_BROKER}
+      BROKER_ENABLE_CONNECTOR: ${BROKER_ENABLE_CONNECTOR}
+      BROKER_HOST: ${BROKER_HOST}
+      BROKER_PORT: ${BROKER_PORT}
+      BROKER_CATALOG_DIR: ${BROKER_CATALOG_DIR}
