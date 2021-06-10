@@ -22,7 +22,9 @@ export class DatasetsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadDatasets();
+    if (this.ssr.isBrowser) {
+      this.loadDatasets();
+    }
   }
 
   private loadDatasets() {
