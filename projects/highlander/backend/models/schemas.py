@@ -69,4 +69,5 @@ class DatasetSchema(Schema):
 
 
 class DataExtraction(Schema):
+    product = fields.Str(required=True)
     variables = fields.List(fields.Str())

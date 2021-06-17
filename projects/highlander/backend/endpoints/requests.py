@@ -58,16 +58,21 @@ class Requests(EndpointResource):
             400: "Invalid request",
         },
     )
-    def post(self, dataset_name):
+    def post(self, dataset_name, product, variables=[]):
         user = self.get_user()
         c = celery.get_instance()
-        req = {
-            "product_type": "VHR-REA_IT_1989_2020_hourly",
-            "variable": ["air_temperature", "precipitation_amount"],
-            "latitude": {"start": 39, "stop": 40},
-            "longitude": {"start": 16, "stop": 16.5},
-            "time": {"year": 1991, "month": 1, "day": 1, "hour": 12},
-        }
+        log.debug("Request for extraction for {}", dataset_name)
+        log.debug("Variables: {}", variables)
+        # req = {
+        #     "product_type": "VHR-REA_IT_1989_2020_hourly",
+        #     "variable": ["air_temperature", "precipitation_amount"],
+        #     "latitude": {"start": 39, "stop": 40},
+        #     "longitude": {"start": 16, "stop": 16.5},
+        #     "time": {"year": 1991, "month": 1, "day": 1, "hour": 12},
+        # }
+        req = {"product_type": product}
+        if variables:
+            req["variable"] = variables
         task = c.celery_app.send_task("extract_data", args=[user.id, dataset_name, req])
         log.debug("Request submitted")
         return self.response(task.id, code=202)

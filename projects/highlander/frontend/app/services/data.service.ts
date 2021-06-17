@@ -28,8 +28,8 @@ export class DataService {
    *
    * @param dataset
    */
-  submit(dataset: string): Observable<any> {
-    return this.api.post(`/api/requests/${dataset}`);
+  submit(dataset: string, args: any): Observable<any> {
+    return this.api.post(`/api/requests/${dataset}`, args);
   }
 
   /**

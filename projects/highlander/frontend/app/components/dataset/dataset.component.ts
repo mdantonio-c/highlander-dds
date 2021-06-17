@@ -72,11 +72,11 @@ export class DatasetComponent implements OnInit {
     }
   }
 
-  jobSubmit() {
+  jobSubmit(args) {
     this.spinner.show();
-    console.log(`submit job request for dataset <${this.dataset.name}>`);
+    console.log(`submit job request for dataset <${this.dataset.name}>`, args);
     this.dataService
-      .submit(this.dataset.name)
+      .submit(this.dataset.name, args)
       .subscribe(
         (ack) => {
           this.notify.showSuccess("Request Accepted");
@@ -98,8 +98,8 @@ export class DatasetComponent implements OnInit {
       keyboard: false,
     });
     modalRef.componentInstance.dataset = this.dataset;
-    modalRef.componentInstance.passEntry.subscribe((req: any) => {
-      this.jobSubmit();
+    modalRef.componentInstance.passEntry.subscribe((args: any) => {
+      this.jobSubmit(args);
     });
   }
 }

@@ -26,6 +26,10 @@ export interface DatasetInfo {
   update_frequency?: string;
 }
 
+export interface DatasetVariables {
+  [key: string]: any;
+}
+
 export interface ContactInfo {
   email: string;
   name: string;
