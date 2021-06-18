@@ -53,6 +53,7 @@ class Dataset(EndpointResource):
         dds = broker.get_instance()
         try:
             details = dds.broker.get_details(dataset_name, extended=True)
+            log.debug(details)
             details["name"] = dataset_name
         except ex.DMSKeyError as e:
             raise NotFound(str(e)[1:-1])

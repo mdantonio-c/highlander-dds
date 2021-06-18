@@ -61,19 +61,33 @@ class Requests(EndpointResource):
     def post(self, dataset_name, product, variables=[]):
         user = self.get_user()
         c = celery.get_instance()
-        log.debug("Request for extraction for {}", dataset_name)
+        log.debug("Request for extraction for <{}>", dataset_name)
         log.debug("Variables: {}", variables)
-        # req = {
-        #     "product_type": "VHR-REA_IT_1989_2020_hourly",
-        #     "variable": ["air_temperature", "precipitation_amount"],
-        #     "latitude": {"start": 39, "stop": 40},
-        #     "longitude": {"start": 16, "stop": 16.5},
-        #     "time": {"year": 1991, "month": 1, "day": 1, "hour": 12},
-        # }
-        req = {"product_type": product}
+        args = {"product_type": product}
         if variables:
-            req["variable"] = variables
-        task = c.celery_app.send_task("extract_data", args=[user.id, dataset_name, req])
+            args["variable"] = variables
+        task = None
+        db = sqlalchemy.get_instance()
+        try:
+            # save request record in db
+            request = db.Request(
+                name="test",
+                dataset_name=dataset_name,
+                args=args,
+                user_id=user.id,
+                status="CREATED",
+            )
+            db.session.add(request)
+            db.session.commit()
+            task = c.celery_app.send_task(
+                "extract_data", args=[user.id, dataset_name, args, request.id]
+            )
+            request.task_id = task.id
+        except Exception as exc:
+            log.exception(exc)
+            db.session.rollback()
+            raise ServerError("Unable to submit the request")
+
         log.debug("Request submitted")
         return self.response(task.id, code=202)
 

@@ -7,8 +7,10 @@
     size="medium"
   ></ngx-spinner>
   <div class="row" *ngIf="dataset">
-    <div class="col-md-8">
+    <div class="col-12">
       <h2>{{ dataset.info.label }}</h2>
+    </div>
+    <div class="col-md-8">
       <hr />
       <div class="mb-4 d-flex">
         <p class="text-justify mb-0">
@@ -37,7 +39,6 @@
       <p>{{ dataset.info.attribution }}</p>
     </div>
     <div class="col-md-4 mb-5">
-      <h2>&nbsp;</h2>
       <hr />
       <h3>Contact</h3>
       <address>
