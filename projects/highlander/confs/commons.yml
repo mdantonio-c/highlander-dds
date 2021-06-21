@@ -1,11 +1,10 @@
-# Customize this file to include compose configurations common to bluprints
-version: "3.2"
+version: "3.8"
 services:
   backend:
-    build: ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/backend
+    build: ${PROJECT_DIR}/builds/backend
     image: hl-dds/backend:${RAPYDO_VERSION}
     volumes:
-      - ${VANILLA_DIR}/data/catalog:/catalog
+      - ${DATA_DIR}/catalog:/catalog
     environment:
       BROKER_ENABLE: ${ACTIVATE_BROKER}
       BROKER_ENABLE_CONNECTOR: ${BROKER_ENABLE_CONNECTOR}
@@ -13,10 +12,10 @@ services:
       BROKER_PORT: ${BROKER_PORT}
       BROKER_CATALOG_DIR: ${BROKER_CATALOG_DIR}
   celery:
-    build: ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/backend
+    build: ${PROJECT_DIR}/builds/backend
     image: hl-dds/backend:${RAPYDO_VERSION}
     volumes:
-      - ${VANILLA_DIR}/data/catalog:/catalog
+      - ${DATA_DIR}/catalog:/catalog
     environment:
       BROKER_ENABLE: ${ACTIVATE_BROKER}
       BROKER_ENABLE_CONNECTOR: ${BROKER_ENABLE_CONNECTOR}

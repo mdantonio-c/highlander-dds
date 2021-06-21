@@ -75,4 +75,4 @@ class Customizer(BaseCustomizer):
         this method is used to extend the output model of profile and admin users
         """
 
-        return Customizer.get_custom_input_fields(request, scope=BaseCustomizer.ADMIN)
+        return {}
