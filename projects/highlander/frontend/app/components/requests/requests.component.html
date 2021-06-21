@@ -32,7 +32,7 @@
         ngx-datatable-row-detail-template
       >
         <div>
-          <div>
+          <div class="mr-2">
             <strong>Request Details</strong>
             <div
               class="btn-group btn-group-sm float-right"
@@ -46,8 +46,7 @@
                 [cbContent]="prettierJSON"
                 (cbOnSuccess)="copiedToClipboard($event)"
                 placement="bottom"
-                container="body"
-                [ngbTooltip]="tipCopyContent"
+                ngbTooltip="Copy to Clipboard"
               >
                 <i class="fas fa-paste"></i>
               </button>
@@ -247,5 +246,4 @@
   </ngx-datatable>
   <ng-template #noValue>-</ng-template>
   <ng-template #tipDownloadContent>Download<br />JSON</ng-template>
-  <ng-template #tipCopyContent>Copy to<br />Clipboard</ng-template>
 </div>
