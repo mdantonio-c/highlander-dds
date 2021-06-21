@@ -16,7 +16,9 @@ from restapi.exceptions import (
 )
 from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import joinedload
+from sqlalchemy.sql import exists
 
 
 class Requests(EndpointResource):
@@ -153,7 +155,6 @@ class Request(EndpointResource):
     def delete(self, request_id):
         log.debug("delete request {}", request_id)
         user = self.get_user()
-        # Can't happen since auth is required
         if not user:
             raise ServerError("User misconfiguration")
 
@@ -182,20 +183,38 @@ class Request(EndpointResource):
 
 
 class DownloadData(EndpointResource):
-    @decorators.auth.require()
+    @decorators.auth.require(allow_access_token_parameter=True)
     @decorators.endpoint(
-        path="/download/<filename>",
+        path="/download/<timestamp>",
         summary="Download output file",
-        responses={200: "File successfully downloaded", 404: "File not found"},
+        responses={
+            200: "File successfully downloaded",
+            401: "Unauthorized request",
+            404: "File not found",
+        },
     )
-    def get(self, filename):
-        # user = self.get_user()
-        # db = sqlalchemy.get_instance()
+    def get(self, timestamp):
+        user = self.get_user()
+        if not user:
+            raise ServerError("User misconfiguration")
 
-        # TODO check if user owns the file
-
-        # TODO retrieve the file via broker connector
-
-        # download the file as a response attachment
-        # return send_from_directory(file_dir, filename, as_attachment=True)
-        pass
+        db = sqlalchemy.get_instance()
+        try:
+            output_file = (
+                db.session.query(db.OutputFile).filter_by(timestamp=timestamp).one()
+            )
+            # check if user owns the file
+            if output_file.request.user_id != user.id:
+                raise Unauthorized("Unauthorized request")
+            file_dir = f"{DOWNLOAD_DIR}/{output_file.timestamp}"
+            file_path = Path(f"{file_dir}/{output_file.filename}")
+            if not file_path.exists():
+                log.error(
+                    f"Expected filename <{output_file.filename}> in the path {file_dir}"
+                )
+                raise FileNotFoundError()
+            return send_from_directory(
+                file_dir, output_file.filename, as_attachment=True
+            )
+        except (NoResultFound, FileNotFoundError):
+            raise NotFound(f"OutputFile with TIMESTAMP<{timestamp}> NOT found")

@@ -3,7 +3,7 @@ import { BasePaginationComponent } from "@rapydo/components/base.pagination.comp
 import { DataService } from "../../services/data.service";
 import { Router, NavigationExtras } from "@angular/router";
 import { saveAs as importedSaveAs } from "file-saver-es";
-import { Request } from "../../types";
+import { Request, RequestOutput } from "../../types";
 import { environment } from "@rapydo/../environments/environment";
 
 @Component({
@@ -24,7 +24,7 @@ export class RequestsComponent extends BasePaginationComponent<Request> {
     this.list();
   }
 
-  download(filename) {
+  /*download(filename) {
     this.dataService.downloadData(filename).subscribe(
       (resp) => {
         const contentType =
@@ -36,13 +36,13 @@ export class RequestsComponent extends BasePaginationComponent<Request> {
         this.notify.showError(`Unable to download file: ${filename}`);
       }
     );
-  }
+  }*/
 
-  downloadByUrl(filename) {
-    const downloadUrl = this.getFileURL(filename);
+  downloadByUrl(output_file: RequestOutput) {
+    const downloadUrl = this.getFileURL(output_file.timestamp);
     let link = document.createElement("a");
     link.href = downloadUrl;
-    link.download = filename;
+    link.download = output_file.timestamp;
     link.style.visibility = "hidden";
     link.click();
   }
@@ -62,8 +62,8 @@ export class RequestsComponent extends BasePaginationComponent<Request> {
     this.table.rowDetail.toggleExpandRow(row);
   }
 
-  private getFileURL(filename) {
-    const source_url = `${environment.backendURI}/api/data/${filename}`;
+  private getFileURL(timestamp) {
+    const source_url = `${environment.backendURI}/api/download/${timestamp}`;
     let token = this.auth.getToken();
     return source_url + "?access_token=" + token;
   }
