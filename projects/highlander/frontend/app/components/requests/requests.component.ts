@@ -4,12 +4,15 @@ import { DataService } from "../../services/data.service";
 import { Router, NavigationExtras } from "@angular/router";
 import { saveAs as importedSaveAs } from "file-saver-es";
 import { Request } from "../../types";
+import { environment } from "@rapydo/../environments/environment";
 
 @Component({
   selector: "app-requests",
   templateUrl: "./requests.component.html",
 })
 export class RequestsComponent extends BasePaginationComponent<Request> {
+  expanded: any = {};
+
   constructor(
     protected injector: Injector,
     public dataService: DataService,
@@ -33,5 +36,35 @@ export class RequestsComponent extends BasePaginationComponent<Request> {
         this.notify.showError(`Unable to download file: ${filename}`);
       }
     );
+  }
+
+  downloadByUrl(filename) {
+    const downloadUrl = this.getFileURL(filename);
+    let link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = filename;
+    link.style.visibility = "hidden";
+    link.click();
+  }
+
+  copiedToClipboard($event) {
+    if ($event["isSuccess"]) {
+      this.notify.showSuccess("Copied to Clipboard");
+    }
+  }
+
+  downloadJSON(jsonBody) {
+    const blob = new Blob([jsonBody], { type: "text/plain" });
+    importedSaveAs(blob, "query.json");
+  }
+
+  toggleExpandRow(row) {
+    this.table.rowDetail.toggleExpandRow(row);
+  }
+
+  private getFileURL(filename) {
+    const source_url = `${environment.backendURI}/api/data/${filename}`;
+    let token = this.auth.getToken();
+    return source_url + "?access_token=" + token;
   }
 }

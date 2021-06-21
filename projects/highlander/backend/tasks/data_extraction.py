@@ -1,3 +1,4 @@
+import datetime
 import pathlib
 
 from celery import states
@@ -58,9 +59,12 @@ def extract_data(self, user_id, dataset_name, req_body, request_id):
             size=data_size,
         )
         db.session.add(output_file)
-        db.session.commit()
 
     except (DiskQuotaException, AccessToDatasetDenied, EmptyOutputFile) as exc:
         handle_exception(self, request, exc, ignore=True)
     except Exception as exc:
         handle_exception(self, request, exc, error_msg="Failed to extract data")
+    finally:
+        if request:
+            request.end_date = datetime.datetime.utcnow()
+            db.session.commit()

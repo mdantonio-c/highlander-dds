@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { ApiService } from "@rapydo/services/api";
-import { Dataset } from "@app/types";
+import { Dataset, StorageUsage } from "@app/types";
 
 @Injectable({
   providedIn: "root",
@@ -43,5 +43,13 @@ export class DataService {
       },
     };
     return this.api.get(`/api/download/${filename}`, {}, options);
+  }
+
+  /**
+   *
+   */
+  getStorageUsage(): Observable<StorageUsage> {
+    // return this.api.get("/api/usage");
+    return of({ quota: 524288000, used: 10180754 });
   }
 }

@@ -44,8 +44,26 @@ class Requests(EndpointResource):
             .paginate(page, size, False)
             .items
         )
-        log.debug(requests)
-        # TODO
+        for r in requests:
+            log.debug(r)
+            item = {
+                "id": r.id,
+                "name": r.name,
+                "dataset_name": r.dataset_name,
+                "args": r.args,
+                "submission_date": r.submission_date.isoformat(),
+                "status": r.status,
+                "task_id": r.task_id,
+            }
+            if r.end_date:
+                item["end_date"] = r.end_date.isoformat()
+            if r.output_file:
+                item["output_file"] = {
+                    "filename": r.output_file.filename,
+                    "timestamp": r.output_file.timestamp,
+                    "size": r.output_file.size,
+                }
+            data.append(item)
         return self.response(data)
 
     @decorators.auth.require()
@@ -79,10 +97,14 @@ class Requests(EndpointResource):
             )
             db.session.add(request)
             db.session.commit()
+
             task = c.celery_app.send_task(
                 "extract_data", args=[user.id, dataset_name, args, request.id]
             )
             request.task_id = task.id
+            request.status = task.status  # 'PENDING'
+            db.session.commit()
+            log.info("Request <ID:{}> successfully saved", request.id)
         except Exception as exc:
             log.exception(exc)
             db.session.rollback()

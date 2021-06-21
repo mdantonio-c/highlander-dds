@@ -8,13 +8,15 @@ import { DatasetsComponent } from "./components/datasets/datasets.component";
 import { DatasetComponent } from "./components/dataset/dataset.component";
 import { DataExtractionModalComponent } from "./components/data-extraction-modal/data-extraction-modal.component";
 import { RequestsComponent } from "./components/requests/requests.component";
+import { DashboardComponent } from "./components/dashboard/dashboard.component";
+import { StorageUsageComponent } from "./components/dashboard/storage-usage/storage-usage.component";
 
 const routes: Routes = [
   { path: "app/datasets", component: DatasetsComponent },
   { path: "app/datasets/:ds_name", component: DatasetComponent },
   {
     path: "app/requests",
-    component: RequestsComponent,
+    component: DashboardComponent,
     canActivate: [AuthGuard],
   },
   { path: "app", redirectTo: "/app/datasets", pathMatch: "full" },
@@ -28,6 +30,8 @@ const routes: Routes = [
     DatasetComponent,
     DataExtractionModalComponent,
     RequestsComponent,
+    DashboardComponent,
+    StorageUsageComponent,
   ],
   schemas: [],
   providers: [],

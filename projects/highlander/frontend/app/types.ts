@@ -42,6 +42,35 @@ export interface LicenseInfo {
   url: string;
 }
 
-export interface Request {}
+export interface RequestArgs {
+  /** @nullable */
+  variable?: string[];
+  product_type: string;
+}
+
+export interface RequestOutput {
+  filename: string;
+  timestamp: string;
+  size: number;
+}
+
+export interface Request {
+  id: number;
+  name: string;
+  dataset_name: string;
+  args: RequestArgs;
+  submission_date: string;
+  /** @nullable */
+  end_date?: string;
+  status: string;
+  task_id: string;
+  /** @nullable */
+  output_file?: RequestOutput;
+}
 
 export interface Requests extends Array<Request> {}
+
+export interface StorageUsage {
+  quota: number;
+  used: number;
+}
