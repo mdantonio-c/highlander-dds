@@ -4,13 +4,12 @@ from typing import Any, Dict, List
 import dds_backend.core.base.ex as ex
 from flask import send_from_directory
 from highlander.connectors import broker
+from highlander.constants import CATALOG_DIR
 from highlander.models.schemas import DatasetSchema
 from restapi import decorators
 from restapi.exceptions import NotFound, ServiceUnavailable
 from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
-
-CATALOG_DIR = os.environ.get("CATALOG_DIR", "/catalog")
 
 
 class Datasets(EndpointResource):

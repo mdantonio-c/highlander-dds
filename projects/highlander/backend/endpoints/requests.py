@@ -1,4 +1,8 @@
+import shutil
+from pathlib import Path
+
 from flask import send_from_directory
+from highlander.constants import DOWNLOAD_DIR
 from highlander.models.schemas import DataExtraction
 from restapi import decorators
 from restapi.connectors import celery, sqlalchemy
@@ -148,8 +152,33 @@ class Request(EndpointResource):
     )
     def delete(self, request_id):
         log.debug("delete request {}", request_id)
-        # TODO
-        pass
+        user = self.get_user()
+        # Can't happen since auth is required
+        if not user:
+            raise ServerError("User misconfiguration")
+
+        db = sqlalchemy.get_instance()
+        # check if the request exists
+        req = db.Request.query.get(int(request_id))
+        if not req:
+            raise NotFound(f"Request ID<{request_id}> NOT found")
+
+        # check if the user owns the request
+        if req.user_id != user.id:
+            raise Unauthorized("Unauthorized request")
+
+        output_file = req.output_file
+        if output_file:
+            try:
+                db.session.delete(output_file)
+                filepath = Path(f"{DOWNLOAD_DIR}/{output_file.timestamp}")
+                shutil.rmtree(filepath)
+            except FileNotFoundError as error:
+                # silently pass when file is not found
+                log.warning(error)
+        db.session.delete(req)
+        db.session.commit()
+        return self.response(f"Request ID<{request_id}> successfully removed")
 
 
 class DownloadData(EndpointResource):

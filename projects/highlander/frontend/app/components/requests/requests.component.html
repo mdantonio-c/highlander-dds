@@ -232,11 +232,7 @@
             >
               <i class="fa fa-download"></i>
             </button>
-            <button
-              class="btn p-0"
-              *ngIf="row.output_file"
-              (click)="delete(row.id)"
-            >
+            <button class="btn p-0" (click)="delete(row.id)">
               <i class="fa fa-trash red"></i>
             </button>
           </div>
