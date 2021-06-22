@@ -1,6 +1,8 @@
 // DO NOT REMOVE ME!
 // Put here custom User properties, if any... or keep it empty
-export interface CustomUser {}
+export interface CustomUser {
+  disk_quota: number;
+}
 
 export interface KeyValue {
   /** @nullable */

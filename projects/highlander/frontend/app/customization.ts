@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { FormlyFieldConfig } from "@ngx-formly/core";
 import { BaseProjectOptions } from "@rapydo/base.project.options";
 import { AdminMenu, User } from "@rapydo/types";
+import { BytesPipe } from "@rapydo/pipes/bytes";
 
 @Injectable()
 export class ProjectOptions extends BaseProjectOptions {
@@ -17,7 +18,14 @@ export class ProjectOptions extends BaseProjectOptions {
   }
 
   custom_user_data(): any[] {
-    return null;
+    return [
+      {
+        name: "Disk<br>Quota",
+        prop: "disk_quota",
+        flexGrow: 0.3,
+        pipe: new BytesPipe(),
+      },
+    ];
   }
 
   cookie_law_text(): string {
@@ -44,7 +52,6 @@ export class ProjectOptions extends BaseProjectOptions {
     // ];
 
     return [];
-
   }
 
   private initTemplates() {
