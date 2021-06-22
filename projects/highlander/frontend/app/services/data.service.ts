@@ -49,7 +49,6 @@ export class DataService {
    *
    */
   getStorageUsage(): Observable<StorageUsage> {
-    // return this.api.get("/api/usage");
-    return of({ quota: 524288000, used: 10180754 });
+    return this.api.get("/api/usage");
   }
 }

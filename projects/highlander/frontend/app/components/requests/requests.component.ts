@@ -1,8 +1,9 @@
 import { Component, Output, EventEmitter, Injector } from "@angular/core";
+import { Subscription } from "rxjs";
 import { BasePaginationComponent } from "@rapydo/components/base.pagination.component";
-import { DataService } from "../../services/data.service";
-import { Router, NavigationExtras } from "@angular/router";
+import { Router } from "@angular/router";
 import { saveAs as importedSaveAs } from "file-saver-es";
+import { DataService } from "../../services/data.service";
 import { Request, RequestOutput } from "../../types";
 import { environment } from "@rapydo/../environments/environment";
 
@@ -12,6 +13,7 @@ import { environment } from "@rapydo/../environments/environment";
 })
 export class RequestsComponent extends BasePaginationComponent<Request> {
   expanded: any = {};
+  @Output() onLoad: EventEmitter<null> = new EventEmitter<null>();
 
   constructor(
     protected injector: Injector,
@@ -24,19 +26,13 @@ export class RequestsComponent extends BasePaginationComponent<Request> {
     this.list();
   }
 
-  /*download(filename) {
-    this.dataService.downloadData(filename).subscribe(
-      (resp) => {
-        const contentType =
-          resp.headers["content-type"] || "application/octet-stream";
-        const blob = new Blob([resp.body], { type: contentType });
-        importedSaveAs(blob, filename);
-      },
-      (error) => {
-        this.notify.showError(`Unable to download file: ${filename}`);
-      }
-    );
-  }*/
+  list(): Subscription {
+    const ret = super.list();
+    ret.add((response) => {
+      this.onLoad.emit();
+    });
+    return ret;
+  }
 
   downloadByUrl(output_file: RequestOutput) {
     const downloadUrl = this.getFileURL(output_file.timestamp);
