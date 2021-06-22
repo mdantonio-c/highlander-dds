@@ -18,7 +18,6 @@ from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import joinedload
-from sqlalchemy.sql import exists
 
 
 class Requests(EndpointResource):
