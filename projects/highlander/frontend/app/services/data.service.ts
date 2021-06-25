@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { ApiService } from "@rapydo/services/api";
-import { Dataset, StorageUsage, DatasetInfo } from "../types";
+import { Dataset, StorageUsage, DatasetInfo, ProductInfo } from "../types";
 
 @Injectable({
   providedIn: "root",
@@ -50,5 +50,17 @@ export class DataService {
    */
   getStorageUsage(): Observable<StorageUsage> {
     return this.api.get("/api/usage");
+  }
+
+  /**
+   * Get a dataset product info.
+   * @param datasetId
+   * @param productId
+   */
+  getDatasetProduct(
+    datasetId: string,
+    productId: string
+  ): Observable<ProductInfo> {
+    return this.api.get(`/api/datasets/${datasetId}/products/${productId}`);
   }
 }

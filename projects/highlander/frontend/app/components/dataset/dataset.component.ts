@@ -91,13 +91,16 @@ export class DatasetComponent implements OnInit {
   }
 
   openDataExtractionModal() {
-    console.log("open data extraction", this.dataset);
+    // FIXME atm use default product. We don't have multi-products cases yet!
+    const productId = this.dataset.default;
+    console.log(`open data extraction for product ${productId}`);
     const modalRef = this.modalService.open(DataExtractionModalComponent, {
       backdrop: "static",
       size: "lg",
       keyboard: false,
     });
     modalRef.componentInstance.dataset = this.dataset;
+    modalRef.componentInstance.productId = productId;
     modalRef.componentInstance.passEntry.subscribe((args: any) => {
       this.jobSubmit(args);
     });

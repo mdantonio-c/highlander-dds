@@ -15,9 +15,11 @@ export interface Dataset {
   products: KeyValue;
 }
 
-export interface ProductInfo {
+export interface ProductReference {
   id: string;
   description: string;
+  /** @nullable */
+  variables?: any[];
 }
 
 export interface DatasetInfo {
@@ -34,7 +36,7 @@ export interface DatasetInfo {
   /** @nullable */
   update_frequency?: string;
   related_data: any[];
-  products: ProductInfo[];
+  products: ProductReference[];
 }
 
 export interface DatasetVariables {
@@ -51,6 +53,31 @@ export interface ContactInfo {
 export interface LicenseInfo {
   name: string;
   url: string;
+}
+
+export interface Widget {
+  name: string;
+  label: string;
+  /** @nullable */
+  icon?: string;
+  required: boolean;
+  parameter: string;
+  type: string;
+  details: any;
+  /** @nullable */
+  help: string;
+  /** @nullable */
+  info: string;
+}
+
+export interface ProductInfo {
+  id: string;
+  label: string;
+  dataset: DatasetInfo;
+  widgets: Widget[];
+  widgets_order: string[];
+  /** @nullable */
+  constraints?: string;
 }
 
 export interface RequestArgs {

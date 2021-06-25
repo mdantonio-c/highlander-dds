@@ -2,14 +2,18 @@ import { Component, Input, OnInit, Output, EventEmitter } from "@angular/core";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import { DataService } from "../../services/data.service";
 import { NotificationService } from "@rapydo/services/notification";
-import { Dataset, DatasetVariables } from "../../types";
+import {
+  DatasetInfo,
+  DatasetVariables,
+  ProductInfo,
+  Widget,
+} from "../../types";
 import {
   AbstractControl,
   FormBuilder,
   FormGroup,
   FormArray,
   FormControl,
-  Validators,
 } from "@angular/forms";
 
 @Component({
@@ -17,12 +21,13 @@ import {
   templateUrl: "./data-extraction-modal.component.html",
 })
 export class DataExtractionModalComponent implements OnInit {
-  @Input() dataset: Dataset;
+  @Input() dataset: DatasetInfo;
+  @Input() productId: string;
   @Output() passEntry: EventEmitter<any> = new EventEmitter();
 
-  variables: DatasetVariables;
   productName: string;
   filterForm: FormGroup;
+  productInfo: ProductInfo;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -36,9 +41,24 @@ export class DataExtractionModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    let [key, value] = Object.entries(this.dataset.products)[0];
-    this.productName = key;
-    this.variables = value[0].variables;
+    console.log(`Product ID: ${this.productId}`);
+    console.log(this.dataset);
+    this.dataService
+      .getDatasetProduct(this.dataset.id, this.productId)
+      .subscribe(
+        (data) => {
+          this.productInfo = data;
+          this.productName = this.productInfo.label;
+        },
+        (error) => {
+          this.notify.showError(error);
+        }
+      );
+  }
+
+  getWidget(widgetName: string): Widget {
+    if (!this.productInfo) return;
+    return this.productInfo.widgets.find((w) => w.name == widgetName);
   }
 
   onVariablesChange(e) {
@@ -60,7 +80,7 @@ export class DataExtractionModalComponent implements OnInit {
 
   submit() {
     const res = {
-      product: this.productName,
+      product: this.productId,
       variables: (this.filterForm.controls.variables as FormArray).value,
     };
     this.passEntry.emit(res);

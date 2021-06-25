@@ -144,6 +144,7 @@ class BrokerExt(Connector):
                 wparameter="variable",
                 wtype="StringList",
                 wdetails={"_values": values},
+                wicon="sliders-h",
             )
             data["widgets"].append(w.to_dict())
             data["widgets_order"].append("variable")
@@ -173,6 +174,7 @@ class BrokerExt(Connector):
                 wparameter=None,
                 wtype="ExclusiveFrame",
                 wdetails={"widgets": ["date_list", "date_range"]},
+                wicon="calendar-alt",
             )
             data["widgets"].append(w.to_dict())
 
@@ -272,6 +274,7 @@ class BrokerExt(Connector):
                 wparameter=None,
                 wtype="ExclusiveFrame",
                 wdetails={"widgets": ["area", "location"]},
+                wicon="globe",
             )
             data["widgets"].append(w.to_dict())
             data["widgets_order"].append("spatial_coverage")
@@ -414,6 +417,7 @@ class Widget:
         wdetails=None,
         whelp=None,
         winfo=None,
+        wicon=None,
     ):
         self.__data = {
             "name": str(wname),
@@ -425,6 +429,8 @@ class Widget:
             "help": whelp,
             "info": winfo,
         }
+        if wicon:
+            self.__data["icon"] = wicon
 
     def __getitem__(self, key):
         return self.__data[key]

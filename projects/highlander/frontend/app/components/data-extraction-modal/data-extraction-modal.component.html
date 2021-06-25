@@ -11,45 +11,47 @@
 </div>
 <div class="modal-body p-0 mb-4">
   <div class="container mt-4">
-    <div class="row">
+    <div class="row" *ngIf="productInfo">
       <div class="col">
-        <!--        <form [formGroup]="filterForm" (ngSubmit)="submit()">-->
         <form #dataForm="ngForm" (ngSubmit)="submit()">
-          <!-- variables -->
-          <h6 class="text-muted font-weight-bold">
-            <i class="fas fa-sliders-h mr-2"></i> Variables
-          </h6>
-          <div class="hl-preview mb-4">
-            <div class="hl-preview-content row">
-              <div
-                class="custom-control custom-checkbox col-sm-12 col-md-6"
-                *ngFor="let v of variables | keyvalue"
-              >
-                <input
-                  [id]="v.key"
-                  [value]="v.value.standard_name"
-                  type="checkbox"
-                  class="custom-control-input"
-                  (change)="onVariablesChange($event)"
-                />
-                <label [for]="v.key" class="custom-control-label">{{
-                  v.value.label
-                }}</label>
+          <ng-container *ngFor="let widgetName of productInfo.widgets_order">
+            <ng-template
+              let-widget
+              [ngTemplateOutletContext]="{ $implicit: getWidget(widgetName) }"
+              [ngTemplateOutlet]="t"
+              #t
+            >
+              <!--                {{widget | json}}-->
+              <h6 class="text-muted font-weight-bold">
+                <i
+                  class="fas fa-{{ widget.icon }} mr-2"
+                  *ngIf="widget.icon"
+                ></i>
+                {{ widget.label }}
+              </h6>
+              <div class="hl-preview mb-4">
+                <div class="hl-preview-content">
+                  <div class="row" *ngIf="widget.name == 'variable'">
+                    <div
+                      class="custom-control custom-checkbox col-sm-12 col-md-6"
+                      *ngFor="let v of widget.details['values']"
+                    >
+                      <input
+                        [id]="v.value"
+                        [value]="v.value"
+                        type="checkbox"
+                        class="custom-control-input"
+                        (change)="onVariablesChange($event)"
+                      />
+                      <label [for]="v.value" class="custom-control-label">{{
+                        v.label
+                      }}</label>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          <h6 class="text-muted font-weight-bold">
-            <i class="fas fa-calendar-alt mr-2"></i> Temporal Coverage
-          </h6>
-          <div class="hl-preview mb-4">
-            <div class="hl-preview-content"></div>
-          </div>
-          <h6 class="text-muted font-weight-bold">
-            <i class="fas fa-globe mr-2"></i> Spatial Coverage
-          </h6>
-          <div class="hl-preview mb-4">
-            <div class="hl-preview-content"></div>
-          </div>
+            </ng-template>
+          </ng-container>
           <button class="btn btn-primary btn-lg">Job Submit »</button>
         </form>
       </div>

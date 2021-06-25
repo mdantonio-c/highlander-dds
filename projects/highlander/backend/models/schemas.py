@@ -106,6 +106,7 @@ class WidgetDetails(Schema):
 class Widget(Schema):
     name = fields.Str()
     label = fields.Str()
+    icon = fields.Str()
     required = fields.Bool()
     parameter = fields.Str()
     type = fields.Str()
