@@ -2,9 +2,8 @@ import { Component, OnInit } from "@angular/core";
 import { DataService } from "../../services/data.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
-import { Dataset } from "../../types";
+import { DatasetInfo } from "../../types";
 import { SSRService } from "@rapydo/services/ssr";
-import { Observable } from "rxjs";
 
 @Component({
   selector: "app-datasets",
@@ -12,7 +11,7 @@ import { Observable } from "rxjs";
   styleUrls: ["./datasets.component.css"],
 })
 export class DatasetsComponent implements OnInit {
-  datasets: Dataset[];
+  datasets: DatasetInfo[];
 
   constructor(
     private dataService: DataService,
@@ -34,7 +33,6 @@ export class DatasetsComponent implements OnInit {
       .subscribe(
         (data) => {
           this.datasets = data;
-          // console.log(this.datasets);
         },
         (error) => {
           this.notify.showError(error);

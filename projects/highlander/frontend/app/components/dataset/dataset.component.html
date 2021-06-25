@@ -8,62 +8,59 @@
   ></ngx-spinner>
   <div class="row" *ngIf="dataset">
     <div class="col-12">
-      <h2>{{ dataset.info.label }}</h2>
+      <h2>{{ dataset.label }}</h2>
     </div>
     <div class="col-md-8">
       <hr />
       <div class="mb-4 d-flex">
         <p class="text-justify mb-0">
           <img
-            src="{{ backendURI + '/api/datasets/' + dataset.name + '/image' }}"
+            src="{{ backendURI + '/api/datasets/' + dataset.id + '/image' }}"
             alt="no img"
             style="float: left"
             class="mr-md-4 w-50"
-            *ngIf="dataset.info.image"
+            *ngIf="dataset.image"
           />
-          {{ dataset.info.description }}
+          {{ dataset.description }}
         </p>
       </div>
-      <ng-container *ngFor="let product of dataset.products | keyvalue">
-        <h3>{{ product.key }}</h3>
+      <ng-container *ngFor="let product of dataset.products">
+        <h3>{{ product.description }}</h3>
         <table class="table table-sm table-hover table-condensed">
           <tbody>
-            <tr *ngFor="let v of product.value[0].variables | keyvalue">
-              <th>{{ v.value.label }}</th>
-              <td>{{ v.value.units }}</td>
+            <tr *ngFor="let v of product.variables">
+              <th>{{ v.label }}</th>
+              <td>{{ v?.units }}</td>
             </tr>
           </tbody>
         </table>
       </ng-container>
       <h3>Attribution</h3>
-      <p>{{ dataset.info.attribution }}</p>
+      <p>{{ dataset.attribution }}</p>
     </div>
     <div class="col-md-4 mb-5">
       <hr />
       <h3>Contact</h3>
       <address>
-        <strong>{{ dataset.info.contact.name }}</strong>
+        <strong>{{ dataset.contact.name }}</strong>
         <br />
         <span>
           <i class="fas fa-envelope"></i>
-          {{ dataset.info.contact.email }}
+          {{ dataset.contact.email }}
         </span>
         <br />
-        <ng-container *ngIf="dataset.info.contact.webpage">
+        <ng-container *ngIf="dataset.contact.webpage">
           <i class="fas fa-globe"></i>
-          <a
-            [href]="dataset.info.contact.webpage"
-            target="_blank"
-            class="ml-1"
-            >{{ dataset.info.contact.webpage }}</a
-          >
+          <a [href]="dataset.contact.webpage" target="_blank" class="ml-1">{{
+            dataset.contact.webpage
+          }}</a>
         </ng-container>
         <br />
       </address>
       <h3>Publication Date</h3>
-      <p>{{ dataset.info.publication_date | date }}</p>
+      <p>{{ dataset.publication_date | date }}</p>
       <h3>License</h3>
-      <p>{{ dataset.info.license.name }}</p>
+      <p>{{ dataset.license.name }}</p>
       <hr />
       <button
         type="button"

@@ -15,17 +15,26 @@ export interface Dataset {
   products: KeyValue;
 }
 
+export interface ProductInfo {
+  id: string;
+  description: string;
+}
+
 export interface DatasetInfo {
-  label: string;
+  id: string;
+  default: string;
   description: string;
   attribution: string;
   contact: ContactInfo;
+  label: string;
   doi: string;
   image: string;
   license: LicenseInfo;
   publication_date: string;
   /** @nullable */
   update_frequency?: string;
+  related_data: any[];
+  products: ProductInfo[];
 }
 
 export interface DatasetVariables {

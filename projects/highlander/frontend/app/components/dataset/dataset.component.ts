@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { Dataset } from "../../types";
+import { DatasetInfo } from "../../types";
 import { NotificationService } from "@rapydo/services/notification";
 import { AuthService } from "@rapydo/services/auth";
 import { DataService } from "../../services/data.service";
@@ -16,8 +16,7 @@ import { environment } from "@rapydo/../environments/environment";
   templateUrl: "./dataset.component.html",
 })
 export class DatasetComponent implements OnInit {
-  dataset: Dataset;
-  // dataset$: Observable<Dataset>;
+  dataset: DatasetInfo;
   user: User;
   readonly backendURI = environment.backendURI;
 
@@ -31,7 +30,8 @@ export class DatasetComponent implements OnInit {
     private spinner: NgxSpinnerService,
     private modalService: NgbModal
   ) {
-    this.dataset = this.router.getCurrentNavigation().extras.state as Dataset;
+    this.dataset = this.router.getCurrentNavigation().extras
+      .state as DatasetInfo;
   }
 
   ngOnInit() {
@@ -74,9 +74,9 @@ export class DatasetComponent implements OnInit {
 
   jobSubmit(args) {
     this.spinner.show();
-    console.log(`submit job request for dataset <${this.dataset.name}>`, args);
+    console.log(`submit job request for dataset <${this.dataset.id}>`, args);
     this.dataService
-      .submit(this.dataset.name, args)
+      .submit(this.dataset.id, args)
       .subscribe(
         (ack) => {
           this.notify.showSuccess("Request Accepted");

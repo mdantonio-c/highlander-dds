@@ -37,13 +37,13 @@
           </div>
           <div class="search-result-details col-xs-11 col-12 col-sm-11">
             <h3>
-              <a href [routerLink]="[dataset.name]" [state]="dataset">{{
-                dataset.info.label
+              <a href [routerLink]="[dataset.id]" [state]="dataset">{{
+                dataset.label
               }}</a>
             </h3>
-            <p class="text" *ngIf="dataset.info.description">
+            <p class="text" *ngIf="dataset.description">
               <i class="fa fa-quote-left fa-gray"></i>
-              {{ dataset.info.description }}
+              {{ dataset.description }}
             </p>
           </div>
         </div>
