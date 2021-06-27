@@ -16,7 +16,7 @@
     type="ball-clip-rotate-multiple"
     size="medium"
   ></ngx-spinner>
-  <h2>Datasets</h2>
+  <h2>{{ title }}</h2>
   <div class="row no-gutters justify-content-md-center mt-3" *ngIf="datasets">
     <!-- no datasets -->
     <ng-template #noResults>
@@ -25,27 +25,53 @@
         <p>we are sorry but no dataset is available yet</p>
       </div>
     </ng-template>
-    <!-- view datasets -->
+
     <div class="col" *ngIf="datasets.length > 0; else noResults">
       <div class="search-result" *ngFor="let dataset of datasets">
         <div class="row">
-          <div class="col-xs-1 d-none d-sm-block col-sm-1 text-center">
-            <span
-              class="fa fa-database fa-2x fa-blue"
-              aria-hidden="true"
-            ></span>
-          </div>
-          <div class="search-result-details col-xs-11 col-12 col-sm-11">
-            <h3>
-              <a href [routerLink]="[dataset.id]" [state]="dataset">{{
-                dataset.label
-              }}</a>
-            </h3>
-            <p class="text" *ngIf="dataset.description">
-              <i class="fa fa-quote-left fa-gray"></i>
-              {{ dataset.description }}
-            </p>
-          </div>
+          <!-- view applications -->
+          <ng-container *ngIf="isApplication; else datasetsView">
+            <div class="col">
+              <div class="d-flex">
+                <div class="text-justify mb-0">
+                  <img
+                    src="{{
+                      backendURI + '/api/datasets/' + dataset.id + '/image'
+                    }}"
+                    alt="no img"
+                    style="float: left; width: 280px"
+                    class="mr-3 mb-2 img-thumbnail"
+                    *ngIf="dataset.image"
+                  />
+                  <h3>{{ dataset.label }}</h3>
+                  <p class="text" *ngIf="dataset.description">
+                    <i class="fa fa-quote-left fa-gray"></i>
+                    {{ dataset.description }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <!-- view datasets -->
+          <ng-template #datasetsView>
+            <div class="col-xs-1 d-none d-sm-block col-sm-1 text-center">
+              <span
+                class="fa fa-database fa-2x fa-blue"
+                aria-hidden="true"
+              ></span>
+            </div>
+            <div class="search-result-details col-xs-11 col-12 col-sm-11">
+              <h3>
+                <a href [routerLink]="[dataset.id]" [state]="dataset">{{
+                  dataset.label
+                }}</a>
+              </h3>
+              <p class="text" *ngIf="dataset.description">
+                <i class="fa fa-quote-left fa-gray"></i>
+                {{ dataset.description }}
+              </p>
+            </div>
+          </ng-template>
         </div>
       </div>
     </div>

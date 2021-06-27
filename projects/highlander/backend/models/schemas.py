@@ -48,6 +48,7 @@ class DatasetInfo(Schema):
     update_frequency = fields.Str()
     license = fields.Nested(License)
     publication_date = fields.DateTime(allow_none=True, format=ISO8601UTC)
+    application = fields.Boolean(default=False)
     related_data = fields.List(fields.Nested(RelatedData))
     products = fields.List(
         fields.Nested(ProductReference),

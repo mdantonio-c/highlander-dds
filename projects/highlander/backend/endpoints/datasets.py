@@ -6,6 +6,7 @@ from highlander.constants import CATALOG_DIR
 from highlander.models.schemas import DatasetInfo, ProductInfo
 from restapi import decorators
 from restapi.exceptions import NotFound, ServiceUnavailable
+from restapi.models import fields
 from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
 
@@ -19,11 +20,16 @@ class Datasets(EndpointResource):
             200: "Datasets successfully retrieved",
         },
     )
+    @decorators.use_kwargs(
+        {"application": fields.Bool(required=False)}, location="query"
+    )
     @decorators.marshal_with(DatasetInfo(many=True), code=200)
-    def get(self) -> Response:
+    def get(self, application=False) -> Response:
+        log.debug("Is application dataset? {}", application)
         dds = broker.get_instance()
         details = dds.get_dataset_details()["data"]
-        return self.response(details)
+        res = [x for x in details if x.get("application", False) == application]
+        return self.response(res)
 
 
 class Dataset(EndpointResource):

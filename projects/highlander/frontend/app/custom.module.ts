@@ -13,6 +13,7 @@ import { StorageUsageComponent } from "./components/dashboard/storage-usage/stor
 
 const routes: Routes = [
   { path: "app/datasets", component: DatasetsComponent },
+  { path: "app/applications", component: DatasetsComponent },
   { path: "app/datasets/:ds_name", component: DatasetComponent },
   {
     path: "app/requests",

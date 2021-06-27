@@ -11,9 +11,11 @@ export class DataService {
 
   /**
    * Get all the available datasets.
+   * @param isApplication filter ONLY application datasets.
    */
-  getDatasets(): Observable<DatasetInfo[]> {
-    return this.api.get("/api/datasets");
+  getDatasets(isApplication?: boolean): Observable<DatasetInfo[]> {
+    const params = isApplication ? { application: true } : {};
+    return this.api.get("/api/datasets", params);
   }
 
   /**
