@@ -23,3 +23,11 @@ services:
       BROKER_HOST: ${BROKER_HOST}
       BROKER_PORT: ${BROKER_PORT}
       BROKER_CATALOG_DIR: ${BROKER_CATALOG_DIR}
+  geoserver:
+    image: geonode/geoserver:2.18.2
+    ports:
+      - 8070:8080
+    environment:
+      ACTIVATE: ${ACTIVATE_GEOSERVER}
+    volumes:
+      - ${VANILLA_DIR}/data/geoserver:/geoserver_data/data
