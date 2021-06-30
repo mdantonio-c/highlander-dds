@@ -29,4 +29,4 @@ services:
     environment:
       ACTIVATE: ${ACTIVATE_GEOSERVER}
     volumes:
-      - ${VANILLA_DIR}/data/geoserver:/geoserver_data/data
+      - ${DATA_DIR}/geoserver:/geoserver_data/data
