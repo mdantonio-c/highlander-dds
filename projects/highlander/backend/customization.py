@@ -1,6 +1,7 @@
 from typing import Any, Tuple
 
 from restapi.customizer import BaseCustomizer, FlaskRequest, Props, User
+from restapi.models import fields, validate
 from restapi.rest.definition import EndpointResource
 
 # from restapi.utilities.logs import log
@@ -17,9 +18,8 @@ class Customizer(BaseCustomizer):
         before sending to the database
         """
         extra_properties: Props = {}
-        # if "myfield" in properties:
-        #     extra_properties["myfield"] = properties["myfield"]
-
+        # 1 GB, as defined in sqlalchemy model
+        properties.setdefault("disk_quota", 1073741824)
         return properties, extra_properties
 
     @staticmethod
@@ -37,27 +37,28 @@ class Customizer(BaseCustomizer):
     def manipulate_profile(ref: EndpointResource, user: User, data: Props) -> Props:
         """
         execute before sending data from the profile endpoint
-        use this method to add additonal information to the user profile
+        use this method to add additional information to the user profile
         """
-        # data["CustomField"] = user.custom_field
+        data["disk_quota"] = user.disk_quota
 
         return data
 
     @staticmethod
     def get_custom_input_fields(request: FlaskRequest, scope: int) -> Props:
 
-        # required = request and request.method == "POST"
-        """
+        required = request and request.method == "POST"
+
         if scope == BaseCustomizer.ADMIN:
             return {
-                'custom_field': fields.Int(
+                "disk_quota": fields.Int(
                     required=required,
                     # validate=validate.Range(min=0, max=???),
                     validate=validate.Range(min=0),
-                    label="CustomField",
-                    description="This is a custom field",
-                )
+                    label="Disk quota",
+                    description="Disk quota in bytes",
+                ),
             }
+
         # these are editable fields in profile
         if scope == BaseCustomizer.PROFILE:
             return {}
@@ -65,9 +66,6 @@ class Customizer(BaseCustomizer):
         # these are additional fields in registration form
         if scope == BaseCustomizer.REGISTRATION:
             return {}
-        """
-
-        return {}
 
     @staticmethod
     def get_custom_output_fields(request: FlaskRequest) -> Props:

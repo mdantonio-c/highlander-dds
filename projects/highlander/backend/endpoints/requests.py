@@ -1,4 +1,8 @@
+import shutil
+from pathlib import Path
+
 from flask import send_from_directory
+from highlander.constants import DOWNLOAD_DIR
 from highlander.models.schemas import DataExtraction
 from restapi import decorators
 from restapi.connectors import celery, sqlalchemy
@@ -12,6 +16,7 @@ from restapi.exceptions import (
 )
 from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
+from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import joinedload
 
 
@@ -44,8 +49,26 @@ class Requests(EndpointResource):
             .paginate(page, size, False)
             .items
         )
-        log.debug(requests)
-        # TODO
+        for r in requests:
+            log.debug(r)
+            item = {
+                "id": r.id,
+                "name": r.name,
+                "dataset_name": r.dataset_name,
+                "args": r.args,
+                "submission_date": r.submission_date.isoformat(),
+                "status": r.status,
+                "task_id": r.task_id,
+            }
+            if r.end_date:
+                item["end_date"] = r.end_date.isoformat()
+            if r.output_file:
+                item["output_file"] = {
+                    "filename": r.output_file.filename,
+                    "timestamp": r.output_file.timestamp,
+                    "size": r.output_file.size,
+                }
+            data.append(item)
         return self.response(data)
 
     @decorators.auth.require()
@@ -58,17 +81,40 @@ class Requests(EndpointResource):
             400: "Invalid request",
         },
     )
-    def post(self, dataset_name):
+    def post(self, dataset_name, product, variables=[]):
         user = self.get_user()
         c = celery.get_instance()
-        req = {
-            "product_type": "VHR-REA_IT_1989_2020_hourly",
-            "variable": ["air_temperature", "precipitation_amount"],
-            "latitude": {"start": 39, "stop": 40},
-            "longitude": {"start": 16, "stop": 16.5},
-            "time": {"year": 1991, "month": 1, "day": 1, "hour": 12},
-        }
-        task = c.celery_app.send_task("extract_data", args=[user.id, dataset_name, req])
+        log.debug("Request for extraction for <{}>", dataset_name)
+        log.debug("Variables: {}", variables)
+        args = {"product_type": product}
+        if variables:
+            args["variable"] = variables
+        task = None
+        db = sqlalchemy.get_instance()
+        try:
+            # save request record in db
+            request = db.Request(
+                name="test",
+                dataset_name=dataset_name,
+                args=args,
+                user_id=user.id,
+                status="CREATED",
+            )
+            db.session.add(request)
+            db.session.commit()
+
+            task = c.celery_app.send_task(
+                "extract_data", args=[user.id, dataset_name, args, request.id]
+            )
+            request.task_id = task.id
+            request.status = task.status  # 'PENDING'
+            db.session.commit()
+            log.info("Request <ID:{}> successfully saved", request.id)
+        except Exception as exc:
+            log.exception(exc)
+            db.session.rollback()
+            raise ServerError("Unable to submit the request")
+
         log.debug("Request submitted")
         return self.response(task.id, code=202)
 
@@ -107,25 +153,67 @@ class Request(EndpointResource):
     )
     def delete(self, request_id):
         log.debug("delete request {}", request_id)
-        # TODO
-        pass
+        user = self.get_user()
+        if not user:
+            raise ServerError("User misconfiguration")
+
+        db = sqlalchemy.get_instance()
+        # check if the request exists
+        req = db.Request.query.get(int(request_id))
+        if not req:
+            raise NotFound(f"Request ID<{request_id}> NOT found")
+
+        # check if the user owns the request
+        if req.user_id != user.id:
+            raise Unauthorized("Unauthorized request")
+
+        output_file = req.output_file
+        if output_file:
+            try:
+                db.session.delete(output_file)
+                filepath = Path(f"{DOWNLOAD_DIR}/{output_file.timestamp}")
+                shutil.rmtree(filepath)
+            except FileNotFoundError as error:
+                # silently pass when file is not found
+                log.warning(error)
+        db.session.delete(req)
+        db.session.commit()
+        return self.response(f"Request ID<{request_id}> successfully removed")
 
 
 class DownloadData(EndpointResource):
-    @decorators.auth.require()
+    @decorators.auth.require(allow_access_token_parameter=True)
     @decorators.endpoint(
-        path="/download/<filename>",
+        path="/download/<timestamp>",
         summary="Download output file",
-        responses={200: "File successfully downloaded", 404: "File not found"},
+        responses={
+            200: "File successfully downloaded",
+            401: "Unauthorized request",
+            404: "File not found",
+        },
     )
-    def get(self, filename):
-        # user = self.get_user()
-        # db = sqlalchemy.get_instance()
+    def get(self, timestamp):
+        user = self.get_user()
+        if not user:
+            raise ServerError("User misconfiguration")
 
-        # TODO check if user owns the file
-
-        # TODO retrieve the file via broker connector
-
-        # download the file as a response attachment
-        # return send_from_directory(file_dir, filename, as_attachment=True)
-        pass
+        db = sqlalchemy.get_instance()
+        try:
+            output_file = (
+                db.session.query(db.OutputFile).filter_by(timestamp=timestamp).one()
+            )
+            # check if user owns the file
+            if output_file.request.user_id != user.id:
+                raise Unauthorized("Unauthorized request")
+            file_dir = f"{DOWNLOAD_DIR}/{output_file.timestamp}"
+            file_path = Path(f"{file_dir}/{output_file.filename}")
+            if not file_path.exists():
+                log.error(
+                    f"Expected filename <{output_file.filename}> in the path {file_dir}"
+                )
+                raise FileNotFoundError()
+            return send_from_directory(
+                file_dir, output_file.filename, as_attachment=True
+            )
+        except (NoResultFound, FileNotFoundError):
+            raise NotFound(f"OutputFile with TIMESTAMP<{timestamp}> NOT found")

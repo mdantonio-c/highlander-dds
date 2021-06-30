@@ -1,16 +1,14 @@
 import os
-from typing import Any, Dict, List
 
-import dds_backend.core.base.ex as ex
 from flask import send_from_directory
 from highlander.connectors import broker
-from highlander.models.schemas import DatasetSchema
+from highlander.constants import CATALOG_DIR
+from highlander.models.schemas import DatasetInfo, ProductInfo
 from restapi import decorators
 from restapi.exceptions import NotFound, ServiceUnavailable
+from restapi.models import fields
 from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
-
-CATALOG_DIR = os.environ.get("CATALOG_DIR", "/catalog")
 
 
 class Datasets(EndpointResource):
@@ -22,46 +20,62 @@ class Datasets(EndpointResource):
             200: "Datasets successfully retrieved",
         },
     )
-    @decorators.marshal_with(DatasetSchema(many=True), code=200)
-    def get(self) -> Response:
+    @decorators.use_kwargs(
+        {"application": fields.Bool(required=False)}, location="query"
+    )
+    @decorators.marshal_with(DatasetInfo(many=True), code=200)
+    def get(self, application=False) -> Response:
+        log.debug("Is application dataset? {}", application)
         dds = broker.get_instance()
-        # get the list of datasets
-        datasets: List[Any] = []
-        for ds in dds.broker.list_datasets():
-            log.debug("get details for dataset <{}>", ds)
-            details = dds.broker.get_details(ds, extended=True)
-            details["name"] = ds
-            datasets.append(details)
-        return self.response(datasets)
+        details = dds.get_dataset_details()["data"]
+        res = [x for x in details if x.get("application", False) == application]
+        return self.response(res)
 
 
 class Dataset(EndpointResource):
     labels = ["dataset"]
 
     @decorators.endpoint(
-        path="/datasets/<dataset_name>",
-        summary="Get a dataset by name",
-        description="Return the dataset filtered by unique name, if it exists",
+        path="/datasets/<dataset_id>",
+        summary="Get a dataset by id",
+        description="Return the dataset filtered by unique id, if it exists",
         responses={
             200: "Dataset successfully retrieved",
             404: "Dataset does not exist",
         },
     )
-    @decorators.marshal_with(DatasetSchema, code=200)
-    def get(self, dataset_name: str) -> Response:
-        log.debug("Get dataset <{}>", dataset_name)
+    @decorators.marshal_with(DatasetInfo, code=200)
+    def get(self, dataset_id: str) -> Response:
+        log.debug("Get dataset <{}>", dataset_id)
         dds = broker.get_instance()
-        try:
-            details = dds.broker.get_details(dataset_name, extended=True)
-            details["name"] = dataset_name
-        except ex.DMSKeyError as e:
-            raise NotFound(str(e)[1:-1])
-        return self.response(details)
+        details = dds.get_dataset_details([dataset_id])["data"]
+        if not details:
+            raise NotFound(f"Dataset ID<{dataset_id}> not found")
+        return self.response(details[0])
+
+
+class DatasetProduct(EndpointResource):
+    @decorators.endpoint(
+        path="/datasets/<dataset_id>/products/<product_id>",
+        summary="Get dataset product",
+        description="Return the dataset product info",
+        responses={
+            200: "Dataset product successfully retrieved",
+            404: "Dataset product not found",
+        },
+    )
+    @decorators.marshal_with(ProductInfo, code=200)
+    def get(self, dataset_id: str, product_id: str) -> Response:
+        log.debug("Get product <{}> for dataset <{}>", product_id, dataset_id)
+        dds = broker.get_instance()
+        data = dds.get_product_for_dataset(dataset_id, product_id)
+        # log.debug(data)
+        return self.response(data)
 
 
 class DatasetImage(EndpointResource):
     @decorators.endpoint(
-        path="/datasets/<dataset_name>/image",
+        path="/datasets/<dataset_id>/image",
         summary="Get dataset image",
         description="Return the dataset thumbnail image",
         responses={
@@ -69,17 +83,16 @@ class DatasetImage(EndpointResource):
             404: "Dataset Image not found",
         },
     )
-    def get(self, dataset_name: str) -> Response:
-        log.debug("Get image for dataset <{}>", dataset_name)
-        dds = broker.get_instance()
+    def get(self, dataset_id: str) -> Response:
+        log.debug("Get image for dataset <{}>", dataset_id)
         try:
-            details = dds.broker.get_details(dataset_name, extended=True)
-            image_filename = details["dataset_info"]["image"]
+            dds = broker.get_instance()
+            image_filename = dds.get_dataset_image_filename(dataset_id)
             if not image_filename:
-                raise ex.DMSKeyError("Dataset image is missing")
+                raise LookupError("Dataset image not configured")
             images_dir = f"{CATALOG_DIR}/images"
             if not os.path.exists(os.path.join(images_dir, image_filename)):
-                raise ex.DMSKeyError("Dataset image not found")
+                raise LookupError(f"Dataset file image <{image_filename}> not found")
             return send_from_directory(images_dir, image_filename)
-        except ex.DMSKeyError as e:
-            raise NotFound(str(e)[1:-1])
+        except LookupError as e:
+            raise NotFound(str(e))

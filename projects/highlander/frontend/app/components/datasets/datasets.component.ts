@@ -2,9 +2,11 @@ import { Component, OnInit } from "@angular/core";
 import { DataService } from "../../services/data.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
-import { Dataset } from "../../types";
+import { DatasetInfo } from "../../types";
 import { SSRService } from "@rapydo/services/ssr";
-import { Observable } from "rxjs";
+import { Router, NavigationEnd } from "@angular/router";
+import { filter } from "rxjs/operators";
+import { environment } from "@rapydo/../environments/environment";
 
 @Component({
   selector: "app-datasets",
@@ -12,14 +14,27 @@ import { Observable } from "rxjs";
   styleUrls: ["./datasets.component.css"],
 })
 export class DatasetsComponent implements OnInit {
-  datasets: Dataset[];
+  datasets: DatasetInfo[];
+  isApplication: boolean;
+  readonly backendURI = environment.backendURI;
+  title: string;
 
   constructor(
     private dataService: DataService,
+    private router: Router,
     private notify: NotificationService,
     private spinner: NgxSpinnerService,
     public ssr: SSRService
-  ) {}
+  ) {
+    router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event) => {
+        this.isApplication = (event as NavigationEnd).url.endsWith(
+          "applications"
+        );
+        this.title = this.isApplication ? "Applications" : "Datasets";
+      });
+  }
 
   ngOnInit() {
     if (this.ssr.isBrowser) {
@@ -30,11 +45,10 @@ export class DatasetsComponent implements OnInit {
   private loadDatasets() {
     this.spinner.show();
     this.dataService
-      .getDatasets()
+      .getDatasets(this.isApplication)
       .subscribe(
         (data) => {
           this.datasets = data;
-          // console.log(this.datasets);
         },
         (error) => {
           this.notify.showError(error);

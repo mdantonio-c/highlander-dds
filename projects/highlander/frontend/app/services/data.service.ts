@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { ApiService } from "@rapydo/services/api";
-import { Dataset } from "@app/types";
+import { Dataset, StorageUsage, DatasetInfo, ProductInfo } from "../types";
 
 @Injectable({
   providedIn: "root",
@@ -11,25 +11,27 @@ export class DataService {
 
   /**
    * Get all the available datasets.
+   * @param isApplication filter ONLY application datasets.
    */
-  getDatasets(): Observable<Dataset[]> {
-    return this.api.get("/api/datasets");
+  getDatasets(isApplication?: boolean): Observable<DatasetInfo[]> {
+    const params = isApplication ? { application: true } : {};
+    return this.api.get("/api/datasets", params);
   }
 
   /**
-   * Get a dataset by name.
-   * @param name
+   * Get a dataset by id.
+   * @param dataset_id
    */
-  getDataset(name: string): Observable<Dataset> {
-    return this.api.get(`/api/datasets/${name}`);
+  getDataset(dataset_id: string): Observable<DatasetInfo> {
+    return this.api.get(`/api/datasets/${dataset_id}`);
   }
 
   /**
    *
    * @param dataset
    */
-  submit(dataset: string): Observable<any> {
-    return this.api.post(`/api/requests/${dataset}`);
+  submit(dataset: string, args: any): Observable<any> {
+    return this.api.post(`/api/requests/${dataset}`, args);
   }
 
   /**
@@ -43,5 +45,24 @@ export class DataService {
       },
     };
     return this.api.get(`/api/download/${filename}`, {}, options);
+  }
+
+  /**
+   *
+   */
+  getStorageUsage(): Observable<StorageUsage> {
+    return this.api.get("/api/usage");
+  }
+
+  /**
+   * Get a dataset product info.
+   * @param datasetId
+   * @param productId
+   */
+  getDatasetProduct(
+    datasetId: string,
+    productId: string
+  ): Observable<ProductInfo> {
+    return this.api.get(`/api/datasets/${datasetId}/products/${productId}`);
   }
 }
