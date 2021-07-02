@@ -31,3 +31,7 @@ services:
       ACTIVATE: ${ACTIVATE_GEOSERVER}
     volumes:
       - ${VANILLA_DIR}/data/geoserver:/geoserver_data/data
+    networks:
+      app_net:
+        aliases:
+          - geoserver.dockerized.io
