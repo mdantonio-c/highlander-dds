@@ -11,4 +11,4 @@ services:
       - /data/sub-sea:/catalog/datasets/sub-sea
   proxy:
     volumes:
-      - ${ PROJECT_DIR }/confs/geoserver.service:/etc/nginx/sites-enabled/geoserver.service
+      - ${PROJECT_DIR}/confs/geoserver.service:/etc/nginx/sites-enabled/geoserver.service
