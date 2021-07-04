@@ -81,14 +81,16 @@ class Requests(EndpointResource):
             400: "Invalid request",
         },
     )
-    def post(self, dataset_name, product, variables=[]):
+    def post(self, dataset_name, product, format, variables=[]):
         user = self.get_user()
         c = celery.get_instance()
         log.debug("Request for extraction for <{}>", dataset_name)
         log.debug("Variables: {}", variables)
+        log.debug("Format: {}", format)
         args = {"product_type": product}
         if variables:
             args["variable"] = variables
+        args["format"] = format
         task = None
         db = sqlalchemy.get_instance()
         try:
