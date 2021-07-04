@@ -1,1 +1,14 @@
 version: "3.8"
+
+services:
+  backend:
+    volumes:
+      - /data/vhr-rea:/catalog/datasets/era5-downscaled
+      - /data/sub-sea:/catalog/datasets/sub-sea
+  celery:
+    volumes:
+      - /data/vhr-rea:/catalog/datasets/era5-downscaled
+      - /data/sub-sea:/catalog/datasets/sub-sea
+  proxy:
+    volumes:
+      - ${PROJECT_DIR}/confs/geoserver.service:/etc/nginx/sites-enabled/geoserver.service

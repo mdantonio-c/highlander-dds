@@ -8,3 +8,7 @@ services:
   frontend:
     ports:
       - 80:8080
+
+  geoserver:
+    ports:
+      - 8070:8080
