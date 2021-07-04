@@ -3,6 +3,9 @@ import { RouterModule, Routes } from "@angular/router";
 
 import { AuthGuard } from "@rapydo/app.auth.guard";
 import { SharedModule } from "@rapydo/shared.module";
+import { LeafletModule } from "@asymmetrik/ngx-leaflet";
+import { LeafletDrawModule } from "@asymmetrik/ngx-leaflet-draw";
+import { LeafletMarkerClusterModule } from "@asymmetrik/ngx-leaflet-markercluster";
 
 import { DatasetsComponent } from "./components/datasets/datasets.component";
 import { DatasetComponent } from "./components/dataset/dataset.component";
@@ -10,6 +13,8 @@ import { DataExtractionModalComponent } from "./components/data-extraction-modal
 import { RequestsComponent } from "./components/requests/requests.component";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { StorageUsageComponent } from "./components/dashboard/storage-usage/storage-usage.component";
+import { ForecastMapsComponent } from "./components/maps/forecast-maps/forecast-maps.component";
+import { MapFilterComponent } from "./components/maps/forecast-maps/map-filter/map-filter.component";
 
 const routes: Routes = [
   { path: "app/datasets", component: DatasetsComponent },
@@ -20,12 +25,23 @@ const routes: Routes = [
     component: DashboardComponent,
     canActivate: [AuthGuard],
   },
+  {
+    path: "app/applications/:ds_name",
+    component: ForecastMapsComponent,
+    canActivate: [AuthGuard],
+  },
   { path: "app", redirectTo: "/app/datasets", pathMatch: "full" },
   { path: "", redirectTo: "/app/datasets", pathMatch: "full" },
 ];
 
 @NgModule({
-  imports: [SharedModule, RouterModule.forChild(routes)],
+  imports: [
+    SharedModule,
+    RouterModule.forChild(routes),
+    LeafletModule,
+    LeafletDrawModule,
+    LeafletMarkerClusterModule,
+  ],
   declarations: [
     DatasetsComponent,
     DatasetComponent,
@@ -33,6 +49,8 @@ const routes: Routes = [
     RequestsComponent,
     DashboardComponent,
     StorageUsageComponent,
+    ForecastMapsComponent,
+    MapFilterComponent,
   ],
   schemas: [],
   providers: [],

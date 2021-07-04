@@ -1,0 +1,63 @@
+<div id="parameters">
+  <div class="card bg-light">
+    <div class="card-body">
+      <!--
+      <h4 class="card-title"><small class="text-muted">PARAMETERS</small></h4>
+      -->
+      <form [formGroup]="filterForm">
+        <!-- INDICATOR -->
+        <div class="form-group">
+          <label class="col-form-label"><strong>Indicator:</strong></label>
+          <select
+            id="indicatorGroup"
+            formControlName="indicator"
+            class="form-control"
+          >
+            <option *ngFor="let i of indicators" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+        </div>
+        <!-- ADMINISTRATIVE -->
+        <div class="form-group">
+          <label class="col-form-label"><strong>Administrative:</strong></label>
+          <select
+            id="administrativeGroup"
+            formControlName="administrative"
+            class="form-control"
+          >
+            <option *ngFor="let i of administratives" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+        </div>
+        <!-- PHYSICAL -->
+        <div class="form-group">
+          <label class="col-form-label"><strong>Physical:</strong></label>
+          <select
+            id="physicalGroup"
+            formControlName="physical"
+            class="form-control"
+          >
+            <option *ngFor="let i of physicals" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+        </div>
+        <!-- USER SELECTED -->
+        <div class="form-group">
+          <label class="col-form-label"><strong>User Selected:</strong></label>
+          <select
+            id="userSelectedGroup"
+            formControlName="userSelected"
+            class="form-control"
+          >
+            <option *ngFor="let i of userSelectedItems" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

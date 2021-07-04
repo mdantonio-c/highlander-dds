@@ -43,7 +43,18 @@
                     class="mr-3 mb-2 img-thumbnail"
                     *ngIf="dataset.image"
                   />
-                  <h3>{{ dataset.label }}</h3>
+                  <h3>
+                    <a
+                      *ngIf="user; else notLogged"
+                      href
+                      [routerLink]="['../applications/' + dataset.id]"
+                      [state]="dataset"
+                      >{{ dataset.label }}</a
+                    >
+                    <ng-template #notLogged>
+                      {{ dataset.label }}
+                    </ng-template>
+                  </h3>
                   <p class="text" *ngIf="dataset.description">
                     <i class="fa fa-quote-left fa-gray"></i>
                     {{ dataset.description }}

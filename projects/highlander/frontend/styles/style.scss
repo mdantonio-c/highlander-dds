@@ -1,3 +1,9 @@
+/* add leaflet and leaflet-draw css */
+@import "leaflet/dist/leaflet";
+@import "leaflet-draw/dist/leaflet.draw";
+@import "leaflet.markercluster/dist/MarkerCluster.Default";
+@import "leaflet-timedimension/dist/leaflet.timedimension.control";
+
 /* Typography */
 body {
   font-family: "Open Sans", sans-serif !important;
