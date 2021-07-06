@@ -1,5 +1,6 @@
 import { Component, Output, EventEmitter, Injector } from "@angular/core";
 import { Subject } from "rxjs";
+import { take } from "rxjs/operators";
 import { BasePaginationComponent } from "@rapydo/components/base.pagination.component";
 import { Router } from "@angular/router";
 import { saveAs as importedSaveAs } from "file-saver-es";
