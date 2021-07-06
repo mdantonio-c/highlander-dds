@@ -26,6 +26,7 @@ jobs:
         run: |
 
           rapydo pull --quiet
+          rapydo build
           rapydo add task test_task
 
           rapydo -e AUTH_LOGIN_BAN_TIME=10 start

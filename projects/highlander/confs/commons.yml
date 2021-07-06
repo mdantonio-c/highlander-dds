@@ -1,11 +1,10 @@
-# Customize this file to include compose configurations common to bluprints
-version: "3.2"
+version: "3.8"
 services:
   backend:
     build: ${PROJECT_DIR}/builds/backend
     image: hl-dds/backend:${RAPYDO_VERSION}
     volumes:
-      - ${VANILLA_DIR}/data/catalog:/catalog
+      - ${DATA_DIR}/catalog:/catalog
     environment:
       BROKER_ENABLE: ${ACTIVATE_BROKER}
       BROKER_ENABLE_CONNECTOR: ${BROKER_ENABLE_CONNECTOR}
@@ -16,7 +15,7 @@ services:
     build: ${PROJECT_DIR}/builds/backend
     image: hl-dds/backend:${RAPYDO_VERSION}
     volumes:
-      - ${VANILLA_DIR}/data/catalog:/catalog
+      - ${DATA_DIR}/catalog:/catalog
     environment:
       BROKER_ENABLE: ${ACTIVATE_BROKER}
       BROKER_ENABLE_CONNECTOR: ${BROKER_ENABLE_CONNECTOR}
@@ -30,8 +29,8 @@ services:
     environment:
       ACTIVATE: ${ACTIVATE_GEOSERVER}
     volumes:
-      - ${VANILLA_DIR}/data/geoserver:/geoserver_data/data
+      - ${DATA_DIR}/geoserver:/geoserver_data/data
     networks:
-      app_net:
+      default:
         aliases:
           - geoserver.dockerized.io

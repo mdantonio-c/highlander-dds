@@ -2,8 +2,8 @@
 project:
   title: Highlander
   description: "Data Delivery System"
-  version: "0.2"
-  rapydo: "1.2"
+  version: "0.3"
+  rapydo: "2.0"
 
 variables:
   # roles:
@@ -23,7 +23,7 @@ variables:
     ACTIVATE_RABBIT: 1
     ACTIVATE_REDIS: 1
     ACTIVATE_CELERY: 1
-    ACTIVATE_CELERYUI: 0
+    ACTIVATE_FLOWER: 1
     ACTIVATE_CELERYBEAT: 1
     ACTIVATE_BROKER: 1
     ACTIVATE_GEOSERVER: 1

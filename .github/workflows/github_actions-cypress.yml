@@ -31,6 +31,7 @@ jobs:
         run: |
 
           rapydo pull --quiet;
+          rapydo build
 
           rapydo -e API_AUTOSTART=1 start;
           sleep 20
