@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter, Injector } from "@angular/core";
-import { Subscription } from "rxjs";
+import { Subject } from "rxjs";
 import { BasePaginationComponent } from "@rapydo/components/base.pagination.component";
 import { Router } from "@angular/router";
 import { saveAs as importedSaveAs } from "file-saver-es";
@@ -26,12 +26,13 @@ export class RequestsComponent extends BasePaginationComponent<Request> {
     this.list();
   }
 
-  list(): Subscription {
-    const ret = super.list();
-    ret.add((response) => {
+  public list(): Subject<boolean> {
+    const subject = super.list();
+
+    subject.pipe(take(1)).subscribe((success: boolean) => {
       this.onLoad.emit();
     });
-    return ret;
+    return subject;
   }
 
   downloadByUrl(output_file: RequestOutput) {
