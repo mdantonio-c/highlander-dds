@@ -2,7 +2,7 @@
 version: "3.2"
 services:
   backend:
-    build: ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/backend
+    build: ${PROJECT_DIR}/builds/backend
     image: hl-dds/backend:${RAPYDO_VERSION}
     volumes:
       - ${VANILLA_DIR}/data/catalog:/catalog
@@ -13,7 +13,7 @@ services:
       BROKER_PORT: ${BROKER_PORT}
       BROKER_CATALOG_DIR: ${BROKER_CATALOG_DIR}
   celery:
-    build: ${VANILLA_DIR}/projects/${COMPOSE_PROJECT_NAME}/builds/backend
+    build: ${PROJECT_DIR}/builds/backend
     image: hl-dds/backend:${RAPYDO_VERSION}
     volumes:
       - ${VANILLA_DIR}/data/catalog:/catalog
@@ -24,7 +24,9 @@ services:
       BROKER_PORT: ${BROKER_PORT}
       BROKER_CATALOG_DIR: ${BROKER_CATALOG_DIR}
   geoserver:
-    image: geonode/geoserver:2.18.2
+    #    image: geonode/geoserver:2.19.1
+    build: ${PROJECT_DIR}/builds/geoserver
+    image: hl-geoserver:${PROJECT_VERSION}
     environment:
       ACTIVATE: ${ACTIVATE_GEOSERVER}
     volumes:
