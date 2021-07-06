@@ -29,6 +29,6 @@ services:
     volumes:
       - ${DATA_DIR}/geoserver:/geoserver_data/data
     networks:
-      app_net:
+      default:
         aliases:
           - geoserver.dockerized.io
