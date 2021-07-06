@@ -16,11 +16,11 @@ import { DataService } from "../../../services/data.service";
 import { SSRService } from "@rapydo/services/ssr";
 
 import * as moment from "moment";
-import * as L from "leaflet";
-import "leaflet-timedimension/dist/leaflet.timedimension.src.js";
-declare module "leaflet" {
-  let timeDimension: any;
-}
+// import * as L from "leaflet";
+// import "leaflet-timedimension/dist/leaflet.timedimension.src.js";
+// declare module "leaflet" {
+//   let timeDimension: any;
+// }
 
 const MAX_ZOOM = 8;
 const MIN_ZOOM = 5;
