@@ -14,6 +14,7 @@ import {
   FormGroup,
   FormArray,
   FormControl,
+  Validators,
 } from "@angular/forms";
 
 @Component({
@@ -36,13 +37,14 @@ export class DataExtractionModalComponent implements OnInit {
     private notify: NotificationService
   ) {
     this.filterForm = this.fb.group({
-      variables: this.fb.array([]),
+      variable: this.fb.array([]),
+      format: ["netcdf", Validators.required],
     });
   }
 
   ngOnInit() {
     console.log(`Product ID: ${this.productId}`);
-    console.log(this.dataset);
+    // console.log(this.dataset);
     this.dataService
       .getDatasetProduct(this.dataset.id, this.productId)
       .subscribe(
@@ -61,8 +63,8 @@ export class DataExtractionModalComponent implements OnInit {
     return this.productInfo.widgets.find((w) => w.name == widgetName);
   }
 
-  onVariablesChange(e) {
-    const checkArray: FormArray = this.filterForm.get("variables") as FormArray;
+  onListChange(e, filter) {
+    const checkArray: FormArray = this.filterForm.get(filter) as FormArray;
 
     if (e.target.checked) {
       checkArray.push(new FormControl(e.target.value));
@@ -81,7 +83,8 @@ export class DataExtractionModalComponent implements OnInit {
   submit() {
     const res = {
       product: this.productId,
-      variables: (this.filterForm.controls.variables as FormArray).value,
+      variables: (this.filterForm.controls.variable as FormArray).value,
+      format: this.filterForm.controls.format.value,
     };
     this.passEntry.emit(res);
     this.activeModal.close();

@@ -1,0 +1,20 @@
+{
+  "projects": {
+    "RAPyDo": {
+      "architect": {
+        "build": {
+          "options": {
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "./node_modules/leaflet/dist/images",
+                "output": "leaflet/"
+              }
+            ],
+            "scripts": ["node_modules/iso8601-js-period/iso8601.js"]
+          }
+        }
+      }
+    }
+  }
+}

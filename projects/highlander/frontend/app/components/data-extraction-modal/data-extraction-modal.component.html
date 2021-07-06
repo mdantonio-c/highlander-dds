@@ -13,7 +13,7 @@
   <div class="container mt-4">
     <div class="row" *ngIf="productInfo">
       <div class="col">
-        <form #dataForm="ngForm" (ngSubmit)="submit()">
+        <form [formGroup]="filterForm" (ngSubmit)="submit()">
           <ng-container *ngFor="let widgetName of productInfo.widgets_order">
             <ng-template
               let-widget
@@ -31,7 +31,7 @@
               </h6>
               <div class="hl-preview mb-4">
                 <div class="hl-preview-content">
-                  <div class="row" *ngIf="widget.name == 'variable'">
+                  <div class="row" *ngIf="widget.type == 'StringList'">
                     <div
                       class="custom-control custom-checkbox col-sm-12 col-md-6"
                       *ngFor="let v of widget.details['values']"
@@ -41,7 +41,25 @@
                         [value]="v.value"
                         type="checkbox"
                         class="custom-control-input"
-                        (change)="onVariablesChange($event)"
+                        (change)="onListChange($event, widget.name)"
+                      />
+                      <label [for]="v.value" class="custom-control-label">{{
+                        v.label
+                      }}</label>
+                    </div>
+                  </div>
+                  <div class="row" *ngIf="widget.type == 'FileFormat'">
+                    <div
+                      class="custom-control custom-radio col-sm-12 col-md-6"
+                      *ngFor="let v of widget.details['values']"
+                    >
+                      <input
+                        [id]="v.value"
+                        [value]="v.value"
+                        [formControlName]="widget.name"
+                        type="radio"
+                        class="custom-control-input"
+                        (change)="onListChange($event, widget.name)"
                       />
                       <label [for]="v.value" class="custom-control-label">{{
                         v.label

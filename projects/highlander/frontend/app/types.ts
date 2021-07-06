@@ -84,6 +84,7 @@ export interface RequestArgs {
   /** @nullable */
   variable?: string[];
   product_type: string;
+  format?: string;
 }
 
 export interface RequestOutput {

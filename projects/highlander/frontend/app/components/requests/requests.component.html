@@ -82,6 +82,15 @@
                 </dd>
                 <ng-template #noFilters>No Variable selected</ng-template>
               </dl>
+              <div class="my-2"></div>
+              <dl class="mb-0" *ngIf="row.args.format">
+                <dt>Format</dt>
+                <dd>
+                  <ul>
+                    <li>{{ row.args.format }}</li>
+                  </ul>
+                </dd>
+              </dl>
             </ng-container>
           </div>
         </div>
