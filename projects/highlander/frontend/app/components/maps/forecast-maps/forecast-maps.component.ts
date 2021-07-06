@@ -13,6 +13,7 @@ import { NgxSpinnerService } from "ngx-spinner";
 import { DatasetInfo } from "../../../types";
 import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
+import { SSRService } from "@rapydo/services/ssr";
 
 import * as moment from "moment";
 import * as L from "leaflet";
@@ -86,14 +87,17 @@ export class ForecastMapsComponent implements OnInit {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     public route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private ssr: SSRService
   ) {
     this.dataset = this.router.getCurrentNavigation().extras
       .state as DatasetInfo;
   }
 
   ngOnInit() {
-    this.setCollapse(window.innerWidth);
+    if (this.ssr.isBrowser) {
+      this.setCollapse(window.innerWidth);
+    }
 
     const datasetName = this.route.snapshot.paramMap.get("ds_name");
     if (!datasetName) {
