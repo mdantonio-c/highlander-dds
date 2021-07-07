@@ -40,6 +40,9 @@ jobs:
           rapydo --prod init --force
           rapydo -s frontend,proxy pull --quiet
 
+          rm projects/highlander/confs/geoserver.service
+          touch projects/highlander/confs/geoserver.service
+
           rapydo -s frontend,proxy start
           rapydo dump
           rapydo -s frontend logs --follow
