@@ -15,7 +15,7 @@ from restapi.exceptions import ServiceUnavailable
 class BrokerExt(Connector):
     broker: Any
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
     def get_connection_exception(self):
@@ -37,10 +37,10 @@ class BrokerExt(Connector):
         )
         return self
 
-    def disconnect(self):
+    def disconnect(self) -> None:
         self.disconnected = True
 
-    def is_connected(self):
+    def is_connected(self) -> bool:
         return not self.disconnected
 
     def get_datasets(self, filter_dataset_ids: List[str] = None) -> Mapping[str, Any]:
