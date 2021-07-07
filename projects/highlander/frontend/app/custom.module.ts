@@ -13,7 +13,7 @@ import { DataExtractionModalComponent } from "./components/data-extraction-modal
 import { RequestsComponent } from "./components/requests/requests.component";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { StorageUsageComponent } from "./components/dashboard/storage-usage/storage-usage.component";
-import { ForecastMapsComponent } from "./components/maps/forecast-maps/forecast-maps.component";
+// import { ForecastMapsComponent } from "./components/maps/forecast-maps/forecast-maps.component";
 import { MapFilterComponent } from "./components/maps/forecast-maps/map-filter/map-filter.component";
 
 const routes: Routes = [
@@ -25,11 +25,11 @@ const routes: Routes = [
     component: DashboardComponent,
     canActivate: [AuthGuard],
   },
-  {
-    path: "app/applications/:ds_name",
-    component: ForecastMapsComponent,
-    canActivate: [AuthGuard],
-  },
+  // {
+  //   path: "app/applications/:ds_name",
+  //   component: ForecastMapsComponent,
+  //   canActivate: [AuthGuard],
+  // },
   { path: "app", redirectTo: "/app/datasets", pathMatch: "full" },
   { path: "", redirectTo: "/app/datasets", pathMatch: "full" },
 ];
@@ -49,7 +49,7 @@ const routes: Routes = [
     RequestsComponent,
     DashboardComponent,
     StorageUsageComponent,
-    ForecastMapsComponent,
+    // ForecastMapsComponent,
     MapFilterComponent,
   ],
   schemas: [],
