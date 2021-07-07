@@ -1,7 +1,7 @@
 name: MyPy
 
 env:
-  PROJECT: highlander 
+  PROJECT: highlander
 
 on:
   push:
@@ -25,11 +25,10 @@ jobs:
       - uses: rapydo/actions/mypy@v1
         with:
           project: ${PROJECT}
-          # install: 
-          # ignore: 
+          install: numpy
+          ignore: dds_backend
       - name: Save Report
         uses: actions/upload-artifact@v2
         with:
           name: mypy-report
           path: report
-
