@@ -153,7 +153,7 @@ class Request(EndpointResource):
             404: "Request does not exist.",
         },
     )
-    def delete(self, request_id):
+    def delete(self, request_id: str) -> Response:
         log.debug("delete request {}", request_id)
         user = self.get_user()
         if not user:
@@ -194,7 +194,7 @@ class DownloadData(EndpointResource):
             404: "File not found",
         },
     )
-    def get(self, timestamp):
+    def get(self, timestamp: str) -> Response:
         user = self.get_user()
         if not user:
             raise ServerError("User misconfiguration")

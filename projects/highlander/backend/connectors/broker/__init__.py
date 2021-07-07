@@ -2,13 +2,14 @@
 DDS Broker connector
 """
 from datetime import datetime, timedelta
-from typing import Any, List, Mapping, Optional, Union
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 import numpy as np
 from dds_backend import DataBroker
 from restapi.connectors import Connector
 from restapi.exceptions import ServiceUnavailable
-from restapi.utilities.logs import log
+
+# from restapi.utilities.logs import log
 
 
 class BrokerExt(Connector):
@@ -101,7 +102,7 @@ class BrokerExt(Connector):
             product_id = default_product_id
         product = products[product_id]
         coords, attrs = product["coordinates"], product.get("attributes", {})
-        data = {
+        data: Dict[str, Any] = {
             "version": "v1",
             "status": "OK",
             "id": product_id,

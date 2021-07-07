@@ -24,7 +24,7 @@ class Datasets(EndpointResource):
         {"application": fields.Bool(required=False)}, location="query"
     )
     @decorators.marshal_with(DatasetInfo(many=True), code=200)
-    def get(self, application=False) -> Response:
+    def get(self, application: bool = False) -> Response:
         log.debug("Is application dataset? {}", application)
         dds = broker.get_instance()
         details = dds.get_dataset_details()["data"]
