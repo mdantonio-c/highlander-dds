@@ -8,8 +8,7 @@ import numpy as np
 from dds_backend import DataBroker
 from restapi.connectors import Connector
 from restapi.exceptions import ServiceUnavailable
-
-# from restapi.utilities.logs import log
+from restapi.utilities.logs import log
 
 
 class BrokerExt(Connector):
@@ -49,7 +48,15 @@ class BrokerExt(Connector):
             dataset_names = list(
                 filter(lambda x: x in filter_dataset_ids, dataset_names)
             )
-        return {dn: self.broker.get_details(dn) for dn in dataset_names}
+        res: Mapping[str, Any] = {}
+        for dn in dataset_names:
+            try:
+                res[dn] = self.broker.get_details(dn)
+            except Exception as exc:
+                # do not block due to corrupt datasets
+                log.exception(exc)
+                log.warning(str(exc))
+        return res
 
     def get_dataset_details(
         self, filter_dataset_ids: List[str] = None
