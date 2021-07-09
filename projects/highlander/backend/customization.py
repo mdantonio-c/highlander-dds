@@ -73,4 +73,6 @@ class Customizer(BaseCustomizer):
         this method is used to extend the output model of profile and admin users
         """
 
-        return {}
+        return {
+            "disk_quota": fields.Int(),
+        }
