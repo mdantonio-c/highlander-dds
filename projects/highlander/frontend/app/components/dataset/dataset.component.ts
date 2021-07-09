@@ -98,6 +98,7 @@ export class DatasetComponent implements OnInit {
       backdrop: "static",
       size: "lg",
       keyboard: false,
+      scrollable: true,
     });
     modalRef.componentInstance.dataset = this.dataset;
     modalRef.componentInstance.productId = productId;

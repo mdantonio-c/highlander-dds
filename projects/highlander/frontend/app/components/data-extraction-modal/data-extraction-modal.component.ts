@@ -2,6 +2,7 @@ import { Component, Input, OnInit, Output, EventEmitter } from "@angular/core";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import { DataService } from "../../services/data.service";
 import { NotificationService } from "@rapydo/services/notification";
+import { NgxSpinnerService } from "ngx-spinner";
 import {
   DatasetInfo,
   DatasetVariables,
@@ -34,7 +35,8 @@ export class DataExtractionModalComponent implements OnInit {
     public activeModal: NgbActiveModal,
     private dataService: DataService,
     private fb: FormBuilder,
-    private notify: NotificationService
+    private notify: NotificationService,
+    private spinner: NgxSpinnerService
   ) {
     this.filterForm = this.fb.group({
       variable: this.fb.array([]),
@@ -45,6 +47,7 @@ export class DataExtractionModalComponent implements OnInit {
   ngOnInit() {
     console.log(`Product ID: ${this.productId}`);
     // console.log(this.dataset);
+    this.spinner.show("extSpinner");
     this.dataService
       .getDatasetProduct(this.dataset.id, this.productId)
       .subscribe(
@@ -55,7 +58,10 @@ export class DataExtractionModalComponent implements OnInit {
         (error) => {
           this.notify.showError(error);
         }
-      );
+      )
+      .add(() => {
+        this.spinner.hide("extSpinner");
+      });
   }
 
   getWidget(widgetName: string): Widget {

@@ -10,10 +10,20 @@
   </button>
 </div>
 <div class="modal-body p-0 mb-4">
-  <div class="container mt-4">
+  <div class="container mt-4" style="min-height: 70vh">
+    <ngx-spinner
+      bdColor="rgba(255,255,255,0.8)"
+      color="#6c757d"
+      zIndex="1000"
+      type="ball-clip-rotate-multiple"
+      size="medium"
+      [fullScreen]="false"
+      name="extSpinner"
+      ><p class="mt-4">Loading...</p></ngx-spinner
+    >
     <div class="row" *ngIf="productInfo">
       <div class="col">
-        <form [formGroup]="filterForm" (ngSubmit)="submit()">
+        <form id="ngForm" [formGroup]="filterForm" (ngSubmit)="submit()">
           <ng-container *ngFor="let widgetName of productInfo.widgets_order">
             <ng-template
               let-widget
@@ -70,9 +80,13 @@
               </div>
             </ng-template>
           </ng-container>
-          <button class="btn btn-primary btn-lg">Job Submit »</button>
         </form>
       </div>
     </div>
   </div>
+</div>
+<div class="modal-footer" *ngIf="productInfo">
+  <button type="submit" class="btn btn-primary btn-lg" form="ngForm">
+    Job Submit »
+  </button>
 </div>
