@@ -101,7 +101,7 @@ class WidgetDetails(Schema):
 
     _values = fields.List(fields.Nested(ValueLabelPair), data_key="values")
     widgets = fields.List(fields.Str())
-    fields = fields.List(fields.Nested(FieldDetails))
+    _fields = fields.List(fields.Nested(FieldDetails), data_key="fields")
 
 
 class Widget(Schema):

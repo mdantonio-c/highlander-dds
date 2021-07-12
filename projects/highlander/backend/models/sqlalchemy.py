@@ -26,7 +26,7 @@ class Request(db.Model):
         "OutputFile", uselist=False, back_populates="request", cascade="delete"
     )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<Request(name='{}', submission date='{}', status='{}')".format(
             self.name, self.submission_date, self.status
         )
@@ -42,5 +42,5 @@ class OutputFile(db.Model):
     request_id = db.Column(db.Integer, db.ForeignKey("request.id"))
     request = db.relationship("Request", back_populates="output_file")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<OutputFile(filename='{self.filename}', size='{self.size}')"

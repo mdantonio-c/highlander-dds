@@ -1,5 +1,6 @@
 import datetime
 import pathlib
+from typing import Any, Dict
 
 from celery import states
 from celery.exceptions import Ignore
@@ -28,7 +29,9 @@ def handle_exception(task, request, exc, ignore=False, error_msg=None):
 
 
 @CeleryExt.task()
-def extract_data(self, user_id, dataset_name, req_body, request_id):
+def extract_data(
+    self, user_id: int, dataset_name: str, req_body: Dict[str, Any], request_id: int
+) -> None:
     log.info("Start task [{}:{}]", self.request.id, self.name)
     log.debug("Data Extraction: Dataset<{}> UserID<{}>", dataset_name, user_id)
     try:

@@ -67,12 +67,13 @@ class Customizer(BaseCustomizer):
         if scope == BaseCustomizer.REGISTRATION:
             return {}
 
+        return {}
+
     @staticmethod
     def get_custom_output_fields(request: FlaskRequest) -> Props:
         """
         this method is used to extend the output model of profile and admin users
         """
-
         return {
             "disk_quota": fields.Int(),
         }

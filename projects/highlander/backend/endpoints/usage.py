@@ -1,7 +1,7 @@
 from restapi import decorators
 from restapi.connectors import sqlalchemy
 from restapi.exceptions import ServerError
-from restapi.rest.definition import EndpointResource
+from restapi.rest.definition import EndpointResource, Response
 from sqlalchemy.sql import func
 
 
@@ -15,7 +15,7 @@ class Usage(EndpointResource):
         summary="Get user disk usage.",
         responses={200: "Disk usage information"},
     )
-    def get(self):
+    def get(self) -> Response:
         """
         Get actual user disk quota and current usage
         """

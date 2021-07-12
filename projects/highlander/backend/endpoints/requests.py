@@ -1,5 +1,6 @@
 import shutil
 from pathlib import Path
+from typing import Dict, List, Union
 
 from flask import send_from_directory
 from highlander.constants import DOWNLOAD_DIR
@@ -16,8 +17,8 @@ from restapi.exceptions import (
 )
 from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
-from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm.exc import NoResultFound
 
 
 class Requests(EndpointResource):
@@ -33,8 +34,18 @@ class Requests(EndpointResource):
             404: "No request found",
         },
     )
-    def get(self, get_total, page, size, sort_order, sort_by, input_filter):
+    def get(
+        self,
+        get_total: bool,
+        page: int,
+        size: int,
+        sort_order: str,
+        sort_by: str,
+        input_filter: str,
+    ) -> Response:
         user = self.get_user()
+        if not user:  # pragma: no cover
+            raise ServerError("User misconfiguration")
         db = sqlalchemy.get_instance()
         if get_total:
             counter = db.Request.query.filter_by(user_id=user.id).count()
@@ -81,13 +92,17 @@ class Requests(EndpointResource):
             400: "Invalid request",
         },
     )
-    def post(self, dataset_name, product, format, variables=[]):
+    def post(
+        self, dataset_name: str, product: str, format: str, variables: List[str] = []
+    ) -> Response:
         user = self.get_user()
+        if not user:  # pragma: no cover
+            raise ServerError("User misconfiguration")
         c = celery.get_instance()
         log.debug("Request for extraction for <{}>", dataset_name)
         log.debug("Variables: {}", variables)
         log.debug("Format: {}", format)
-        args = {"product_type": product}
+        args: Dict[str, Union[str, List[str]]] = {"product_type": product}
         if variables:
             args["variable"] = variables
         args["format"] = format

@@ -2,11 +2,11 @@
 DDS Broker connector
 """
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, List, Mapping, Optional, Tuple, Type, Union
 
 import numpy as np
 from dds_backend import DataBroker
-from restapi.connectors import Connector
+from restapi.connectors import Connector, ExceptionsList
 from restapi.exceptions import ServiceUnavailable
 from restapi.utilities.logs import log
 
@@ -17,15 +17,11 @@ class BrokerExt(Connector):
     def __init__(self) -> None:
         super().__init__()
 
-    def get_connection_exception(self):
-        return (
-            NotImplementedError,
-            ServiceUnavailable,
-            AttributeError,
-            FileNotFoundError,
-        )
+    @staticmethod
+    def get_connection_exception() -> ExceptionsList:
+        return None
 
-    def connect(self, **kwargs):
+    def connect(self, **kwargs: Dict[str, Any]):
         catalog_dir = self.variables.get("catalog_dir", "/catalog")
         self.broker = DataBroker(
             catalog_path=f"{catalog_dir}/catalog.yaml",  # Place where catalog YAML file is located
@@ -42,13 +38,11 @@ class BrokerExt(Connector):
     def is_connected(self) -> bool:
         return not self.disconnected
 
-    def get_datasets(self, filter_dataset_ids: List[str] = None) -> Mapping[str, Any]:
+    def get_datasets(self, filter_dataset_ids: List[str] = []) -> Dict[str, Any]:
         dataset_names = list(self.broker.list_datasets().keys())
         if filter_dataset_ids:
-            dataset_names = list(
-                filter(lambda x: x in filter_dataset_ids, dataset_names)
-            )
-        res: Mapping[str, Any] = {}
+            dataset_names = [x for x in dataset_names if x in filter_dataset_ids]
+        res: Dict[str, Any] = {}
         for dn in dataset_names:
             try:
                 res[dn] = self.broker.get_details(dn)
@@ -59,7 +53,7 @@ class BrokerExt(Connector):
         return res
 
     def get_dataset_details(
-        self, filter_dataset_ids: List[str] = None
+        self, filter_dataset_ids: List[str] = []
     ) -> Mapping[str, Any]:
         datasets = self.get_datasets(filter_dataset_ids)
         return {
@@ -401,14 +395,14 @@ class BrokerExt(Connector):
 
         return data
 
-    def get_dataset_image_filename(self, dataset_id: str) -> str:
+    def get_dataset_image_filename(self, dataset_id: str) -> Any:
         datasets = self.get_datasets([dataset_id])
         if dataset_id not in datasets:
             raise LookupError(f"Dataset <{dataset_id}> does not exist")
         return datasets[dataset_id]["dataset_info"].get("image")
 
     @staticmethod
-    def unwrap(obj):
+    def unwrap(obj: Any) -> Any:
         if isinstance(obj, (set, list)):
             return next(iter(obj))
         return obj
@@ -417,15 +411,15 @@ class BrokerExt(Connector):
 class Widget:
     def __init__(
         self,
-        wname,
-        wlabel,
-        wrequired,
-        wparameter,
-        wtype,
-        wdetails=None,
-        whelp=None,
-        winfo=None,
-        wicon=None,
+        wname: str,
+        wlabel: str,
+        wrequired: bool,
+        wparameter: Optional[str],
+        wtype: str,
+        wdetails: Optional[Mapping[str, Any]] = None,
+        whelp: Optional[Any] = None,
+        winfo: Optional[Any] = None,
+        wicon: Optional[str] = None,
     ):
         self.__data = {
             "name": str(wname),
@@ -440,14 +434,14 @@ class Widget:
         if wicon:
             self.__data["icon"] = wicon
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> Any:
         return self.__data[key]
 
-    def to_dict(self):
+    def to_dict(self) -> Dict[str, Any]:
         return self.__data.copy()
 
     @classmethod
-    def from_dict(cls, data):
+    def from_dict(cls, data: Dict[str, Any]) -> "Widget":
         return Widget(**data)
 
 
