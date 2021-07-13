@@ -27,7 +27,7 @@ def handle_exception(
     request.status = states.FAILURE
     request.error_message = error_msg or str(exc)
     # manually update the task state
-    task.update_state(state=states.FAILURE, meta=exc)
+    task.update_state(state=states.FAILURE, meta=str(exc))
     if ignore:
         log.warning(exc)
         raise Ignore()

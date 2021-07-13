@@ -2,12 +2,11 @@
 DDS Broker connector
 """
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Mapping, Optional, Tuple, Type, Union
+from typing import Any, Dict, List, Mapping, Optional
 
 import numpy as np
 from dds_backend import DataBroker
 from restapi.connectors import Connector, ExceptionsList
-from restapi.exceptions import ServiceUnavailable
 from restapi.utilities.logs import log
 
 
@@ -21,7 +20,7 @@ class BrokerExt(Connector):
     def get_connection_exception() -> ExceptionsList:
         return None
 
-    def connect(self, **kwargs: Any) -> "BrokerExt":
+    def connect(self, **kwargs: str) -> "BrokerExt":
         catalog_dir = self.variables.get("catalog_dir", "/catalog")
         self.broker = DataBroker(
             # Place where catalog YAML file is located
@@ -456,7 +455,7 @@ instance = BrokerExt()
 def get_instance(
     verification: Optional[int] = None,
     expiration: Optional[int] = None,
-    **kwargs: Union[Optional[str], int],
+    **kwargs: str,
 ) -> "BrokerExt":
     return instance.get_instance(
         verification=verification, expiration=expiration, **kwargs
