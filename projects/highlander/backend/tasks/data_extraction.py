@@ -1,8 +1,9 @@
 import datetime
 import pathlib
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from celery import states
+from celery.app.task import Task
 from celery.exceptions import Ignore
 from highlander.connectors import broker
 from highlander.exceptions import (
@@ -10,12 +11,19 @@ from highlander.exceptions import (
     DiskQuotaException,
     EmptyOutputFile,
 )
+from highlander.models.sqlalchemy import Request
 from restapi.connectors import sqlalchemy
 from restapi.connectors.celery import CeleryExt
 from restapi.utilities.logs import log
 
 
-def handle_exception(task, request, exc, ignore=False, error_msg=None):
+def handle_exception(
+    task: Task,
+    request: Request,
+    exc: Exception,
+    ignore: bool = False,
+    error_msg: Optional[str] = None,
+) -> None:
     request.status = states.FAILURE
     request.error_message = error_msg or str(exc)
     # manually update the task state
@@ -30,7 +38,11 @@ def handle_exception(task, request, exc, ignore=False, error_msg=None):
 
 @CeleryExt.task()
 def extract_data(
-    self, user_id: int, dataset_name: str, req_body: Dict[str, Any], request_id: int
+    self: Task,
+    user_id: int,
+    dataset_name: str,
+    req_body: Dict[str, Any],
+    request_id: int,
 ) -> None:
     log.info("Start task [{}:{}]", self.request.id, self.name)
     log.debug("Data Extraction: Dataset<{}> UserID<{}>", dataset_name, user_id)

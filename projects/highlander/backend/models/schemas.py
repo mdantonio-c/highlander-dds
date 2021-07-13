@@ -1,4 +1,4 @@
-from typing import Iterable, Mapping
+from typing import Any, Iterable, Mapping
 
 import numpy as np
 from restapi.models import ISO8601UTC, Schema, fields
@@ -60,7 +60,7 @@ class DatasetInfo(Schema):
 class NumpyDateTime(fields.Field):
     """A formatted numpy datetime64 string."""
 
-    def _serialize(self, value, attr, obj, **kwargs):
+    def _serialize(self, value: Any, attr: str, obj: Any, **kwargs: Any) -> Any:
         if value is None:
             return None
         return np.datetime_as_string(value, unit="s")
@@ -74,7 +74,7 @@ class PolyRange(fields.Field):
         self.mapping = mapping
         super().__init__()
 
-    def _serialize(self, value, attr, obj, **kwargs):
+    def _serialize(self, value: Any, attr: str, obj: Any, **kwargs: Any) -> Any:
         obj_cls = value.__class__.__name__
         # log.debug('-- obj cls: {},  value: {} ------------', obj_cls, value)
         try:
@@ -131,7 +131,7 @@ class ProductInfo(Schema):
 
 
 class ListOfInt(fields.List):
-    def _serialize(self, value, attr, obj, **kwargs):
+    def _serialize(self, value: Any, attr: str, obj: Any, **kwargs: Any) -> Any:
         if not isinstance(value, Iterable):
             value = [int(value)]
         return super()._serialize(value, attr, obj, **kwargs)

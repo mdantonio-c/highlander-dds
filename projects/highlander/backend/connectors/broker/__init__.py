@@ -21,14 +21,19 @@ class BrokerExt(Connector):
     def get_connection_exception() -> ExceptionsList:
         return None
 
-    def connect(self, **kwargs: Dict[str, Any]):
+    def connect(self, **kwargs: Any) -> "BrokerExt":
         catalog_dir = self.variables.get("catalog_dir", "/catalog")
         self.broker = DataBroker(
-            catalog_path=f"{catalog_dir}/catalog.yaml",  # Place where catalog YAML file is located
-            cache_dir=f"{catalog_dir}/cache",  # Directory where cache files should be stored
-            cache_details=True,  # If details should be cached as well
-            storage=f"{catalog_dir}/download",  # Directory where retrieved data are persisted
-            log_path=f"{catalog_dir}/logs",  # Directory where logs should be saved
+            # Place where catalog YAML file is located
+            catalog_path=f"{catalog_dir}/catalog.yaml",
+            # Directory where cache files should be stored
+            cache_dir=f"{catalog_dir}/cache",
+            # If details should be cached as well
+            cache_details=True,
+            # Directory where retrieved data are persisted
+            storage=f"{catalog_dir}/download",
+            # Directory where logs should be saved
+            log_path=f"{catalog_dir}/logs",
         )
         return self
 
