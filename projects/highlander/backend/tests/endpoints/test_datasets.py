@@ -9,4 +9,4 @@ class TestApp(BaseTests):
 
         # check response type
         response_data = self.get_content(r)
-        assert type(response_data) == list
+        assert isinstance(response_data, list)
