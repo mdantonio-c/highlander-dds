@@ -31,9 +31,10 @@ jobs:
         run: |
 
           # Temporary fix, waiting for a public release
-          mkdir -p projects/highlander/builds/backend/packages
-          cd projects/highlander/builds/backend/packages
-          git clone --depth https://${{ secrets.DDS_USER }}:${{ secrets.DDS_TOKEN }}@${{ secrets.DDS_URL }}/${{ secrets.DDS_USER }}/dds_backend .
+          cd projects/highlander/builds/backend
+          # git clone url path does not work
+          git clone --depth https://${{ secrets.DDS_USER }}:${{ secrets.DDS_TOKEN }}@${{ secrets.DDS_URL }}/${{ secrets.DDS_USER }}/dds_backend
+          mv dds_backend packages
           cd -
 
           rapydo pull --quiet;
