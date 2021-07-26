@@ -30,6 +30,10 @@ jobs:
           git clone --depth 1 https://${{ secrets.DDS_USER }}:${{ secrets.DDS_TOKEN }}@${{ secrets.DDS_URL }}/${{ secrets.DDS_USER }}/dds_backend.git packages
           cd -
 
+          # Install sample datasets/catalog
+          tar -xvf projects/highlander/builds/backend/packages/sample_datasets.tar.gz -C data/catalog/
+          cp projects/highlander/builds/backend/packages/confs/*.yaml data/catalog/
+
           rapydo pull --quiet
           rapydo build
           rapydo add task test_task
