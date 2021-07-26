@@ -30,6 +30,12 @@ jobs:
       - name: Run Cypress
         run: |
 
+          # Temporary fix, waiting for a public release
+          mkdir -p projects/highlander/builds/backend/packages
+          cd projects/highlander/builds/backend/packages
+          git clone --depth https://${{ secrets.DDS_USER }}:${{ secrets.DDS_TOKEN }}@${{ secrets.DDS_URL }}/${{ secrets.DDS_USER }}/dds_backend .
+          cd -
+
           rapydo pull --quiet;
           rapydo build
 
