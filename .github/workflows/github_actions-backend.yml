@@ -58,7 +58,7 @@ jobs:
         run: |
           rapydo remove --all
           rm -rf data/graphdata/*
-          rapydo --prod init --force
+          rapydo --prod -e ACTIVATE_GEOSERVER=0 init --force
           rapydo pull --quiet
           rapydo ssl --volatile
           rapydo -e AUTH_LOGIN_BAN_TIME=10 start
