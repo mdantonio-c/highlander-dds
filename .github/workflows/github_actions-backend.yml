@@ -62,7 +62,7 @@ jobs:
           rapydo pull --quiet
           rapydo ssl --volatile
           rapydo -e AUTH_LOGIN_BAN_TIME=10 start
-          sleep 45
+          sleep 60
           rapydo logs
           curl --insecure -X GET --max-time 5 https://localhost/api/status | grep "Server is alive"
           rapydo -s proxy,backend logs --tail 20
