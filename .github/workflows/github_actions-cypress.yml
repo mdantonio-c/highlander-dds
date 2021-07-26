@@ -38,6 +38,9 @@ jobs:
           # Install sample datasets/catalog
           tar -xvf projects/highlander/builds/backend/packages/sample_datasets.tar.gz -C data/catalog/
           cp projects/highlander/builds/backend/packages/confs/*.yaml data/catalog/
+          # When the cache, download and logs will be added to the repository with a .gitkeep
+          # This mkdir will start to fail... in this case just remove it
+          mkdir data/catalog/cache data/catalog/download data/catalog/logs
 
           rapydo pull --quiet;
           rapydo build
