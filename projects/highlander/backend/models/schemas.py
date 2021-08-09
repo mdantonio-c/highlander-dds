@@ -1,7 +1,7 @@
 from typing import Any, Iterable, Mapping
 
 import numpy as np
-from restapi.models import ISO8601UTC, Schema, fields
+from restapi.models import ISO8601UTC, Schema, fields, validate
 from restapi.utilities.logs import log
 
 
@@ -174,4 +174,8 @@ class DatasetSchema(Schema):
 class DataExtraction(Schema):
     product = fields.Str(required=True)
     variables = fields.List(fields.Str())
+    time = fields.Dict(
+        keys=fields.Str(validate=validate.OneOf(["year", "month", "day", "hour"])),
+        values=fields.List(fields.Str(), min_items=1),
+    )
     format = fields.Str(required=True)

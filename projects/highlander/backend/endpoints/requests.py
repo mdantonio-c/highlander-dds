@@ -93,7 +93,12 @@ class Requests(EndpointResource):
         },
     )
     def post(
-        self, dataset_name: str, product: str, format: str, variables: List[str] = []
+        self,
+        dataset_name: str,
+        product: str,
+        format: str,
+        variables: List[str] = [],
+        time: Dict[str, List[str]] = None,
     ) -> Response:
         user = self.get_user()
         if not user:  # pragma: no cover
@@ -101,10 +106,15 @@ class Requests(EndpointResource):
         c = celery.get_instance()
         log.debug("Request for extraction for <{}>", dataset_name)
         log.debug("Variables: {}", variables)
+        log.debug("Time: {}", time)
         log.debug("Format: {}", format)
-        args: Dict[str, Union[str, List[str]]] = {"product_type": product}
+        args: Dict[str, Union[str, List[str], Dict[str, List[str]]]] = {
+            "product_type": product
+        }
         if variables:
             args["variable"] = variables
+        if time:
+            args["time"] = time
         args["format"] = format
         task = None
         db = sqlalchemy.get_instance()

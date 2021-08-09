@@ -80,10 +80,18 @@ export interface ProductInfo {
   constraints?: string;
 }
 
+export interface TimeArg {
+  year?: string[];
+  month?: string[];
+  day?: string[];
+  hour?: string[];
+}
+
 export interface RequestArgs {
   /** @nullable */
   variable?: string[];
   product_type: string;
+  time?: TimeArg;
   format?: string;
 }
 
