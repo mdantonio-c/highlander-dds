@@ -25,6 +25,19 @@ jobs:
       - name: Run Pytest
         run: |
 
+          # Temporary fix, waiting for a public release
+          cd projects/highlander/builds/backend
+          git clone --depth 1 https://${{ secrets.DDS_USER }}:${{ secrets.DDS_TOKEN }}@${{ secrets.DDS_URL }}/${{ secrets.DDS_USER }}/dds_backend.git packages
+          cd -
+
+          # Install sample datasets/catalog
+          tar -xvf projects/highlander/builds/backend/packages/sample_datasets.tar.gz -C data/catalog/
+          cp projects/highlander/builds/backend/packages/confs/*.yaml data/catalog/
+          # When the cache, download and logs will be added to the repository with a .gitkeep
+          # This mkdir will start to fail... in this case just remove it
+          mkdir data/catalog/cache data/catalog/download data/catalog/logs
+
+          rapydo --testing -e ACTIVATE_GEOSERVER=0 init --force
           rapydo pull --quiet
           rapydo build
           rapydo add task test_task
@@ -44,12 +57,15 @@ jobs:
       - name: Production mode
         run: |
           rapydo remove --all
-          rm -rf data/graphdata/*
-          rapydo --prod init --force
+
+          rm projects/highlander/confs/geoserver.service
+          touch projects/highlander/confs/geoserver.service
+
+          rapydo --prod -e ACTIVATE_GEOSERVER=0 init --force
           rapydo pull --quiet
           rapydo ssl --volatile
           rapydo -e AUTH_LOGIN_BAN_TIME=10 start
-          sleep 45
+          sleep 60
           rapydo logs
           curl --insecure -X GET --max-time 5 https://localhost/api/status | grep "Server is alive"
           rapydo -s proxy,backend logs --tail 20

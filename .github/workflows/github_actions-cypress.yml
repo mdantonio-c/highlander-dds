@@ -30,6 +30,18 @@ jobs:
       - name: Run Cypress
         run: |
 
+          # Temporary fix, waiting for a public release
+          cd projects/highlander/builds/backend
+          git clone --depth 1 https://${{ secrets.DDS_USER }}:${{ secrets.DDS_TOKEN }}@${{ secrets.DDS_URL }}/${{ secrets.DDS_USER }}/dds_backend.git packages
+          cd -
+
+          # Install sample datasets/catalog
+          tar -xvf projects/highlander/builds/backend/packages/sample_datasets.tar.gz -C data/catalog/
+          cp projects/highlander/builds/backend/packages/confs/*.yaml data/catalog/
+          # When the cache, download and logs will be added to the repository with a .gitkeep
+          # This mkdir will start to fail... in this case just remove it
+          mkdir data/catalog/cache data/catalog/download data/catalog/logs
+
           rapydo pull --quiet;
           rapydo build
 
