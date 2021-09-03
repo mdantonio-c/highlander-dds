@@ -63,8 +63,8 @@ export class ForecastMapsComponent implements OnInit {
     zoom: 6,
     fullscreenControl: true,
     center: L.latLng([42.0, 13.0]),
-    timeDimension: true,
-    timeDimensionControl: true,
+    timeDimension: false,
+    timeDimensionControl: false,
     maxBounds: this.bounds,
     maxBoundsViscosity: 1.0,
     //bounds:
