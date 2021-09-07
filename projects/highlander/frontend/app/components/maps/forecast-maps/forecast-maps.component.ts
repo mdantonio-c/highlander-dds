@@ -39,8 +39,13 @@ export class ForecastMapsComponent implements OnInit {
   private collapsed = false;
   map: L.Map;
   private legends: { [key: string]: L.Control } = {};
+  baseUrl: string = environment.production
+    ? `${environment.backendURI}`
+    : "http://localhost:8070";
 
   bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
+  readonly models = [...Array(12)].map((_, i) => `R${i + 1}`);
+  readonly timeRanges = ["historical", "future"];
 
   LAYER_OSM = L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -52,11 +57,14 @@ export class ForecastMapsComponent implements OnInit {
     }
   );
 
+  layers: L.Layer[] = [this.LAYER_OSM];
+  layerControl;
   layersControl = {
     baseLayers: {
       "Openstreet Map": this.LAYER_OSM,
     },
   };
+  mLayers = L.layerGroup([]);
 
   options = {
     layers: [this.LAYER_OSM],
@@ -65,7 +73,7 @@ export class ForecastMapsComponent implements OnInit {
     center: L.latLng([42.0, 13.0]),
     timeDimension: false,
     timeDimensionControl: false,
-    maxBounds: this.bounds,
+    // maxBounds: this.bounds,
     maxBoundsViscosity: 1.0,
     //bounds:
     timeDimensionControlOptions: {
@@ -126,10 +134,28 @@ export class ForecastMapsComponent implements OnInit {
 
   onMapReady(map: L.Map) {
     this.map = map;
+    this.setOverlaysToMap();
+  }
+
+  private setOverlaysToMap() {
+    let overlays = {};
+    this.models.forEach((m) => {
+      overlays[m] = L.tileLayer.wms(`${this.baseUrl}/geoserver/wms`, {
+        layers: `highlander:TOT_PREC_${m}`,
+        version: "1.1.0",
+        format: "image/png",
+        opacity: 0.5,
+        attribution: "'&copy; CMCC",
+        maxZoom: MAX_ZOOM,
+        minZoom: MIN_ZOOM,
+      });
+    });
+    L.control.layers(overlays, null, { collapsed: false }).addTo(this.map);
+    overlays[this.models[0]].addTo(this.map);
   }
 
   onMapZoomEnd($event) {
-    console.log(`Map Zoom: ${this.map.getZoom()}`);
+    // console.log(`Map Zoom: ${this.map.getZoom()}`);
   }
 
   applyFilter(filter: any) {
