@@ -37,3 +37,5 @@ variables:
 
     CELERY_BROKER: RABBIT
     CELERY_BACKEND: REDIS
+
+    SET_CSP_IMG_SRC: "https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org"
