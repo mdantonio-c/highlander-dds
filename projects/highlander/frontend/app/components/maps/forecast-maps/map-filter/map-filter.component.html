@@ -13,7 +13,11 @@
             formControlName="indicator"
             class="form-control"
           >
-            <option *ngFor="let i of indicators" [value]="i.code">
+            <option
+              *ngFor="let i of indicators"
+              [value]="i.code"
+              [disabled]="i.state"
+            >
               {{ i.label }}
             </option>
           </select>
@@ -25,6 +29,7 @@
             id="administrativeGroup"
             formControlName="administrative"
             class="form-control"
+            disabled
           >
             <option *ngFor="let i of administratives" [value]="i.code">
               {{ i.label }}
@@ -38,6 +43,7 @@
             id="physicalGroup"
             formControlName="physical"
             class="form-control"
+            disabled
           >
             <option *ngFor="let i of physicals" [value]="i.code">
               {{ i.label }}
@@ -51,6 +57,7 @@
             id="userSelectedGroup"
             formControlName="userSelected"
             class="form-control"
+            disabled
           >
             <option *ngFor="let i of userSelectedItems" [value]="i.code">
               {{ i.label }}

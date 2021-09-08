@@ -25,6 +25,7 @@ export class MapFilterComponent implements OnInit {
     {
       code: "SL",
       label: "Soil Loss",
+      state: "disabled",
     },
   ];
 
