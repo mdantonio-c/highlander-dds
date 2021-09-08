@@ -14,6 +14,7 @@ import { DatasetInfo } from "../../../types";
 import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
 import { SSRService } from "@rapydo/services/ssr";
+import { LegendConfig, LEGEND_DATA } from "../../../services/data";
 
 import * as moment from "moment";
 import * as L from "leaflet";
@@ -46,6 +47,7 @@ export class ForecastMapsComponent implements OnInit {
   bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
   readonly models = [...Array(12)].map((_, i) => `R${i + 1}`);
   readonly timeRanges = ["historical", "future"];
+  readonly LEGEND_POSITION = "bottomleft";
 
   LAYER_OSM = L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -135,6 +137,11 @@ export class ForecastMapsComponent implements OnInit {
   onMapReady(map: L.Map) {
     this.map = map;
     this.setOverlaysToMap();
+    // add a legend
+    let legend = this.createLegendControl("prp");
+    if (legend) {
+      legend.addTo(map);
+    }
   }
 
   private setOverlaysToMap() {
@@ -152,6 +159,31 @@ export class ForecastMapsComponent implements OnInit {
     });
     L.control.layers(overlays, null, { collapsed: false }).addTo(this.map);
     overlays[this.models[0]].addTo(this.map);
+  }
+
+  private createLegendControl(id: string): L.Control {
+    let config: LegendConfig = LEGEND_DATA.find((x) => x.id === id);
+    if (!config) {
+      console.error(`Legend data NOT found for ID<${id}>`);
+      this.notify.showError("Bad legend configuration");
+      return;
+    }
+    const legend = new L.Control({ position: this.LEGEND_POSITION });
+    legend.onAdd = () => {
+      let div = L.DomUtil.create("div", config.legend_type);
+      div.style.clear = "unset";
+      div.innerHTML += `<h6>${config.title}</h6>`;
+      for (let i = 0; i < config.labels.length; i++) {
+        div.innerHTML +=
+          '<i style="background:' +
+          config.colors[i] +
+          '"></i><span>' +
+          config.labels[i] +
+          "</span><br>";
+      }
+      return div;
+    };
+    return legend;
   }
 
   onMapZoomEnd($event) {
