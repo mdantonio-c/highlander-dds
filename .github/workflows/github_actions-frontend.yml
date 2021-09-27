@@ -36,6 +36,9 @@ jobs:
 
       - name: Production mode
         run: |
+
+          sudo mkdir /data/sub-sea
+
           rapydo remove --all
           rapydo --prod init --force
           rapydo -s frontend,proxy pull --quiet
