@@ -38,6 +38,7 @@ jobs:
         run: |
 
           sudo mkdir /data/sub-sea
+          sudo mkdir /data/vhr-rea
 
           rapydo remove --all
           rapydo --prod init --force
