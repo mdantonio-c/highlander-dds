@@ -20,7 +20,6 @@ jobs:
       - uses: rapydo/actions/install@v1
         with:
           project: ${PROJECT}
-          codecov_token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Run Pytest
         run: |
@@ -51,8 +50,12 @@ jobs:
           # This should fail if at least one container is in Exit status
           [[ ! $(LOGURU_LEVEL=WARNING rapydo list services | grep -E "Exit|Restarting|Created") ]]
 
-          docker cp ${PROJECT}_backend_1:/code/coverage.xml coverage.xml
-          bash <(curl -s https://codecov.io/bash)
+      - name: Coverage
+        uses: rapydo/actions/coverage@v1
+        with:
+          repository: projects/${PROJECT}
+          project: ${PROJECT}
+          step: backend
 
       - name: Production mode
         run: |
