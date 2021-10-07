@@ -89,10 +89,12 @@ class DatasetImage(EndpointResource):
             dds = broker.get_instance()
             image_filename = dds.get_dataset_image_filename(dataset_id)
             if not image_filename:
-                raise LookupError("Dataset image not configured")
+                raise Warning(f"Image NOT configured for dataset <{dataset_id}>")
             images_dir = f"{CATALOG_DIR}/images"
             if not os.path.exists(os.path.join(images_dir, image_filename)):
-                raise LookupError(f"Dataset file image <{image_filename}> not found")
+                raise LookupError(
+                    f"Image file <{image_filename}> NOT found for dataset <{dataset_id}>"
+                )
             return send_from_directory(images_dir, image_filename)
-        except LookupError as e:
-            raise NotFound(str(e))
+        except (LookupError, Warning) as e:
+            raise NotFound(str(e), is_warning=isinstance(e, Warning))
