@@ -197,13 +197,13 @@ class Request(EndpointResource):
         output_file = req.output_file
         if output_file:
             try:
-                db.session.delete(output_file)
+                db.session.delete(output_file)  # type: ignore
                 filepath = Path(f"{DOWNLOAD_DIR}/{output_file.timestamp}")
                 shutil.rmtree(filepath)
             except FileNotFoundError as error:
                 # silently pass when file is not found
                 log.warning(error)
-        db.session.delete(req)
+        db.session.delete(req)  # type: ignore
         db.session.commit()
         return self.response(f"Request ID<{request_id}> successfully removed")
 
