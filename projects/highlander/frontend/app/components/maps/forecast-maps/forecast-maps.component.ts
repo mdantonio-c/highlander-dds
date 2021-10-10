@@ -53,7 +53,7 @@ export class ForecastMapsComponent implements OnInit {
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
       attribution:
-        '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">Open Street Map</a> ',
+        '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Open Street Map</a> ',
       maxZoom: MAX_ZOOM,
       minZoom: MIN_ZOOM,
     }
