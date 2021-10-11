@@ -152,6 +152,7 @@ export class ForecastMapsComponent implements OnInit {
         version: "1.1.0",
         format: "image/png",
         opacity: 0.5,
+        transparent: true,
         attribution: "'&copy; CMCC",
         maxZoom: MAX_ZOOM,
         minZoom: MIN_ZOOM,
