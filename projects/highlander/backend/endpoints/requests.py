@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict, List, Union
 
 from flask import send_from_directory
+from highlander.connectors import broker
 from highlander.constants import DOWNLOAD_DIR
 from highlander.models.schemas import DataExtraction
 from restapi import decorators
@@ -15,6 +16,7 @@ from restapi.exceptions import (
     ServiceUnavailable,
     Unauthorized,
 )
+from restapi.models import fields
 from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
 from sqlalchemy.orm import joinedload
@@ -244,3 +246,40 @@ class DownloadData(EndpointResource):
             )
         except (NoResultFound, FileNotFoundError):
             raise NotFound(f"OutputFile with TIMESTAMP<{timestamp}> NOT found")
+
+
+class EstimateSize(EndpointResource):
+    labels = ["estimate-size"]
+
+    @decorators.auth.require()
+    @decorators.use_kwargs(DataExtraction)
+    @decorators.endpoint(
+        path="/estimate-size/<dataset_name>",
+        summary="Estimate request size",
+        responses={200: "Estimated size", 404: "Dataset does not exist"},
+    )
+    def post(
+        self,
+        dataset_name: str,
+        product: str,
+        format: str,
+        variables: List[str] = [],
+        time: Dict[str, List[str]] = None,
+    ) -> Response:
+        log.debug(f"Estimate size for dataset <{dataset_name}>")
+        user = self.get_user()
+        if not user:  # pragma: no cover
+            raise ServerError("User misconfiguration")
+        dds = broker.get_instance()
+        if dataset_name not in dds.get_datasets([dataset_name]):
+            raise NotFound(f"Dataset <{dataset_name}> does not exist")
+        request = {"product_type": product, "variable": variables, "time": time}
+        log.debug(f"request: {request}")
+        try:
+            estimated_size = dds.broker.estimate_size(
+                dataset_name=dataset_name, request=request
+            )
+        except Exception as e:
+            log.error(e)
+            raise ServiceUnavailable("Size estimation NOT available")
+        return self.response(estimated_size)
