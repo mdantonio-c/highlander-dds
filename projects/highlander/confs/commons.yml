@@ -30,7 +30,11 @@ services:
     image: hl-dds/backend:${RAPYDO_VERSION}
   geoserver:
     #    image: geonode/geoserver:2.19.1
-    build: ${PROJECT_DIR}/builds/geoserver
+    build:
+      context: ${PROJECT_DIR}/builds/geoserver
+      args:
+        CURRENT_UID: ${CURRENT_UID}
+        CURRENT_GID: ${CURRENT_GID}
     image: hl-geoserver:${PROJECT_VERSION}
     environment:
       ACTIVATE: ${ACTIVATE_GEOSERVER}

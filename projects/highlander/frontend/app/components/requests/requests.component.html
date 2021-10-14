@@ -83,6 +83,18 @@
                 <ng-template #noFilters>No Variable selected</ng-template>
               </dl>
               <div class="my-2"></div>
+              <dl class="mb-0" *ngIf="row.args.time">
+                <dt>Time</dt>
+                <dd>
+                  <ul>
+                    <li *ngFor="let item of row.args.time | keyvalue">
+                      <b>{{ item.key }}</b
+                      >: {{ item.value }}
+                    </li>
+                  </ul>
+                </dd>
+              </dl>
+              <div class="my-2"></div>
               <dl class="mb-0" *ngIf="row.args.format">
                 <dt>Format</dt>
                 <dd>

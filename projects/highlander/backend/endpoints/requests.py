@@ -2,11 +2,12 @@ import shutil
 from typing import Dict, List, Union
 
 from flask import send_from_directory
+from highlander.connectors import broker
 from highlander.constants import DOWNLOAD_DIR
 from highlander.models.schemas import DataExtraction
 from restapi import decorators
 from restapi.connectors import celery, sqlalchemy
-from restapi.exceptions import NotFound, ServerError, Unauthorized
+from restapi.exceptions import NotFound, ServerError, ServiceUnavailable, Unauthorized
 from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
 from sqlalchemy.orm import joinedload
@@ -85,7 +86,12 @@ class Requests(EndpointResource):
         },
     )
     def post(
-        self, dataset_name: str, product: str, format: str, variables: List[str] = []
+        self,
+        dataset_name: str,
+        product: str,
+        format: str,
+        variables: List[str] = [],
+        time: Dict[str, List[str]] = None,
     ) -> Response:
         user = self.get_user()
         if not user:  # pragma: no cover
@@ -93,10 +99,15 @@ class Requests(EndpointResource):
         c = celery.get_instance()
         log.debug("Request for extraction for <{}>", dataset_name)
         log.debug("Variables: {}", variables)
+        log.debug("Time: {}", time)
         log.debug("Format: {}", format)
-        args: Dict[str, Union[str, List[str]]] = {"product_type": product}
+        args: Dict[str, Union[str, List[str], Dict[str, List[str]]]] = {
+            "product_type": product
+        }
         if variables:
             args["variable"] = variables
+        if time:
+            args["time"] = time
         args["format"] = format
         task = None
         db = sqlalchemy.get_instance()
@@ -226,3 +237,40 @@ class DownloadData(EndpointResource):
             )
         except (NoResultFound, FileNotFoundError):
             raise NotFound(f"OutputFile with TIMESTAMP<{timestamp}> NOT found")
+
+
+class EstimateSize(EndpointResource):
+    labels = ["estimate-size"]
+
+    @decorators.auth.require()
+    @decorators.use_kwargs(DataExtraction)
+    @decorators.endpoint(
+        path="/estimate-size/<dataset_name>",
+        summary="Estimate request size",
+        responses={200: "Estimated size", 404: "Dataset does not exist"},
+    )
+    def post(
+        self,
+        dataset_name: str,
+        product: str,
+        format: str,
+        variables: List[str] = [],
+        time: Dict[str, List[str]] = None,
+    ) -> Response:
+        log.debug(f"Estimate size for dataset <{dataset_name}>")
+        user = self.get_user()
+        if not user:  # pragma: no cover
+            raise ServerError("User misconfiguration")
+        dds = broker.get_instance()
+        if dataset_name not in dds.get_datasets([dataset_name]):
+            raise NotFound(f"Dataset <{dataset_name}> does not exist")
+        request = {"product_type": product, "variable": variables, "time": time}
+        log.debug(f"request: {request}")
+        try:
+            estimated_size = dds.broker.estimate_size(
+                dataset_name=dataset_name, request=request
+            )
+        except Exception as e:
+            log.error(e)
+            raise ServiceUnavailable("Size estimation NOT available")
+        return self.response(estimated_size)

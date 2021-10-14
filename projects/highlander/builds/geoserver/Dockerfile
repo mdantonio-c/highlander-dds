@@ -1,6 +1,15 @@
-ARG GEOSERVER_VER="2.18.2"
+ARG GEOSERVER_VER="2.19.x"
 FROM geonode/geoserver:$GEOSERVER_VER
-ARG GEOSERVER_VER
+ARG GEOSERVER_VER="2.19.2"
+#ARG GEOSERVER_VER="2.18.2"
+#FROM geonode/geoserver:$GEOSERVER_VER
+#ARG GEOSERVER_VER
+
+ARG CURRENT_UID
+RUN test -n "$CURRENT_UID"
+
+ARG CURRENT_GID
+RUN test -n "$CURRENT_GID"
 
 # Install GEOSERVER-NETCDF extension
 # NOTE check lib webapps/geoserver/WEB-INF/lib in cp command when upgrading to 2.19.x
@@ -10,3 +19,17 @@ RUN mkdir /tmp/geoserver-netcdf && \
     unzip -d /tmp/geoserver-netcdf /tmp/geoserver-netcdf/geoserver-$GEOSERVER_VER-netcdf-out-plugin.zip && \
     cp /tmp/geoserver-netcdf/*.jar $CATALINA_HOME/webapps/geoserver/WEB-INF/lib && \
     rm -rf /tmp/geoserver-netcdf
+
+ENV TOMCAT_USER tomcat
+
+RUN useradd \
+    -r -M -d /home/$TOMCAT_USER -s /bin/bash -p ! \
+    --uid $CURRENT_UID $TOMCAT_USER \
+    && groupmod -og $CURRENT_GID $TOMCAT_USER \
+    && mkdir -p /home/$TOMCAT_USER \
+    && chown $CURRENT_UID:$CURRENT_GID /home/$TOMCAT_USER
+
+# Force tomcat to run as NO-root user
+RUN chown -R $(id tomcat -u) /usr/local/tomcat && \
+    sed -i  '107d' /usr/local/tomcat/tmp/entrypoint.sh && \
+    sed -i '106iexec env JAVA_OPTS="${JAVA_OPTS}" su -c "PATH=$PATH catalina.sh run" tomcat' /usr/local/tomcat/tmp/entrypoint.sh

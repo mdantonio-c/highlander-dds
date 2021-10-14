@@ -58,6 +58,69 @@
                       }}</label>
                     </div>
                   </div>
+                  <div class="row" *ngIf="widget.type == 'ExclusiveFrame'">
+                    <!--<ul ngbNav #nav="ngbNav" class="nav-pills" orientation="vertical">
+                      <ng-container *ngFor="let w of widget.details['widgets']">
+                        <li [ngbNavItem]="w">
+                          <a ngbNavLink>{{w}}</a>
+                          <ng-template>
+                            <p>a</p>
+                          </ng-template>
+                        </li>
+                      </ng-container>
+                    </ul>-->
+                    <ng-container
+                      *ngIf="widget.details['widgets'].includes('date_list')"
+                    >
+                      <ng-template
+                        let-innerWidget
+                        [ngTemplateOutletContext]="{
+                          $implicit: getWidget('date_list')
+                        }"
+                        [ngTemplateOutlet]="inner"
+                        #inner
+                      >
+                        <div
+                          *ngFor="
+                            let dateType of innerWidget.details['widgets']
+                          "
+                          class="col-12"
+                        >
+                          <div class="row mb-3">
+                            <div class="col-12 px-0">
+                              <h6 class="text-muted font-weight-bold">
+                                {{ dateType }}
+                              </h6>
+                            </div>
+                            <div
+                              class="
+                                custom-control custom-checkbox
+                                col-sm-6 col-md-3
+                              "
+                              *ngFor="
+                                let v of getWidget(dateType).details['values']
+                              "
+                            >
+                              <input
+                                [id]="dateType + '_' + v.value"
+                                [value]="v.value"
+                                type="checkbox"
+                                class="custom-control-input"
+                                (change)="
+                                  onListChange($event, 'time_' + dateType)
+                                "
+                              />
+                              <label
+                                [for]="dateType + '_' + v.value"
+                                class="custom-control-label"
+                                >{{ v.label }}</label
+                              >
+                            </div>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </ng-container>
+                  </div>
                   <div class="row" *ngIf="widget.type == 'FileFormat'">
                     <div
                       class="custom-control custom-radio col-sm-12 col-md-6"

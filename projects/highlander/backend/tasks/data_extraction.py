@@ -19,11 +19,13 @@ from restapi.utilities.logs import log
 
 def handle_exception(
     task: Task,
-    request: Request,
+    request: Optional[Request],
     exc: Exception,
     ignore: bool = False,
     error_msg: Optional[str] = None,
 ) -> None:
+    if not request:
+        return None
     request.status = states.FAILURE
     request.error_message = error_msg or str(exc)
     # manually update the task state
@@ -46,6 +48,7 @@ def extract_data(
 ) -> None:
     log.info("Start task [{}:{}]", self.request.id, self.name)
     log.debug("Data Extraction: Dataset<{}> UserID<{}>", dataset_name, user_id)
+    request = None
     try:
         db = sqlalchemy.get_instance()
         # load request by id

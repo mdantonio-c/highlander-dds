@@ -24,17 +24,26 @@
           {{ dataset.description }}
         </p>
       </div>
-      <ng-container *ngFor="let product of dataset.products">
-        <h3>{{ product.description }}</h3>
-        <table class="table table-sm table-hover table-condensed">
-          <tbody>
-            <tr *ngFor="let v of product.variables">
-              <th>{{ v.label }}</th>
-              <td>{{ v?.units }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </ng-container>
+      <div class="form-group">
+        <h3>Product(s)</h3>
+        <ng-select
+          [items]="dataset.products"
+          class="disable-clear-all"
+          [clearable]="false"
+          [searchable]="false"
+          bindLabel="description"
+          [(ngModel)]="selectedProduct"
+        >
+        </ng-select>
+      </div>
+      <table class="table table-sm table-hover table-condensed">
+        <tbody>
+          <tr *ngFor="let v of selectedProduct.variables">
+            <th>{{ v.label }}</th>
+            <td>{{ v?.units }}</td>
+          </tr>
+        </tbody>
+      </table>
       <h3>Attribution</h3>
       <p>{{ dataset.attribution }}</p>
     </div>
