@@ -40,3 +40,5 @@ variables:
 
     SET_CSP_IMG_SRC: "https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org"
     SET_CSP_FONT_SRC: https://netdna.bootstrapcdn.com
+
+    RUN_SCHEMATHESIS: 0
