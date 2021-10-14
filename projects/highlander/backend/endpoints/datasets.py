@@ -1,11 +1,9 @@
-import os
-
 from flask import send_from_directory
 from highlander.connectors import broker
 from highlander.constants import CATALOG_DIR
 from highlander.models.schemas import DatasetInfo, ProductInfo
 from restapi import decorators
-from restapi.exceptions import NotFound, ServiceUnavailable
+from restapi.exceptions import NotFound
 from restapi.models import fields
 from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
@@ -90,11 +88,11 @@ class DatasetImage(EndpointResource):
             image_filename = dds.get_dataset_image_filename(dataset_id)
             if not image_filename:
                 raise Warning(f"Image NOT configured for dataset <{dataset_id}>")
-            images_dir = f"{CATALOG_DIR}/images"
-            if not os.path.exists(os.path.join(images_dir, image_filename)):
+            image = CATALOG_DIR.joinpath("images", image_filename)
+            if not image.exists():
                 raise LookupError(
                     f"Image file <{image_filename}> NOT found for dataset <{dataset_id}>"
                 )
-            return send_from_directory(images_dir, image_filename)
+            return send_from_directory(image.parent, image.name)
         except (LookupError, Warning) as e:
             raise NotFound(str(e), is_warning=isinstance(e, Warning))
