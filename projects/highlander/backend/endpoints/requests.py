@@ -1,5 +1,4 @@
 import shutil
-from pathlib import Path
 from typing import Dict, List, Union
 
 from flask import send_from_directory
@@ -7,14 +6,7 @@ from highlander.constants import DOWNLOAD_DIR
 from highlander.models.schemas import DataExtraction
 from restapi import decorators
 from restapi.connectors import celery, sqlalchemy
-from restapi.exceptions import (
-    BadRequest,
-    Forbidden,
-    NotFound,
-    ServerError,
-    ServiceUnavailable,
-    Unauthorized,
-)
+from restapi.exceptions import NotFound, ServerError, Unauthorized
 from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
 from sqlalchemy.orm import joinedload
@@ -188,7 +180,7 @@ class Request(EndpointResource):
         if output_file:
             try:
                 db.session.delete(output_file)
-                filepath = Path(f"{DOWNLOAD_DIR}/{output_file.timestamp}")
+                filepath = DOWNLOAD_DIR.joinpath(output_file.timestamp)
                 shutil.rmtree(filepath)
             except FileNotFoundError as error:
                 # silently pass when file is not found
@@ -222,8 +214,8 @@ class DownloadData(EndpointResource):
             # check if user owns the file
             if output_file.request.user_id != user.id:
                 raise Unauthorized("Unauthorized request")
-            file_dir = f"{DOWNLOAD_DIR}/{output_file.timestamp}"
-            file_path = Path(f"{file_dir}/{output_file.filename}")
+            file_dir = DOWNLOAD_DIR.joinpath(output_file.timestamp)
+            file_path = file_dir.joinpath(output_file.filename)
             if not file_path.exists():
                 log.error(
                     f"Expected filename <{output_file.filename}> in the path {file_dir}"
