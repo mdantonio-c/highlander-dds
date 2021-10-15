@@ -1,7 +1,7 @@
 from restapi import decorators
 from restapi.connectors import sqlalchemy
-from restapi.exceptions import ServerError
 from restapi.rest.definition import EndpointResource, Response
+from restapi.services.authentication import User
 from sqlalchemy.sql import func
 
 
@@ -15,13 +15,10 @@ class Usage(EndpointResource):
         summary="Get user disk usage.",
         responses={200: "Disk usage information"},
     )
-    def get(self) -> Response:
+    def get(self, user: User) -> Response:
         """
         Get actual user disk quota and current usage
         """
-        user = self.get_user()
-        if not user:
-            raise ServerError("User misconfiguration")
 
         # get current usage
         db = sqlalchemy.get_instance()
