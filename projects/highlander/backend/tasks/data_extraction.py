@@ -66,9 +66,13 @@ def extract_data(
         request.status = states.SUCCESS
 
         # create output_file record in db
-        data_size = pathlib.Path(result_path).stat().st_size
         r = pathlib.Path(result_path)
-        timestamp = r.parent.name
+        data_size = r.stat().st_size
+
+        timestamp = None
+        if r.parent.name != "download":
+            timestamp = r.parent.name
+
         filename = r.name
         output_file = db.OutputFile(
             request_id=request_id,

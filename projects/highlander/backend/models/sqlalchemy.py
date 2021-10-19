@@ -37,10 +37,12 @@ class OutputFile(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String(64), index=True, nullable=False)
-    timestamp = db.Column(db.String(64), nullable=False)
+    timestamp = db.Column(db.String(64))
     size = db.Column(db.BigInteger)
     request_id = db.Column(db.Integer, db.ForeignKey("request.id"))
     request = db.relationship("Request", back_populates="output_file")
 
     def __repr__(self) -> str:
-        return f"<OutputFile(filename='{self.filename}', size='{self.size}')"
+        filepath = f"{self.timestamp}/" or ""
+        filepath += self.filename
+        return f"<OutputFile(filepath='{filepath}', size='{self.size}')"

@@ -10,6 +10,7 @@ from restapi.connectors import celery, sqlalchemy
 from restapi.exceptions import NotFound, ServerError, ServiceUnavailable, Unauthorized
 from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
+from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -191,8 +192,12 @@ class Request(EndpointResource):
         if output_file:
             try:
                 db.session.delete(output_file)
-                filepath = DOWNLOAD_DIR.joinpath(output_file.timestamp)
-                shutil.rmtree(filepath)
+                if output_file.timestamp:
+                    filepath = DOWNLOAD_DIR.joinpath(output_file.timestamp)
+                    shutil.rmtree(filepath)
+                else:
+                    filepath = DOWNLOAD_DIR.joinpath(output_file.filename)
+                    filepath.unlink()
             except FileNotFoundError as error:
                 # silently pass when file is not found
                 log.warning(error)
@@ -220,12 +225,21 @@ class DownloadData(EndpointResource):
         db = sqlalchemy.get_instance()
         try:
             output_file = (
-                db.session.query(db.OutputFile).filter_by(timestamp=timestamp).one()
+                db.session.query(db.OutputFile)
+                .filter(
+                    or_(
+                        db.OutputFile.timestamp == timestamp,
+                        db.OutputFile.filename == f"{timestamp}.zip",
+                    )
+                )
+                .one()
             )
             # check if user owns the file
             if output_file.request.user_id != user.id:
                 raise Unauthorized("Unauthorized request")
-            file_dir = DOWNLOAD_DIR.joinpath(output_file.timestamp)
+            file_dir = DOWNLOAD_DIR
+            if output_file.timestamp:
+                file_dir = DOWNLOAD_DIR.joinpath(output_file.timestamp)
             file_path = file_dir.joinpath(output_file.filename)
             if not file_path.exists():
                 log.error(

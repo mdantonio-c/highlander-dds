@@ -65,6 +65,11 @@ export class DataService {
     timestamp: string,
     token: string
   ): Observable<any> {
+    if (!timestamp) {
+      // expected timestamp in the filename
+      // remove file extension
+      timestamp = filename.replace(/\.[^/.]+$/, "");
+    }
     const url = `${environment.backendURI}/api/download/${timestamp}`;
     const headers = new Headers({
       Authorization: `Bearer ${token}`,

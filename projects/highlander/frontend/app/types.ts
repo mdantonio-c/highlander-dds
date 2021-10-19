@@ -97,6 +97,7 @@ export interface RequestArgs {
 
 export interface RequestOutput {
   filename: string;
+  /** @nullable */
   timestamp: string;
   size: number;
 }
