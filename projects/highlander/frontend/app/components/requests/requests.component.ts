@@ -72,23 +72,6 @@ export class RequestsComponent extends BasePaginationComponent<Request> {
     );
   }
 
-  downloadStream(output_file: RequestOutput) {
-    let token = this.auth.getToken();
-    let filename = output_file.filename;
-    let timestamp = output_file.timestamp;
-
-    this.dataService.downloadStreamData(filename, timestamp, token).subscribe(
-      (data) => {
-        // do nothing
-      },
-      (error) => {
-        // console.error(error.message);
-        let reason = error.message || "n/a";
-        this.notify.showError(`Unable to download data: ${reason}`);
-      }
-    );
-  }
-
   copiedToClipboard($event) {
     if ($event["isSuccess"]) {
       this.notify.showSuccess("Copied to Clipboard");
