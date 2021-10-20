@@ -9,6 +9,7 @@ from restapi import decorators
 from restapi.connectors import celery, sqlalchemy
 from restapi.exceptions import NotFound, ServerError, ServiceUnavailable, Unauthorized
 from restapi.rest.definition import EndpointResource, Response
+from restapi.services.download import Downloader
 from restapi.utilities.logs import log
 from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
@@ -246,9 +247,7 @@ class DownloadData(EndpointResource):
                     f"Expected filename <{output_file.filename}> in the path {file_dir}"
                 )
                 raise FileNotFoundError()
-            return send_from_directory(
-                file_dir, output_file.filename, as_attachment=True
-            )
+            return Downloader.send_file_streamed(file_path)
         except (NoResultFound, FileNotFoundError):
             raise NotFound(f"OutputFile with TIMESTAMP<{timestamp}> NOT found")
 
