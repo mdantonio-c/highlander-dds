@@ -44,7 +44,13 @@ export class RequestsComponent extends BasePaginationComponent<Request> {
   }
 
   downloadByUrl(output_file: RequestOutput) {
-    const downloadUrl = this.getFileURL(output_file.timestamp);
+    let timestamp = output_file.timestamp;
+    if (!timestamp) {
+      // expected timestamp in the filename
+      // remove file extension
+      timestamp = output_file.filename.replace(/\.[^/.]+$/, "");
+    }
+    const downloadUrl = this.getFileURL(timestamp);
     let link = document.createElement("a");
     link.href = downloadUrl;
     link.download = output_file.timestamp;

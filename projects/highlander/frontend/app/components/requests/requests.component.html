@@ -249,7 +249,7 @@
             <button
               class="btn p-0 mr-1"
               *ngIf="row.status == 'SUCCESS' && row.output_file"
-              (click)="downloadStream(row.output_file)"
+              (click)="downloadByUrl(row.output_file)"
             >
               <i class="fa fa-download"></i>
             </button>
