@@ -247,7 +247,9 @@ class DownloadData(EndpointResource):
                     f"Expected filename <{output_file.filename}> in the path {file_dir}"
                 )
                 raise FileNotFoundError()
-            return Downloader.send_file_streamed(file_path)
+            return Downloader.send_file_streamed(
+                file_path.name, subfolder=file_path.parent
+            )
         except (NoResultFound, FileNotFoundError):
             raise NotFound(f"OutputFile with TIMESTAMP<{timestamp}> NOT found")
 
