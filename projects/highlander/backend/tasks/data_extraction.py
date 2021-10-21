@@ -29,7 +29,8 @@ def handle_exception(
     request.status = states.FAILURE
     request.error_message = error_msg or str(exc)
     # manually update the task state
-    task.update_state(state=states.FAILURE, meta={"error": str(exc)})
+    task.update_state(state=states.FAILURE, meta={})
+
     if ignore:
         log.warning(exc)
         raise Ignore()
@@ -59,7 +60,10 @@ def extract_data(
             )
 
         dds = broker.get_instance()
-        result_path = dds.broker.retrieve(dataset_name=dataset_name, request=req_body)
+        result_path = dds.broker.retrieve(
+            dataset_name=dataset_name, request=req_body.copy()
+        )
+
         log.debug("data result_path: {}", result_path)
 
         # update request status
@@ -85,7 +89,9 @@ def extract_data(
     except (DiskQuotaException, AccessToDatasetDenied, EmptyOutputFile) as exc:
         handle_exception(self, request, exc, ignore=True)
     except Exception as exc:
-        handle_exception(self, request, exc, error_msg="Failed to extract data")
+        handle_exception(
+            self, request, exc, error_msg=f"Failed to extract data: {str(exc)}"
+        )
     finally:
         if request:
             request.end_date = datetime.datetime.utcnow()

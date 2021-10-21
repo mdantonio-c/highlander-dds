@@ -38,16 +38,7 @@ export class DataExtractionModalComponent implements OnInit {
     private fb: FormBuilder,
     private notify: NotificationService,
     private spinner: NgxSpinnerService
-  ) {
-    this.filterForm = this.fb.group({
-      variable: this.fb.array([]),
-      time_year: this.fb.array([]),
-      time_month: this.fb.array([]),
-      time_day: this.fb.array([]),
-      time_hour: this.fb.array([]),
-      format: ["netcdf", Validators.required],
-    });
-  }
+  ) {}
 
   ngOnInit() {
     console.log(`Product ID: ${this.productId}`);
@@ -59,6 +50,7 @@ export class DataExtractionModalComponent implements OnInit {
         (data) => {
           this.productInfo = data;
           this.productName = this.productInfo.label;
+          this.filterForm = this.toFormGroup(data);
         },
         (error) => {
           this.notify.showError(error);
@@ -71,15 +63,16 @@ export class DataExtractionModalComponent implements OnInit {
 
   getWidget(widgetName: string): Widget {
     if (!this.productInfo) return;
+    // @ts-ignore
     return this.productInfo.widgets.find((w) => w.name == widgetName);
   }
 
   onListChange(e, filter) {
     const checkArray: FormArray = this.filterForm.get(filter) as FormArray;
     if (!checkArray) {
+      console.warn(`filter '${filter}' not yet managed!`);
       return;
     }
-
     if (e.target.checked) {
       checkArray.push(new FormControl(e.target.value));
     } else {
@@ -95,11 +88,17 @@ export class DataExtractionModalComponent implements OnInit {
   }
 
   submit() {
-    const res = {
+    let res = {
       product: this.productId,
-      variables: (this.filterForm.controls.variable as FormArray).value,
-      format: this.filterForm.controls.format.value,
     };
+    Object.keys(this.filterForm.controls).forEach((key) => {
+      let controlValue = this.filterForm.controls[key].value;
+      // @ts-ignore
+      if (!key.startsWith("time_") && controlValue && controlValue.length) {
+        res[key] = controlValue;
+      }
+    });
+    // add time model
     let years: string[] = (this.filterForm.controls.time_year as FormArray)
       .value;
     let months: string[] = (this.filterForm.controls.time_month as FormArray)
@@ -125,5 +124,22 @@ export class DataExtractionModalComponent implements OnInit {
     }
     this.passEntry.emit(res);
     this.activeModal.close();
+  }
+
+  private toFormGroup(data: ProductInfo) {
+    let formGroup = this.fb.group({
+      time_year: this.fb.array([]),
+      time_month: this.fb.array([]),
+      time_day: this.fb.array([]),
+      time_hour: this.fb.array([]),
+      format: ["netcdf", Validators.required],
+    });
+    data.widgets_order.forEach((w) => {
+      let comp = this.getWidget(w);
+      if (comp.type === "StringList") {
+        formGroup.addControl(comp.name, new FormArray([]));
+      }
+    });
+    return formGroup;
   }
 }

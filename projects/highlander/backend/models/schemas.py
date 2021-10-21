@@ -1,6 +1,7 @@
 from typing import Any, Iterable, Mapping
 
 import numpy as np
+from marshmallow import pre_load
 from restapi.models import ISO8601UTC, Schema, fields, validate
 from restapi.utilities.logs import log
 
@@ -173,9 +174,21 @@ class DatasetSchema(Schema):
 
 class DataExtraction(Schema):
     product = fields.Str(required=True)
-    variables = fields.List(fields.Str())
+    variable = fields.List(fields.Str())
     time = fields.Dict(
         keys=fields.Str(validate=validate.OneOf(["year", "month", "day", "hour"])),
         values=fields.List(fields.Str(), min_items=1),
     )
     format = fields.Str(required=True)
+    extra = fields.Dict()
+
+    @pre_load
+    def unwrap_envelope(self, data, **kwargs):
+        extra = {}
+        rest = {}
+        for k, v in data.items():
+            if k not in self.declared_fields:
+                extra[k] = v
+            else:
+                rest[k] = v
+        return {"extra": extra, **rest}
