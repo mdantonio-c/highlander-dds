@@ -1,22 +1,17 @@
 import shutil
-from pathlib import Path
-from typing import Dict, List, Union
+from typing import Any, Dict, List, Union
 
 from flask import send_from_directory
+from highlander.connectors import broker
 from highlander.constants import DOWNLOAD_DIR
 from highlander.models.schemas import DataExtraction
 from restapi import decorators
 from restapi.connectors import celery, sqlalchemy
-from restapi.exceptions import (
-    BadRequest,
-    Forbidden,
-    NotFound,
-    ServerError,
-    ServiceUnavailable,
-    Unauthorized,
-)
+from restapi.exceptions import NotFound, ServerError, ServiceUnavailable, Unauthorized
 from restapi.rest.definition import EndpointResource, Response
+from restapi.services.download import Downloader
 from restapi.utilities.logs import log
+from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -73,6 +68,8 @@ class Requests(EndpointResource):
             }
             if r.end_date:
                 item["end_date"] = r.end_date.isoformat()
+            if r.error_message:
+                item["error_message"] = r.error_message
             if r.output_file:
                 item["output_file"] = {
                     "filename": r.output_file.filename,
@@ -97,25 +94,30 @@ class Requests(EndpointResource):
         dataset_name: str,
         product: str,
         format: str,
-        variables: List[str] = [],
+        variable: List[str] = [],
         time: Dict[str, List[str]] = None,
+        extra: Dict[str, Any] = None,
     ) -> Response:
         user = self.get_user()
         if not user:  # pragma: no cover
             raise ServerError("User misconfiguration")
         c = celery.get_instance()
         log.debug("Request for extraction for <{}>", dataset_name)
-        log.debug("Variables: {}", variables)
+        log.debug("Variable: {}", variable)
         log.debug("Time: {}", time)
         log.debug("Format: {}", format)
+        log.debug("Extra: {}", extra)
         args: Dict[str, Union[str, List[str], Dict[str, List[str]]]] = {
-            "product_type": product
+            "product_type": product,
+            "format": format,
         }
-        if variables:
-            args["variable"] = variables
+        if variable:
+            args["variable"] = variable
         if time:
             args["time"] = time
-        args["format"] = format
+        for k, v in extra.items():
+            args[k] = v
+
         task = None
         db = sqlalchemy.get_instance()
         try:
@@ -198,8 +200,12 @@ class Request(EndpointResource):
         if output_file:
             try:
                 db.session.delete(output_file)
-                filepath = Path(f"{DOWNLOAD_DIR}/{output_file.timestamp}")
-                shutil.rmtree(filepath)
+                if output_file.timestamp:
+                    filepath = DOWNLOAD_DIR.joinpath(output_file.timestamp)
+                    shutil.rmtree(filepath)
+                else:
+                    filepath = DOWNLOAD_DIR.joinpath(output_file.filename)
+                    filepath.unlink()
             except FileNotFoundError as error:
                 # silently pass when file is not found
                 log.warning(error)
@@ -227,20 +233,64 @@ class DownloadData(EndpointResource):
         db = sqlalchemy.get_instance()
         try:
             output_file = (
-                db.session.query(db.OutputFile).filter_by(timestamp=timestamp).one()
+                db.session.query(db.OutputFile)
+                .filter(
+                    or_(
+                        db.OutputFile.timestamp == timestamp,
+                        db.OutputFile.filename == f"{timestamp}.zip",
+                    )
+                )
+                .one()
             )
             # check if user owns the file
             if output_file.request.user_id != user.id:
                 raise Unauthorized("Unauthorized request")
-            file_dir = f"{DOWNLOAD_DIR}/{output_file.timestamp}"
-            file_path = Path(f"{file_dir}/{output_file.filename}")
+            file_dir = DOWNLOAD_DIR
+            if output_file.timestamp:
+                file_dir = DOWNLOAD_DIR.joinpath(output_file.timestamp)
+            file_path = file_dir.joinpath(output_file.filename)
             if not file_path.exists():
                 log.error(
                     f"Expected filename <{output_file.filename}> in the path {file_dir}"
                 )
                 raise FileNotFoundError()
-            return send_from_directory(
-                file_dir, output_file.filename, as_attachment=True
-            )
+            return Downloader.send_file_streamed(file_path)
         except (NoResultFound, FileNotFoundError):
             raise NotFound(f"OutputFile with TIMESTAMP<{timestamp}> NOT found")
+
+
+class EstimateSize(EndpointResource):
+    labels = ["estimate-size"]
+
+    @decorators.auth.require()
+    @decorators.use_kwargs(DataExtraction)
+    @decorators.endpoint(
+        path="/estimate-size/<dataset_name>",
+        summary="Estimate request size",
+        responses={200: "Estimated size", 404: "Dataset does not exist"},
+    )
+    def post(
+        self,
+        dataset_name: str,
+        product: str,
+        format: str,
+        variables: List[str] = [],
+        time: Dict[str, List[str]] = None,
+    ) -> Response:
+        log.debug(f"Estimate size for dataset <{dataset_name}>")
+        user = self.get_user()
+        if not user:  # pragma: no cover
+            raise ServerError("User misconfiguration")
+        dds = broker.get_instance()
+        if dataset_name not in dds.get_datasets([dataset_name]):
+            raise NotFound(f"Dataset <{dataset_name}> does not exist")
+        request = {"product_type": product, "variable": variables, "time": time}
+        log.debug(f"request: {request}")
+        try:
+            estimated_size = dds.broker.estimate_size(
+                dataset_name=dataset_name, request=request
+            )
+        except Exception as e:
+            log.error(e)
+            raise ServiceUnavailable("Size estimation NOT available")
+        return self.response(estimated_size)

@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { ApiService } from "@rapydo/services/api";
-import { Dataset, StorageUsage, DatasetInfo, ProductInfo } from "../types";
+import { StorageUsage, DatasetInfo, ProductInfo } from "../types";
 
 @Injectable({
   providedIn: "root",

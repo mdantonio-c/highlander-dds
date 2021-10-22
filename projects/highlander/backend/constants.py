@@ -1,4 +1,6 @@
-import os
+from pathlib import Path
 
-CATALOG_DIR = os.environ.get("CATALOG_DIR", "/catalog")
-DOWNLOAD_DIR = f"{CATALOG_DIR}/download"
+from restapi.env import Env
+
+CATALOG_DIR = Path(Env.get("CATALOG_DIR", "/catalog"))  # type: ignore
+DOWNLOAD_DIR = CATALOG_DIR.joinpath("download")

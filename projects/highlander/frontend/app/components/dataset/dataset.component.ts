@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { DatasetInfo } from "../../types";
+import { DatasetInfo, ProductReference } from "../../types";
 import { NotificationService } from "@rapydo/services/notification";
 import { AuthService } from "@rapydo/services/auth";
 import { DataService } from "../../services/data.service";
@@ -19,6 +19,7 @@ export class DatasetComponent implements OnInit {
   dataset: DatasetInfo;
   user: User;
   readonly backendURI = environment.backendURI;
+  selectedProduct: ProductReference;
 
   constructor(
     private dataService: DataService,
@@ -61,6 +62,11 @@ export class DatasetComponent implements OnInit {
         .subscribe(
           (data) => {
             this.dataset = data;
+            if (this.dataset.products && this.dataset.products.length) {
+              this.selectedProduct = this.dataset.products.find(
+                (e) => e.id === this.dataset.default
+              );
+            }
           },
           (error) => {
             this.notify.showError(error);
@@ -69,6 +75,10 @@ export class DatasetComponent implements OnInit {
         .add(() => {
           this.spinner.hide();
         });
+    } else if (this.dataset.products && this.dataset.products.length) {
+      this.selectedProduct = this.dataset.products.find(
+        (e) => e.id === this.dataset.default
+      );
     }
   }
 
@@ -91,8 +101,7 @@ export class DatasetComponent implements OnInit {
   }
 
   openDataExtractionModal() {
-    // FIXME atm use default product. We don't have multi-products cases yet!
-    const productId = this.dataset.default;
+    const productId = this.selectedProduct.id;
     console.log(`open data extraction for product ${productId}`);
     const modalRef = this.modalService.open(DataExtractionModalComponent, {
       backdrop: "static",
