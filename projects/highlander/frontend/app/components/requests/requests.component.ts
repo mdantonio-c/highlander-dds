@@ -7,7 +7,6 @@ import { saveAs as importedSaveAs } from "file-saver-es";
 import { DataService } from "../../services/data.service";
 import { Request, RequestOutput } from "../../types";
 import { environment } from "@rapydo/../environments/environment";
-import streamSaver from "streamsaver";
 
 declare global {
   interface Window {

@@ -1,12 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { ApiService } from "@rapydo/services/api";
-import { Dataset, StorageUsage, DatasetInfo, ProductInfo } from "../types";
-import { WritableStream } from "web-streams-polyfill/ponyfill";
-import streamSaver from "streamsaver";
-import { environment } from "@rapydo/../environments/environment";
-import { from } from "rxjs";
-import { throwError } from "rxjs";
+import { StorageUsage, DatasetInfo, ProductInfo } from "../types";
 
 @Injectable({
   providedIn: "root",
