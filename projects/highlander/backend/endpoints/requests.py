@@ -115,8 +115,9 @@ class Requests(EndpointResource):
             args["variable"] = variable
         if time:
             args["time"] = time
-        for k, v in extra.items():
-            args[k] = v
+        if extra:
+            for k, v in extra.items():
+                args[k] = v
 
         task = None
         db = sqlalchemy.get_instance()
