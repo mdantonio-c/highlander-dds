@@ -88,11 +88,12 @@ export interface TimeArg {
 }
 
 export interface RequestArgs {
+  product_type: string;
   /** @nullable */
   variable?: string[];
-  product_type: string;
   time?: TimeArg;
-  format?: string;
+  format: string;
+  [other: string]: any;
 }
 
 export interface RequestOutput {
@@ -111,6 +112,7 @@ export interface Request {
   /** @nullable */
   end_date?: string;
   status: string;
+  error_message?: string;
   task_id: string;
   /** @nullable */
   output_file?: RequestOutput;

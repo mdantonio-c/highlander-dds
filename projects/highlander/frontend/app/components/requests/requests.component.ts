@@ -7,7 +7,6 @@ import { saveAs as importedSaveAs } from "file-saver-es";
 import { DataService } from "../../services/data.service";
 import { Request, RequestOutput } from "../../types";
 import { environment } from "@rapydo/../environments/environment";
-import streamSaver from "streamsaver";
 
 declare global {
   interface Window {
@@ -68,23 +67,6 @@ export class RequestsComponent extends BasePaginationComponent<Request> {
       },
       (error) => {
         this.notify.showError(`Unable to download file: ${filename}`);
-      }
-    );
-  }
-
-  downloadStream(output_file: RequestOutput) {
-    let token = this.auth.getToken();
-    let filename = output_file.filename;
-    let timestamp = output_file.timestamp;
-
-    this.dataService.downloadStreamData(filename, timestamp, token).subscribe(
-      (data) => {
-        // do nothing
-      },
-      (error) => {
-        // console.error(error.message);
-        let reason = error.message || "n/a";
-        this.notify.showError(`Unable to download data: ${reason}`);
       }
     );
   }

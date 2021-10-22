@@ -1,5 +1,5 @@
 import shutil
-from typing import Dict, List, Union
+from typing import Any, Dict, List, Union
 
 from flask import send_from_directory
 from highlander.connectors import broker
@@ -68,6 +68,8 @@ class Requests(EndpointResource):
             }
             if r.end_date:
                 item["end_date"] = r.end_date.isoformat()
+            if r.error_message:
+                item["error_message"] = r.error_message
             if r.output_file:
                 item["output_file"] = {
                     "filename": r.output_file.filename,
@@ -92,25 +94,30 @@ class Requests(EndpointResource):
         dataset_name: str,
         product: str,
         format: str,
-        variables: List[str] = [],
+        variable: List[str] = [],
         time: Dict[str, List[str]] = None,
+        extra: Dict[str, Any] = None,
     ) -> Response:
         user = self.get_user()
         if not user:  # pragma: no cover
             raise ServerError("User misconfiguration")
         c = celery.get_instance()
         log.debug("Request for extraction for <{}>", dataset_name)
-        log.debug("Variables: {}", variables)
+        log.debug("Variable: {}", variable)
         log.debug("Time: {}", time)
         log.debug("Format: {}", format)
+        log.debug("Extra: {}", extra)
         args: Dict[str, Union[str, List[str], Dict[str, List[str]]]] = {
-            "product_type": product
+            "product_type": product,
+            "format": format,
         }
-        if variables:
-            args["variable"] = variables
+        if variable:
+            args["variable"] = variable
         if time:
             args["time"] = time
-        args["format"] = format
+        for k, v in extra.items():
+            args[k] = v
+
         task = None
         db = sqlalchemy.get_instance()
         try:

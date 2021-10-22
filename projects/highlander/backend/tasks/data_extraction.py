@@ -17,25 +17,10 @@ from restapi.connectors.celery import CeleryExt
 from restapi.utilities.logs import log
 
 
-def handle_exception(
-    task: Task,
-    request: Optional[Request],
-    exc: Exception,
-    ignore: bool = False,
-    error_msg: Optional[str] = None,
-) -> None:
-    if not request:
-        return None
-    request.status = states.FAILURE
-    request.error_message = error_msg or str(exc)
-    # manually update the task state
-    task.update_state(state=states.FAILURE, meta={"error": str(exc)})
-    if ignore:
-        log.warning(exc)
-        raise Ignore()
-    else:
-        log.exception("{}: {}", error_msg, repr(exc))
-        raise exc
+def handle_exception(request: Optional[Request], error_msg: str) -> None:
+    if request:
+        request.status = states.FAILURE
+        request.error_message = error_msg
 
 
 @CeleryExt.task()
@@ -59,7 +44,10 @@ def extract_data(
             )
 
         dds = broker.get_instance()
-        result_path = dds.broker.retrieve(dataset_name=dataset_name, request=req_body)
+        result_path = dds.broker.retrieve(
+            dataset_name=dataset_name, request=req_body.copy()
+        )
+
         log.debug("data result_path: {}", result_path)
 
         # update request status
@@ -83,9 +71,11 @@ def extract_data(
         db.session.add(output_file)
 
     except (DiskQuotaException, AccessToDatasetDenied, EmptyOutputFile) as exc:
-        handle_exception(self, request, exc, ignore=True)
+        handle_exception(request, error_msg=str(exc))
+        raise Ignore(str(exc))
     except Exception as exc:
-        handle_exception(self, request, exc, error_msg="Failed to extract data")
+        handle_exception(request, error_msg=f"Failed to extract data: {str(exc)}")
+        raise exc
     finally:
         if request:
             request.end_date = datetime.datetime.utcnow()
