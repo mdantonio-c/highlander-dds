@@ -44,7 +44,10 @@ def extract_data(
             )
 
         dds = broker.get_instance()
-        result_path = dds.broker.retrieve(dataset_name=dataset_name, request=req_body)
+        result_path = dds.broker.retrieve(
+            dataset_name=dataset_name, request=req_body.copy()
+        )
+
         log.debug("data result_path: {}", result_path)
 
         # update request status
@@ -71,7 +74,7 @@ def extract_data(
         handle_exception(request, error_msg=str(exc))
         raise Ignore(str(exc))
     except Exception as exc:
-        handle_exception(request, error_msg="Failed to extract data")
+        handle_exception(request, error_msg=f"Failed to extract data: {str(exc)}")
         raise exc
     finally:
         if request:
