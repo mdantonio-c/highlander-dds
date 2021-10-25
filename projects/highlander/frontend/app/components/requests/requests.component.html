@@ -63,46 +63,64 @@
             </div>
             <div>Task ID: {{ row.task_id }}</div>
             <ng-container *ngIf="row.args">
-              <div class="my-2"></div>
-              <dl class="mb-0">
-                <dt>Dataset</dt>
-                <dd>
-                  <ul>
-                    <li>{{ row.dataset_name }}</li>
-                  </ul>
-                </dd>
-              </dl>
-              <div class="my-2"></div>
-              <dl class="mb-0" *ngIf="row.args.variable">
-                <dt>Variable(s)</dt>
-                <dd *ngIf="(row.args.variable || []).length; else noFilters">
-                  <ul>
-                    <li *ngFor="let v of row.args.variable">{{ v }}</li>
-                  </ul>
-                </dd>
-                <ng-template #noFilters>No Variable selected</ng-template>
-              </dl>
-              <div class="my-2"></div>
-              <dl class="mb-0" *ngIf="row.args.time">
-                <dt>Time</dt>
-                <dd>
-                  <ul>
-                    <li *ngFor="let item of row.args.time | keyvalue">
-                      <b>{{ item.key }}</b
-                      >: {{ item.value }}
-                    </li>
-                  </ul>
-                </dd>
-              </dl>
-              <div class="my-2"></div>
-              <dl class="mb-0" *ngIf="row.args.format">
-                <dt>Format</dt>
-                <dd>
-                  <ul>
-                    <li>{{ row.args.format }}</li>
-                  </ul>
-                </dd>
-              </dl>
+              <div class="row mt-2">
+                <div class="col-sm">
+                  <dl class="mb-0">
+                    <dt>Dataset</dt>
+                    <dd>
+                      <ul>
+                        <li>{{ row.dataset_name }}</li>
+                      </ul>
+                    </dd>
+                  </dl>
+                  <dl class="mb-0" *ngIf="row.args.variable">
+                    <dt>Variable</dt>
+                    <dd
+                      *ngIf="(row.args.variable || []).length; else noFilters"
+                    >
+                      <ul>
+                        <li *ngFor="let v of row.args.variable">{{ v }}</li>
+                      </ul>
+                    </dd>
+                    <ng-template #noFilters>No Variable selected</ng-template>
+                  </dl>
+                  <dl class="mb-0" *ngIf="row.args.time">
+                    <dt>Time</dt>
+                    <dd>
+                      <ul>
+                        <li *ngFor="let item of row.args.time | keyvalue">
+                          <b>{{ item.key }}</b
+                          >: {{ item.value }}
+                        </li>
+                      </ul>
+                    </dd>
+                  </dl>
+                  <dl class="mb-0" *ngIf="row.args.format">
+                    <dt>Format</dt>
+                    <dd>
+                      <ul>
+                        <li>{{ row.args.format }}</li>
+                      </ul>
+                    </dd>
+                  </dl>
+                </div>
+                <div class="col-sm">
+                  <ng-container *ngFor="let extra of row.args | keyvalue">
+                    <!-- {{extra | json}}-->
+                    <dl
+                      class="mb-0"
+                      *ngIf="!declaredFields.includes(extra.key)"
+                    >
+                      <dt>{{ extra.key | titlecase | replace: "_":" " }}</dt>
+                      <dd>
+                        <ul>
+                          <li>{{ extra.value }}</li>
+                        </ul>
+                      </dd>
+                    </dl>
+                  </ng-container>
+                </div>
+              </div>
             </ng-container>
           </div>
         </div>
