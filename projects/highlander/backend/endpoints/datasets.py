@@ -1,3 +1,5 @@
+from typing import Optional
+
 from flask import send_from_directory
 from highlander.connectors import broker
 from highlander.constants import CATALOG_DIR
@@ -22,11 +24,15 @@ class Datasets(EndpointResource):
         {"application": fields.Bool(required=False)}, location="query"
     )
     @decorators.marshal_with(DatasetInfo(many=True), code=200)
-    def get(self, application: bool = False) -> Response:
-        log.debug("Is application dataset? {}", application)
+    def get(self, application: Optional[bool] = None) -> Response:
+        log.debug("Filter for application dataset? {}", application)
         dds = broker.get_instance()
         details = dds.get_dataset_details()["data"]
-        res = [x for x in details if x.get("application", False) == application]
+        res = [
+            x
+            for x in details
+            if application is None or x.get("application", False) == application
+        ]
         return self.response(res)
 
 
