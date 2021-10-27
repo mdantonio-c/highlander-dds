@@ -8,18 +8,14 @@ import { DataService } from "../../services/data.service";
 import { Request, RequestOutput } from "../../types";
 import { environment } from "@rapydo/../environments/environment";
 
-declare global {
-  interface Window {
-    writer: any;
-  }
-}
-
 @Component({
   selector: "app-requests",
   templateUrl: "./requests.component.html",
+  styleUrls: ["./requests.component.css"],
 })
 export class RequestsComponent extends BasePaginationComponent<Request> {
   expanded: any = {};
+  readonly declaredFields: string[] = ["variable", "time", "format"];
   @Output() onLoad: EventEmitter<null> = new EventEmitter<null>();
 
   constructor(

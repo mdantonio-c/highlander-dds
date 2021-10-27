@@ -15,6 +15,7 @@ import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { StorageUsageComponent } from "./components/dashboard/storage-usage/storage-usage.component";
 import { ForecastMapsComponent } from "./components/maps/forecast-maps/forecast-maps.component";
 import { MapFilterComponent } from "./components/maps/forecast-maps/map-filter/map-filter.component";
+import { ReplacePipe } from "./pipes/replace.pipe";
 
 const routes: Routes = [
   { path: "app/datasets", component: DatasetsComponent },
@@ -51,6 +52,7 @@ const routes: Routes = [
     StorageUsageComponent,
     ForecastMapsComponent,
     MapFilterComponent,
+    ReplacePipe,
   ],
   schemas: [],
   providers: [],
