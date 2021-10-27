@@ -1,4 +1,4 @@
-from typing import Any, Iterable, Mapping
+from typing import Any, Dict, Iterable, Mapping
 
 import numpy as np
 from marshmallow import pre_load
@@ -183,7 +183,7 @@ class DataExtraction(Schema):
     extra = fields.Dict()
 
     @pre_load
-    def unwrap_envelope(self, data, **kwargs):
+    def unwrap_envelope(self, data: Dict[str, Any], **kwargs: Any) -> Dict[str, Any]:
         extra = {}
         rest = {}
         for k, v in data.items():
