@@ -52,8 +52,7 @@ jobs:
           touch projects/highlander/confs/geoserver.service
 
           rapydo start frontend proxy
-          rapydo dump
           rapydo logs --follow frontend
-          docker-compose logs --tail 6 frontend 2>&1 | grep "files have been compressed."
-          docker-compose logs --tail 20 proxy
+          rapydo logs --tail 6 frontend | grep "files have been compressed."
+          rapydo logs --tail 20 proxy
           curl --insecure -X GET https://localhost
