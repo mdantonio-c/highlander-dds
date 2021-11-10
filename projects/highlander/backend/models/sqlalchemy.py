@@ -9,7 +9,7 @@ setattr(User, "disk_quota", db.Column(db.BigInteger, default=1073741824))  # 1 G
 setattr(User, "requests", db.relationship("Request", backref="user", lazy=True))
 
 
-class Request(db.Model):  # type: ignore
+class Request(db.Model):
     __tablename__ = "request"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -32,7 +32,7 @@ class Request(db.Model):  # type: ignore
         )
 
 
-class OutputFile(db.Model):  # type: ignore
+class OutputFile(db.Model):
     __tablename__ = "output_file"
 
     id = db.Column(db.Integer, primary_key=True)

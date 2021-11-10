@@ -64,7 +64,7 @@ class NumpyDateTime(fields.Field):
     def _serialize(self, value: Any, attr: str, obj: Any, **kwargs: Any) -> Any:
         if value is None:
             return None
-        return np.datetime_as_string(value, unit="s")  # type: ignore
+        return np.datetime_as_string(value, unit="s")
         # return np.datetime64(value).item().replace(tzinfo=pytz.UTC).isoformat('T')
 
 

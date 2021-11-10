@@ -6,7 +6,7 @@ __author__ = "Giuseppe Trotta (g.trotta@cineca.it)"
 
 
 class TestApp(BaseTests):
-    def test_usage(self, client: FlaskClient) -> None:
+    def test_usage(self, client: FlaskClient[Any]) -> None:
         endpoint = f"{API_URI}/usage"
 
         # test without login

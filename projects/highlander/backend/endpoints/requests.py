@@ -9,6 +9,7 @@ from restapi import decorators
 from restapi.connectors import celery, sqlalchemy
 from restapi.exceptions import NotFound, ServerError, ServiceUnavailable, Unauthorized
 from restapi.rest.definition import EndpointResource, Response
+from restapi.services.authentication import User
 from restapi.services.download import Downloader
 from restapi.utilities.logs import log
 from sqlalchemy import or_
@@ -37,10 +38,9 @@ class Requests(EndpointResource):
         sort_order: str,
         sort_by: str,
         input_filter: str,
+        user: User,
     ) -> Response:
-        user = self.get_user()
-        if not user:  # pragma: no cover
-            raise ServerError("User misconfiguration")
+
         db = sqlalchemy.get_instance()
         if get_total:
             counter = db.Request.query.filter_by(user_id=user.id).count()
@@ -94,13 +94,11 @@ class Requests(EndpointResource):
         dataset_name: str,
         product: str,
         format: str,
+        user: User,
         variable: List[str] = [],
         time: Dict[str, List[str]] = None,
         extra: Dict[str, Any] = None,
     ) -> Response:
-        user = self.get_user()
-        if not user:  # pragma: no cover
-            raise ServerError("User misconfiguration")
         c = celery.get_instance()
         log.debug("Request for extraction for <{}>", dataset_name)
         log.debug("Variable: {}", variable)
@@ -162,7 +160,7 @@ class Request(EndpointResource):
         },
     )
     @decorators.marshal_with(DataExtraction, code=200)
-    def get(self, request_id: str) -> Response:
+    def get(self, request_id: str, user: User) -> Response:
         log.debug("Get request <{}>", request_id)
         data_query = None
         try:
@@ -181,12 +179,8 @@ class Request(EndpointResource):
             404: "Request does not exist.",
         },
     )
-    def delete(self, request_id: str) -> Response:
+    def delete(self, request_id: str, user: User) -> Response:
         log.debug("delete request {}", request_id)
-        user = self.get_user()
-        if not user:
-            raise ServerError("User misconfiguration")
-
         db = sqlalchemy.get_instance()
         # check if the request exists
         req = db.Request.query.get(int(request_id))
@@ -200,7 +194,7 @@ class Request(EndpointResource):
         output_file = req.output_file
         if output_file:
             try:
-                db.session.delete(output_file)  # type: ignore
+                db.session.delete(output_file)
                 if output_file.timestamp:
                     filepath = DOWNLOAD_DIR.joinpath(output_file.timestamp)
                     shutil.rmtree(filepath)
@@ -210,7 +204,7 @@ class Request(EndpointResource):
             except FileNotFoundError as error:
                 # silently pass when file is not found
                 log.warning(error)
-        db.session.delete(req)  # type: ignore
+        db.session.delete(req)
         db.session.commit()
         return self.response(f"Request ID<{request_id}> successfully removed")
 
@@ -226,10 +220,7 @@ class DownloadData(EndpointResource):
             404: "File not found",
         },
     )
-    def get(self, timestamp: str) -> Response:
-        user = self.get_user()
-        if not user:
-            raise ServerError("User misconfiguration")
+    def get(self, timestamp: str, user: User) -> Response:
 
         db = sqlalchemy.get_instance()
         try:
@@ -277,13 +268,11 @@ class EstimateSize(EndpointResource):
         dataset_name: str,
         product: str,
         format: str,
+        user: User,
         variables: List[str] = [],
         time: Dict[str, List[str]] = None,
     ) -> Response:
         log.debug(f"Estimate size for dataset <{dataset_name}>")
-        user = self.get_user()
-        if not user:  # pragma: no cover
-            raise ServerError("User misconfiguration")
         dds = broker.get_instance()
         if dataset_name not in dds.get_datasets([dataset_name]):
             raise NotFound(f"Dataset <{dataset_name}> does not exist")
