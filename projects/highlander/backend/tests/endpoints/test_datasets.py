@@ -8,7 +8,7 @@ PRODUCT_VHR = "VHR-REA_IT_1989_2020_hourly"
 
 
 class TestApp(BaseTests):
-    def test_get_datasets(self, client: FlaskClient[Any]) -> None:
+    def test_get_datasets(self, client: FlaskClient) -> None:
         """Expected no empty dataset catalog"""
         r = client.get(f"{API_URI}/datasets")
         assert r.status_code == 200
@@ -18,7 +18,7 @@ class TestApp(BaseTests):
         assert isinstance(response_data, list)
         assert len(response_data) > 0
 
-    def test_get_applications(self, client: FlaskClient[Any]) -> None:
+    def test_get_applications(self, client: FlaskClient) -> None:
         r = client.get(f"{API_URI}/datasets?application=true")
         assert r.status_code == 200
 
@@ -29,17 +29,17 @@ class TestApp(BaseTests):
         for ds in response_data:
             assert ds.get("application", False)
 
-    def test_get_dataset(self, client: FlaskClient[Any]) -> None:
+    def test_get_dataset(self, client: FlaskClient) -> None:
         # expected era5-downscaled-over-italy dataset in test data
         r = client.get(f"{API_URI}/datasets/{DATASET_VHR}")
         assert r.status_code == 200
 
-    def test_get_dataset_product(self, client: FlaskClient[Any]) -> None:
+    def test_get_dataset_product(self, client: FlaskClient) -> None:
         # expected VHR-REA_IT_1989_2020_hourly product in test data
         r = client.get(f"{API_URI}/datasets/{DATASET_VHR}/products/{PRODUCT_VHR}")
         assert r.status_code == 200
 
-    def test_get_dataset_image(self, client: FlaskClient[Any]) -> None:
+    def test_get_dataset_image(self, client: FlaskClient) -> None:
         r = client.get(f"{API_URI}/datasets")
         datasets = self.get_content(r)
         assert isinstance(datasets, list)
