@@ -1,5 +1,5 @@
 import shutil
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Mapping, Optional, Union
 
 from flask import send_from_directory
 from highlander.connectors import broker
@@ -269,20 +269,27 @@ class EstimateSize(EndpointResource):
         product: str,
         format: str,
         user: User,
-        variables: List[str] = [],
+        variable: List[str] = None,
         time: Dict[str, List[str]] = None,
+        extra: Dict[str, Any] = None,
     ) -> Response:
         log.debug(f"Estimate size for dataset <{dataset_name}>")
         dds = broker.get_instance()
         if dataset_name not in dds.get_datasets([dataset_name]):
             raise NotFound(f"Dataset <{dataset_name}> does not exist")
-        request = {"product_type": product, "variable": variables, "time": time}
+        request: Dict[str, Any] = {"product_type": product, "format": format}
+        if variable:
+            request["variable"] = variable
+        if time:
+            request["time"] = time
+        if extra:
+            for k, v in extra.items():
+                request[k] = v
         log.debug(f"request: {request}")
         try:
             estimated_size = dds.broker.estimate_size(
                 dataset_name=dataset_name, request=request
             )
         except Exception as e:
-            log.error(e)
-            raise ServiceUnavailable("Size estimation NOT available")
+            raise ServerError(f"Unable to get size estimation: {e}")
         return self.response(estimated_size)
