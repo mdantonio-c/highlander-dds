@@ -1,13 +1,12 @@
 import shutil
-from typing import Any, Dict, List, Mapping, Optional, Union
+from typing import Any, Dict, List, Union
 
-from flask import send_from_directory
 from highlander.connectors import broker
 from highlander.constants import DOWNLOAD_DIR
 from highlander.models.schemas import DataExtraction
 from restapi import decorators
 from restapi.connectors import celery, sqlalchemy
-from restapi.exceptions import NotFound, ServerError, ServiceUnavailable, Unauthorized
+from restapi.exceptions import NotFound, ServerError, Unauthorized
 from restapi.rest.definition import EndpointResource, Response
 from restapi.services.authentication import User
 from restapi.services.download import Downloader
@@ -194,7 +193,7 @@ class Request(EndpointResource):
         output_file = req.output_file
         if output_file:
             try:
-                db.session.delete(output_file)
+                db.session.delete(output_file)  # type: ignore
                 if output_file.timestamp:
                     filepath = DOWNLOAD_DIR.joinpath(output_file.timestamp)
                     shutil.rmtree(filepath)
@@ -204,7 +203,7 @@ class Request(EndpointResource):
             except FileNotFoundError as error:
                 # silently pass when file is not found
                 log.warning(error)
-        db.session.delete(req)
+        db.session.delete(req)  # type: ignore
         db.session.commit()
         return self.response(f"Request ID<{request_id}> successfully removed")
 
