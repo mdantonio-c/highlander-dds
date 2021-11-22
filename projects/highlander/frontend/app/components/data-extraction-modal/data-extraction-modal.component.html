@@ -34,7 +34,7 @@
         placement="bottom-right"
         ngbTooltip="Remaining size after extraction"
         container="body"
-        >{{ remaining | bytes: 2 }}</span
+        ><i *ngIf="remaining < 0">-</i>{{ remaining | abs | bytes: 2 }}</span
       >
     </ng-container>
   </ngb-alert>

@@ -61,6 +61,7 @@ export class DataExtractionModalComponent implements OnInit {
       .subscribe(
         ({ storageUsage, datasetProduct }) => {
           this.usage = storageUsage;
+          this.remaining = this.usage.quota - this.usage.used;
           this.productInfo = datasetProduct;
           this.productName = this.productInfo.label;
           this.filterForm = this.toFormGroup(datasetProduct);
