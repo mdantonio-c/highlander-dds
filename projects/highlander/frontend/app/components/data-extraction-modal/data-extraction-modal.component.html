@@ -20,10 +20,22 @@
   ><p class="mt-4">Loading...</p></ngx-spinner
 >
 <p class="mb-0">
-  <ngb-alert class="mb-0" [dismissible]="false" *ngIf="productInfo">
+  <ngb-alert
+    class="mb-0 fade animate-show animate-hide"
+    [dismissible]="false"
+    *ngIf="productInfo"
+    [type]="remaining >= 0 ? 'success' : 'warning'"
+  >
     <strong>Size Estimate</strong>:
     <ng-container *ngIf="estimatedSize$ | async as size">
       {{ size | bytes: 2 }}
+      <span
+        class="float-right"
+        placement="bottom-right"
+        ngbTooltip="Remaining size after extraction"
+        container="body"
+        >{{ remaining | bytes: 2 }}</span
+      >
     </ng-container>
   </ngb-alert>
 </p>
@@ -157,7 +169,12 @@
   </div>
 </div>
 <div class="modal-footer" *ngIf="productInfo">
-  <button type="submit" class="btn btn-primary btn-lg" form="ngForm">
+  <button
+    type="submit"
+    class="btn btn-primary btn-lg"
+    form="ngForm"
+    [disabled]="remaining < 0"
+  >
     Job Submit »
   </button>
 </div>

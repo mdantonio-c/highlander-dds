@@ -7,6 +7,7 @@ import {
   DatasetInfo,
   DatasetVariables,
   ProductInfo,
+  StorageUsage,
   Widget,
 } from "../../types";
 import {
@@ -17,15 +18,8 @@ import {
   FormControl,
   Validators,
 } from "@angular/forms";
-import { Observable } from "rxjs";
-import {
-  mergeMap,
-  startWith,
-  switchMap,
-  tap,
-  finalize,
-  take,
-} from "rxjs/operators";
+import { Observable, forkJoin, throwError, of } from "rxjs";
+import { startWith, switchMap, tap, catchError } from "rxjs/operators";
 
 @Component({
   selector: "data-extraction-modal",
@@ -41,7 +35,8 @@ export class DataExtractionModalComponent implements OnInit {
   productInfo: ProductInfo;
   active = 1;
   estimatedSize$: Observable<number>;
-  estimatedSize: number;
+  usage: StorageUsage;
+  remaining: number;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -55,13 +50,20 @@ export class DataExtractionModalComponent implements OnInit {
     console.log(`Product ID: ${this.productId}`);
     // console.log(this.dataset);
     this.spinner.show("extSpinner");
-    this.dataService
-      .getDatasetProduct(this.dataset.id, this.productId)
+    forkJoin({
+      storageUsage: this.dataService.getStorageUsage(),
+      datasetProduct: this.dataService.getDatasetProduct(
+        this.dataset.id,
+        this.productId
+      ),
+    })
+      .pipe(catchError((error) => of(error)))
       .subscribe(
-        (data) => {
-          this.productInfo = data;
+        ({ storageUsage, datasetProduct }) => {
+          this.usage = storageUsage;
+          this.productInfo = datasetProduct;
           this.productName = this.productInfo.label;
-          this.filterForm = this.toFormGroup(data);
+          this.filterForm = this.toFormGroup(datasetProduct);
           this.onFilterChange();
         },
         (error) => {
@@ -80,7 +82,10 @@ export class DataExtractionModalComponent implements OnInit {
       switchMap(() =>
         this.dataService.getSizeEstimate(this.dataset.id, this.buildRequest())
       ),
-      tap(() => this.spinner.hide("extSpinner"))
+      tap((size) => {
+        this.remaining = this.usage.quota - this.usage.used - size;
+        this.spinner.hide("extSpinner");
+      })
     );
   }
 
