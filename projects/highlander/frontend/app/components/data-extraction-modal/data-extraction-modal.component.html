@@ -22,7 +22,9 @@
 <p class="mb-0">
   <ngb-alert class="mb-0" [dismissible]="false" *ngIf="productInfo">
     <strong>Size Estimate</strong>:
-    {{ (estimatedSize$ | async | bytes: 2) || "n/a" }}
+    <ng-container *ngIf="estimatedSize$ | async as size">
+      {{ size | bytes: 2 }}
+    </ng-container>
   </ngb-alert>
 </p>
 <div class="modal-body p-0 mb-4 pt-2">
