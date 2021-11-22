@@ -17,6 +17,15 @@ import {
   FormControl,
   Validators,
 } from "@angular/forms";
+import { Observable } from "rxjs";
+import {
+  mergeMap,
+  startWith,
+  switchMap,
+  tap,
+  finalize,
+  take,
+} from "rxjs/operators";
 
 @Component({
   selector: "data-extraction-modal",
@@ -31,6 +40,8 @@ export class DataExtractionModalComponent implements OnInit {
   filterForm: FormGroup;
   productInfo: ProductInfo;
   active = 1;
+  estimatedSize$: Observable<number>;
+  estimatedSize: number;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -51,6 +62,7 @@ export class DataExtractionModalComponent implements OnInit {
           this.productInfo = data;
           this.productName = this.productInfo.label;
           this.filterForm = this.toFormGroup(data);
+          this.onFilterChange();
         },
         (error) => {
           this.notify.showError(error);
@@ -59,6 +71,17 @@ export class DataExtractionModalComponent implements OnInit {
       .add(() => {
         this.spinner.hide("extSpinner");
       });
+  }
+
+  private onFilterChange() {
+    this.estimatedSize$ = this.filterForm.valueChanges.pipe(
+      startWith(this.filterForm.value),
+      tap(() => this.spinner.show("extSpinner")),
+      switchMap(() =>
+        this.dataService.getSizeEstimate(this.dataset.id, this.buildRequest())
+      ),
+      tap(() => this.spinner.hide("extSpinner"))
+    );
   }
 
   getWidget(widgetName: string): Widget {
@@ -88,6 +111,11 @@ export class DataExtractionModalComponent implements OnInit {
   }
 
   submit() {
+    this.passEntry.emit(this.buildRequest());
+    this.activeModal.close();
+  }
+
+  private buildRequest() {
     let res = {
       product: this.productId,
     };
@@ -122,8 +150,7 @@ export class DataExtractionModalComponent implements OnInit {
       }
       res["time"] = time;
     }
-    this.passEntry.emit(res);
-    this.activeModal.close();
+    return res;
   }
 
   private toFormGroup(data: ProductInfo) {
@@ -142,4 +169,6 @@ export class DataExtractionModalComponent implements OnInit {
     });
     return formGroup;
   }
+
+  close() {}
 }

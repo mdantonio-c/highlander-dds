@@ -35,6 +35,14 @@ export class DataService {
   }
 
   /**
+   * Get size estimate.
+   */
+  getSizeEstimate(dataset: string, args: any): Observable<number> {
+    // return of(Math.floor(Math.random() * 100));
+    return this.api.post(`/api/estimate-size/${dataset}`, args);
+  }
+
+  /**
    * Download data for a completed extraction request
    */
   downloadData(filename): Observable<any> {

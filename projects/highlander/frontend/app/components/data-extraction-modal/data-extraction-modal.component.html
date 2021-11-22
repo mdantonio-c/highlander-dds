@@ -9,18 +9,24 @@
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
-<div class="modal-body p-0 mb-4">
-  <div class="container mt-4" style="min-height: 70vh">
-    <ngx-spinner
-      bdColor="rgba(255,255,255,0.8)"
-      color="#6c757d"
-      zIndex="1000"
-      type="ball-clip-rotate-multiple"
-      size="medium"
-      [fullScreen]="false"
-      name="extSpinner"
-      ><p class="mt-4">Loading...</p></ngx-spinner
-    >
+<ngx-spinner
+  bdColor="rgba(255,255,255,0.8)"
+  color="#6c757d"
+  zIndex="1000"
+  type="ball-clip-rotate-multiple"
+  size="medium"
+  [fullScreen]="false"
+  name="extSpinner"
+  ><p class="mt-4">Loading...</p></ngx-spinner
+>
+<p class="mb-0">
+  <ngb-alert class="mb-0" [dismissible]="false" *ngIf="productInfo">
+    <strong>Size Estimate</strong>:
+    {{ (estimatedSize$ | async | bytes: 2) || "n/a" }}
+  </ngb-alert>
+</p>
+<div class="modal-body p-0 mb-4 pt-2">
+  <div class="container mt-2" style="min-height: 70vh">
     <div class="row" *ngIf="productInfo">
       <div class="col">
         <form id="ngForm" [formGroup]="filterForm" (ngSubmit)="submit()">
