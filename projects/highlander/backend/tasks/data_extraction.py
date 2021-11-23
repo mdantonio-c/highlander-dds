@@ -59,9 +59,7 @@ def extract_data(
         data_size_estimate = dds.broker.estimate_size(
             dataset_name=dataset_name, request=req_body.copy()
         )
-        user_quota = (
-            db.session.query(db.User.disk_quota).filter_by(id=user_id).scalar()
-        )  # type: ignore
+        user_quota = db.session.query(db.User.disk_quota).filter_by(id=user_id).scalar()  # type: ignore
         log.debug("USER QUOTA for user<{}>: {}", user_id, user_quota)
         used_quota = (
             db.session.query(func.sum(db.OutputFile.size).label("total_used"))
