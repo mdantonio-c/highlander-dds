@@ -1,3 +1,4 @@
+import json
 import shutil
 from typing import Any, Dict, List, Union
 
@@ -88,30 +89,31 @@ class Requests(EndpointResource):
             400: "Invalid request",
         },
     )
-    def post(
-        self,
-        dataset_name: str,
-        product: str,
-        format: str,
-        user: User,
-        variable: List[str] = [],
-        time: Dict[str, List[str]] = None,
-        extra: Dict[str, Any] = None,
-    ) -> Response:
+    def post(self, dataset_name: str, user: User, **kwargs) -> Response:
         c = celery.get_instance()
         log.debug("Request for extraction for <{}>", dataset_name)
-        log.debug("Variable: {}", variable)
-        log.debug("Time: {}", time)
-        log.debug("Format: {}", format)
-        log.debug("Extra: {}", extra)
+        payload = kwargs.copy()
+        log.debug(json.dumps(payload, indent=2, sort_keys=True))
+
+        product: str = kwargs.pop("product")
+        variable: List[str] = kwargs.pop("variable", [])
+        time: Dict[str, List[str]] = kwargs.pop("time", None)
+        format_: str = kwargs.pop("format")
+        latitude: Dict[str, float] = kwargs.pop("latitude", None)
+        longitude: Dict[str, float] = kwargs.pop("longitude", None)
+        extra: Dict[str, Any] = kwargs.pop("extra", None)
         args: Dict[str, Union[str, List[str], Dict[str, List[str]]]] = {
             "product_type": product,
-            "format": format,
+            "format": format_,
         }
         if variable:
             args["variable"] = variable
         if time:
             args["time"] = time
+        if latitude:
+            args["latitude"] = latitude
+        if longitude:
+            args["longitude"] = longitude
         if extra:
             for k, v in extra.items():
                 args[k] = v
