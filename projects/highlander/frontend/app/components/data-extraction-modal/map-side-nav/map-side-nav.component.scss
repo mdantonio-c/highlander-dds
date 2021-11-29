@@ -1,0 +1,79 @@
+.map-sidenav {
+  top: 0;
+  position: absolute;
+  z-index: 1000;
+  pointer-events: none;
+  float: left;
+  height: 100%;
+  text-align: center;
+  width: 220px;
+  cursor: auto;
+
+  li a .nav-text {
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 12px;
+    width: 100%;
+    position: relative;
+    margin-left: 20px;
+  }
+
+  li a:hover .nav-text {
+    text-decoration: none;
+    border-bottom: 1px solid #fff;
+  }
+
+  .map-sidenav-menu {
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+    background-color: #dfdfdfdf;
+    position: relative;
+    z-index: 800;
+    pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+    pointer-events: auto;
+    //padding: 6px 10px 6px 6px;
+    padding: 10px;
+    height: 100%;
+    margin: 0;
+
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+
+    section {
+      width: 100%;
+      border-bottom-color: white;
+      border-bottom-style: double;
+      //margin-bottom: 0.5rem;
+      color: #6c757d;
+
+      .title {
+        display: flex;
+        align-items: center;
+        i {
+          margin-right: 0.5rem;
+        }
+        input {
+          margin-left: auto;
+        }
+      }
+      .content {
+        padding-bottom: 1.5rem;
+
+        .form-group {
+          margin-bottom: 0 !important;
+
+          label {
+            margin-bottom: 0 !important;
+            float: left !important;
+          }
+        }
+      }
+
+      &:not(:first-child) {
+        margin-top: 0.5rem;
+      }
+    }
+  }
+}

@@ -10,6 +10,8 @@ import { LeafletMarkerClusterModule } from "@asymmetrik/ngx-leaflet-markercluste
 import { DatasetsComponent } from "./components/datasets/datasets.component";
 import { DatasetComponent } from "./components/dataset/dataset.component";
 import { DataExtractionModalComponent } from "./components/data-extraction-modal/data-extraction-modal.component";
+import { SpatialCoverageComponent } from "./components/data-extraction-modal/spatial-coverage/spatial-coverage.component";
+import { MapSideNavComponent } from "./components/data-extraction-modal/map-side-nav/map-side-nav.component";
 import { RequestsComponent } from "./components/requests/requests.component";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { StorageUsageComponent } from "./components/dashboard/storage-usage/storage-usage.component";
@@ -17,6 +19,7 @@ import { ForecastMapsComponent } from "./components/maps/forecast-maps/forecast-
 import { MapFilterComponent } from "./components/maps/forecast-maps/map-filter/map-filter.component";
 import { ReplacePipe } from "./pipes/replace.pipe";
 import { AbsPipe } from "./pipes/abs.pipe";
+import { ClickStopPropagation } from "./directives/click-stop-propagation";
 
 const routes: Routes = [
   { path: "app/datasets", component: DatasetsComponent },
@@ -48,6 +51,8 @@ const routes: Routes = [
     DatasetsComponent,
     DatasetComponent,
     DataExtractionModalComponent,
+    SpatialCoverageComponent,
+    MapSideNavComponent,
     RequestsComponent,
     DashboardComponent,
     StorageUsageComponent,
@@ -55,6 +60,7 @@ const routes: Routes = [
     MapFilterComponent,
     ReplacePipe,
     AbsPipe,
+    ClickStopPropagation,
   ],
   schemas: [],
   providers: [],

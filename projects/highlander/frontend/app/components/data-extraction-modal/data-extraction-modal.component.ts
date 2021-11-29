@@ -9,6 +9,7 @@ import {
   ProductInfo,
   StorageUsage,
   Widget,
+  SpatialArea,
 } from "../../types";
 import {
   AbstractControl,
@@ -36,6 +37,12 @@ export class DataExtractionModalComponent implements OnInit {
   active = 1;
   estimatedSize$: Observable<number>;
   usage: StorageUsage;
+  area: SpatialArea = {
+    north: null,
+    east: null,
+    south: null,
+    west: null,
+  };
   remaining: number;
 
   constructor(
@@ -65,6 +72,17 @@ export class DataExtractionModalComponent implements OnInit {
           this.productInfo = datasetProduct;
           this.productName = this.productInfo.label;
           this.filterForm = this.toFormGroup(datasetProduct);
+          // check spatial coverage
+          for (let widget of this.productInfo.widgets) {
+            if (widget.name === "area") {
+              for (let field of widget.details.fields) {
+                if (field.name in this.area) {
+                  this.area[field.name] = field.range;
+                }
+              }
+              break;
+            }
+          }
           this.onFilterChange();
         },
         (error) => {

@@ -79,16 +79,15 @@
                     </div>
                   </div>
                   <div class="row" *ngIf="widget.type == 'ExclusiveFrame'">
-                    <!--<ul ngbNav #nav="ngbNav" class="nav-pills" orientation="vertical">
-                      <ng-container *ngFor="let w of widget.details['widgets']">
-                        <li [ngbNavItem]="w">
-                          <a ngbNavLink>{{w}}</a>
-                          <ng-template>
-                            <p>a</p>
-                          </ng-template>
-                        </li>
-                      </ng-container>
-                    </ul>-->
+                    <app-spatial-coverage
+                      class="w-100"
+                      *ngIf="widget.name === 'spatial_coverage'"
+                      [north]="area.north"
+                      [east]="area.east"
+                      [south]="area.south"
+                      [west]="area.west"
+                    >
+                    </app-spatial-coverage>
                     <ng-container
                       *ngIf="widget.details['widgets'].includes('date_list')"
                     >
