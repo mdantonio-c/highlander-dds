@@ -1,6 +1,9 @@
 import { Component, Input } from "@angular/core";
 import * as L from "leaflet";
+import { SpatialArea } from "../../../types";
 // import { SpatialArea } from "../../../types";
+
+const MAP_CENTER: L.LatLng = L.latLng({ lat: 41.88, lng: 12.28 });
 
 @Component({
   selector: "app-spatial-coverage",
@@ -8,13 +11,11 @@ import * as L from "leaflet";
   styleUrls: ["./spatial-coverage.component.scss"],
 })
 export class SpatialCoverageComponent {
-  @Input() north: number;
-  @Input() east: number;
-  @Input() south: number;
-  @Input() west: number;
+  @Input() area: SpatialArea;
+  selectedArea: SpatialArea;
 
   drawnItems: L.FeatureGroup = L.featureGroup();
-  readonly offset: number = 1.2;
+  readonly offset: number = 1.8;
   map: L.Map;
 
   options = {
@@ -26,7 +27,7 @@ export class SpatialCoverageComponent {
     ],
     zoomControl: true,
     zoom: 6,
-    center: L.latLng({ lat: 41.879966, lng: 12.28 + this.offset }),
+    center: MAP_CENTER,
   };
 
   drawOptions = {
@@ -60,21 +61,7 @@ export class SpatialCoverageComponent {
       this.resetAll();
     });
 
-    // create the entire rectangle area
-    const poly = new L.Rectangle(
-      L.latLngBounds(
-        L.latLng(this.south, this.east),
-        L.latLng(this.north, this.west)
-      )
-    );
-    // zoom the map to the rectangle bounds
-    this.fitBounds(poly);
-    // add to the map
-    this.drawnItems.addLayer(poly);
-  }
-
-  private getRandomLatLng() {
-    return [48.8 + 0.1 * Math.random(), 2.25 + 0.2 * Math.random()];
+    this.drawEntireArea();
   }
 
   private clearAll() {
@@ -94,10 +81,7 @@ export class SpatialCoverageComponent {
     const southWest = area.getLatLngs()[0] as L.LatLng,
       northEast = area.getLatLngs()[2] as L.LatLng,
       bounds = L.latLngBounds(southWest, northEast);
-    this.map.fitBounds(bounds, { padding: [50, 50] });
-    // map pan slightly to right
-    const center: L.LatLng = this.map.getCenter();
-    this.map.panTo([center.lat - this.offset, center.lng + this.offset]);
+    this.map.fitBounds(bounds, { padding: [20, 20] });
   }
 
   onDrawCreated(e: any) {
@@ -105,10 +89,12 @@ export class SpatialCoverageComponent {
       layer = (e as L.DrawEvents.Created).layer;
     if (type === "rectangle") {
       const coords = (layer as L.Rectangle).getLatLngs();
-      // this.ilonControl.setValue(coords[0][0].lng, { emitEvent: false });
-      // this.ilatControl.setValue(coords[0][0].lat, { emitEvent: false });
-      // this.flonControl.setValue(coords[0][2].lng, { emitEvent: false });
-      // this.flatControl.setValue(coords[0][2].lat, { emitEvent: false });
+      this.selectedArea = {
+        north: coords[0][0].lat,
+        east: coords[0][0].lng,
+        south: coords[0][2].lat,
+        west: coords[0][2].lng,
+      };
       this.drawnItems.addLayer(layer);
     }
   }
@@ -118,11 +104,53 @@ export class SpatialCoverageComponent {
     e.layers.eachLayer(function (layer, comp: SpatialCoverageComponent = ref) {
       if (layer instanceof L.Rectangle) {
         const coords = (layer as L.Rectangle).getLatLngs();
-        // comp.ilonControl.setValue(coords[0][0].lng, { emitEvent: false });
-        // comp.ilatControl.setValue(coords[0][0].lat, { emitEvent: false });
-        // comp.flonControl.setValue(coords[0][2].lng, { emitEvent: false });
-        // comp.flatControl.setValue(coords[0][2].lat, { emitEvent: false });
+        comp.selectedArea = {
+          north: coords[0][0].lat,
+          east: coords[0][0].lng,
+          south: coords[0][2].lat,
+          west: coords[0][2].lng,
+        };
       }
     });
+  }
+
+  onDrawDeleted(e: L.DrawEvents.Deleted) {
+    // reset to the whole area
+    this.drawEntireArea();
+  }
+
+  private drawEntireArea() {
+    // create the entire rectangle area
+    const poly = new L.Rectangle(
+      L.latLngBounds(
+        L.latLng(this.area.south, this.area.east),
+        L.latLng(this.area.north, this.area.west)
+      )
+    );
+    // zoom the map to the rectangle bounds
+    this.fitBounds(poly);
+    // add to the map
+    this.drawnItems.addLayer(poly);
+    // update selected area
+    this.selectedArea = {
+      north: this.area.north,
+      east: this.area.east,
+      south: this.area.south,
+      west: this.area.west,
+    };
+  }
+
+  updateArea(val: SpatialArea) {
+    // clean up
+    this.resetAll();
+    // create the updated rectangle area
+    const poly = new L.Rectangle(
+      L.latLngBounds(
+        L.latLng(val.south, val.east),
+        L.latLng(val.north, val.west)
+      )
+    );
+    // add to the map
+    this.drawnItems.addLayer(poly);
   }
 }

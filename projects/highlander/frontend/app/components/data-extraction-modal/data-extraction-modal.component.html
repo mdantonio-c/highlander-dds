@@ -82,10 +82,7 @@
                     <app-spatial-coverage
                       class="w-100"
                       *ngIf="widget.name === 'spatial_coverage'"
-                      [north]="area.north"
-                      [east]="area.east"
-                      [south]="area.south"
-                      [west]="area.west"
+                      [area]="area"
                     >
                     </app-spatial-coverage>
                     <ng-container

@@ -1,8 +1,14 @@
-import { Component, Input, OnInit, HostListener } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  HostListener,
+  Output,
+  EventEmitter,
+} from "@angular/core";
 import { trigger, style, animate, transition } from "@angular/animations";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
-import * as L from "leaflet";
-// import { SpatialArea } from "../../../types";
+import { SpatialArea, SpatialPoint } from "../../../types";
 
 @Component({
   selector: "app-map-side-nav",
@@ -19,33 +25,96 @@ import * as L from "leaflet";
   ],
 })
 export class MapSideNavComponent implements OnInit {
-  @Input() north: number;
-  @Input() east: number;
-  @Input() south: number;
-  @Input() west: number;
+  @Input() initialArea: SpatialArea;
+
+  @Output() onAreaChange: EventEmitter<SpatialArea> =
+    new EventEmitter<SpatialArea>();
+  @Output() onLocationChange: EventEmitter<SpatialPoint> =
+    new EventEmitter<SpatialPoint>();
 
   spatialForm: FormGroup;
 
   constructor(private fb: FormBuilder) {}
 
+  private _selectedArea: SpatialArea;
+
+  @Input() set selectedArea(value: SpatialArea) {
+    this._selectedArea = value;
+    if (!this.spatialForm) return;
+    // update area coords
+    this.spatialForm.patchValue({
+      north: value.north,
+      east: value.east,
+      south: value.south,
+      west: value.west,
+    });
+  }
+
+  get selectedArea(): SpatialArea {
+    return this._selectedArea;
+  }
+
   ngOnInit() {
     this.spatialForm = this.fb.group({
-      north: [this.north],
-      east: [this.east],
-      south: [this.south],
-      west: [this.west],
+      north: [this.initialArea.north],
+      east: [this.initialArea.east],
+      south: [this.initialArea.south],
+      west: [this.initialArea.west],
       lat: [""],
       lon: [""],
       coverageType: ["area", Validators.required],
     });
+
+    this.onChanges();
   }
+
+  onChanges(): void {
+    this.spatialForm.valueChanges.subscribe((val) => {
+      if (this.spatialForm.get("coverageType").value === "area") {
+        // console.log('Emit area change');
+        let newArea: SpatialArea = {
+          north: this.spatialForm.get("north").value,
+          east: this.spatialForm.get("east").value,
+          south: this.spatialForm.get("south").value,
+          west: this.spatialForm.get("west").value,
+        };
+        this.onAreaChange.emit(newArea);
+      } else if (this.spatialForm.get("coverageType").value === "location") {
+        // console.log('Emit area location');
+        let newLocation: SpatialPoint = {
+          lat: this.spatialForm.get("lat").value,
+          lon: this.spatialForm.get("lon").value,
+        };
+        this.onLocationChange.emit(newLocation);
+      }
+    });
+  }
+
+  /*updateArea() {
+    this.clearAll();
+    if (
+      this.ilatControl.value &&
+      this.ilonControl.value &&
+      this.flatControl.value &&
+      this.flonControl.value
+    ) {
+      const poly = new L.Rectangle(
+        L.latLngBounds(
+          L.latLng(this.ilatControl.value, this.ilonControl.value),
+          L.latLng(this.flatControl.value, this.flonControl.value)
+        )
+      );
+      this.drawnItems.addLayer(poly);
+      return poly;
+    }
+  }*/
 
   resetArea() {
     this.spatialForm.patchValue({
-      north: this.north,
-      east: this.east,
-      south: this.south,
-      west: this.west,
+      north: this.initialArea.north,
+      east: this.initialArea.east,
+      south: this.initialArea.south,
+      west: this.initialArea.west,
     });
   }
 
