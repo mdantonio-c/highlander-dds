@@ -89,11 +89,12 @@ export class SpatialCoverageComponent {
       layer = (e as L.DrawEvents.Created).layer;
     if (type === "rectangle") {
       const coords = (layer as L.Rectangle).getLatLngs();
+      console.log(coords);
       this.selectedArea = {
-        north: coords[0][0].lat,
-        east: coords[0][0].lng,
-        south: coords[0][2].lat,
-        west: coords[0][2].lng,
+        south: coords[0][0].lat,
+        west: coords[0][0].lng,
+        north: coords[0][2].lat,
+        east: coords[0][2].lng,
       };
       this.drawnItems.addLayer(layer);
     }
@@ -105,10 +106,10 @@ export class SpatialCoverageComponent {
       if (layer instanceof L.Rectangle) {
         const coords = (layer as L.Rectangle).getLatLngs();
         comp.selectedArea = {
-          north: coords[0][0].lat,
-          east: coords[0][0].lng,
-          south: coords[0][2].lat,
-          west: coords[0][2].lng,
+          south: coords[0][0].lat,
+          west: coords[0][0].lng,
+          north: coords[0][2].lat,
+          east: coords[0][2].lng,
         };
       }
     });
