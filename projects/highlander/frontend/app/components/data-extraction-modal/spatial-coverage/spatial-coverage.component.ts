@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 import * as L from "leaflet";
 import { SpatialArea } from "../../../types";
 // import { SpatialArea } from "../../../types";
@@ -13,6 +13,8 @@ const MAP_CENTER: L.LatLng = L.latLng({ lat: 41.88, lng: 12.28 });
 export class SpatialCoverageComponent {
   @Input() area: SpatialArea;
   selectedArea: SpatialArea;
+  @Output() areaChanged: EventEmitter<SpatialArea> =
+    new EventEmitter<SpatialArea>();
 
   drawnItems: L.FeatureGroup = L.featureGroup();
   readonly offset: number = 1.8;
@@ -105,12 +107,14 @@ export class SpatialCoverageComponent {
     e.layers.eachLayer(function (layer, comp: SpatialCoverageComponent = ref) {
       if (layer instanceof L.Rectangle) {
         const coords = (layer as L.Rectangle).getLatLngs();
-        comp.selectedArea = {
+        const selectedArea = {
           south: coords[0][0].lat,
           west: coords[0][0].lng,
           north: coords[0][2].lat,
           east: coords[0][2].lng,
         };
+        comp.selectedArea = selectedArea;
+        comp.areaChanged.emit(selectedArea);
       }
     });
   }

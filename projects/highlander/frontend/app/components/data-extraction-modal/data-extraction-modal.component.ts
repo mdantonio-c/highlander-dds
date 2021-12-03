@@ -10,6 +10,7 @@ import {
   StorageUsage,
   Widget,
   SpatialArea,
+  LatLngRange,
 } from "../../types";
 import {
   AbstractControl,
@@ -44,6 +45,8 @@ export class DataExtractionModalComponent implements OnInit {
     west: null,
   };
   remaining: number;
+  private latitude: LatLngRange;
+  private longitude: LatLngRange;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -101,8 +104,16 @@ export class DataExtractionModalComponent implements OnInit {
       switchMap(() =>
         this.dataService.getSizeEstimate(this.dataset.id, this.buildRequest())
       ),
+      catchError((err) => {
+        this.notify.showError(
+          "An error occurred calculating the size estimate"
+        );
+        return of(null);
+      }),
       tap((size) => {
-        this.remaining = this.usage.quota - this.usage.used - size;
+        if (size) {
+          this.remaining = this.usage.quota - this.usage.used - size;
+        }
         this.spinner.hide("extSpinner");
       })
     );
@@ -174,7 +185,26 @@ export class DataExtractionModalComponent implements OnInit {
       }
       res["time"] = time;
     }
+    // FIXME add spatial coverage
+    if (this.latitude) {
+      res["latitude"] = this.latitude;
+    }
+    if (this.longitude) {
+      res["longitude"] = this.longitude;
+    }
     return res;
+  }
+
+  setSpatialCoverage(area: SpatialArea) {
+    this.latitude = {
+      start: area.south,
+      stop: area.north,
+    };
+    this.longitude = {
+      start: area.west,
+      stop: area.east,
+    };
+    this.onFilterChange();
   }
 
   private toFormGroup(data: ProductInfo) {

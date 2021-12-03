@@ -136,3 +136,8 @@ export interface SpatialPoint {
   lat: number;
   lon: number;
 }
+
+export interface LatLngRange {
+  start: number;
+  stop?: number;
+}

@@ -27,7 +27,7 @@
     [type]="remaining >= 0 ? 'success' : 'warning'"
   >
     <strong>Size Estimate</strong>:
-    <ng-container *ngIf="estimatedSize$ | async as size">
+    <ng-container *ngIf="estimatedSize$ | async as size; else notAvailable">
       {{ size | bytes: 2 }}
       <span
         class="float-right"
@@ -83,6 +83,7 @@
                       class="w-100"
                       *ngIf="widget.name === 'spatial_coverage'"
                       [area]="area"
+                      (areaChanged)="setSpatialCoverage($event)"
                     >
                     </app-spatial-coverage>
                     <ng-container
@@ -169,8 +170,11 @@
     type="submit"
     class="btn btn-primary btn-lg"
     form="ngForm"
-    [disabled]="remaining < 0"
+    [disabled]="!(estimatedSize$ | async) || remaining < 0"
   >
     Job Submit »
   </button>
 </div>
+<ng-template #notAvailable>
+  <i>n/a</i>
+</ng-template>
