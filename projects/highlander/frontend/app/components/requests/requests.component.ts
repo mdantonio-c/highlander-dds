@@ -15,7 +15,13 @@ import { environment } from "@rapydo/../environments/environment";
 })
 export class RequestsComponent extends BasePaginationComponent<Request> {
   expanded: any = {};
-  readonly declaredFields: string[] = ["variable", "time", "format"];
+  readonly declaredFields: string[] = [
+    "variable",
+    "time",
+    "format",
+    "latitude",
+    "longitude",
+  ];
   @Output() onLoad: EventEmitter<null> = new EventEmitter<null>();
 
   constructor(
