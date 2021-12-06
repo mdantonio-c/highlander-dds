@@ -9,6 +9,7 @@ import {
 import { trigger, style, animate, transition } from "@angular/animations";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { SpatialArea, SpatialPoint } from "../../../types";
+import { debounceTime } from "rxjs/operators";
 
 @Component({
   selector: "app-map-side-nav",
@@ -69,7 +70,7 @@ export class MapSideNavComponent implements OnInit {
   }
 
   onChanges(): void {
-    this.spatialForm.valueChanges.subscribe((val) => {
+    this.spatialForm.valueChanges.pipe(debounceTime(500)).subscribe((val) => {
       if (this.spatialForm.get("coverageType").value === "area") {
         // console.log('Emit area change');
         let newArea: SpatialArea = {
@@ -80,7 +81,7 @@ export class MapSideNavComponent implements OnInit {
         };
         this.onAreaChange.emit(newArea);
       } else if (this.spatialForm.get("coverageType").value === "location") {
-        // console.log('Emit area location');
+        // console.log('Emit location change');
         let newLocation: SpatialPoint = {
           lat: this.spatialForm.get("lat").value,
           lon: this.spatialForm.get("lon").value,
@@ -89,25 +90,6 @@ export class MapSideNavComponent implements OnInit {
       }
     });
   }
-
-  /*updateArea() {
-    this.clearAll();
-    if (
-      this.ilatControl.value &&
-      this.ilonControl.value &&
-      this.flatControl.value &&
-      this.flonControl.value
-    ) {
-      const poly = new L.Rectangle(
-        L.latLngBounds(
-          L.latLng(this.ilatControl.value, this.ilonControl.value),
-          L.latLng(this.flatControl.value, this.flonControl.value)
-        )
-      );
-      this.drawnItems.addLayer(poly);
-      return poly;
-    }
-  }*/
 
   resetArea() {
     this.spatialForm.patchValue({

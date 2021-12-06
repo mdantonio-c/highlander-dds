@@ -1,4 +1,11 @@
-import { Component, Input, OnInit, Output, EventEmitter } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  Output,
+  EventEmitter,
+  OnDestroy,
+} from "@angular/core";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import { DataService } from "../../services/data.service";
 import { NotificationService } from "@rapydo/services/notification";
@@ -20,14 +27,24 @@ import {
   FormControl,
   Validators,
 } from "@angular/forms";
-import { Observable, forkJoin, throwError, of } from "rxjs";
-import { startWith, switchMap, tap, catchError } from "rxjs/operators";
+import { Observable, forkJoin, throwError, of, empty, Subject } from "rxjs";
+import {
+  startWith,
+  mergeMap,
+  switchMap,
+  tap,
+  takeUntil,
+  catchError,
+  debounceTime,
+  throttleTime,
+  distinctUntilChanged,
+} from "rxjs/operators";
 
 @Component({
   selector: "data-extraction-modal",
   templateUrl: "./data-extraction-modal.component.html",
 })
-export class DataExtractionModalComponent implements OnInit {
+export class DataExtractionModalComponent implements OnInit, OnDestroy {
   @Input() dataset: DatasetInfo;
   @Input() productId: string;
   @Output() passEntry: EventEmitter<any> = new EventEmitter();
@@ -37,6 +54,7 @@ export class DataExtractionModalComponent implements OnInit {
   productInfo: ProductInfo;
   active = 1;
   estimatedSize$: Observable<number>;
+  estimatedSize: number;
   usage: StorageUsage;
   area: SpatialArea = {
     north: null,
@@ -47,6 +65,8 @@ export class DataExtractionModalComponent implements OnInit {
   remaining: number;
   private latitude: LatLngRange;
   private longitude: LatLngRange;
+  private loading: boolean;
+  private destroy$ = new Subject<void>();
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -57,9 +77,9 @@ export class DataExtractionModalComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log(`Product ID: ${this.productId}`);
     // console.log(this.dataset);
     this.spinner.show("extSpinner");
+    this.loading = true;
     forkJoin({
       storageUsage: this.dataService.getStorageUsage(),
       datasetProduct: this.dataService.getDatasetProduct(
@@ -94,29 +114,42 @@ export class DataExtractionModalComponent implements OnInit {
       )
       .add(() => {
         this.spinner.hide("extSpinner");
+        this.loading = false;
       });
   }
 
   private onFilterChange() {
-    this.estimatedSize$ = this.filterForm.valueChanges.pipe(
-      startWith(this.filterForm.value),
-      tap(() => this.spinner.show("extSpinner")),
-      switchMap(() =>
-        this.dataService.getSizeEstimate(this.dataset.id, this.buildRequest())
-      ),
-      catchError((err) => {
-        this.notify.showError(
-          "An error occurred calculating the size estimate"
-        );
-        return of(null);
-      }),
-      tap((size) => {
-        if (size) {
-          this.remaining = this.usage.quota - this.usage.used - size;
-        }
-        this.spinner.hide("extSpinner");
-      })
-    );
+    console.log("subscribe to form value changes");
+    this.filterForm.valueChanges
+      .pipe(
+        // distinctUntilChanged(),
+        takeUntil(this.destroy$),
+        startWith(this.filterForm.value),
+        tap(() => {
+          this.spinner.show("extSpinner");
+          this.loading = true;
+        }),
+        switchMap(() => {
+          return this.dataService.getSizeEstimate(
+            this.dataset.id,
+            this.buildRequest()
+          );
+        }),
+        catchError((err) => {
+          this.notify.showError(
+            "An error occurred calculating the size estimate"
+          );
+          return of(null);
+        }),
+        tap((size) => {
+          if (size) {
+            this.remaining = this.usage.quota - this.usage.used - size;
+          }
+          this.spinner.hide("extSpinner");
+          this.loading = false;
+        })
+      )
+      .subscribe((val) => (this.estimatedSize = val));
   }
 
   getWidget(widgetName: string): Widget {
@@ -185,7 +218,7 @@ export class DataExtractionModalComponent implements OnInit {
       }
       res["time"] = time;
     }
-    // FIXME add spatial coverage
+    // add spatial coverage
     if (this.latitude) {
       res["latitude"] = this.latitude;
     }
@@ -204,7 +237,10 @@ export class DataExtractionModalComponent implements OnInit {
       start: area.west,
       stop: area.east,
     };
-    this.onFilterChange();
+    this.filterForm.updateValueAndValidity({
+      onlySelf: false,
+      emitEvent: true,
+    });
   }
 
   private toFormGroup(data: ProductInfo) {
@@ -224,5 +260,12 @@ export class DataExtractionModalComponent implements OnInit {
     return formGroup;
   }
 
-  close() {}
+  isLoading(): boolean {
+    return this.loading;
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }
