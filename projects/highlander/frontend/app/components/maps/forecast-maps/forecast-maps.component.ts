@@ -15,6 +15,7 @@ import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
 import { SSRService } from "@rapydo/services/ssr";
 import { LegendConfig, LEGEND_DATA } from "../../../services/data";
+import { HttpClient } from '@angular/common/http';
 
 import * as moment from "moment";
 import * as L from "leaflet";
@@ -98,11 +99,42 @@ export class ForecastMapsComponent implements OnInit {
     protected spinner: NgxSpinnerService,
     public route: ActivatedRoute,
     private router: Router,
-    private ssr: SSRService
+    private ssr: SSRService,
+    private http: HttpClient
   ) {
     this.dataset = this.router.getCurrentNavigation().extras
       .state as DatasetInfo;
   }
+
+  style(feature) {
+return {
+  weight: 2,
+  opacity: 0.2,
+  color: 'black',
+  // dashArray: '3',
+  fillOpacity: 0.2,
+  // fillColor: getColor(feature.properties.density)
+};
+}
+// //
+highlightFeature(e) {
+var layer = e.target;
+
+layer.setStyle({
+  weight: 5,
+  color: '#666',
+  dashArray: '',
+  fillOpacity: 0.7
+});
+// info.update(layer.feature.properties);
+}
+onEachFeature(feature, layer) {
+layer.on({
+  mouseover: this.highlightFeature
+  // mouseout: resetHighlight,
+  // click: zoomToFeature
+});
+}
 
   ngOnInit() {
     if (this.ssr.isBrowser) {
@@ -160,7 +192,15 @@ export class ForecastMapsComponent implements OnInit {
     });
     L.control.layers(overlays, null, { collapsed: false }).addTo(this.map);
     overlays[this.models[0]].addTo(this.map);
-  }
+
+    this.http.get('/app/custom/assets/images/regioni_git.geojson').subscribe((json: any) => {
+        let jsonLayer = L.geoJSON(json,{
+          style: this.style,
+          onEachFeature: this.onEachFeature
+        })
+        .addTo(this.map);
+      });
+    }
 
   private createLegendControl(id: string): L.Control {
     let config: LegendConfig = LEGEND_DATA.find((x) => x.id === id);
