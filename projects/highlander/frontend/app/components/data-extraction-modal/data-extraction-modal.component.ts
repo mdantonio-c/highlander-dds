@@ -1,4 +1,11 @@
-import { Component, Input, OnInit, Output, EventEmitter } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnInit,
+  Output,
+  EventEmitter,
+  OnDestroy,
+} from "@angular/core";
 import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
 import { DataService } from "../../services/data.service";
 import { NotificationService } from "@rapydo/services/notification";
@@ -7,7 +14,10 @@ import {
   DatasetInfo,
   DatasetVariables,
   ProductInfo,
+  StorageUsage,
   Widget,
+  SpatialArea,
+  LatLngRange,
 } from "../../types";
 import {
   AbstractControl,
@@ -17,12 +27,24 @@ import {
   FormControl,
   Validators,
 } from "@angular/forms";
+import { Observable, forkJoin, throwError, of, empty, Subject } from "rxjs";
+import {
+  startWith,
+  mergeMap,
+  switchMap,
+  tap,
+  takeUntil,
+  catchError,
+  debounceTime,
+  throttleTime,
+  distinctUntilChanged,
+} from "rxjs/operators";
 
 @Component({
   selector: "data-extraction-modal",
   templateUrl: "./data-extraction-modal.component.html",
 })
-export class DataExtractionModalComponent implements OnInit {
+export class DataExtractionModalComponent implements OnInit, OnDestroy {
   @Input() dataset: DatasetInfo;
   @Input() productId: string;
   @Output() passEntry: EventEmitter<any> = new EventEmitter();
@@ -31,6 +53,20 @@ export class DataExtractionModalComponent implements OnInit {
   filterForm: FormGroup;
   productInfo: ProductInfo;
   active = 1;
+  estimatedSize$: Observable<number>;
+  estimatedSize: number;
+  usage: StorageUsage;
+  area: SpatialArea = {
+    north: null,
+    east: null,
+    south: null,
+    west: null,
+  };
+  remaining: number;
+  private latitude: LatLngRange;
+  private longitude: LatLngRange;
+  private loading: boolean;
+  private destroy$ = new Subject<void>();
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -41,16 +77,36 @@ export class DataExtractionModalComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    console.log(`Product ID: ${this.productId}`);
     // console.log(this.dataset);
     this.spinner.show("extSpinner");
-    this.dataService
-      .getDatasetProduct(this.dataset.id, this.productId)
+    this.loading = true;
+    forkJoin({
+      storageUsage: this.dataService.getStorageUsage(),
+      datasetProduct: this.dataService.getDatasetProduct(
+        this.dataset.id,
+        this.productId
+      ),
+    })
+      .pipe(catchError((error) => of(error)))
       .subscribe(
-        (data) => {
-          this.productInfo = data;
+        ({ storageUsage, datasetProduct }) => {
+          this.usage = storageUsage;
+          this.remaining = this.usage.quota - this.usage.used;
+          this.productInfo = datasetProduct;
           this.productName = this.productInfo.label;
-          this.filterForm = this.toFormGroup(data);
+          this.filterForm = this.toFormGroup(datasetProduct);
+          // check spatial coverage
+          for (let widget of this.productInfo.widgets) {
+            if (widget.name === "area") {
+              for (let field of widget.details.fields) {
+                if (field.name in this.area) {
+                  this.area[field.name] = field.range;
+                }
+              }
+              break;
+            }
+          }
+          this.onFilterChange();
         },
         (error) => {
           this.notify.showError(error);
@@ -58,7 +114,42 @@ export class DataExtractionModalComponent implements OnInit {
       )
       .add(() => {
         this.spinner.hide("extSpinner");
+        this.loading = false;
       });
+  }
+
+  private onFilterChange() {
+    console.log("subscribe to form value changes");
+    this.filterForm.valueChanges
+      .pipe(
+        // distinctUntilChanged(),
+        takeUntil(this.destroy$),
+        startWith(this.filterForm.value),
+        tap(() => {
+          this.spinner.show("extSpinner");
+          this.loading = true;
+        }),
+        switchMap(() => {
+          return this.dataService.getSizeEstimate(
+            this.dataset.id,
+            this.buildRequest()
+          );
+        }),
+        catchError((err) => {
+          this.notify.showError(
+            "An error occurred calculating the size estimate"
+          );
+          return of(null);
+        }),
+        tap((size) => {
+          if (size) {
+            this.remaining = this.usage.quota - this.usage.used - size;
+          }
+          this.spinner.hide("extSpinner");
+          this.loading = false;
+        })
+      )
+      .subscribe((val) => (this.estimatedSize = val));
   }
 
   getWidget(widgetName: string): Widget {
@@ -88,6 +179,11 @@ export class DataExtractionModalComponent implements OnInit {
   }
 
   submit() {
+    this.passEntry.emit(this.buildRequest());
+    this.activeModal.close();
+  }
+
+  private buildRequest() {
     let res = {
       product: this.productId,
     };
@@ -122,8 +218,29 @@ export class DataExtractionModalComponent implements OnInit {
       }
       res["time"] = time;
     }
-    this.passEntry.emit(res);
-    this.activeModal.close();
+    // add spatial coverage
+    if (this.latitude) {
+      res["latitude"] = this.latitude;
+    }
+    if (this.longitude) {
+      res["longitude"] = this.longitude;
+    }
+    return res;
+  }
+
+  setSpatialCoverage(area: SpatialArea) {
+    this.latitude = {
+      start: area.south,
+      stop: area.north,
+    };
+    this.longitude = {
+      start: area.west,
+      stop: area.east,
+    };
+    this.filterForm.updateValueAndValidity({
+      onlySelf: false,
+      emitEvent: true,
+    });
   }
 
   private toFormGroup(data: ProductInfo) {
@@ -141,5 +258,14 @@ export class DataExtractionModalComponent implements OnInit {
       }
     });
     return formGroup;
+  }
+
+  isLoading(): boolean {
+    return this.loading;
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

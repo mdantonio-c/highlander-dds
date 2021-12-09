@@ -4,6 +4,8 @@
 
 /data
 /projects/highlander/builds/**/packages
+/node_modules
+tsconfig.json
 
 ########################
 ##  Host configuration  ##

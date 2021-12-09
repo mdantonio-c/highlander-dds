@@ -1,19 +1,22 @@
+import json
 import shutil
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Mapping, Optional, Union, cast
 
-from flask import send_from_directory
 from highlander.connectors import broker
 from highlander.constants import DOWNLOAD_DIR
 from highlander.models.schemas import DataExtraction
 from restapi import decorators
 from restapi.connectors import celery, sqlalchemy
-from restapi.exceptions import NotFound, ServerError, ServiceUnavailable, Unauthorized
+from restapi.exceptions import NotFound, ServerError, Unauthorized
 from restapi.rest.definition import EndpointResource, Response
+from restapi.services.authentication import User
 from restapi.services.download import Downloader
 from restapi.utilities.logs import log
 from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import NoResultFound
+
+RequestArgs = Union[str, List[str], Dict[str, List[str]]]
 
 
 class Requests(EndpointResource):
@@ -37,10 +40,9 @@ class Requests(EndpointResource):
         sort_order: str,
         sort_by: str,
         input_filter: str,
+        user: User,
     ) -> Response:
-        user = self.get_user()
-        if not user:  # pragma: no cover
-            raise ServerError("User misconfiguration")
+
         db = sqlalchemy.get_instance()
         if get_total:
             counter = db.Request.query.filter_by(user_id=user.id).count()
@@ -89,34 +91,10 @@ class Requests(EndpointResource):
             400: "Invalid request",
         },
     )
-    def post(
-        self,
-        dataset_name: str,
-        product: str,
-        format: str,
-        variable: List[str] = [],
-        time: Dict[str, List[str]] = None,
-        extra: Dict[str, Any] = None,
-    ) -> Response:
-        user = self.get_user()
-        if not user:  # pragma: no cover
-            raise ServerError("User misconfiguration")
+    def post(self, dataset_name: str, user: User, **kwargs: RequestArgs) -> Response:
         c = celery.get_instance()
         log.debug("Request for extraction for <{}>", dataset_name)
-        log.debug("Variable: {}", variable)
-        log.debug("Time: {}", time)
-        log.debug("Format: {}", format)
-        log.debug("Extra: {}", extra)
-        args: Dict[str, Union[str, List[str], Dict[str, List[str]]]] = {
-            "product_type": product,
-            "format": format,
-        }
-        if variable:
-            args["variable"] = variable
-        if time:
-            args["time"] = time
-        for k, v in extra.items():
-            args[k] = v
+        args = build_request_args(**kwargs)
 
         task = None
         db = sqlalchemy.get_instance()
@@ -161,7 +139,7 @@ class Request(EndpointResource):
         },
     )
     @decorators.marshal_with(DataExtraction, code=200)
-    def get(self, request_id: str) -> Response:
+    def get(self, request_id: str, user: User) -> Response:
         log.debug("Get request <{}>", request_id)
         data_query = None
         try:
@@ -180,12 +158,8 @@ class Request(EndpointResource):
             404: "Request does not exist.",
         },
     )
-    def delete(self, request_id: str) -> Response:
+    def delete(self, request_id: str, user: User) -> Response:
         log.debug("delete request {}", request_id)
-        user = self.get_user()
-        if not user:
-            raise ServerError("User misconfiguration")
-
         db = sqlalchemy.get_instance()
         # check if the request exists
         req = db.Request.query.get(int(request_id))
@@ -225,10 +199,7 @@ class DownloadData(EndpointResource):
             404: "File not found",
         },
     )
-    def get(self, timestamp: str) -> Response:
-        user = self.get_user()
-        if not user:
-            raise ServerError("User misconfiguration")
+    def get(self, timestamp: str, user: User) -> Response:
 
         db = sqlalchemy.get_instance()
         try:
@@ -271,28 +242,55 @@ class EstimateSize(EndpointResource):
         summary="Estimate request size",
         responses={200: "Estimated size", 404: "Dataset does not exist"},
     )
-    def post(
-        self,
-        dataset_name: str,
-        product: str,
-        format: str,
-        variables: List[str] = [],
-        time: Dict[str, List[str]] = None,
-    ) -> Response:
+    def post(self, dataset_name: str, user: User, **kwargs: RequestArgs) -> Response:
         log.debug(f"Estimate size for dataset <{dataset_name}>")
-        user = self.get_user()
-        if not user:  # pragma: no cover
-            raise ServerError("User misconfiguration")
+        args = build_request_args(**kwargs)
+        log.debug(f"request: {args}")
+
         dds = broker.get_instance()
         if dataset_name not in dds.get_datasets([dataset_name]):
             raise NotFound(f"Dataset <{dataset_name}> does not exist")
-        request = {"product_type": product, "variable": variables, "time": time}
-        log.debug(f"request: {request}")
         try:
             estimated_size = dds.broker.estimate_size(
-                dataset_name=dataset_name, request=request
+                dataset_name=dataset_name, request=args
             )
         except Exception as e:
-            log.error(e)
-            raise ServiceUnavailable("Size estimation NOT available")
+            raise ServerError(f"Unable to get size estimation: {e}")
         return self.response(estimated_size)
+
+
+def build_request_args(**kwargs: RequestArgs) -> Mapping[str, Any]:
+    payload = kwargs.copy()
+    log.debug(json.dumps(payload, indent=2, sort_keys=True))
+
+    product: str = cast(str, kwargs.pop("product"))
+    variable: List[str] = cast(List[str], kwargs.pop("variable", []))
+    time: Optional[Dict[str, List[str]]] = cast(
+        Optional[Dict[str, List[str]]], kwargs.pop("time", None)
+    )
+    format_: str = cast(str, kwargs.pop("format"))
+    latitude: Optional[Dict[str, float]] = cast(
+        Optional[Dict[str, float]], kwargs.pop("latitude", None)
+    )
+    longitude: Optional[Dict[str, float]] = cast(
+        Optional[Dict[str, float]], kwargs.pop("longitude", None)
+    )
+    extra: Optional[Dict[str, Any]] = cast(
+        Optional[Dict[str, Any]], kwargs.pop("extra", None)
+    )
+    args: Dict[str, Any] = {
+        "product_type": product,
+        "format": format_,
+    }
+    if variable:
+        args["variable"] = variable
+    if time:
+        args["time"] = time
+    if latitude:
+        args["latitude"] = latitude
+    if longitude:
+        args["longitude"] = longitude
+    if extra:
+        for k, v in extra.items():
+            args[k] = v
+    return args

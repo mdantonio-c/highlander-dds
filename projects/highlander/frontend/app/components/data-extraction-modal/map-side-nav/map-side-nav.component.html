@@ -1,0 +1,102 @@
+<nav class="map-sidenav">
+  <div class="map-sidenav-menu">
+    <form [formGroup]="spatialForm">
+      <section>
+        <h6 class="title">
+          <i class="fas fa-map"></i>Area
+          <input
+            type="radio"
+            name="coverageType"
+            value="area"
+            formControlName="coverageType"
+          />
+        </h6>
+        <div
+          class="content"
+          *ngIf="spatialForm.get('coverageType').value === 'area'"
+          @openClose
+        >
+          <div class="form-group">
+            <label for="north">North</label>
+            <input
+              type="number"
+              class="form-control"
+              id="north"
+              formControlName="north"
+            />
+          </div>
+          <div class="form-group">
+            <label for="east">East</label>
+            <input
+              type="number"
+              class="form-control"
+              id="east"
+              formControlName="east"
+            />
+          </div>
+          <div class="form-group">
+            <label for="south">South</label>
+            <input
+              type="number"
+              class="form-control"
+              id="south"
+              formControlName="south"
+            />
+          </div>
+          <div class="form-group">
+            <label for="west">West</label>
+            <input
+              type="number"
+              class="form-control"
+              id="west"
+              formControlName="west"
+            />
+          </div>
+          <div class="d-flex mt-2">
+            <button
+              class="btn btn-sm btn-secondary float-right"
+              (click)="resetArea()"
+            >
+              Whole Area
+            </button>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h6 class="title">
+          <i class="fas fa-map-marked-alt"></i>Location
+          <input
+            type="radio"
+            name="coverageType"
+            value="location"
+            formControlName="coverageType"
+          />
+        </h6>
+        <div
+          class="content"
+          *ngIf="spatialForm.get('coverageType').value === 'location'"
+          @openClose
+        >
+          <div class="form-group">
+            <label for="lat">Latitude</label>
+            <input
+              type="number"
+              class="form-control"
+              id="lat"
+              formControlName="lat"
+            />
+          </div>
+          <div class="form-group">
+            <label for="lon">Longitude</label>
+            <input
+              type="number"
+              class="form-control"
+              id="lon"
+              formControlName="lon"
+            />
+          </div>
+        </div>
+      </section>
+    </form>
+  </div>
+</nav>

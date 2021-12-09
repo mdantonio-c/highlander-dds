@@ -1,6 +1,6 @@
 import datetime
 import pathlib
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from celery import states
 from celery.app.task import Task
@@ -15,12 +15,22 @@ from highlander.models.sqlalchemy import Request
 from restapi.connectors import sqlalchemy
 from restapi.connectors.celery import CeleryExt
 from restapi.utilities.logs import log
+from sqlalchemy.sql import func
 
 
 def handle_exception(request: Optional[Request], error_msg: str) -> None:
     if request:
         request.status = states.FAILURE
         request.error_message = error_msg
+
+
+def human_size(
+    bytes: int, units: List[str] = [" bytes", "KB", "MB", "GB", "TB", "PB", "EB"]
+) -> str:
+    """Returns a human readable string representation of bytes
+    :rtype: string
+    """
+    return str(bytes) + units[0] if bytes < 1024 else human_size(bytes >> 10, units[1:])
 
 
 @CeleryExt.task()
@@ -44,6 +54,30 @@ def extract_data(
             )
 
         dds = broker.get_instance()
+
+        # check the size estimate to avoid exceeding the user quota
+        data_size_estimate = dds.broker.estimate_size(
+            dataset_name=dataset_name, request=req_body.copy()
+        )
+        user_quota = db.session.query(db.User.disk_quota).filter_by(id=user_id).scalar()  # type: ignore
+        log.debug("USER QUOTA for user<{}>: {}", user_id, user_quota)
+        used_quota = (
+            db.session.query(func.sum(db.OutputFile.size).label("total_used"))
+            .join(db.Request)  # type: ignore
+            .filter(db.Request.user_id == user_id, db.OutputFile.size is not None)
+            .all()[0][0]
+        )
+        if used_quota + data_size_estimate > user_quota:
+            free_space = max(user_quota - used_quota, 0)
+            # save error message in db
+            message = (
+                "Disk quota exceeded: required size {}; remaining space {}".format(
+                    human_size(data_size_estimate), human_size(free_space)
+                )
+            )
+            raise DiskQuotaException(message)
+
+        # run data extraction
         result_path = dds.broker.retrieve(
             dataset_name=dataset_name, request=req_body.copy()
         )

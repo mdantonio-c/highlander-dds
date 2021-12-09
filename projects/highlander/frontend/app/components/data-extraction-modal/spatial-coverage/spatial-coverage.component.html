@@ -1,0 +1,25 @@
+<div class="container px-0">
+  <div class="row">
+    <div class="col-sm-12">
+      <app-map-side-nav
+        *ngIf="area"
+        [initialArea]="area"
+        [selectedArea]="selectedArea"
+        (onAreaChange)="updateArea($event)"
+      ></app-map-side-nav>
+      <div
+        style="height: 400px; margin-left: 220px"
+        leaflet
+        leafletDraw
+        [leafletOptions]="options"
+        [leafletDrawOptions]="drawOptions"
+        (leafletMapReady)="onMapReady($event)"
+        (leafletDrawCreated)="onDrawCreated($event)"
+        (leafletDrawEdited)="onDrawEdited($event)"
+        (leafletDrawDeleted)="onDrawDeleted($event)"
+      >
+        <div [leafletLayer]="drawnItems"></div>
+      </div>
+    </div>
+  </div>
+</div>

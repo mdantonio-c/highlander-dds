@@ -42,9 +42,9 @@ jobs:
           rapydo add task test_task
 
           rapydo -e AUTH_LOGIN_BAN_TIME=10 start
-          rapydo shell --no-tty backend 'restapi wait'
+          rapydo shell backend 'restapi wait'
 
-          rapydo shell --no-tty backend 'restapi tests --wait --destroy'
+          rapydo shell backend 'restapi tests --wait --destroy'
 
           LOGURU_LEVEL=WARNING rapydo list services
           # This should fail if at least one container is in Exit status
@@ -64,7 +64,7 @@ jobs:
           rm projects/highlander/confs/geoserver.service
           touch projects/highlander/confs/geoserver.service
 
-          rapydo --prod -e ACTIVATE_GEOSERVER=0 init --force
+          rapydo --testing --prod -e ACTIVATE_GEOSERVER=0 init --force
           rapydo pull --quiet
           rapydo ssl --volatile
           rapydo -e AUTH_LOGIN_BAN_TIME=10 start

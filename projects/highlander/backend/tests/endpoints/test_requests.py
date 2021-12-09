@@ -1,3 +1,5 @@
+from typing import Any
+
 from restapi.rest.definition import Response
 from restapi.tests import API_URI, BaseTests, FlaskClient
 

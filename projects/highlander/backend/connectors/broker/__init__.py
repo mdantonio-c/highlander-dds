@@ -266,7 +266,7 @@ class BrokerExt(Connector):
                 wrequired=True,
                 wparameter="time",
                 wtype="DateTimeRange",
-                wdetails={"fields": t_range},
+                wdetails={"_fields": t_range},
             )
             data["widgets"].append(w.to_dict())
 
@@ -303,7 +303,7 @@ class BrokerExt(Connector):
                 wrequired=True,
                 wparameter="area",
                 wtype="geoarea",
-                wdetails={"fields": area_fields},
+                wdetails={"_fields": area_fields},
             )
             data["widgets"].append(w.to_dict())
 
@@ -323,7 +323,7 @@ class BrokerExt(Connector):
                 wrequired=True,
                 wparameter="location",
                 wtype="geolocation",
-                wdetails={"fields": loc_fields},
+                wdetails={"_fields": loc_fields},
             )
             data["widgets"].append(w.to_dict())
 
@@ -376,7 +376,7 @@ class BrokerExt(Connector):
                     wrequired=False,
                     wparameter=coord,
                     wtype="NumberRange",
-                    wdetails={"fields": range_},
+                    wdetails={"_fields": range_},
                 )
                 data["widgets"].append(w.to_dict())
         #            data['widgets_order'].append(f'{coord}_range')

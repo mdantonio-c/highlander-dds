@@ -1,4 +1,4 @@
-from typing import Any, Iterable, Mapping
+from typing import Any, Dict, Iterable, Mapping
 
 import numpy as np
 from marshmallow import pre_load
@@ -172,18 +172,25 @@ class DatasetSchema(Schema):
     )
 
 
+class CoordRange(Schema):
+    start = fields.Float(required=True)
+    stop = fields.Float()
+
+
 class DataExtraction(Schema):
     product = fields.Str(required=True)
     variable = fields.List(fields.Str())
+    latitude = fields.Nested(CoordRange)
+    longitude = fields.Nested(CoordRange)
     time = fields.Dict(
         keys=fields.Str(validate=validate.OneOf(["year", "month", "day", "hour"])),
         values=fields.List(fields.Str(), min_items=1),
     )
     format = fields.Str(required=True)
-    extra = fields.Dict()
+    extra = fields.Dict(allow_none=True)
 
     @pre_load
-    def unwrap_envelope(self, data, **kwargs):
+    def unwrap_envelope(self, data: Dict[str, Any], **kwargs: Any) -> Dict[str, Any]:
         extra = {}
         rest = {}
         for k, v in data.items():
@@ -191,4 +198,4 @@ class DataExtraction(Schema):
                 extra[k] = v
             else:
                 rest[k] = v
-        return {"extra": extra, **rest}
+        return {"extra": extra or None, **rest}

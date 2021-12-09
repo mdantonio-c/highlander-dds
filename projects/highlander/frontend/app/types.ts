@@ -124,3 +124,20 @@ export interface StorageUsage {
   quota: number;
   used: number;
 }
+
+export interface SpatialArea {
+  north: number;
+  east: number;
+  south: number;
+  west: number;
+}
+
+export interface SpatialPoint {
+  lat: number;
+  lon: number;
+}
+
+export interface LatLngRange {
+  start: number;
+  stop?: number;
+}
