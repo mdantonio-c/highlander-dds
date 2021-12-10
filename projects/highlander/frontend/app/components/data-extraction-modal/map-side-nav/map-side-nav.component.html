@@ -26,6 +26,7 @@
               class="form-control"
               id="north"
               step=".01"
+              [min]="spatialForm.get('south').value"
               formControlName="north"
               [readonly]="!editable"
             />
@@ -40,6 +41,7 @@
               class="form-control"
               id="east"
               step=".01"
+              [min]="spatialForm.get('west').value"
               formControlName="east"
               [readonly]="!editable"
             />
@@ -54,6 +56,7 @@
               class="form-control"
               id="south"
               step=".01"
+              [max]="spatialForm.get('north').value"
               formControlName="south"
               [readonly]="!editable"
             />
@@ -68,6 +71,7 @@
               class="form-control"
               id="west"
               step=".01"
+              [max]="spatialForm.get('east').value"
               formControlName="west"
               [readonly]="!editable"
             />

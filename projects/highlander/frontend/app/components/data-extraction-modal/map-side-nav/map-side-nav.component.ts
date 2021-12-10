@@ -96,6 +96,15 @@ export class MapSideNavComponent implements OnInit {
           south: this.spatialForm.get("south").value,
           west: this.spatialForm.get("west").value,
         };
+        if (
+          !newArea.north ||
+          !newArea.south ||
+          !newArea.east ||
+          !newArea.west
+        ) {
+          // DO NOT emit invalid area
+          return;
+        }
         // console.log('Emit area change');
         this.onAreaChange.emit({
           area: newArea,
