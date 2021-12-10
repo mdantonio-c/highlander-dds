@@ -77,7 +77,6 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // console.log(this.dataset);
     this.spinner.show("extSpinner");
     this.loading = true;
     forkJoin({
@@ -110,19 +109,15 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
         },
         (error) => {
           this.notify.showError(error);
+          this.spinner.hide("extSpinner");
+          this.loading = false;
         }
-      )
-      .add(() => {
-        this.spinner.hide("extSpinner");
-        this.loading = false;
-      });
+      );
   }
 
   private onFilterChange() {
-    console.log("subscribe to form value changes");
     this.filterForm.valueChanges
       .pipe(
-        // distinctUntilChanged(),
         takeUntil(this.destroy$),
         startWith(this.filterForm.value),
         tap(() => {

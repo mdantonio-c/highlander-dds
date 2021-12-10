@@ -10,6 +10,7 @@ import { trigger, style, animate, transition } from "@angular/animations";
 import { FormGroup, FormBuilder, Validators } from "@angular/forms";
 import { SpatialArea, SpatialPoint } from "../../../types";
 import { debounceTime } from "rxjs/operators";
+import * as _ from "lodash";
 
 @Component({
   selector: "app-map-side-nav",
@@ -26,12 +27,23 @@ import { debounceTime } from "rxjs/operators";
   ],
 })
 export class MapSideNavComponent implements OnInit {
-  @Input() initialArea: SpatialArea;
+  @Input() readonly initialArea: SpatialArea;
 
-  @Output() onAreaChange: EventEmitter<SpatialArea> =
-    new EventEmitter<SpatialArea>();
+  @Output() onAreaChange: EventEmitter<{
+    area: SpatialArea;
+    propagate: boolean;
+  }> = new EventEmitter<{ area: SpatialArea; propagate: boolean }>();
   @Output() onLocationChange: EventEmitter<SpatialPoint> =
     new EventEmitter<SpatialPoint>();
+  private _editable: boolean;
+
+  @Input() set editable(value: boolean) {
+    this._editable = value;
+  }
+
+  get editable(): boolean {
+    return this._editable;
+  }
 
   spatialForm: FormGroup;
 
@@ -43,12 +55,18 @@ export class MapSideNavComponent implements OnInit {
     this._selectedArea = value;
     if (!this.spatialForm) return;
     // update area coords
-    this.spatialForm.patchValue({
-      north: value.north,
-      east: value.east,
-      south: value.south,
-      west: value.west,
-    });
+    this.spatialForm.patchValue(
+      {
+        north: value.north,
+        east: value.east,
+        south: value.south,
+        west: value.west,
+      },
+      {
+        onlySelf: true,
+        emitEvent: false,
+      }
+    );
   }
 
   get selectedArea(): SpatialArea {
@@ -70,34 +88,48 @@ export class MapSideNavComponent implements OnInit {
   }
 
   onChanges(): void {
-    this.spatialForm.valueChanges.pipe(debounceTime(500)).subscribe((val) => {
+    this.spatialForm.valueChanges.pipe(debounceTime(100)).subscribe((val) => {
       if (this.spatialForm.get("coverageType").value === "area") {
-        // console.log('Emit area change');
         let newArea: SpatialArea = {
           north: this.spatialForm.get("north").value,
           east: this.spatialForm.get("east").value,
           south: this.spatialForm.get("south").value,
           west: this.spatialForm.get("west").value,
         };
-        this.onAreaChange.emit(newArea);
+        // console.log('Emit area change');
+        this.onAreaChange.emit({
+          area: newArea,
+          propagate: false,
+        });
       } else if (this.spatialForm.get("coverageType").value === "location") {
-        // console.log('Emit location change');
         let newLocation: SpatialPoint = {
           lat: this.spatialForm.get("lat").value,
           lon: this.spatialForm.get("lon").value,
         };
+        // console.log('Emit location change');
         this.onLocationChange.emit(newLocation);
       }
     });
   }
 
   resetArea() {
-    this.spatialForm.patchValue({
-      north: this.initialArea.north,
-      east: this.initialArea.east,
-      south: this.initialArea.south,
-      west: this.initialArea.west,
+    this.spatialForm.patchValue(
+      {
+        north: this.initialArea.north,
+        east: this.initialArea.east,
+        south: this.initialArea.south,
+        west: this.initialArea.west,
+      },
+      { emitEvent: false, onlySelf: true }
+    );
+    this.onAreaChange.emit({
+      area: this.initialArea,
+      propagate: true,
     });
+  }
+
+  isWholeAreaSelected(): boolean {
+    return _.isEqual(this.initialArea, this.selectedArea);
   }
 
   @HostListener("dblclick", ["$event"])

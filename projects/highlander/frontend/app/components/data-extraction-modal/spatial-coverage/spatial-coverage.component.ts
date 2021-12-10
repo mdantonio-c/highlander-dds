@@ -14,9 +14,17 @@ export class SpatialCoverageComponent {
   selectedArea: SpatialArea;
   @Output() areaChanged: EventEmitter<SpatialArea> =
     new EventEmitter<SpatialArea>();
+  private _editable: boolean = false;
+
+  @Input() set editable(value: boolean) {
+    this._editable = value;
+  }
+
+  get editable(): boolean {
+    return this._editable;
+  }
 
   drawnItems: L.FeatureGroup = L.featureGroup();
-  readonly offset: number = 1.8;
   map: L.Map;
 
   options = {
@@ -31,7 +39,8 @@ export class SpatialCoverageComponent {
     center: MAP_CENTER,
   };
 
-  drawOptions = {
+  // toolbar
+  drawAreaOptions = {
     position: "topright",
     draw: {
       polygon: false,
@@ -39,15 +48,11 @@ export class SpatialCoverageComponent {
       circle: false,
       marker: false,
       polyline: false,
-      // "showArea:false" 	solves a leafler-draw bug. An alternative is to add
-      // "noImplicitUseStrict": true
-      // under the compilerOptions property in tsconfig.json and tsconfig.app.json
-      rectangle: {
-        showArea: false,
-      },
+      rectangle: false,
     },
     edit: {
       featureGroup: this.drawnItems,
+      remove: false,
     },
   };
 
@@ -85,25 +90,16 @@ export class SpatialCoverageComponent {
     this.map.fitBounds(bounds, { padding: [20, 20] });
   }
 
-  onDrawCreated(e: any) {
-    const type = (e as L.DrawEvents.Created).layerType,
-      layer = (e as L.DrawEvents.Created).layer;
-    if (type === "rectangle") {
-      const coords = (layer as L.Rectangle).getLatLngs();
-      console.log(coords);
-      this.selectedArea = {
-        south: coords[0][0].lat,
-        west: coords[0][0].lng,
-        north: coords[0][2].lat,
-        east: coords[0][2].lng,
-      };
-      this.drawnItems.addLayer(layer);
-    }
-  }
-
   onDrawEdited(e: L.DrawEvents.Edited) {
-    const ref = this;
+    // console.log('draw edited')
+    this.drawnItems.eachLayer((layer) => {
+      this.setCurrentArea(layer as L.Rectangle);
+      this.areaChanged.emit(this.selectedArea);
+    });
+
+    /*const ref = this;
     e.layers.eachLayer(function (layer, comp: SpatialCoverageComponent = ref) {
+      console.log(layer);
       if (layer instanceof L.Rectangle) {
         const coords = (layer as L.Rectangle).getLatLngs();
         const selectedArea = {
@@ -113,14 +109,41 @@ export class SpatialCoverageComponent {
           east: coords[0][2].lng,
         };
         comp.selectedArea = selectedArea;
-        // comp.areaChanged.emit(selectedArea);
+        comp.areaChanged.emit(selectedArea);
       }
-    });
+    });*/
   }
 
-  onDrawDeleted(e: L.DrawEvents.Deleted) {
-    // reset to the whole area
-    this.drawEntireArea();
+  resizeDraw(e: L.DrawEvents.EditResize) {
+    // console.log('resize area', e);
+    if (!e.layer) return;
+    this.setCurrentArea(e.layer as L.Rectangle);
+  }
+
+  moveDraw(e: L.DrawEvents.EditMove) {
+    // console.log('move area', e);
+    if (!e.layer) return;
+    this.setCurrentArea(e.layer as L.Rectangle);
+  }
+
+  private setCurrentArea(layer: L.Rectangle) {
+    const coords = layer.getLatLngs();
+    this.selectedArea = {
+      south: coords[0][0].lat,
+      west: coords[0][0].lng,
+      north: coords[0][2].lat,
+      east: coords[0][2].lng,
+    };
+  }
+
+  onDrawEditStop(e: L.DrawEvents.EditStop) {
+    // console.log('draw edit stop')
+    this.editable = false;
+
+    // force selected area to the actual draw (ON EDIT CANCEL)
+    this.drawnItems.eachLayer((layer) => {
+      this.setCurrentArea(layer as L.Rectangle);
+    });
   }
 
   private drawEntireArea() {
@@ -144,9 +167,16 @@ export class SpatialCoverageComponent {
     };
   }
 
-  updateArea(val: SpatialArea) {
+  /**
+   * Draw updated area on the map.
+   * @param val the new area to draw
+   * @param propagate if true, propagate set spatial coverage and size estimate
+   */
+  updateArea(val: SpatialArea, propagate = true) {
+    // console.log(`Draw updated area on the map. Propagate? ${propagate}`);
     // clean up
     this.resetAll();
+
     // create the updated rectangle area
     const poly = new L.Rectangle(
       L.latLngBounds(
@@ -154,9 +184,13 @@ export class SpatialCoverageComponent {
         L.latLng(val.north, val.west)
       )
     );
+
     // add to the map
     this.drawnItems.addLayer(poly);
+
     // emit output changes
-    this.areaChanged.emit(val);
+    if (propagate) {
+      this.areaChanged.emit(val);
+    }
   }
 }

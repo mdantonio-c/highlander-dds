@@ -17,44 +17,65 @@
           @openClose
         >
           <div class="form-group">
-            <label for="north">North</label>
+            <label for="north"
+              >North
+              <!--<small>({{initialArea.north}})</small>--></label
+            >
             <input
               type="number"
               class="form-control"
               id="north"
+              step=".01"
               formControlName="north"
+              [readonly]="!editable"
             />
           </div>
           <div class="form-group">
-            <label for="east">East</label>
+            <label for="east"
+              >East
+              <!--<small>({{initialArea.east}})</small>--></label
+            >
             <input
               type="number"
               class="form-control"
               id="east"
+              step=".01"
               formControlName="east"
+              [readonly]="!editable"
             />
           </div>
           <div class="form-group">
-            <label for="south">South</label>
+            <label for="south"
+              >South
+              <!--<small>({{initialArea.south}})</small>--></label
+            >
             <input
               type="number"
               class="form-control"
               id="south"
+              step=".01"
               formControlName="south"
+              [readonly]="!editable"
             />
           </div>
           <div class="form-group">
-            <label for="west">West</label>
+            <label for="west"
+              >West
+              <!--<small>({{initialArea.west}})</small>--></label
+            >
             <input
               type="number"
               class="form-control"
               id="west"
+              step=".01"
               formControlName="west"
+              [readonly]="!editable"
             />
           </div>
           <div class="d-flex mt-2">
             <button
               class="btn btn-sm btn-secondary float-right"
+              [disabled]="isWholeAreaSelected()"
               (click)="resetArea()"
             >
               Whole Area
