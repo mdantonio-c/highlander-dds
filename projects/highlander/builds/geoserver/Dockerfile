@@ -29,6 +29,9 @@ RUN useradd \
     && mkdir -p /home/$TOMCAT_USER \
     && chown $CURRENT_UID:$CURRENT_GID /home/$TOMCAT_USER
 
+# RCE su log4j CVE-2021-44228
+ENV JAVA_OPTS="${JAVA_OPTS} -Dlog4j2.formatMsgNoLookups=true"
+
 # Force tomcat to run as NO-root user
 RUN chown -R $(id tomcat -u) /usr/local/tomcat && \
     sed -i  '107d' /usr/local/tomcat/tmp/entrypoint.sh && \
