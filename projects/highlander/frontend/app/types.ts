@@ -153,3 +153,20 @@ export interface CodeLabel {
   /** @nullable */
   [key: string]: any;
 }
+
+export interface ProvinceFeature {
+  prov_acr: string;
+  prov_istat_code: string;
+  prov_istat_code_num: number;
+  prov_name: string;
+  reg_istat_code: string;
+  reg_istat_code_num: number;
+  reg_name: string;
+}
+
+export interface RegionFeature {
+  id: number;
+  name: string;
+  length: number;
+  area: number;
+}

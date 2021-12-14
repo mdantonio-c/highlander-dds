@@ -10,7 +10,12 @@ import { Observable } from "rxjs";
 import { User } from "@rapydo/types";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
-import { DatasetInfo, SoilErosionFilter } from "../../../types";
+import {
+  DatasetInfo,
+  ProvinceFeature,
+  RegionFeature,
+  SoilErosionFilter,
+} from "../../../types";
 import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
 import { SSRService } from "@rapydo/services/ssr";
@@ -107,6 +112,7 @@ export class ForecastMapsComponent implements OnInit {
   };
 
   private administrativeArea: L.LayerGroup = new L.LayerGroup();
+  private filter: SoilErosionFilter;
 
   constructor(
     private dataService: DataService,
@@ -209,6 +215,7 @@ export class ForecastMapsComponent implements OnInit {
 
   applyFilter(data: SoilErosionFilter) {
     console.log("apply filter", data);
+    this.filter = data;
 
     // ADMINISTRATIVE AREA
     // clear current administrative layer
@@ -227,6 +234,7 @@ export class ForecastMapsComponent implements OnInit {
             layer.on({
               mouseover: (e) => this.highlightFeature(e),
               mouseout: (e) => this.resetFeature(e),
+              click: (e) => this.loadDetails(e),
             }),
         });
         this.administrativeArea.addLayer(jsonLayer);
@@ -242,6 +250,18 @@ export class ForecastMapsComponent implements OnInit {
   private resetFeature(e) {
     const layer = e.target;
     layer.setStyle(NORMAL_STYLE);
+  }
+
+  private loadDetails(e) {
+    const layer = e.target;
+    switch (this.filter.administrative) {
+      case "regions":
+        console.log((layer.feature.properties as RegionFeature).name);
+        break;
+      case "provinces":
+        console.log((layer.feature.properties as ProvinceFeature).prov_name);
+        break;
+    }
   }
 
   toggleCollapse() {
