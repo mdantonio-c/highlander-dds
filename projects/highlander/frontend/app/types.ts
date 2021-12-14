@@ -141,3 +141,15 @@ export interface LatLngRange {
   start: number;
   stop?: number;
 }
+
+export interface SoilErosionFilter {
+  indicator: string;
+  administrative: string;
+}
+
+export interface CodeLabel {
+  code: string;
+  label: string;
+  /** @nullable */
+  [key: string]: any;
+}

@@ -10,14 +10,14 @@ import { Observable } from "rxjs";
 import { User } from "@rapydo/types";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
-import { DatasetInfo } from "../../../types";
+import { DatasetInfo, SoilErosionFilter } from "../../../types";
 import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
 import { SSRService } from "@rapydo/services/ssr";
 import { LegendConfig, LEGEND_DATA } from "../../../services/data";
-import { HttpClient } from "@angular/common/http";
 
 import * as moment from "moment";
+import { mergeMap, map, throttleTime, filter } from "rxjs/operators";
 import * as L from "leaflet";
 import "leaflet-timedimension/dist/leaflet.timedimension.src.js";
 declare module "leaflet" {
@@ -26,6 +26,14 @@ declare module "leaflet" {
 
 const MAX_ZOOM = 8;
 const MIN_ZOOM = 5;
+const GEOJSON_STYLE = {
+  weight: 2,
+  opacity: 0.9,
+  color: "gray",
+  // dashArray: '3',
+  fillOpacity: 0,
+  // fillColor: getColor(feature.properties.density)
+};
 
 @Component({
   selector: "hl-forecast-maps",
@@ -93,31 +101,21 @@ export class ForecastMapsComponent implements OnInit {
     },
   };
 
+  private administrativeArea: L.LayerGroup = new L.LayerGroup();
+
   constructor(
     private dataService: DataService,
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     public route: ActivatedRoute,
     private router: Router,
-    private ssr: SSRService,
-    private http: HttpClient
+    private ssr: SSRService
   ) {
     this.dataset = this.router.getCurrentNavigation().extras
       .state as DatasetInfo;
   }
 
-  style(feature) {
-    return {
-      weight: 2,
-      opacity: 0.2,
-      color: "black",
-      // dashArray: '3',
-      fillOpacity: 0.2,
-      // fillColor: getColor(feature.properties.density)
-    };
-  }
-  // //
-  highlightFeature(e) {
+  /*highlightFeature(e) {
     var layer = e.target;
 
     layer.setStyle({
@@ -134,7 +132,7 @@ export class ForecastMapsComponent implements OnInit {
       // mouseout: resetHighlight,
       // click: zoomToFeature
     });
-  }
+  }*/
 
   ngOnInit() {
     if (this.ssr.isBrowser) {
@@ -192,15 +190,6 @@ export class ForecastMapsComponent implements OnInit {
     });
     L.control.layers(overlays, null, { collapsed: false }).addTo(this.map);
     overlays[this.models[0]].addTo(this.map);
-
-    this.http
-      .get("/app/custom/assets/images/regioni_git.geojson")
-      .subscribe((json: any) => {
-        let jsonLayer = L.geoJSON(json, {
-          style: this.style,
-          onEachFeature: this.onEachFeature,
-        }).addTo(this.map);
-      });
   }
 
   private createLegendControl(id: string): L.Control {
@@ -232,8 +221,27 @@ export class ForecastMapsComponent implements OnInit {
     // console.log(`Map Zoom: ${this.map.getZoom()}`);
   }
 
-  applyFilter(filter: any) {
-    console.log("apply filter");
+  applyFilter(data: SoilErosionFilter) {
+    console.log("apply filter", data);
+
+    // ADMINISTRATIVE AREA
+    // clear current administrative layer
+    if (this.map) {
+      this.administrativeArea.clearLayers();
+    }
+    if (data.administrative === "italy") {
+      return;
+    }
+    this.dataService
+      .getAdministrativeAreas(data.administrative)
+      .subscribe((json) => {
+        const jsonLayer = L.geoJSON(json, {
+          style: GEOJSON_STYLE,
+          // onEachFeature: this.onEachFeature,
+        });
+        this.administrativeArea.addLayer(jsonLayer);
+        this.administrativeArea.addTo(this.map);
+      });
   }
 
   toggleCollapse() {
