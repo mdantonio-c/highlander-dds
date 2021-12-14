@@ -26,13 +26,18 @@ declare module "leaflet" {
 
 const MAX_ZOOM = 8;
 const MIN_ZOOM = 5;
-const GEOJSON_STYLE = {
+
+const HIGHLIGHT_STYLE = {
+  weight: 5,
+  color: "#666",
+  dashArray: "",
+  fillOpacity: 0.7,
+};
+const NORMAL_STYLE = {
   weight: 2,
   opacity: 0.9,
   color: "gray",
-  // dashArray: '3',
-  fillOpacity: 0,
-  // fillColor: getColor(feature.properties.density)
+  fillOpacity: 0.25,
 };
 
 @Component({
@@ -114,25 +119,6 @@ export class ForecastMapsComponent implements OnInit {
     this.dataset = this.router.getCurrentNavigation().extras
       .state as DatasetInfo;
   }
-
-  /*highlightFeature(e) {
-    var layer = e.target;
-
-    layer.setStyle({
-      weight: 5,
-      color: "#666",
-      dashArray: "",
-      fillOpacity: 0.7,
-    });
-    // info.update(layer.feature.properties);
-  }
-  onEachFeature(feature, layer) {
-    layer.on({
-      mouseover: this.highlightFeature,
-      // mouseout: resetHighlight,
-      // click: zoomToFeature
-    });
-  }*/
 
   ngOnInit() {
     if (this.ssr.isBrowser) {
@@ -236,12 +222,26 @@ export class ForecastMapsComponent implements OnInit {
       .getAdministrativeAreas(data.administrative)
       .subscribe((json) => {
         const jsonLayer = L.geoJSON(json, {
-          style: GEOJSON_STYLE,
-          // onEachFeature: this.onEachFeature,
+          style: NORMAL_STYLE,
+          onEachFeature: (feature, layer) =>
+            layer.on({
+              mouseover: (e) => this.highlightFeature(e),
+              mouseout: (e) => this.resetFeature(e),
+            }),
         });
         this.administrativeArea.addLayer(jsonLayer);
         this.administrativeArea.addTo(this.map);
       });
+  }
+
+  private highlightFeature(e) {
+    const layer = e.target;
+    layer.setStyle(HIGHLIGHT_STYLE);
+  }
+
+  private resetFeature(e) {
+    const layer = e.target;
+    layer.setStyle(NORMAL_STYLE);
   }
 
   toggleCollapse() {
