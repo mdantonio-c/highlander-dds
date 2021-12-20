@@ -4,6 +4,7 @@ import {
   ViewChild,
   ElementRef,
   HostListener,
+  ChangeDetectorRef,
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Observable } from "rxjs";
@@ -114,13 +115,16 @@ export class ForecastMapsComponent implements OnInit {
   private administrativeArea: L.LayerGroup = new L.LayerGroup();
   private filter: SoilErosionFilter;
 
+  isPanelCollapsed: boolean = true;
+
   constructor(
     private dataService: DataService,
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     public route: ActivatedRoute,
     private router: Router,
-    private ssr: SSRService
+    private ssr: SSRService,
+    private cdr: ChangeDetectorRef
   ) {
     this.dataset = this.router.getCurrentNavigation().extras
       .state as DatasetInfo;
@@ -158,6 +162,9 @@ export class ForecastMapsComponent implements OnInit {
 
   onMapReady(map: L.Map) {
     this.map = map;
+    setTimeout(function () {
+      map.invalidateSize();
+    }, 200);
     this.setOverlaysToMap();
     // add a legend
     let legend = this.createLegendControl("prp");
@@ -223,6 +230,9 @@ export class ForecastMapsComponent implements OnInit {
       this.administrativeArea.clearLayers();
     }
     if (data.administrative === "italy") {
+      if (this.map) {
+        this.map.setView(L.latLng([42.0, 13.0]), 6);
+      }
       return;
     }
     this.dataService
@@ -253,6 +263,13 @@ export class ForecastMapsComponent implements OnInit {
   }
 
   private loadDetails(e) {
+    console.log("open details");
+    this.isPanelCollapsed = false;
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.map.invalidateSize();
+    }, 0);
+
     const layer = e.target;
     switch (this.filter.administrative) {
       case "regions":
@@ -262,6 +279,13 @@ export class ForecastMapsComponent implements OnInit {
         console.log((layer.feature.properties as ProvinceFeature).prov_name);
         break;
     }
+  }
+
+  closeDetails() {
+    this.isPanelCollapsed = true;
+    setTimeout(() => {
+      this.map.invalidateSize();
+    }, 0);
   }
 
   toggleCollapse() {

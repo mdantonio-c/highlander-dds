@@ -1,5 +1,5 @@
 <div class="page-header">
-  <div class="container-fluid px-4">
+  <div class="container-fluid px-4 pt-0">
     <div class="page-header-content">
       <div class="row gx-4 align-items-center justify-content-between">
         <div class="col-auto">
@@ -20,11 +20,11 @@
   </div>
 </div>
 <div class="container-fluid px-4">
-  <div class="row">
+  <div class="row no-gutters">
     <div class="col-12">
       <hr class="mt-2 mb-3" />
     </div>
-    <div class="col-lg-3 mb-2" style="min-width: 160px">
+    <div class="col-2 mb-2">
       <hl-map-filter
         class="collapse"
         id="filters"
@@ -32,7 +32,7 @@
         (onFilterChange)="applyFilter($event)"
       ></hl-map-filter>
     </div>
-    <div class="col-lg-9">
+    <div class="col px-3">
       <div id="map-wrapper" class="fill">
         <ngx-spinner
           bdColor="rgba(255,255,255,0.8)"
@@ -102,6 +102,26 @@
               </div>
             </div>
           </div>-->
+        </div>
+      </div>
+    </div>
+    <div class="col-auto">
+      <div #collapse="ngbCollapse" [ngbCollapse]="isPanelCollapsed">
+        <div class="card bg-light" style="min-width: 300px">
+          <div class="px-2">
+            <button
+              type="button"
+              class="btn btn-sm float-right"
+              (click)="closeDetails()"
+              [attr.aria-expanded]="!isPanelCollapsed"
+            >
+              <b style="font-size: x-large">&times;</b>
+            </button>
+          </div>
+          <div class="card-body">
+            <!-- TODO show selected administrative area -->
+            <!-- TODO show box plot -->
+          </div>
         </div>
       </div>
     </div>
