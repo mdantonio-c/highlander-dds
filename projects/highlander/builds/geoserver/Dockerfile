@@ -18,7 +18,10 @@ RUN mkdir /tmp/geoserver-netcdf && \
         https://sourceforge.net/projects/geoserver/files/GeoServer/$GEOSERVER_VER/extensions/geoserver-$GEOSERVER_VER-netcdf-out-plugin.zip/download && \
     unzip -d /tmp/geoserver-netcdf /tmp/geoserver-netcdf/geoserver-$GEOSERVER_VER-netcdf-out-plugin.zip && \
     cp /tmp/geoserver-netcdf/*.jar $CATALINA_HOME/webapps/geoserver/WEB-INF/lib && \
-    rm -rf /tmp/geoserver-netcdf
+    rm -rf /tmp/geoserver-netcdf && \
+    apt-get update -qq && \
+    apt-get install --yes --no-install-recommends libnetcdf-dev && \
+    apt-get autoremove --yes && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV TOMCAT_USER tomcat
 
