@@ -124,3 +124,49 @@ export interface StorageUsage {
   quota: number;
   used: number;
 }
+
+export interface SpatialArea {
+  north: number;
+  east: number;
+  south: number;
+  west: number;
+}
+
+export interface SpatialPoint {
+  lat: number;
+  lon: number;
+}
+
+export interface LatLngRange {
+  start: number;
+  stop?: number;
+}
+
+export interface SoilErosionFilter {
+  indicator: string;
+  administrative: string;
+}
+
+export interface CodeLabel {
+  code: string;
+  label: string;
+  /** @nullable */
+  [key: string]: any;
+}
+
+export interface ProvinceFeature {
+  prov_acr: string;
+  prov_istat_code: string;
+  prov_istat_code_num: number;
+  prov_name: string;
+  reg_istat_code: string;
+  reg_istat_code_num: number;
+  reg_name: string;
+}
+
+export interface RegionFeature {
+  id: number;
+  name: string;
+  length: number;
+  area: number;
+}

@@ -2,12 +2,13 @@ import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
 import { ApiService } from "@rapydo/services/api";
 import { StorageUsage, DatasetInfo, ProductInfo } from "../types";
+import { HttpClient } from "@angular/common/http";
 
 @Injectable({
   providedIn: "root",
 })
 export class DataService {
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private http: HttpClient) {}
 
   /**
    * Get all the available datasets.
@@ -72,5 +73,13 @@ export class DataService {
     productId: string
   ): Observable<ProductInfo> {
     return this.api.get(`/api/datasets/${datasetId}/products/${productId}`);
+  }
+
+  /**
+   * Get administrative areas.
+   * @param area
+   */
+  getAdministrativeAreas(area = "regions"): Observable<any> {
+    return this.http.get(`/app/custom/assets/geojson/italy-${area}.json`);
   }
 }

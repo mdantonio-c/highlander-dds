@@ -10,13 +10,19 @@ import { Observable } from "rxjs";
 import { User } from "@rapydo/types";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
-import { DatasetInfo } from "../../../types";
+import {
+  DatasetInfo,
+  ProvinceFeature,
+  RegionFeature,
+  SoilErosionFilter,
+} from "../../../types";
 import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
 import { SSRService } from "@rapydo/services/ssr";
 import { LegendConfig, LEGEND_DATA } from "../../../services/data";
 
 import * as moment from "moment";
+import { mergeMap, map, throttleTime, filter } from "rxjs/operators";
 import * as L from "leaflet";
 import "leaflet-timedimension/dist/leaflet.timedimension.src.js";
 declare module "leaflet" {
@@ -26,10 +32,23 @@ declare module "leaflet" {
 const MAX_ZOOM = 8;
 const MIN_ZOOM = 5;
 
+const HIGHLIGHT_STYLE = {
+  weight: 5,
+  color: "#666",
+  dashArray: "",
+  fillOpacity: 0.7,
+};
+const NORMAL_STYLE = {
+  weight: 2,
+  opacity: 0.9,
+  color: "gray",
+  fillOpacity: 0.25,
+};
+
 @Component({
   selector: "hl-forecast-maps",
   templateUrl: "./forecast-maps.component.html",
-  styleUrls: ["./forecast-maps.component.css"],
+  styleUrls: ["./forecast-maps.component.scss"],
 })
 export class ForecastMapsComponent implements OnInit {
   dataset: DatasetInfo;
@@ -91,6 +110,9 @@ export class ForecastMapsComponent implements OnInit {
       },
     },
   };
+
+  private administrativeArea: L.LayerGroup = new L.LayerGroup();
+  private filter: SoilErosionFilter;
 
   constructor(
     private dataService: DataService,
@@ -191,8 +213,55 @@ export class ForecastMapsComponent implements OnInit {
     // console.log(`Map Zoom: ${this.map.getZoom()}`);
   }
 
-  applyFilter(filter: any) {
-    console.log("apply filter");
+  applyFilter(data: SoilErosionFilter) {
+    console.log("apply filter", data);
+    this.filter = data;
+
+    // ADMINISTRATIVE AREA
+    // clear current administrative layer
+    if (this.map) {
+      this.administrativeArea.clearLayers();
+    }
+    if (data.administrative === "italy") {
+      return;
+    }
+    this.dataService
+      .getAdministrativeAreas(data.administrative)
+      .subscribe((json) => {
+        const jsonLayer = L.geoJSON(json, {
+          style: NORMAL_STYLE,
+          onEachFeature: (feature, layer) =>
+            layer.on({
+              mouseover: (e) => this.highlightFeature(e),
+              mouseout: (e) => this.resetFeature(e),
+              click: (e) => this.loadDetails(e),
+            }),
+        });
+        this.administrativeArea.addLayer(jsonLayer);
+        this.administrativeArea.addTo(this.map);
+      });
+  }
+
+  private highlightFeature(e) {
+    const layer = e.target;
+    layer.setStyle(HIGHLIGHT_STYLE);
+  }
+
+  private resetFeature(e) {
+    const layer = e.target;
+    layer.setStyle(NORMAL_STYLE);
+  }
+
+  private loadDetails(e) {
+    const layer = e.target;
+    switch (this.filter.administrative) {
+      case "regions":
+        console.log((layer.feature.properties as RegionFeature).name);
+        break;
+      case "provinces":
+        console.log((layer.feature.properties as ProvinceFeature).prov_name);
+        break;
+    }
   }
 
   toggleCollapse() {

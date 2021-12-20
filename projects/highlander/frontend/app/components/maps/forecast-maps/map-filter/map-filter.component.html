@@ -1,9 +1,6 @@
 <div id="parameters">
   <div class="card bg-light">
     <div class="card-body">
-      <!--
-      <h4 class="card-title"><small class="text-muted">PARAMETERS</small></h4>
-      -->
       <form [formGroup]="filterForm">
         <!-- INDICATOR -->
         <div class="form-group">
@@ -29,7 +26,6 @@
             id="administrativeGroup"
             formControlName="administrative"
             class="form-control"
-            disabled
           >
             <option *ngFor="let i of administratives" [value]="i.code">
               {{ i.label }}
@@ -37,7 +33,7 @@
           </select>
         </div>
         <!-- PHYSICAL -->
-        <div class="form-group">
+        <!--<div class="form-group">
           <label class="col-form-label"><strong>Physical:</strong></label>
           <select
             id="physicalGroup"
@@ -49,9 +45,9 @@
               {{ i.label }}
             </option>
           </select>
-        </div>
+        </div>-->
         <!-- USER SELECTED -->
-        <div class="form-group">
+        <!--<div class="form-group">
           <label class="col-form-label"><strong>User Selected:</strong></label>
           <select
             id="userSelectedGroup"
@@ -63,7 +59,7 @@
               {{ i.label }}
             </option>
           </select>
-        </div>
+        </div>-->
       </form>
     </div>
   </div>

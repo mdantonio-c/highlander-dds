@@ -103,6 +103,29 @@
                       </ul>
                     </dd>
                   </dl>
+                  <!-- spatial coverage -->
+                  <dl class="mb-0" *ngIf="row.args.latitude">
+                    <dt>Latitude</dt>
+                    <dd>
+                      <ul>
+                        <li>
+                          [{{ row.args.latitude.start }},
+                          {{ row.args.latitude.stop }}]
+                        </li>
+                      </ul>
+                    </dd>
+                  </dl>
+                  <dl class="mb-0" *ngIf="row.args.longitude">
+                    <dt>Longitude</dt>
+                    <dd>
+                      <ul>
+                        <li>
+                          [{{ row.args.longitude.start }},
+                          {{ row.args.longitude.stop }}]
+                        </li>
+                      </ul>
+                    </dd>
+                  </dl>
                 </div>
                 <div class="col-sm">
                   <ng-container *ngFor="let extra of row.args | keyvalue">

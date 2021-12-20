@@ -1,11 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from "@angular/core";
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  FormControl,
-} from "@angular/forms";
+import { FormBuilder, FormGroup } from "@angular/forms";
 import { AuthService } from "@rapydo/services/auth";
+import { ADMINISTRATIVE_AREAS, INDICATORS } from "../data";
 
 @Component({
   selector: "hl-map-filter",
@@ -17,31 +13,15 @@ export class MapFilterComponent implements OnInit {
   user;
   @Output() onFilterChange: EventEmitter<null> = new EventEmitter<null>();
 
-  indicators = [
-    {
-      code: "RF",
-      label: "R Factor",
-    },
-    {
-      code: "SL",
-      label: "Soil Loss",
-      state: "disabled",
-    },
-  ];
-
-  administratives = [
-    { code: "ADM1", label: "Italy" },
-    { code: "ADM2", label: "Regions" },
-    { code: "ADM3", label: "Provinces" },
-    { code: "ADM4", label: "Municipalities" },
-  ];
-  physicals = [];
-  userSelectedItems = [];
+  readonly indicators = INDICATORS;
+  readonly administratives = ADMINISTRATIVE_AREAS;
+  readonly physicals = [];
+  readonly userSelectedItems = [];
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.filterForm = this.fb.group({
       indicator: ["RF"],
-      administrative: ["ADM1"],
+      administrative: ["italy"],
       physical: [""],
       userSelected: [""],
     });
@@ -52,16 +32,12 @@ export class MapFilterComponent implements OnInit {
     // subscribe for form value changes
     this.onChanges();
     // apply filter the first time
-    this.filter();
+    this.onFilterChange.emit(this.filterForm.value);
   }
 
   private onChanges(): void {
-    // TODO
-  }
-
-  private filter() {
-    let filter = this.filterForm.value;
-    // TODO
-    this.onFilterChange.emit(filter);
+    this.filterForm.valueChanges.subscribe((val) => {
+      this.onFilterChange.emit(val);
+    });
   }
 }

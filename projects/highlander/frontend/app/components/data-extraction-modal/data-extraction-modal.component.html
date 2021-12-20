@@ -12,7 +12,6 @@
 <ngx-spinner
   bdColor="rgba(255,255,255,0.8)"
   color="#6c757d"
-  zIndex="1000"
   type="ball-clip-rotate-multiple"
   size="medium"
   [fullScreen]="false"
@@ -27,16 +26,28 @@
     [type]="remaining >= 0 ? 'success' : 'warning'"
   >
     <strong>Size Estimate</strong>:
-    <ng-container *ngIf="estimatedSize$ | async as size">
-      {{ size | bytes: 2 }}
+    <span *ngIf="!isLoading(); else loadingSpinner">
+      <ng-container *ngIf="estimatedSize; else notAvailable">{{
+        estimatedSize | bytes: 2
+      }}</ng-container>
+    </span>
+    <ng-template #loadingSpinner>
       <span
-        class="float-right"
-        placement="bottom-right"
-        ngbTooltip="Remaining size after extraction"
-        container="body"
-        ><i *ngIf="remaining < 0">-</i>{{ remaining | abs | bytes: 2 }}</span
-      >
-    </ng-container>
+        ><i
+          class="fa fa-spinner fa-spin"
+          aria-hidden="true"
+          style="font-size: 12px"
+        ></i
+      ></span>
+    </ng-template>
+    <span
+      class="float-right"
+      placement="bottom-right"
+      ngbTooltip="Remaining size after extraction"
+      container="body"
+      *ngIf="!isLoading() && estimatedSize"
+      ><i *ngIf="remaining < 0">-</i>{{ remaining | abs | bytes: 2 }}</span
+    >
   </ngb-alert>
 </p>
 <div class="modal-body p-0 mb-4 pt-2">
@@ -79,16 +90,13 @@
                     </div>
                   </div>
                   <div class="row" *ngIf="widget.type == 'ExclusiveFrame'">
-                    <!--<ul ngbNav #nav="ngbNav" class="nav-pills" orientation="vertical">
-                      <ng-container *ngFor="let w of widget.details['widgets']">
-                        <li [ngbNavItem]="w">
-                          <a ngbNavLink>{{w}}</a>
-                          <ng-template>
-                            <p>a</p>
-                          </ng-template>
-                        </li>
-                      </ng-container>
-                    </ul>-->
+                    <app-spatial-coverage
+                      class="w-100"
+                      *ngIf="widget.name === 'spatial_coverage'"
+                      [area]="area"
+                      (areaChanged)="setSpatialCoverage($event)"
+                    >
+                    </app-spatial-coverage>
                     <ng-container
                       *ngIf="widget.details['widgets'].includes('date_list')"
                     >
@@ -173,8 +181,11 @@
     type="submit"
     class="btn btn-primary btn-lg"
     form="ngForm"
-    [disabled]="remaining < 0"
+    [disabled]="!estimatedSize || remaining < 0"
   >
     Job Submit »
   </button>
 </div>
+<ng-template #notAvailable>
+  <i *ngIf="!isLoading()">n/a</i>
+</ng-template>

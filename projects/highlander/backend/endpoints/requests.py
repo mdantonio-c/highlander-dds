@@ -1,5 +1,6 @@
+import json
 import shutil
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Mapping, Optional, Union, cast
 
 from highlander.connectors import broker
 from highlander.constants import DOWNLOAD_DIR
@@ -14,6 +15,8 @@ from restapi.utilities.logs import log
 from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm.exc import NoResultFound
+
+RequestArgs = Union[str, List[str], Dict[str, List[str]]]
 
 
 class Requests(EndpointResource):
@@ -88,33 +91,10 @@ class Requests(EndpointResource):
             400: "Invalid request",
         },
     )
-    def post(
-        self,
-        dataset_name: str,
-        product: str,
-        format: str,
-        user: User,
-        variable: List[str] = [],
-        time: Dict[str, List[str]] = None,
-        extra: Dict[str, Any] = None,
-    ) -> Response:
+    def post(self, dataset_name: str, user: User, **kwargs: RequestArgs) -> Response:
         c = celery.get_instance()
         log.debug("Request for extraction for <{}>", dataset_name)
-        log.debug("Variable: {}", variable)
-        log.debug("Time: {}", time)
-        log.debug("Format: {}", format)
-        log.debug("Extra: {}", extra)
-        args: Dict[str, Union[str, List[str], Dict[str, List[str]]]] = {
-            "product_type": product,
-            "format": format,
-        }
-        if variable:
-            args["variable"] = variable
-        if time:
-            args["time"] = time
-        if extra:
-            for k, v in extra.items():
-                args[k] = v
+        args = build_request_args(**kwargs)
 
         task = None
         db = sqlalchemy.get_instance()
@@ -262,33 +242,55 @@ class EstimateSize(EndpointResource):
         summary="Estimate request size",
         responses={200: "Estimated size", 404: "Dataset does not exist"},
     )
-    def post(
-        self,
-        dataset_name: str,
-        product: str,
-        format: str,
-        user: User,
-        variable: List[str] = None,
-        time: Dict[str, List[str]] = None,
-        extra: Dict[str, Any] = None,
-    ) -> Response:
+    def post(self, dataset_name: str, user: User, **kwargs: RequestArgs) -> Response:
         log.debug(f"Estimate size for dataset <{dataset_name}>")
+        args = build_request_args(**kwargs)
+        log.debug(f"request: {args}")
+
         dds = broker.get_instance()
         if dataset_name not in dds.get_datasets([dataset_name]):
             raise NotFound(f"Dataset <{dataset_name}> does not exist")
-        request: Dict[str, Any] = {"product_type": product, "format": format}
-        if variable:
-            request["variable"] = variable
-        if time:
-            request["time"] = time
-        if extra:
-            for k, v in extra.items():
-                request[k] = v
-        log.debug(f"request: {request}")
         try:
             estimated_size = dds.broker.estimate_size(
-                dataset_name=dataset_name, request=request
+                dataset_name=dataset_name, request=args
             )
         except Exception as e:
             raise ServerError(f"Unable to get size estimation: {e}")
         return self.response(estimated_size)
+
+
+def build_request_args(**kwargs: RequestArgs) -> Mapping[str, Any]:
+    payload = kwargs.copy()
+    log.debug(json.dumps(payload, indent=2, sort_keys=True))
+
+    product: str = cast(str, kwargs.pop("product"))
+    variable: List[str] = cast(List[str], kwargs.pop("variable", []))
+    time: Optional[Dict[str, List[str]]] = cast(
+        Optional[Dict[str, List[str]]], kwargs.pop("time", None)
+    )
+    format_: str = cast(str, kwargs.pop("format"))
+    latitude: Optional[Dict[str, float]] = cast(
+        Optional[Dict[str, float]], kwargs.pop("latitude", None)
+    )
+    longitude: Optional[Dict[str, float]] = cast(
+        Optional[Dict[str, float]], kwargs.pop("longitude", None)
+    )
+    extra: Optional[Dict[str, Any]] = cast(
+        Optional[Dict[str, Any]], kwargs.pop("extra", None)
+    )
+    args: Dict[str, Any] = {
+        "product_type": product,
+        "format": format_,
+    }
+    if variable:
+        args["variable"] = variable
+    if time:
+        args["time"] = time
+    if latitude:
+        args["latitude"] = latitude
+    if longitude:
+        args["longitude"] = longitude
+    if extra:
+        for k, v in extra.items():
+            args[k] = v
+    return args

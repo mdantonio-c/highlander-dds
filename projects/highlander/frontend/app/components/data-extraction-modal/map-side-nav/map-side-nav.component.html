@@ -1,0 +1,127 @@
+<nav class="map-sidenav">
+  <div class="map-sidenav-menu">
+    <form [formGroup]="spatialForm">
+      <section>
+        <h6 class="title">
+          <i class="fas fa-map"></i>Area
+          <input
+            type="radio"
+            name="coverageType"
+            value="area"
+            formControlName="coverageType"
+          />
+        </h6>
+        <div
+          class="content"
+          *ngIf="spatialForm.get('coverageType').value === 'area'"
+          @openClose
+        >
+          <div class="form-group">
+            <label for="north"
+              >North
+              <!--<small>({{initialArea.north}})</small>--></label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="north"
+              step=".01"
+              [min]="spatialForm.get('south').value"
+              formControlName="north"
+              [readonly]="!editable"
+            />
+          </div>
+          <div class="form-group">
+            <label for="east"
+              >East
+              <!--<small>({{initialArea.east}})</small>--></label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="east"
+              step=".01"
+              [min]="spatialForm.get('west').value"
+              formControlName="east"
+              [readonly]="!editable"
+            />
+          </div>
+          <div class="form-group">
+            <label for="south"
+              >South
+              <!--<small>({{initialArea.south}})</small>--></label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="south"
+              step=".01"
+              [max]="spatialForm.get('north').value"
+              formControlName="south"
+              [readonly]="!editable"
+            />
+          </div>
+          <div class="form-group">
+            <label for="west"
+              >West
+              <!--<small>({{initialArea.west}})</small>--></label
+            >
+            <input
+              type="number"
+              class="form-control"
+              id="west"
+              step=".01"
+              [max]="spatialForm.get('east').value"
+              formControlName="west"
+              [readonly]="!editable"
+            />
+          </div>
+          <div class="d-flex mt-2">
+            <button
+              class="btn btn-sm btn-secondary float-right"
+              [disabled]="isWholeAreaSelected()"
+              (click)="resetArea()"
+            >
+              Whole Area
+            </button>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h6 class="title">
+          <i class="fas fa-map-marked-alt"></i>Location
+          <input
+            type="radio"
+            name="coverageType"
+            value="location"
+            formControlName="coverageType"
+          />
+        </h6>
+        <div
+          class="content"
+          *ngIf="spatialForm.get('coverageType').value === 'location'"
+          @openClose
+        >
+          <div class="form-group">
+            <label for="lat">Latitude</label>
+            <input
+              type="number"
+              class="form-control"
+              id="lat"
+              formControlName="lat"
+            />
+          </div>
+          <div class="form-group">
+            <label for="lon">Longitude</label>
+            <input
+              type="number"
+              class="form-control"
+              id="lon"
+              formControlName="lon"
+            />
+          </div>
+        </div>
+      </section>
+    </form>
+  </div>
+</nav>
