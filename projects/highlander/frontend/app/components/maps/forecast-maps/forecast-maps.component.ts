@@ -263,7 +263,6 @@ export class ForecastMapsComponent implements OnInit {
   }
 
   private loadDetails(e) {
-    console.log("open details");
     this.isPanelCollapsed = false;
     this.cdr.detectChanges();
     setTimeout(() => {
@@ -271,6 +270,7 @@ export class ForecastMapsComponent implements OnInit {
     }, 0);
 
     const layer = e.target;
+    this.map.fitBounds(layer.getBounds());
     switch (this.filter.administrative) {
       case "regions":
         console.log((layer.feature.properties as RegionFeature).name);
@@ -283,6 +283,7 @@ export class ForecastMapsComponent implements OnInit {
 
   closeDetails() {
     this.isPanelCollapsed = true;
+    this.map.setView(L.latLng([42.0, 13.0]), 6);
     setTimeout(() => {
       this.map.invalidateSize();
     }, 0);
