@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { DatasetInfo, ProductReference } from "../../types";
 import { NotificationService } from "@rapydo/services/notification";
 import { AuthService } from "@rapydo/services/auth";
+import { LocalStorageService } from "@rapydo/services/localstorage";
 import { DataService } from "../../services/data.service";
 import { Observable } from "rxjs";
 import { User } from "@rapydo/types";
@@ -24,6 +25,7 @@ export class DatasetComponent implements OnInit {
   constructor(
     private dataService: DataService,
     private authService: AuthService,
+    private local_storage: LocalStorageService,
     public route: ActivatedRoute,
     private router: Router,
     private notify: NotificationService,
@@ -39,11 +41,11 @@ export class DatasetComponent implements OnInit {
     this.authService.isAuthenticated().subscribe((isAuth) => {
       this.user = isAuth ? this.authService.getUser() : null;
     });
-    this.authService.userChanged.subscribe((user) => {
-      if (user === this.authService.LOGGED_OUT) {
+    this.local_storage.userChanged.subscribe((user) => {
+      if (user === this.local_storage.LOGGED_OUT) {
         this.user = null;
         this.ref.detectChanges();
-      } else if (user === this.authService.LOGGED_IN) {
+      } else if (user === this.local_storage.LOGGED_IN) {
         this.user = this.authService.getUser();
       }
     });

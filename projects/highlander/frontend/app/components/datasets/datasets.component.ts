@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from "@angular/core";
 import { AuthService } from "@rapydo/services/auth";
+import { LocalStorageService } from "@rapydo/services/localstorage";
 import { DataService } from "../../services/data.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
@@ -25,6 +26,7 @@ export class DatasetsComponent implements OnInit {
   constructor(
     private dataService: DataService,
     private authService: AuthService,
+    private local_storage: LocalStorageService,
     private router: Router,
     private notify: NotificationService,
     private ref: ChangeDetectorRef,
@@ -45,11 +47,11 @@ export class DatasetsComponent implements OnInit {
     this.authService.isAuthenticated().subscribe((isAuth) => {
       this.user = isAuth ? this.authService.getUser() : null;
     });
-    this.authService.userChanged.subscribe((user) => {
-      if (user === this.authService.LOGGED_OUT) {
+    this.local_storage.userChanged.subscribe((user) => {
+      if (user === this.local_storage.LOGGED_OUT) {
         this.user = null;
         this.ref.detectChanges();
-      } else if (user === this.authService.LOGGED_IN) {
+      } else if (user === this.local_storage.LOGGED_IN) {
         this.user = this.authService.getUser();
       }
     });
