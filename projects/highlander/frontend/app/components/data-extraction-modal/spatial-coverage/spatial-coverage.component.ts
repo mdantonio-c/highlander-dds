@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
 import * as L from "leaflet";
 import { SpatialArea } from "../../../types";
+import { NotificationService } from "@rapydo/services/notification";
 
 const MAP_CENTER: L.LatLng = L.latLng({ lat: 41.88, lng: 12.28 });
 
@@ -55,6 +56,8 @@ export class SpatialCoverageComponent {
       remove: false,
     },
   };
+
+  constructor(private notify: NotificationService) {}
 
   onMapReady(map) {
     this.map = map;
@@ -148,6 +151,13 @@ export class SpatialCoverageComponent {
 
   private drawEntireArea() {
     // create the entire rectangle area
+    if (Object.values(this.area).some((v) => v === null)) {
+      console.error("Bad area", this.area);
+      this.notify.showError(
+        "The area CANNOT be drawn on the map as the coords are invalid"
+      );
+      return;
+    }
     const poly = new L.Rectangle(
       L.latLngBounds(
         L.latLng(this.area.south, this.area.east),
