@@ -5,7 +5,6 @@ import {
   ChangeDetectorRef,
   Input,
 } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
 import { Observable } from "rxjs";
 import { User } from "@rapydo/types";
 import { NotificationService } from "@rapydo/services/notification";
@@ -119,43 +118,14 @@ export class SoilErosionComponent implements OnInit {
     private dataService: DataService,
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
-    public route: ActivatedRoute,
-    private router: Router,
     private ssr: SSRService,
     private cdr: ChangeDetectorRef
-  ) {
-    /*this.dataset = this.router.getCurrentNavigation().extras
-      .state as DatasetInfo;*/
-  }
+  ) {}
 
   ngOnInit() {
     if (this.ssr.isBrowser) {
       this.setCollapse(window.innerWidth);
     }
-
-    /*const datasetName = this.route.snapshot.paramMap.get("ds_name");
-    if (!datasetName) {
-      this.notify.showError("ds_name parameter not found");
-      return;
-    }
-
-    if (!this.dataset) {
-      // console.log(`load dataset <${dataset_name}>`);
-      this.spinner.show();
-      this.dataService
-        .getDataset(datasetName)
-        .subscribe(
-          (data) => {
-            this.dataset = data;
-          },
-          (error) => {
-            this.notify.showError(error);
-          }
-        )
-        .add(() => {
-          this.spinner.hide();
-        });
-    }*/
   }
 
   onMapReady(map: L.Map) {

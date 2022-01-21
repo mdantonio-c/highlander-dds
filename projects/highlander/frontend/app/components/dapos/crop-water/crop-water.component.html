@@ -1,8 +1,16 @@
 <div class="container-fluid px-4">
   <div class="row no-gutters">
     <div class="col-12">
-      <hr class="mt-2 mb-3" />
-      <p>Hello <strong>Crop-Water</strong>!</p>
+      <hr class="mt-1 mb-3" />
+      <div id="map-wrapper" class="fill">
+        <div
+          class="map"
+          leaflet
+          [leafletOptions]="options"
+          (leafletMapReady)="onMapReady($event)"
+          (leafletMapZoomEnd)="onMapZoomEnd($event)"
+        ></div>
+      </div>
     </div>
   </div>
 </div>
