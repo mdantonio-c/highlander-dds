@@ -15,8 +15,11 @@ import { MapSideNavComponent } from "./components/data-extraction-modal/map-side
 import { RequestsComponent } from "./components/requests/requests.component";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { StorageUsageComponent } from "./components/dashboard/storage-usage/storage-usage.component";
-import { ForecastMapsComponent } from "./components/maps/forecast-maps/forecast-maps.component";
-import { MapFilterComponent } from "./components/maps/forecast-maps/map-filter/map-filter.component";
+import { DaposComponent } from "./components/dapos/dapos.component";
+import { SoilErosionComponent } from "./components/dapos/soil-erosion/soil-erosion.component";
+import { CropWaterComponent } from "./components/dapos/crop-water/crop-water.component";
+import { HumanWellbeingComponent } from "./components/dapos/human-wellbeing/human-wellbeing.component";
+import { MapFilterComponent } from "./components/dapos/soil-erosion/map-filter/map-filter.component";
 import { ReplacePipe } from "./pipes/replace.pipe";
 import { AbsPipe } from "./pipes/abs.pipe";
 import { ClickStopPropagation } from "./directives/click-stop-propagation";
@@ -32,7 +35,7 @@ const routes: Routes = [
   },
   {
     path: "app/applications/:ds_name",
-    component: ForecastMapsComponent,
+    component: DaposComponent,
     canActivate: [AuthGuard],
   },
   { path: "app", redirectTo: "/app/datasets", pathMatch: "full" },
@@ -56,7 +59,10 @@ const routes: Routes = [
     RequestsComponent,
     DashboardComponent,
     StorageUsageComponent,
-    ForecastMapsComponent,
+    DaposComponent,
+    SoilErosionComponent,
+    CropWaterComponent,
+    HumanWellbeingComponent,
     MapFilterComponent,
     ReplacePipe,
     AbsPipe,

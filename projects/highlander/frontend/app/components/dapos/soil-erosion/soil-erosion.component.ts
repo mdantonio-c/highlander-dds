@@ -1,10 +1,9 @@
 import {
   Component,
   OnInit,
-  ViewChild,
-  ElementRef,
   HostListener,
   ChangeDetectorRef,
+  Input,
 } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { Observable } from "rxjs";
@@ -22,8 +21,6 @@ import { DataService } from "../../../services/data.service";
 import { SSRService } from "@rapydo/services/ssr";
 import { LegendConfig, LEGEND_DATA } from "../../../services/data";
 
-import * as moment from "moment";
-import { mergeMap, map, throttleTime, filter } from "rxjs/operators";
 import * as L from "leaflet";
 import "leaflet-timedimension/dist/leaflet.timedimension.src.js";
 declare module "leaflet" {
@@ -47,11 +44,12 @@ const NORMAL_STYLE = {
 };
 
 @Component({
-  selector: "hl-forecast-maps",
-  templateUrl: "./forecast-maps.component.html",
-  styleUrls: ["./forecast-maps.component.scss"],
+  selector: "app-soil-erosion",
+  templateUrl: "./soil-erosion.component.html",
+  styleUrls: ["./soil-erosion.component.scss"],
 })
-export class ForecastMapsComponent implements OnInit {
+export class SoilErosionComponent implements OnInit {
+  @Input()
   dataset: DatasetInfo;
   user: User;
   readonly backendURI = environment.backendURI;
@@ -126,8 +124,8 @@ export class ForecastMapsComponent implements OnInit {
     private ssr: SSRService,
     private cdr: ChangeDetectorRef
   ) {
-    this.dataset = this.router.getCurrentNavigation().extras
-      .state as DatasetInfo;
+    /*this.dataset = this.router.getCurrentNavigation().extras
+      .state as DatasetInfo;*/
   }
 
   ngOnInit() {
@@ -135,7 +133,7 @@ export class ForecastMapsComponent implements OnInit {
       this.setCollapse(window.innerWidth);
     }
 
-    const datasetName = this.route.snapshot.paramMap.get("ds_name");
+    /*const datasetName = this.route.snapshot.paramMap.get("ds_name");
     if (!datasetName) {
       this.notify.showError("ds_name parameter not found");
       return;
@@ -157,7 +155,7 @@ export class ForecastMapsComponent implements OnInit {
         .add(() => {
           this.spinner.hide();
         });
-    }
+    }*/
   }
 
   onMapReady(map: L.Map) {
