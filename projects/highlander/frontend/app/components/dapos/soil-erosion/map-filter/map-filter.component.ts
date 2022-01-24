@@ -6,7 +6,7 @@ import { ADMINISTRATIVE_AREAS, INDICATORS } from "../data";
 @Component({
   selector: "hl-map-filter",
   templateUrl: "./map-filter.component.html",
-  styleUrls: ["./map-filter.component.css"],
+  styleUrls: ["./map-filter.component.scss"],
 })
 export class MapFilterComponent implements OnInit {
   filterForm: FormGroup;
