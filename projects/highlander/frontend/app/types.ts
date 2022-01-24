@@ -147,6 +147,11 @@ export interface SoilErosionFilter {
   administrative: string;
 }
 
+export interface CropWaterFilter {
+  crop: string;
+  area: string;
+}
+
 export interface CodeLabel {
   code: string;
   label: string;

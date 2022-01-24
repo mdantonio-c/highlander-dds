@@ -1,13 +1,14 @@
 import { Component, OnInit, Input } from "@angular/core";
-import { DatasetInfo } from "../../../types";
+import { DatasetInfo, CropWaterFilter } from "../../../types";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 
 import * as L from "leaflet";
 import { DataService } from "../../../services/data.service";
+import { ADMINISTRATIVE_AREAS } from "./data";
 
 const MAX_ZOOM = 16;
-const MIN_ZOOM = 12;
+const MIN_ZOOM = 10;
 
 @Component({
   selector: "app-crop-water",
@@ -17,6 +18,8 @@ const MIN_ZOOM = 12;
 export class CropWaterComponent implements OnInit {
   @Input()
   dataset: DatasetInfo;
+  isFilterCollapsed = false;
+  private collapsed = false;
   map: L.Map;
   zoom: number = 12;
 
@@ -37,6 +40,7 @@ export class CropWaterComponent implements OnInit {
   };
 
   layers: L.Layer[] = [this.LAYER_OSM];
+  private filter: CropWaterFilter;
 
   constructor(
     private dataService: DataService,
@@ -53,5 +57,21 @@ export class CropWaterComponent implements OnInit {
   onMapZoomEnd($event) {
     // console.log(`Map Zoom: ${this.map.getZoom()}`);
     this.zoom = this.map.getZoom();
+  }
+
+  applyFilter(data: CropWaterFilter) {
+    console.log("apply filter", data);
+    this.filter = data;
+
+    // change area
+    if (this.map) {
+      const selectedArea = ADMINISTRATIVE_AREAS.find(
+        (x) => x.code === data.area
+      );
+      const z = selectedArea.zLevel ? selectedArea.zLevel : this.zoom;
+      this.zoom = z;
+      // console.log(`change zoom to ${z}`);
+      this.map.setView(selectedArea.coords, z);
+    }
   }
 }

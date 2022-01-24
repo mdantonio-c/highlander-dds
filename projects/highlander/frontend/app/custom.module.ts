@@ -19,7 +19,8 @@ import { DaposComponent } from "./components/dapos/dapos.component";
 import { SoilErosionComponent } from "./components/dapos/soil-erosion/soil-erosion.component";
 import { CropWaterComponent } from "./components/dapos/crop-water/crop-water.component";
 import { HumanWellbeingComponent } from "./components/dapos/human-wellbeing/human-wellbeing.component";
-import { MapFilterComponent } from "./components/dapos/soil-erosion/map-filter/map-filter.component";
+import { MapFilterComponent as SoilErosionFilter } from "./components/dapos/soil-erosion/map-filter/map-filter.component";
+import { MapFilterComponent as CropWaterFilter } from "./components/dapos/crop-water/map-filter/map-filter.component";
 import { ReplacePipe } from "./pipes/replace.pipe";
 import { AbsPipe } from "./pipes/abs.pipe";
 import { ClickStopPropagation } from "./directives/click-stop-propagation";
@@ -63,7 +64,8 @@ const routes: Routes = [
     SoilErosionComponent,
     CropWaterComponent,
     HumanWellbeingComponent,
-    MapFilterComponent,
+    SoilErosionFilter,
+    CropWaterFilter,
     ReplacePipe,
     AbsPipe,
     ClickStopPropagation,
