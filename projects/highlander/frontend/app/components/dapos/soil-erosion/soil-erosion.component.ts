@@ -58,9 +58,10 @@ export class SoilErosionComponent implements OnInit {
   private collapsed = false;
   map: L.Map;
   private legends: { [key: string]: L.Control } = {};
-  baseUrl: string = environment.production
+  /*baseUrl: string = environment.production
     ? `${environment.backendURI}`
-    : "http://localhost:8070";
+    : "http://localhost:8070";*/
+  baseUrl: string = "https://dds.highlander.cineca.it";
 
   bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
   // readonly models = [...Array(12)].map((_, i) => `R${i + 1}`);

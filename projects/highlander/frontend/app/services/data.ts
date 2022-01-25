@@ -9,7 +9,7 @@ export interface LegendConfig {
 export const LEGEND_DATA: LegendConfig[] = [
   {
     id: "RF",
-    legend_type: "legend_rf",
+    legend_type: "legend_box",
     title: "Rainfall erosivity</br><small>[MJ mm ha-1 h-1 yr-1]</small>",
     colors: [
       "rgba(255, 255, 102, 1)",
@@ -38,7 +38,7 @@ export const LEGEND_DATA: LegendConfig[] = [
   },
   {
     id: "SL",
-    legend_type: "legend_sl",
+    legend_type: "legend_box",
     title: "Soil loss</br><small>[t ha-1 yr-1]</small>",
     colors: [
       "#30123b",
@@ -52,17 +52,6 @@ export const LEGEND_DATA: LegendConfig[] = [
       "#c92903",
       "#7a0403",
     ],
-    labels: [
-      "0",
-      "1",
-      "2.5",
-      "5",
-      "10",
-      "50",
-      "100",
-      "500",
-      "1000",
-      ">2000",
-    ],
+    labels: ["0", "1", "2.5", "5", "10", "50", "100", "500", "1000", ">2000"],
   },
 ];

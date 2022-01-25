@@ -136,7 +136,7 @@ input[type="radio"] {
 }
 
 /* legend styles */
-.legend_prec {
+.legend_box {
   padding: 6px 12px;
   font: 12px Arial, Helvetica, sans-serif;
   background: white;
@@ -145,14 +145,13 @@ input[type="radio"] {
   border-radius: 5px;
   line-height: 14px;
   color: #555;
-}
-
-.legend_prec i {
-  width: 16px;
-  height: 13px;
-  float: left;
-  margin-right: 8px;
-  opacity: 0.7;
+  i {
+    width: 16px;
+    height: 13px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+  }
 }
 
 .alert {
