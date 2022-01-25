@@ -19,6 +19,7 @@ import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
 import { SSRService } from "@rapydo/services/ssr";
 import { LegendConfig, LEGEND_DATA } from "../../../services/data";
+import { SOIL_EROSION_WMS, INDICATORS } from "./data";
 
 import * as L from "leaflet";
 import "leaflet-timedimension/dist/leaflet.timedimension.src.js";
@@ -57,12 +58,13 @@ export class SoilErosionComponent implements OnInit {
   private collapsed = false;
   map: L.Map;
   private legends: { [key: string]: L.Control } = {};
-  baseUrl: string = environment.production
+  /*baseUrl: string = environment.production
     ? `${environment.backendURI}`
-    : "http://localhost:8070";
+    : "http://localhost:8070";*/
+  baseUrl: string = "https://dds-dev.highlander.cineca.it";
 
   bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
-  readonly models = [...Array(12)].map((_, i) => `R${i + 1}`);
+  // readonly models = [...Array(12)].map((_, i) => `R${i + 1}`);
   readonly timeRanges = ["historical", "future"];
   readonly LEGEND_POSITION = "bottomleft";
 
@@ -133,19 +135,15 @@ export class SoilErosionComponent implements OnInit {
     setTimeout(function () {
       map.invalidateSize();
     }, 200);
-    this.setOverlaysToMap();
-    // add a legend
-    let legend = this.createLegendControl("prp");
-    if (legend) {
-      legend.addTo(map);
-    }
+    this.initLegends(map);
   }
 
   private setOverlaysToMap() {
     let overlays = {};
-    this.models.forEach((m) => {
+    const product = SOIL_EROSION_WMS[this.filter.indicator].product;
+    SOIL_EROSION_WMS[this.filter.indicator].models.forEach((m) => {
       overlays[m] = L.tileLayer.wms(`${this.baseUrl}/geoserver/wms`, {
-        layers: `highlander:TOT_PREC_${m}`,
+        layers: `highlander:${product}_${m}`,
         version: "1.1.0",
         format: "image/png",
         opacity: 0.5,
@@ -156,7 +154,14 @@ export class SoilErosionComponent implements OnInit {
       });
     });
     L.control.layers(overlays, null, { collapsed: false }).addTo(this.map);
-    overlays[this.models[0]].addTo(this.map);
+    overlays[SOIL_EROSION_WMS[this.filter.indicator].models[0]].addTo(this.map);
+  }
+
+  private initLegends(map: L.Map) {
+    INDICATORS.forEach((ind) => {
+      this.legends[ind.code] = this.createLegendControl(ind.code);
+      console.log(`add legend <${ind.code}>`);
+    });
   }
 
   private createLegendControl(id: string): L.Control {
@@ -190,7 +195,25 @@ export class SoilErosionComponent implements OnInit {
 
   applyFilter(data: SoilErosionFilter) {
     console.log("apply filter", data);
-    this.filter = data;
+    if (!this.filter) {
+      this.filter = data;
+      this.setOverlaysToMap();
+      // add a legend
+      if (this.legends[data.indicator]) {
+        this.legends[data.indicator].addTo(this.map);
+      }
+    }
+
+    // INDICATORS
+    if (this.filter.indicator !== data.indicator) {
+      console.log(`indicator changed to ${data.indicator}`);
+      // remove the previous legend
+      this.map.removeControl(this.legends[this.filter.indicator]);
+      // add the new legend
+      this.legends[data.indicator].addTo(this.map);
+      // TODO
+      this.filter = data;
+    }
 
     // ADMINISTRATIVE AREA
     // clear current administrative layer

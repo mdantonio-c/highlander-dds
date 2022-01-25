@@ -32,7 +32,9 @@ export class MapFilterComponent implements OnInit {
     // subscribe for form value changes
     this.onChanges();
     // apply filter the first time
-    this.onFilterChange.emit(this.filterForm.value);
+    setTimeout(() => {
+      this.onFilterChange.emit(this.filterForm.value);
+    }, 1000);
   }
 
   private onChanges(): void {

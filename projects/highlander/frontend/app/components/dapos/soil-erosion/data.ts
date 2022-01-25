@@ -8,7 +8,6 @@ export const INDICATORS: CodeLabel[] = [
   {
     code: "SL",
     label: "Soil Loss",
-    state: "disabled",
   },
 ];
 
@@ -18,3 +17,23 @@ export const ADMINISTRATIVE_AREAS = [
   { code: "provinces", label: "Provinces" },
   // { code: "municipalities", label: "Municipalities" },
 ];
+
+export interface WMSLayers {
+  product: string;
+  models: string[];
+}
+
+export interface WMSEndpoint {
+  [key: string]: WMSLayers;
+}
+
+export const SOIL_EROSION_WMS: WMSEndpoint = {
+  RF: {
+    product: "RAINFALL_EROSIVITY",
+    models: [...Array(12)].map((_, i) => `${i + 1}`),
+  },
+  SL: {
+    product: "SOIL_LOSS",
+    models: [...Array(12)].map((_, i) => `${i + 1}`),
+  },
+};

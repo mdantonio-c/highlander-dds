@@ -10,11 +10,7 @@
             formControlName="indicator"
             class="form-control"
           >
-            <option
-              *ngFor="let i of indicators"
-              [value]="i.code"
-              [disabled]="i.state"
-            >
+            <option *ngFor="let i of indicators" [value]="i.code">
               {{ i.label }}
             </option>
           </select>
