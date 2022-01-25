@@ -40,7 +40,7 @@ const NORMAL_STYLE = {
   weight: 2,
   opacity: 0.9,
   color: "gray",
-  fillOpacity: 0.25,
+  fillOpacity: 0,
 };
 
 @Component({
@@ -58,13 +58,11 @@ export class SoilErosionComponent implements OnInit {
   private collapsed = false;
   map: L.Map;
   private legends: { [key: string]: L.Control } = {};
-  /*baseUrl: string = environment.production
+  baseUrl: string = environment.production
     ? `${environment.backendURI}`
-    : "http://localhost:8070";*/
-  baseUrl: string = "https://dds.highlander.cineca.it";
+    : "http://localhost:8070";
 
   bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
-  // readonly models = [...Array(12)].map((_, i) => `R${i + 1}`);
   readonly timeRanges = ["historical", "future"];
   readonly LEGEND_POSITION = "bottomleft";
 
@@ -79,11 +77,12 @@ export class SoilErosionComponent implements OnInit {
   );
 
   layers: L.Layer[] = [this.LAYER_OSM];
-  layerControl;
   layersControl = {
-    baseLayers: {
-      "Openstreet Map": this.LAYER_OSM,
-    },
+    baseLayers: {},
+    overlays: null,
+  };
+  layersControlOptions = {
+    collapsed: false,
   };
   mLayers = L.layerGroup([]);
 
@@ -140,27 +139,31 @@ export class SoilErosionComponent implements OnInit {
 
   private setOverlaysToMap() {
     let overlays = {};
-    const product = SOIL_EROSION_WMS[this.filter.indicator].product;
-    SOIL_EROSION_WMS[this.filter.indicator].models.forEach((m) => {
-      overlays[m] = L.tileLayer.wms(`${this.baseUrl}/geoserver/wms`, {
-        layers: `highlander:${product}_${m}`,
-        version: "1.1.0",
-        format: "image/png",
-        opacity: 0.5,
-        transparent: true,
-        attribution: "'&copy; CMCC",
-        maxZoom: MAX_ZOOM,
-        minZoom: MIN_ZOOM,
-      });
+    const ind = this.filter.indicator;
+    const product = SOIL_EROSION_WMS[ind].product;
+    SOIL_EROSION_WMS[ind].models.forEach((m) => {
+      overlays[`${ind}${m}`] = L.tileLayer.wms(
+        `${this.baseUrl}/geoserver/wms`,
+        {
+          layers: `highlander:${product}_${m}`,
+          version: "1.1.0",
+          format: "image/png",
+          opacity: 0.5,
+          transparent: true,
+          attribution: "'&copy; CMCC",
+          maxZoom: MAX_ZOOM,
+          minZoom: MIN_ZOOM,
+        }
+      );
     });
-    L.control.layers(overlays, null, { collapsed: false }).addTo(this.map);
-    overlays[SOIL_EROSION_WMS[this.filter.indicator].models[0]].addTo(this.map);
+    this.layersControl["baseLayers"] = overlays;
+    overlays[`${ind}${SOIL_EROSION_WMS[ind].models[0]}`].addTo(this.map);
   }
 
   private initLegends(map: L.Map) {
     INDICATORS.forEach((ind) => {
       this.legends[ind.code] = this.createLegendControl(ind.code);
-      console.log(`add legend <${ind.code}>`);
+      // console.log(`add legend <${ind.code}>`);
     });
   }
 
@@ -206,13 +209,21 @@ export class SoilErosionComponent implements OnInit {
 
     // INDICATORS
     if (this.filter.indicator !== data.indicator) {
-      console.log(`indicator changed to ${data.indicator}`);
+      // console.log(`indicator changed to ${data.indicator}`);
+
       // remove the previous legend
       this.map.removeControl(this.legends[this.filter.indicator]);
       // add the new legend
       this.legends[data.indicator].addTo(this.map);
-      // TODO
       this.filter = data;
+
+      let overlays = this.layersControl["baseLayers"];
+      for (let name in overlays) {
+        if (this.map.hasLayer(overlays[name])) {
+          this.map.removeLayer(overlays[name]);
+        }
+      }
+      this.setOverlaysToMap();
     }
 
     // ADMINISTRATIVE AREA
