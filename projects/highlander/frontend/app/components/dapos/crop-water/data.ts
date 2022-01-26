@@ -8,21 +8,36 @@ export interface Area extends CodeLabel {
 
 export const ADMINISTRATIVE_AREAS: Area[] = [
   {
-    code: "renana",
+    code: "C5",
     label: "Renana",
     coords: L.latLng([44.56406, 11.49889]),
     zLevel: 11,
   },
   {
-    code: "burana",
+    code: "C4",
     label: "Burana",
     coords: L.latLng([44.72122, 11.15122]),
     zLevel: 10,
   },
   {
-    code: "romagna",
+    code: "C7",
     label: "Romagna",
-    coords: L.latLng([44.06454, 12.44987]),
+    coords: L.latLng([44.22606, 12.40426]),
     zLevel: 10,
+  },
+];
+
+export const LAYERS: CodeLabel[] = [
+  {
+    code: "IRRIGATION",
+    label: "Irrigation monthly forecast",
+  },
+  {
+    code: "PRECIPITATION",
+    label: "Precipitation monthly forecast",
+  },
+  {
+    code: "CROP",
+    label: "Crop cultures",
   },
 ];

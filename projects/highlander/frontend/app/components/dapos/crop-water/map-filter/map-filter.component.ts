@@ -1,7 +1,8 @@
 import { Component, OnInit, Output, EventEmitter } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { AuthService } from "@rapydo/services/auth";
-import { ADMINISTRATIVE_AREAS } from "../data";
+import { ADMINISTRATIVE_AREAS, LAYERS } from "../data";
+import { CodeLabel } from "../../../../types";
 
 @Component({
   selector: "crop-water-filter",
@@ -15,11 +16,12 @@ export class MapFilterComponent implements OnInit {
 
   readonly crops = [];
   readonly areas = ADMINISTRATIVE_AREAS;
+  readonly layers: CodeLabel[] = LAYERS;
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.filterForm = this.fb.group({
-      crop: [],
-      area: ["renana"],
+      layer: ["IRRIGATION"],
+      area: ["C5"],
     });
   }
 

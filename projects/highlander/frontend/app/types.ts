@@ -150,6 +150,7 @@ export interface SoilErosionFilter {
 export interface CropWaterFilter {
   crop: string;
   area: string;
+  layer: CodeLabel;
 }
 
 export interface CodeLabel {

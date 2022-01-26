@@ -15,6 +15,7 @@ const NORMAL_STYLE = {
   color: "gray",
   fillOpacity: 0.9,
 };
+const WMS_ENDPOINT = "https://dds.highlander.cineca.it/geoserver/wms"; // FIXME
 
 @Component({
   selector: "app-crop-water",
@@ -48,8 +49,9 @@ export class CropWaterComponent implements OnInit {
   };
 
   layers: L.Layer[] = [this.LAYER_OSM];
-  private filter: CropWaterFilter;
+  public filter: CropWaterFilter;
   private geoData: L.LayerGroup = new L.LayerGroup();
+  referenceDate: string = "2021-07-07";
 
   constructor(
     private dataService: DataService,
@@ -92,6 +94,8 @@ export class CropWaterComponent implements OnInit {
       // change area
       console.log(`change zoom to ${this.zoom}`);
       this.map.setView(this.center, this.zoom);
+
+      this.loadGeoData();
     }
   }
 
@@ -113,26 +117,25 @@ export class CropWaterComponent implements OnInit {
         this.geoData.addLayer(L.geoJSON(json));
       });*/
 
-    const year: number = 2021;
-    const months: string = "MJJ";
-    const layerName: string =
-      // `highlander:seasonalForecast_C5_${year}_${months}`;
-      "highlander:forecast-50";
-    // 'highlander:climate-50';
-
-    let myLayer = L.tileLayer.wms(
-      `https://dds.highlander.cineca.it/geoserver/wms`,
-      {
-        layers: layerName,
-        version: "1.1.0",
-        format: "image/png",
-        opacity: 0.5,
-        transparent: true,
-        attribution: "'&copy; CMCC",
-        maxZoom: MAX_ZOOM,
-        minZoom: MIN_ZOOM,
-      }
+    const year: number = 2021,
+      month: string = "07",
+      day: string = "07";
+    // const months: string = "MJJ";
+    // const layerType: string = "IRRIGATION";
+    console.log(
+      `highlander:${this.filter.layer}_${this.filter.area}_${year}_${month}_${day}`
     );
+
+    let myLayer = L.tileLayer.wms(`${WMS_ENDPOINT}`, {
+      layers: `highlander:${this.filter.layer}_${this.filter.area}_${year}_${month}_${day}`,
+      version: "1.1.0",
+      format: "image/png",
+      opacity: 0.5,
+      transparent: true,
+      attribution: "'&copy; CMCC",
+      maxZoom: MAX_ZOOM,
+      minZoom: MIN_ZOOM,
+    });
     this.geoData.addLayer(myLayer);
   }
 }
