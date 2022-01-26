@@ -29,15 +29,15 @@ export const ADMINISTRATIVE_AREAS: Area[] = [
 
 export const LAYERS: CodeLabel[] = [
   {
-    code: "IRRIGATION",
+    code: "Irrigation",
     label: "Irrigation monthly forecast",
   },
   {
-    code: "PRECIPITATION",
+    code: "Precipitation",
     label: "Precipitation monthly forecast",
   },
   {
-    code: "CROP",
+    code: "Crop",
     label: "Crop cultures",
   },
 ];

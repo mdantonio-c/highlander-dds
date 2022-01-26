@@ -15,8 +15,8 @@
         <div class="form-group">
           <label class="col-form-label"><strong>Layer:</strong></label>
           <select id="layerGroup" formControlName="layer" class="form-control">
-            <option *ngFor="let l of layers" [value]="l.code">
-              {{ l.code }}
+            <option *ngFor="let l of layers" [value]="l">
+              {{ l }}
             </option>
           </select>
         </div>

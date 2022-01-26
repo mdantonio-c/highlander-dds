@@ -5,7 +5,7 @@ import { NgxSpinnerService } from "ngx-spinner";
 
 import * as L from "leaflet";
 import { DataService } from "../../../services/data.service";
-import { ADMINISTRATIVE_AREAS } from "./data";
+import { ADMINISTRATIVE_AREAS, LAYERS } from "./data";
 
 const MAX_ZOOM = 16;
 const MIN_ZOOM = 10;
@@ -92,7 +92,6 @@ export class CropWaterComponent implements OnInit {
 
     if (this.map) {
       // change area
-      console.log(`change zoom to ${this.zoom}`);
       this.map.setView(this.center, this.zoom);
 
       this.loadGeoData();
@@ -120,22 +119,24 @@ export class CropWaterComponent implements OnInit {
     const year: number = 2021,
       month: string = "07",
       day: string = "07";
-    // const months: string = "MJJ";
-    // const layerType: string = "IRRIGATION";
-    console.log(
-      `highlander:${this.filter.layer}_${this.filter.area}_${year}_${month}_${day}`
-    );
 
     let myLayer = L.tileLayer.wms(`${WMS_ENDPOINT}`, {
-      layers: `highlander:${this.filter.layer}_${this.filter.area}_${year}_${month}_${day}`,
+      layers: `highlander:${this.filter.layer.toUpperCase()}_${
+        this.filter.area
+      }_${year}_${month}_${day}`,
       version: "1.1.0",
       format: "image/png",
-      opacity: 0.5,
+      opacity: 0.8,
       transparent: true,
       attribution: "'&copy; CMCC",
       maxZoom: MAX_ZOOM,
       minZoom: MIN_ZOOM,
     });
     this.geoData.addLayer(myLayer);
+  }
+
+  printLayerDescription(code: string): string {
+    const found = LAYERS.find((x) => x.code === code);
+    return found.label || code;
   }
 }
