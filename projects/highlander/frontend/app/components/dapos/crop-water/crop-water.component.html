@@ -11,7 +11,7 @@
         (onFilterChange)="applyFilter($event)"
       ></crop-water-filter>
     </div>
-    <div class="col px-3">
+    <div class="col pl-3">
       <div id="map-wrapper" class="fill">
         <div
           class="map"
@@ -19,7 +19,22 @@
           [leafletOptions]="options"
           (leafletMapReady)="onMapReady($event)"
           (leafletMapZoomEnd)="onMapZoomEnd($event)"
-        ></div>
+          (leafletMapMove)="onMapMove($event)"
+        >
+          <!-- Zoom Level -->
+          <div class="leaflet-bottom leaflet-right mb-4 mr-1">
+            <div class="leaflet-box">
+              Zoom Level:
+              <span class="font-weight-bold">{{ zoom }}</span>
+              <br />
+              Center:
+              <span class="font-weight-bold"
+                >{{ center.lat | number: "1.1-5" }},
+                {{ center.lng | number: "1.1-5" }}</span
+              >
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

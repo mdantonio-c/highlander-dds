@@ -9,6 +9,12 @@ import { ADMINISTRATIVE_AREAS } from "./data";
 
 const MAX_ZOOM = 16;
 const MIN_ZOOM = 10;
+const NORMAL_STYLE = {
+  weight: 2,
+  opacity: 0.9,
+  color: "gray",
+  fillOpacity: 0.9,
+};
 
 @Component({
   selector: "app-crop-water",
@@ -21,7 +27,9 @@ export class CropWaterComponent implements OnInit {
   isFilterCollapsed = false;
   private collapsed = false;
   map: L.Map;
+
   zoom: number = 12;
+  center: L.LatLng = L.latLng([44.49895, 11.32759]); // default Bologna City
 
   LAYER_OSM = L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -36,11 +44,12 @@ export class CropWaterComponent implements OnInit {
     layers: [this.LAYER_OSM],
     zoom: this.zoom,
     fullscreenControl: true,
-    center: L.latLng([44.5, 11.33]),
+    center: this.center,
   };
 
   layers: L.Layer[] = [this.LAYER_OSM];
   private filter: CropWaterFilter;
+  private geoData: L.LayerGroup = new L.LayerGroup();
 
   constructor(
     private dataService: DataService,
@@ -52,6 +61,14 @@ export class CropWaterComponent implements OnInit {
 
   onMapReady(map: L.Map) {
     this.map = map;
+    // posizion to selected area
+    this.map.setView(this.center, this.zoom);
+
+    // load geo data
+    console.log("load geo data");
+    this.loadGeoData();
+
+    this.geoData.addTo(map);
   }
 
   onMapZoomEnd($event) {
@@ -59,19 +76,63 @@ export class CropWaterComponent implements OnInit {
     this.zoom = this.map.getZoom();
   }
 
+  onMapMove($event) {
+    this.center = this.map.getCenter();
+  }
+
   applyFilter(data: CropWaterFilter) {
     console.log("apply filter", data);
     this.filter = data;
 
-    // change area
+    const selectedArea = ADMINISTRATIVE_AREAS.find((x) => x.code === data.area);
+    this.zoom = selectedArea.zLevel ? selectedArea.zLevel : this.zoom;
+    this.center = selectedArea.coords;
+
     if (this.map) {
-      const selectedArea = ADMINISTRATIVE_AREAS.find(
-        (x) => x.code === data.area
-      );
-      const z = selectedArea.zLevel ? selectedArea.zLevel : this.zoom;
-      this.zoom = z;
-      // console.log(`change zoom to ${z}`);
-      this.map.setView(selectedArea.coords, z);
+      // change area
+      console.log(`change zoom to ${this.zoom}`);
+      this.map.setView(this.center, this.zoom);
     }
+  }
+
+  /**
+   * Load geo data on the map
+   */
+  private loadGeoData() {
+    if (!this.map) {
+      console.warn("Cannot load geo data. Map not available");
+      return;
+    }
+    this.geoData.clearLayers();
+    /*this.dataService
+      .getCropWaterForecasts()
+      .subscribe((json) => {
+        const jsonLayer = L.geoJSON(json, {
+          style: NORMAL_STYLE
+        });
+        this.geoData.addLayer(L.geoJSON(json));
+      });*/
+
+    const year: number = 2021;
+    const months: string = "MJJ";
+    const layerName: string =
+      // `highlander:seasonalForecast_C5_${year}_${months}`;
+      "highlander:forecast-50";
+    // 'highlander:climate-50';
+
+    let myLayer = L.tileLayer.wms(
+      `https://dds.highlander.cineca.it/geoserver/wms`,
+      {
+        layers: layerName,
+        version: "1.1.0",
+        format: "image/png",
+        opacity: 0.5,
+        transparent: true,
+        attribution: "'&copy; CMCC",
+        maxZoom: MAX_ZOOM,
+        minZoom: MIN_ZOOM,
+      }
+    );
+    this.geoData.addLayer(myLayer);
   }
 }

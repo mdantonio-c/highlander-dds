@@ -10,13 +10,13 @@ export const ADMINISTRATIVE_AREAS: Area[] = [
   {
     code: "renana",
     label: "Renana",
-    coords: L.latLng([44.5, 11.33]),
-    zLevel: 12,
+    coords: L.latLng([44.56406, 11.49889]),
+    zLevel: 11,
   },
   {
     code: "burana",
     label: "Burana",
-    coords: L.latLng([44.721, 11.151]),
+    coords: L.latLng([44.72122, 11.15122]),
     zLevel: 10,
   },
   {
