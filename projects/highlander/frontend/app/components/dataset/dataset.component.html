@@ -50,26 +50,41 @@
     <div class="col-md-4 mb-5">
       <hr />
       <h3>Contact</h3>
-      <address>
+      <address class="mb-0">
         <strong>{{ dataset.contact.name }}</strong>
-        <br />
-        <span>
+        <span class="text-truncate">
           <i class="fas fa-envelope"></i>
           {{ dataset.contact.email }}
         </span>
         <br />
-        <ng-container *ngIf="dataset.contact.webpage">
+        <div *ngIf="dataset.contact.webpage" class="text-nowrap text-truncate">
           <i class="fas fa-globe"></i>
           <a [href]="dataset.contact.webpage" target="_blank" class="ml-1">{{
             dataset.contact.webpage
           }}</a>
-        </ng-container>
+        </div>
         <br />
       </address>
-      <h3>Publication Date</h3>
+      <h3 class="m-0">Publication Date</h3>
       <p>{{ dataset.publication_date | date }}</p>
-      <h3>License</h3>
+      <h3 class="m-0">License</h3>
       <p>{{ dataset.license.name }}</p>
+      <h3 class="m-0">Update frequency</h3>
+      <p>{{ dataset.update_frequency || "n/a" }}</p>
+      <ng-container *ngIf="dataset.doi">
+        <h3 class="m-0">DOI</h3>
+        <p>
+          <a [href]="'https://doi.org/' + dataset.doi" target="_blank">
+            https://doi.org/{{ dataset.doi }}</a
+          >
+        </p>
+      </ng-container>
+      <ng-container *ngIf="dataset.related_data && dataset.related_data.length">
+        <h3 class="m-0">Related Data</h3>
+        <div class="d-block" *ngFor="let link of dataset.related_data">
+          <a [href]="link.url" target="_blank"> {{ link.name }}</a>
+        </div>
+      </ng-container>
       <hr />
       <button
         type="button"
