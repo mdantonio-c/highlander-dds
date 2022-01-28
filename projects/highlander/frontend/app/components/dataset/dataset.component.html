@@ -70,14 +70,14 @@
       <p>{{ dataset.publication_date | date }}</p>
       <ng-container *ngIf="dataset.license">
         <h3 class="m-0">License</h3>
-        <p *ngIf="dataset.license.url; else plainName">
-          <a [href]="dataset.license.url" target="_blank">
-            {{ dataset.license.name }}</a
-          >
-        </p>
-        <ng-template #plainName>
-          <p>{{ dataset.license.name }}</p>
-        </ng-template>
+        <ng-container
+          [ngTemplateOutlet]="dataset.license.url ? simpleLink : plainName"
+          [ngTemplateOutletContext]="{
+            link: dataset.license.url,
+            name: dataset.license.name
+          }"
+        >
+        </ng-container>
       </ng-container>
       <h3 class="m-0">Update frequency</h3>
       <p>{{ dataset.update_frequency || "n/a" }}</p>
@@ -92,7 +92,11 @@
       <ng-container *ngIf="dataset.related_data && dataset.related_data.length">
         <h3 class="m-0">Related Data</h3>
         <div class="d-block" *ngFor="let link of dataset.related_data">
-          <a [href]="link.url" target="_blank"> {{ link.name }}</a>
+          <ng-container
+            [ngTemplateOutlet]="link.url ? simpleLink : plainName"
+            [ngTemplateOutletContext]="{ link: link.url, name: link.name }"
+          >
+          </ng-container>
         </div>
       </ng-container>
       <hr />
@@ -104,6 +108,14 @@
       >
         Get Data »
       </button>
+      <ng-template #plainName let-name="name">
+        <p>{{ name }}</p>
+      </ng-template>
+      <ng-template #simpleLink let-name="name" let-link="link">
+        <p>
+          <a [href]="link" target="_blank">{{ name }}</a>
+        </p>
+      </ng-template>
     </div>
   </div>
 </div>
