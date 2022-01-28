@@ -52,6 +52,7 @@
       <h3>Contact</h3>
       <address class="mb-0">
         <strong>{{ dataset.contact.name }}</strong>
+        <br />
         <span class="text-truncate">
           <i class="fas fa-envelope"></i>
           {{ dataset.contact.email }}
@@ -67,8 +68,17 @@
       </address>
       <h3 class="m-0">Publication Date</h3>
       <p>{{ dataset.publication_date | date }}</p>
-      <h3 class="m-0">License</h3>
-      <p>{{ dataset.license.name }}</p>
+      <ng-container *ngIf="dataset.license">
+        <h3 class="m-0">License</h3>
+        <p *ngIf="dataset.license.url; else plainName">
+          <a [href]="dataset.license.url" target="_blank">
+            {{ dataset.license.name }}</a
+          >
+        </p>
+        <ng-template #plainName>
+          <p>{{ dataset.license.name }}</p>
+        </ng-template>
+      </ng-container>
       <h3 class="m-0">Update frequency</h3>
       <p>{{ dataset.update_frequency || "n/a" }}</p>
       <ng-container *ngIf="dataset.doi">
