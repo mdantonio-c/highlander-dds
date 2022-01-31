@@ -75,7 +75,9 @@
                   <div class="row" *ngIf="widget.type == 'StringList'">
                     <div
                       class="custom-control custom-checkbox col-sm-12 col-md-6"
-                      *ngFor="let v of widget.details['values']"
+                      *ngFor="
+                        let v of sortBy(widget.details['values'], 'label')
+                      "
                     >
                       <input
                         [id]="v.value"

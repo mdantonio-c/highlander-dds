@@ -259,6 +259,13 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
     return this.loading;
   }
 
+  sortBy(arr: any[], field: string) {
+    if (!arr || arr.length === 0 || !arr[0].hasOwnProperty(field)) {
+      return arr;
+    }
+    return arr.sort((a, b) => a[field].toLowerCase().localeCompare(b[field]));
+  }
+
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
