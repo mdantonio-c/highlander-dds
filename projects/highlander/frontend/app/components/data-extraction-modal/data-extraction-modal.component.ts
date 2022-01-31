@@ -259,11 +259,31 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
     return this.loading;
   }
 
+  /**
+   * Sort list of object alphabetically by field.
+   * If the fields all end with a number, sort by that number.
+   * E.g. R1,R2,...,R9,R10,R11,etc
+   */
   sortBy(arr: any[], field: string) {
     if (!arr || arr.length === 0 || !arr[0].hasOwnProperty(field)) {
       return arr;
     }
-    return arr.sort((a, b) => a[field].toLowerCase().localeCompare(b[field]));
+    return arr.sort((a, b) => {
+      let a1 = a[field].toLowerCase(),
+        b1 = b[field].toLowerCase();
+      const regex = /\d+$/;
+      if (a1.match(regex) && b1.match(regex)) {
+        const firstPartA = a1.replace(regex, ""),
+          firstPartB = a1.replace(regex, "");
+        if (firstPartA === firstPartB) {
+          const an = Number(a1.match(regex)[0]),
+            bn = Number(b1.match(regex)[0]);
+          // compare numbers
+          return an > bn ? 1 : an === bn ? 0 : -1;
+        }
+      }
+      return a1.localeCompare(b1);
+    });
   }
 
   ngOnDestroy() {
