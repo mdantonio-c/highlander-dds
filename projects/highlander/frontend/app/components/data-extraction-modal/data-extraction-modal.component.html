@@ -68,7 +68,7 @@
                   class="fas fa-{{ widget.icon }} mr-2"
                   *ngIf="widget.icon"
                 ></i>
-                {{ widget.label }}
+                {{ widget.label.replace("_", " ") | titlecase }}
               </h6>
               <div class="hl-preview mb-4">
                 <div class="hl-preview-content">
