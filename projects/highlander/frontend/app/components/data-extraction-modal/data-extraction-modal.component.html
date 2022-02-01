@@ -99,57 +99,12 @@
                       (areaChanged)="setSpatialCoverage($event)"
                     >
                     </app-spatial-coverage>
-                    <ng-container
-                      *ngIf="widget.details['widgets'].includes('date_list')"
+                    <app-temporal-coverage
+                      *ngIf="widget.name === 'temporal_coverage'"
+                      [widgets]="productInfo.widgets"
+                      (dateChanged)="onListChange($event.event, $event.filter)"
                     >
-                      <ng-template
-                        let-innerWidget
-                        [ngTemplateOutletContext]="{
-                          $implicit: getWidget('date_list')
-                        }"
-                        [ngTemplateOutlet]="inner"
-                        #inner
-                      >
-                        <div
-                          *ngFor="
-                            let dateType of innerWidget.details['widgets']
-                          "
-                          class="col-12"
-                        >
-                          <div class="row mb-3">
-                            <div class="col-12 px-0">
-                              <h6 class="text-muted font-weight-bold">
-                                {{ dateType }}
-                              </h6>
-                            </div>
-                            <div
-                              class="
-                                custom-control custom-checkbox
-                                col-sm-6 col-md-3
-                              "
-                              *ngFor="
-                                let v of getWidget(dateType).details['values']
-                              "
-                            >
-                              <input
-                                [id]="dateType + '_' + v.value"
-                                [value]="v.value"
-                                type="checkbox"
-                                class="custom-control-input"
-                                (change)="
-                                  onListChange($event, 'time_' + dateType)
-                                "
-                              />
-                              <label
-                                [for]="dateType + '_' + v.value"
-                                class="custom-control-label"
-                                >{{ v.label }}</label
-                              >
-                            </div>
-                          </div>
-                        </div>
-                      </ng-template>
-                    </ng-container>
+                    </app-temporal-coverage>
                   </div>
                   <div class="row" *ngIf="widget.type == 'FileFormat'">
                     <div

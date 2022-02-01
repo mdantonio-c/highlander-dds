@@ -153,7 +153,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
     return this.productInfo.widgets.find((w) => w.name == widgetName);
   }
 
-  onListChange(e, filter) {
+  onListChange(e, filter: string) {
     const checkArray: FormArray = this.filterForm.get(filter) as FormArray;
     if (!checkArray) {
       console.warn(`filter '${filter}' not yet managed!`);

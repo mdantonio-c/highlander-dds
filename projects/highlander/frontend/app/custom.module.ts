@@ -11,6 +11,7 @@ import { DatasetsComponent } from "./components/datasets/datasets.component";
 import { DatasetComponent } from "./components/dataset/dataset.component";
 import { DataExtractionModalComponent } from "./components/data-extraction-modal/data-extraction-modal.component";
 import { SpatialCoverageComponent } from "./components/data-extraction-modal/spatial-coverage/spatial-coverage.component";
+import { TemporalCoverageComponent } from "./components/data-extraction-modal/temporal-coverage/temporal-coverage.component";
 import { MapSideNavComponent } from "./components/data-extraction-modal/map-side-nav/map-side-nav.component";
 import { RequestsComponent } from "./components/requests/requests.component";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
@@ -56,6 +57,7 @@ const routes: Routes = [
     DatasetComponent,
     DataExtractionModalComponent,
     SpatialCoverageComponent,
+    TemporalCoverageComponent,
     MapSideNavComponent,
     RequestsComponent,
     DashboardComponent,
