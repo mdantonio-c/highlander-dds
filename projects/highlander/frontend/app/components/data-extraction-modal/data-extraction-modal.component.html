@@ -92,19 +92,32 @@
                     </div>
                   </div>
                   <div class="row" *ngIf="widget.type == 'ExclusiveFrame'">
-                    <app-spatial-coverage
-                      class="w-100"
-                      *ngIf="widget.name === 'spatial_coverage'"
-                      [area]="area"
-                      (areaChanged)="setSpatialCoverage($event)"
-                    >
-                    </app-spatial-coverage>
-                    <app-temporal-coverage
-                      *ngIf="widget.name === 'temporal_coverage'"
-                      [widgets]="productInfo.widgets"
-                      (dateChanged)="onListChange($event.event, $event.filter)"
-                    >
-                    </app-temporal-coverage>
+                    <ng-container [ngSwitch]="widget.name">
+                      <app-spatial-coverage
+                        *ngSwitchCase="'spatial_coverage'"
+                        class="w-100"
+                        [area]="area"
+                        (areaChanged)="setSpatialCoverage($event)"
+                      >
+                      </app-spatial-coverage>
+                      <app-temporal-coverage
+                        *ngSwitchCase="'temporal_coverage'"
+                        [widgets]="productInfo.widgets"
+                        (dateChanged)="
+                          onListChange($event.event, $event.filter)
+                        "
+                      >
+                      </app-temporal-coverage>
+                      <app-exclusive-frame
+                        *ngSwitchDefault
+                        [comp]="widget"
+                        [widgets]="productInfo.widgets"
+                        (dataChanged)="
+                          onListChange($event.event, $event.filter)
+                        "
+                      >
+                      </app-exclusive-frame>
+                    </ng-container>
                   </div>
                   <div class="row" *ngIf="widget.type == 'FileFormat'">
                     <div
