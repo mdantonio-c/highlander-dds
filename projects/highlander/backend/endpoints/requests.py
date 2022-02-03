@@ -275,6 +275,9 @@ def build_request_args(**kwargs: RequestArgs) -> Mapping[str, Any]:
     longitude: Optional[Dict[str, float]] = cast(
         Optional[Dict[str, float]], kwargs.pop("longitude", None)
     )
+    area: Optional[Dict[str, float]] = cast(
+        Optional[Dict[str, float]], kwargs.pop("area", None)
+    )
     extra: Optional[Dict[str, Any]] = cast(
         Optional[Dict[str, Any]], kwargs.pop("extra", None)
     )
@@ -290,6 +293,8 @@ def build_request_args(**kwargs: RequestArgs) -> Mapping[str, Any]:
         args["latitude"] = latitude
     if longitude:
         args["longitude"] = longitude
+    if area:
+        args["area"] = area
     if extra:
         for k, v in extra.items():
             args[k] = v

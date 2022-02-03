@@ -56,7 +56,8 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
   estimatedSize$: Observable<number>;
   estimatedSize: number;
   usage: StorageUsage;
-  area: SpatialArea = {
+  // the initial whole area
+  initialArea: SpatialArea = {
     north: null,
     east: null,
     south: null,
@@ -98,8 +99,8 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
           for (let widget of this.productInfo.widgets) {
             if (widget.name === "area") {
               for (let field of widget.details.fields) {
-                if (field.name in this.area) {
-                  this.area[field.name] = field.range;
+                if (field.name in this.initialArea) {
+                  this.initialArea[field.name] = field.range;
                 }
               }
               break;
@@ -214,28 +215,36 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
       res["time"] = time;
     }
     // add spatial coverage
-    if (this.latitude) {
+    let area: SpatialArea = (this.filterForm.controls.area as AbstractControl)
+      .value;
+    if (area) {
+      res["area"] = area;
+    }
+    /*if (this.latitude) {
       res["latitude"] = this.latitude;
     }
     if (this.longitude) {
       res["longitude"] = this.longitude;
-    }
+    }*/
     return res;
   }
 
   setSpatialCoverage(area: SpatialArea) {
-    this.latitude = {
+    // console.log('set spatial coverage', area);
+    /*this.latitude = {
       start: area.south,
       stop: area.north,
     };
     this.longitude = {
       start: area.west,
       stop: area.east,
-    };
-    this.filterForm.updateValueAndValidity({
+    };*/
+    // this.area = area;
+    this.filterForm.controls.area.setValue(area);
+    /*this.filterForm.updateValueAndValidity({
       onlySelf: false,
       emitEvent: true,
-    });
+    });*/
   }
 
   private toFormGroup(data: ProductInfo) {
@@ -245,6 +254,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
       time_day: this.fb.array([]),
       time_hour: this.fb.array([]),
       format: ["netcdf", Validators.required],
+      area: [null],
     });
     data.widgets_order.forEach((w) => {
       let comp = this.getWidget(w);

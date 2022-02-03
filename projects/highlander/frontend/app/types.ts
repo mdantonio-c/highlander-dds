@@ -92,6 +92,7 @@ export interface RequestArgs {
   /** @nullable */
   variable?: string[];
   time?: TimeArg;
+  area?: SpatialArea;
   format: string;
   [other: string]: any;
 }
