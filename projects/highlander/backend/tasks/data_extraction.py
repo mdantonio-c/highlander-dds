@@ -77,6 +77,7 @@ def extract_data(
             )
             raise DiskQuotaException(message)
 
+        log.debug(req_body)
         # run data extraction
         result_path = dds.broker.retrieve(
             dataset_name=dataset_name, request=req_body.copy()

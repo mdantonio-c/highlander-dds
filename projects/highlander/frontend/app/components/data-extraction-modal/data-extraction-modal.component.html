@@ -96,7 +96,7 @@
                       <app-spatial-coverage
                         *ngSwitchCase="'spatial_coverage'"
                         class="w-100"
-                        [area]="area"
+                        [area]="initialArea"
                         (areaChanged)="setSpatialCoverage($event)"
                       >
                       </app-spatial-coverage>
@@ -141,6 +141,7 @@
               </div>
             </ng-template>
           </ng-container>
+          <!-- <pre>{{filterForm.value | json}}</pre> -->
         </form>
       </div>
     </div>
