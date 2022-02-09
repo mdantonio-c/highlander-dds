@@ -56,7 +56,8 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
   estimatedSize$: Observable<number>;
   estimatedSize: number;
   usage: StorageUsage;
-  area: SpatialArea = {
+  // the initial whole area
+  initialArea: SpatialArea = {
     north: null,
     east: null,
     south: null,
@@ -98,8 +99,8 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
           for (let widget of this.productInfo.widgets) {
             if (widget.name === "area") {
               for (let field of widget.details.fields) {
-                if (field.name in this.area) {
-                  this.area[field.name] = field.range;
+                if (field.name in this.initialArea) {
+                  this.initialArea[field.name] = field.range;
                 }
               }
               break;
@@ -153,7 +154,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
     return this.productInfo.widgets.find((w) => w.name == widgetName);
   }
 
-  onListChange(e, filter) {
+  onListChange(e, filter: string) {
     const checkArray: FormArray = this.filterForm.get(filter) as FormArray;
     if (!checkArray) {
       console.warn(`filter '${filter}' not yet managed!`);
@@ -214,28 +215,36 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
       res["time"] = time;
     }
     // add spatial coverage
-    if (this.latitude) {
+    let area: SpatialArea = (this.filterForm.controls.area as AbstractControl)
+      .value;
+    if (area) {
+      res["area"] = area;
+    }
+    /*if (this.latitude) {
       res["latitude"] = this.latitude;
     }
     if (this.longitude) {
       res["longitude"] = this.longitude;
-    }
+    }*/
     return res;
   }
 
   setSpatialCoverage(area: SpatialArea) {
-    this.latitude = {
+    // console.log('set spatial coverage', area);
+    /*this.latitude = {
       start: area.south,
       stop: area.north,
     };
     this.longitude = {
       start: area.west,
       stop: area.east,
-    };
-    this.filterForm.updateValueAndValidity({
+    };*/
+    // this.area = area;
+    this.filterForm.controls.area.setValue(area);
+    /*this.filterForm.updateValueAndValidity({
       onlySelf: false,
       emitEvent: true,
-    });
+    });*/
   }
 
   private toFormGroup(data: ProductInfo) {
@@ -245,10 +254,16 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
       time_day: this.fb.array([]),
       time_hour: this.fb.array([]),
       format: ["netcdf", Validators.required],
+      area: [null],
     });
     data.widgets_order.forEach((w) => {
       let comp = this.getWidget(w);
       if (comp.type === "StringList") {
+        formGroup.addControl(comp.name, new FormArray([]));
+      } else if (
+        comp.type === "ExclusiveFrame" &&
+        !["temporal_coverage", "spatial_coverage"].includes(comp.name)
+      ) {
         formGroup.addControl(comp.name, new FormArray([]));
       }
     });
@@ -257,6 +272,33 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
 
   isLoading(): boolean {
     return this.loading;
+  }
+
+  /**
+   * Sort list of object alphabetically by field.
+   * If the fields all end with a number, sort by that number.
+   * E.g. R1,R2,...,R9,R10,R11,etc
+   */
+  sortBy(arr: any[], field: string) {
+    if (!arr || arr.length === 0 || !arr[0].hasOwnProperty(field)) {
+      return arr;
+    }
+    return arr.sort((a, b) => {
+      let a1 = a[field].toLowerCase(),
+        b1 = b[field].toLowerCase();
+      const regex = /\d+$/;
+      if (a1.match(regex) && b1.match(regex)) {
+        const firstPartA = a1.replace(regex, ""),
+          firstPartB = a1.replace(regex, "");
+        if (firstPartA === firstPartB) {
+          const an = Number(a1.match(regex)[0]),
+            bn = Number(b1.match(regex)[0]);
+          // compare numbers
+          return an > bn ? 1 : an === bn ? 0 : -1;
+        }
+      }
+      return a1.localeCompare(b1);
+    });
   }
 
   ngOnDestroy() {

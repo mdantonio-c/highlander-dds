@@ -1,0 +1,21 @@
+<ng-container *ngIf="data_list">
+  <div class="col-12">
+    <div class="row mb-3">
+      <div
+        class="custom-control custom-checkbox col-sm-6 col-md-3"
+        *ngFor="let v of data_list.details['values']"
+      >
+        <input
+          [id]="comp.name + '_' + v.value"
+          [value]="v.value"
+          type="checkbox"
+          class="custom-control-input"
+          (change)="onListChange($event, comp.name)"
+        />
+        <label [for]="comp.name + '_' + v.value" class="custom-control-label">{{
+          v.label
+        }}</label>
+      </div>
+    </div>
+  </div>
+</ng-container>

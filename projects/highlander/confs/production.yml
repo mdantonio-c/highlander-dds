@@ -5,10 +5,12 @@ services:
     volumes:
       - /data/vhr-rea:/catalog/datasets/era5-downscaled
       - /data/sub-sea:/catalog/datasets/sub-sea
+      - /data/human-wellbeing:/catalog/datasets/human-wellbeing
   celery:
     volumes:
       - /data/vhr-rea:/catalog/datasets/era5-downscaled
       - /data/sub-sea:/catalog/datasets/sub-sea
+      - /data/human-wellbeing:/catalog/datasets/human-wellbeing
   proxy:
     volumes:
       - ${PROJECT_DIR}/confs/geoserver.service:/etc/nginx/sites-enabled/geoserver.service

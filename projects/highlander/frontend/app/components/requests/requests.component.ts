@@ -21,6 +21,7 @@ export class RequestsComponent extends BasePaginationComponent<Request> {
     "format",
     "latitude",
     "longitude",
+    "area",
   ];
   @Output() onLoad: EventEmitter<null> = new EventEmitter<null>();
 

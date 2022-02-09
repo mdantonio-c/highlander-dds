@@ -1,0 +1,24 @@
+.search-result {
+  border-bottom: 1px solid #ddd;
+  padding: 15px 0;
+
+  &:first-child {
+    border-top: 1px solid #ddd;
+  }
+
+  .search-result-details {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 10; /* number of lines to show */
+    line-clamp: 10;
+    -webkit-box-orient: vertical;
+  }
+}
+
+.fa-gray {
+  color: #bbb;
+}
+.fa-blue {
+  color: #1a7dc1;
+}

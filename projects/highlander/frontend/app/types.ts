@@ -92,6 +92,7 @@ export interface RequestArgs {
   /** @nullable */
   variable?: string[];
   time?: TimeArg;
+  area?: SpatialArea;
   format: string;
   [other: string]: any;
 }
@@ -145,6 +146,11 @@ export interface LatLngRange {
 export interface SoilErosionFilter {
   indicator: string;
   administrative: string;
+}
+
+export interface CropWaterFilter {
+  area: string;
+  layer: string;
 }
 
 export interface CodeLabel {
