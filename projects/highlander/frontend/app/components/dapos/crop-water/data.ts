@@ -1,4 +1,5 @@
 import { CodeLabel } from "../../../types";
+import { LegendConfig } from "../../../services/data";
 import * as L from "leaflet";
 
 export interface Area extends CodeLabel {
@@ -119,7 +120,7 @@ export const LEGEND_DATA: LegendConfig[] = [
       "rgba(85,26,139,100)",
       "rgba(255,162,0,100)",
       "rgba(139,139,139,100)",
-      "rgba(241.6,28.64,99.3,0)"
+      "rgba(241.6,28.64,99.3,0)",
     ],
     labels: [
       "summer crop",
