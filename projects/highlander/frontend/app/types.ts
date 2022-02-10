@@ -148,6 +148,11 @@ export interface SoilErosionFilter {
   administrative: string;
 }
 
+export interface HumanWellbeingFilter {
+  indicator: string;
+  administrative: string;
+}
+
 export interface CropWaterFilter {
   area: string;
   layer: string;
