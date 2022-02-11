@@ -27,7 +27,14 @@ import {
   FormControl,
   Validators,
 } from "@angular/forms";
-import { Observable, forkJoin, throwError, of, empty, Subject } from "rxjs";
+import {
+  Observable,
+  forkJoin,
+  throwError,
+  of,
+  empty,
+  ReplaySubject,
+} from "rxjs";
 import {
   startWith,
   mergeMap,
@@ -67,7 +74,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
   private latitude: LatLngRange;
   private longitude: LatLngRange;
   private loading: boolean;
-  private destroy$ = new Subject<void>();
+  private destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -126,26 +133,33 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
           this.loading = true;
         }),
         switchMap(() => {
-          return this.dataService.getSizeEstimate(
-            this.dataset.id,
-            this.buildRequest()
-          );
-        }),
-        catchError((err) => {
-          this.notify.showError(
-            "An error occurred calculating the size estimate"
-          );
-          return of(null);
+          return this.dataService
+            .getSizeEstimate(this.dataset.id, this.buildRequest())
+            .pipe(
+              // put catch error into inner observable in order
+              // to keep outer observable live
+              catchError((err) => {
+                console.error(err);
+                return of(null);
+              })
+            );
         }),
         tap((size) => {
           if (size) {
             this.remaining = this.usage.quota - this.usage.used - size;
+          } else {
+            this.notify.showWarning("Unable to calculate the size estimate.");
+            // TODO at this point the FormControl that caused the error should be unchecked
           }
           this.spinner.hide("extSpinner");
           this.loading = false;
         })
       )
-      .subscribe((val) => (this.estimatedSize = val));
+      .subscribe((val) => {
+        if (val) {
+          this.estimatedSize = val;
+        }
+      });
   }
 
   getWidget(widgetName: string): Widget {
@@ -302,7 +316,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.destroy$.next();
+    this.destroy$.next(true);
     this.destroy$.complete();
   }
 }
