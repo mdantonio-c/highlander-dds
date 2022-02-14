@@ -353,12 +353,19 @@ class BrokerExt(Connector):
                     for val in coords[coord]["value"]
                 ]
 
+                # naive check for widget type looking at the first value type
+                widget_type = (
+                    "IntList"
+                    if isinstance(values[0], (float, int, np.float64, np.float32))
+                    else "StringList"
+                )
+
                 w = Widget(
                     wname=f"{coord}_list",
                     wlabel=BrokerExt.unwrap(coords[coord]["label"]),
                     wrequired=False,
                     wparameter=coord,
-                    wtype="StringList",
+                    wtype=widget_type,
                     wdetails={"_values": values},
                 )
                 data["widgets"].append(w.to_dict())
