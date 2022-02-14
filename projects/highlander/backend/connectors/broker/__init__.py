@@ -356,7 +356,9 @@ class BrokerExt(Connector):
                 # naive check for widget type looking at the first value type
                 widget_type = (
                     "IntList"
-                    if isinstance(values[0], (float, int, np.float64, np.float32))
+                    if isinstance(
+                        values[0]["value"], (float, int, np.float64, np.float32)
+                    )
                     else "StringList"
                 )
 
