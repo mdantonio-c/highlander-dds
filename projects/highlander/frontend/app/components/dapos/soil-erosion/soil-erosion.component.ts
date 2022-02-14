@@ -148,7 +148,7 @@ export class SoilErosionComponent implements OnInit {
           layers: `highlander:${product}_${m}`,
           version: "1.1.0",
           format: "image/png",
-          opacity: 0.5,
+          opacity: 0.7,
           transparent: true,
           attribution: "'&copy; CMCC",
           maxZoom: MAX_ZOOM,
