@@ -113,7 +113,7 @@
                         [comp]="widget"
                         [widgets]="productInfo.widgets"
                         (dataChanged)="
-                          onListChange($event.event, $event.filter)
+                          onListChange($event.event, $event.filter, $event.type)
                         "
                       >
                       </app-exclusive-frame>

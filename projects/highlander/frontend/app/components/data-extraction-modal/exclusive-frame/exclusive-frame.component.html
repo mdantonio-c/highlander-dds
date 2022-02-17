@@ -10,7 +10,7 @@
           [value]="v.value"
           type="checkbox"
           class="custom-control-input"
-          (change)="onListChange($event, comp.name)"
+          (change)="onListChange($event, comp.name, data_list.type)"
         />
         <label [for]="comp.name + '_' + v.value" class="custom-control-label">{{
           v.label

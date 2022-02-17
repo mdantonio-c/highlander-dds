@@ -168,18 +168,20 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
     return this.productInfo.widgets.find((w) => w.name == widgetName);
   }
 
-  onListChange(e, filter: string) {
+  onListChange(e, filter: string, type?: string) {
     const checkArray: FormArray = this.filterForm.get(filter) as FormArray;
     if (!checkArray) {
       console.warn(`filter '${filter}' not yet managed!`);
       return;
     }
+    const val =
+      type && type === "IntList" ? Number(e.target.value) : e.target.value;
     if (e.target.checked) {
-      checkArray.push(new FormControl(e.target.value));
+      checkArray.push(new FormControl(val));
     } else {
       let i: number = 0;
       checkArray.controls.forEach((item: AbstractControl) => {
-        if (item.value == e.target.value) {
+        if (item.value == val) {
           checkArray.removeAt(i);
           return;
         }
