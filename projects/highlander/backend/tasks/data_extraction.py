@@ -33,7 +33,7 @@ def human_size(
     return str(bytes) + units[0] if bytes < 1024 else human_size(bytes >> 10, units[1:])
 
 
-@CeleryExt.task()
+@CeleryExt.task(idempotent=True)
 def extract_data(
     self: Task,
     user_id: int,
