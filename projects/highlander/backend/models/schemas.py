@@ -92,6 +92,7 @@ class FieldDetails(Schema):
         {
             "datetime64": NumpyDateTime(),
             "float32": fields.Float(),
+            "float64": fields.Float(),
             "list": fields.List(fields.Float()),
         }
     )

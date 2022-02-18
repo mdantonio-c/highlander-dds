@@ -19,6 +19,7 @@ export class ExclusiveFrameComponent implements OnInit {
       let w = this.getWidget(n);
       switch (w.type) {
         case "StringList":
+        case "IntList":
           this.data_list = w;
           break;
         case "NumberRange":
@@ -35,7 +36,7 @@ export class ExclusiveFrameComponent implements OnInit {
     return this.widgets.find((w) => w.name == widgetName);
   }
 
-  onListChange(e: Event, filter: string) {
-    this.dataChanged.emit({ event: e, filter: filter });
+  onListChange(e: Event, filter: string, wType: string) {
+    this.dataChanged.emit({ event: e, filter: filter, type: wType });
   }
 }

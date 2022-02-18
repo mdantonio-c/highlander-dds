@@ -27,7 +27,14 @@ import {
   FormControl,
   Validators,
 } from "@angular/forms";
-import { Observable, forkJoin, throwError, of, empty, Subject } from "rxjs";
+import {
+  Observable,
+  forkJoin,
+  throwError,
+  of,
+  empty,
+  ReplaySubject,
+} from "rxjs";
 import {
   startWith,
   mergeMap,
@@ -67,7 +74,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
   private latitude: LatLngRange;
   private longitude: LatLngRange;
   private loading: boolean;
-  private destroy$ = new Subject<void>();
+  private destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -126,26 +133,33 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
           this.loading = true;
         }),
         switchMap(() => {
-          return this.dataService.getSizeEstimate(
-            this.dataset.id,
-            this.buildRequest()
-          );
-        }),
-        catchError((err) => {
-          this.notify.showError(
-            "An error occurred calculating the size estimate"
-          );
-          return of(null);
+          return this.dataService
+            .getSizeEstimate(this.dataset.id, this.buildRequest())
+            .pipe(
+              // put catch error into inner observable in order
+              // to keep outer observable live
+              catchError((err) => {
+                console.error(err);
+                return of(null);
+              })
+            );
         }),
         tap((size) => {
           if (size) {
             this.remaining = this.usage.quota - this.usage.used - size;
+          } else {
+            this.notify.showWarning("Unable to calculate the size estimate.");
+            // TODO at this point the FormControl that caused the error should be unchecked
           }
           this.spinner.hide("extSpinner");
           this.loading = false;
         })
       )
-      .subscribe((val) => (this.estimatedSize = val));
+      .subscribe((val) => {
+        if (val) {
+          this.estimatedSize = val;
+        }
+      });
   }
 
   getWidget(widgetName: string): Widget {
@@ -154,18 +168,20 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
     return this.productInfo.widgets.find((w) => w.name == widgetName);
   }
 
-  onListChange(e, filter: string) {
+  onListChange(e, filter: string, type?: string) {
     const checkArray: FormArray = this.filterForm.get(filter) as FormArray;
     if (!checkArray) {
       console.warn(`filter '${filter}' not yet managed!`);
       return;
     }
+    const val =
+      type && type === "IntList" ? Number(e.target.value) : e.target.value;
     if (e.target.checked) {
-      checkArray.push(new FormControl(e.target.value));
+      checkArray.push(new FormControl(val));
     } else {
       let i: number = 0;
       checkArray.controls.forEach((item: AbstractControl) => {
-        if (item.value == e.target.value) {
+        if (item.value == val) {
           checkArray.removeAt(i);
           return;
         }
@@ -302,7 +318,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.destroy$.next();
+    this.destroy$.next(true);
     this.destroy$.complete();
   }
 }

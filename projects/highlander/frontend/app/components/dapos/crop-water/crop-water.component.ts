@@ -5,7 +5,8 @@ import { NgxSpinnerService } from "ngx-spinner";
 
 import * as L from "leaflet";
 import { DataService } from "../../../services/data.service";
-import { ADMINISTRATIVE_AREAS, LAYERS } from "./data";
+import { ADMINISTRATIVE_AREAS, LAYERS, LEGEND_DATA } from "./data";
+import { LegendConfig } from "../../../services/data";
 
 const MAX_ZOOM = 16;
 const MIN_ZOOM = 10;
@@ -28,9 +29,10 @@ export class CropWaterComponent implements OnInit {
   isFilterCollapsed = false;
   private collapsed = false;
   map: L.Map;
-
+  private legends: { [key: string]: L.Control } = {};
   zoom: number = 12;
   center: L.LatLng = L.latLng([44.49895, 11.32759]); // default Bologna City
+  readonly LEGEND_POSITION = "bottomleft";
 
   LAYER_OSM = L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -71,6 +73,11 @@ export class CropWaterComponent implements OnInit {
     this.loadGeoData();
 
     this.geoData.addTo(map);
+    this.initLegends(map);
+    // add a legend
+    if (this.legends[this.filter.layer]) {
+      this.legends[this.filter.layer].addTo(map);
+    }
   }
 
   onMapZoomEnd($event) {
@@ -82,9 +89,40 @@ export class CropWaterComponent implements OnInit {
     this.center = this.map.getCenter();
   }
 
+  private initLegends(map: L.Map) {
+    LAYERS.forEach((l) => {
+      this.legends[l.code] = this.createLegendControl(l.code);
+      console.log(`add legend <${l.code}>`);
+    });
+  }
+
+  private createLegendControl(id: string): L.Control {
+    let config: LegendConfig = LEGEND_DATA.find((x) => x.id === id);
+    if (!config) {
+      console.error(`Legend data NOT found for ID<${id}>`);
+      this.notify.showError("Bad legend configuration");
+      return;
+    }
+    const legend = new L.Control({ position: this.LEGEND_POSITION });
+    legend.onAdd = () => {
+      let div = L.DomUtil.create("div", config.legend_type);
+      div.style.clear = "unset";
+      div.innerHTML += `<h6>${config.title}</h6>`;
+      for (let i = 0; i < config.labels.length; i++) {
+        div.innerHTML +=
+          '<i style="background:' +
+          config.colors[i] +
+          '"></i><span>' +
+          config.labels[i] +
+          "</span><br>";
+      }
+      return div;
+    };
+    return legend;
+  }
+
   applyFilter(data: CropWaterFilter) {
     console.log("apply filter", data);
-    this.filter = data;
 
     const selectedArea = ADMINISTRATIVE_AREAS.find((x) => x.code === data.area);
     this.zoom = selectedArea.zLevel ? selectedArea.zLevel : this.zoom;
@@ -95,7 +133,16 @@ export class CropWaterComponent implements OnInit {
       this.map.setView(this.center, this.zoom);
 
       this.loadGeoData();
+
+      if (data.layer !== this.filter.layer) {
+        // remove the previous legend
+        this.map.removeControl(this.legends[this.filter.layer]);
+        // add the new legend
+        this.legends[data.layer].addTo(this.map);
+      }
     }
+
+    this.filter = data;
   }
 
   /**
