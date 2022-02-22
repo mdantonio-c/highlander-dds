@@ -473,16 +473,16 @@ def get_instance(
     # ######     REMOVE ME IN A NEAR FUTURE !    ######
     # #################################################
     warnings.filterwarnings(
-        "ignore",
+        "always",
         message="In a future release of intake, the intake.registry will not be directly mutable. Use intake.register_driver.",
     )
     warnings.filterwarnings(
-        "ignore",
+        "always",
         message="In a future release of intake, the intake.container_map will not be directly mutable. Use intake.register_container.",
     )
 
     warnings.filterwarnings(
-        "ignore",
+        "always",
         message="numpy.ndarray size changed, may indicate binary incompatibility",
     )
 
