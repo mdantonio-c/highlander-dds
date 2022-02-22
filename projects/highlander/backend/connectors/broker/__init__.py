@@ -1,6 +1,7 @@
 """
 DDS Broker connector
 """
+import warnings
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Mapping, Optional
 
@@ -8,6 +9,17 @@ import numpy as np
 from dds_backend import DataBroker
 from restapi.connectors import Connector, ExceptionsList
 from restapi.utilities.logs import log
+
+# #################################################
+# ######     REMOVE ME IN A NEAR FUTURE !    ######
+# #################################################
+# intake is going to deprecate package scan
+# https://intake.readthedocs.io/en/stable/making-plugins.html#deprecated-package-scan
+# waiting for a fix from DDS
+warnings.filterwarnings(
+    "ignore", message="The option `do_package_scan` may be removed in a future release."
+)
+# #################################################
 
 wtypes = {
     "int32": "IntList",
