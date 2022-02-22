@@ -2,17 +2,6 @@
 DDS Broker connector
 """
 import warnings
-
-# #################################################
-# ######     REMOVE ME IN A NEAR FUTURE !    ######
-# #################################################
-if True:
-    warnings.filterwarnings(
-        "ignore",
-        message="In a future release of intake, the intake.registry will not be directly mutable. Use intake.register_driver.",
-    )
-# #################################################
-
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Mapping, Optional
 
@@ -40,6 +29,7 @@ class BrokerExt(Connector):
         return None
 
     def connect(self, **kwargs: str) -> "BrokerExt":
+
         catalog_dir = self.variables.get("catalog_dir", "/catalog")
         self.broker = DataBroker(
             # Place where catalog YAML file is located
@@ -478,6 +468,20 @@ def get_instance(
     expiration: Optional[int] = None,
     **kwargs: str,
 ) -> "BrokerExt":
+
+    # #################################################
+    # ######     REMOVE ME IN A NEAR FUTURE !    ######
+    # #################################################
+    warnings.filterwarnings(
+        "ignore",
+        message="In a future release of intake, the intake.registry will not be directly mutable. Use intake.register_driver.",
+    )
+    warnings.filterwarnings(
+        "ignore",
+        message="In a future release of intake, the intake.container_map will not be directly mutable. Use intake.register_container.",
+    )
+
+    # #################################################
     return instance.get_instance(
         verification=verification, expiration=expiration, **kwargs
     )
