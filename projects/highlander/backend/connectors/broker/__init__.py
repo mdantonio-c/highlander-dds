@@ -481,6 +481,11 @@ def get_instance(
         message="In a future release of intake, the intake.container_map will not be directly mutable. Use intake.register_container.",
     )
 
+    warnings.filterwarnings(
+        "ignore",
+        message="'CachingFileManager' object has no attribute '_ref_counter'",
+    )
+
     # #################################################
     return instance.get_instance(
         verification=verification, expiration=expiration, **kwargs
