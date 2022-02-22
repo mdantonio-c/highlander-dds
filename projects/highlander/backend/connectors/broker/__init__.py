@@ -1,21 +1,6 @@
 """
 DDS Broker connector
 """
-import warnings
-
-# #################################################
-# ######     REMOVE ME IN A NEAR FUTURE !    ######
-# #################################################
-# intake is going to deprecate package scan
-# https://intake.readthedocs.io/en/stable/making-plugins.html#deprecated-package-scan
-# waiting for a fix from DDS, see issue #31
-if True:
-    warnings.filterwarnings(
-        "ignore",
-        message="The option `do_package_scan` may be removed in a future release.",
-    )
-# #################################################
-
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Mapping, Optional
 
