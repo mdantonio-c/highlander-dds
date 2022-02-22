@@ -53,10 +53,11 @@ class Customizer(BaseCustomizer):
             return {
                 "disk_quota": fields.Int(
                     required=required,
-                    # validate=validate.Range(min=0, max=???),
                     validate=validate.Range(min=0),
-                    label="Disk quota",
-                    description="Disk quota in bytes",
+                    metadata={
+                        "label": "Disk quota",
+                        "description": "Disk quota in bytes",
+                    },
                 ),
             }
 
