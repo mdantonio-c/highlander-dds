@@ -483,7 +483,7 @@ def get_instance(
 
     warnings.filterwarnings(
         "ignore",
-        message="'CachingFileManager' object has no attribute '_ref_counter'",
+        message="numpy.ndarray size changed, may indicate binary incompatibility",
     )
 
     # #################################################
