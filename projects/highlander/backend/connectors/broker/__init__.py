@@ -1,6 +1,18 @@
 """
 DDS Broker connector
 """
+import warnings
+
+# #################################################
+# ######     REMOVE ME IN A NEAR FUTURE !    ######
+# #################################################
+if True:
+    warnings.filterwarnings(
+        "ignore",
+        message="In a future release of intake, the intake.registry will not be directly mutable. Use intake.register_driver.",
+    )
+# #################################################
+
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Mapping, Optional
 
