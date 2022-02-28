@@ -1,7 +1,8 @@
 import json
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import pytest
+from highlander.models.sqlalchemy import Request
 from restapi.connectors import celery, sqlalchemy
 from restapi.tests import API_URI, BaseTests, FlaskClient
 
@@ -38,7 +39,10 @@ class TestApp(BaseTests):
         pass
 
     def test_estimate_size(
-        self, client: FlaskClient, data_filter: Dict[str, Any], headers
+        self,
+        client: FlaskClient,
+        data_filter: Dict[str, Any],
+        headers: Optional[Dict[str, str]],
     ) -> None:
         endpoint = f"{API_URI}/estimate-size"
 
@@ -49,7 +53,12 @@ class TestApp(BaseTests):
         response_body = self.get_content(r)
         assert isinstance(response_body, int)
 
-    def test_data_extraction(self, client: FlaskClient, data_request, headers) -> None:
+    def test_data_extraction(
+        self,
+        client: FlaskClient,
+        data_request: Request,
+        headers: Optional[Dict[str, str]],
+    ) -> None:
 
         # check task execution results
         c = celery.get_instance()
@@ -64,13 +73,18 @@ class TestApp(BaseTests):
         assert db_request.status == "SUCCESS"
 
     @pytest.fixture
-    def headers(self, client: FlaskClient):
+    def headers(self, client: FlaskClient) -> Optional[Dict[str, str]]:
         """login: default user"""
         headers, _ = self.do_login(client, None, None)
         return headers
 
     @pytest.fixture
-    def data_request(self, data_filter, client, headers):
+    def data_request(
+        self,
+        client: FlaskClient,
+        data_filter: Dict[str, Any],
+        headers: Optional[Dict[str, str]],
+    ) -> Request:
         """submit data request"""
         endpoint = f"{API_URI}/requests"
         r = client.post(f"{endpoint}/{DATASET_NAME}", data=data_filter, headers=headers)
