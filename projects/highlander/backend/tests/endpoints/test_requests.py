@@ -1,9 +1,10 @@
 import json
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Iterator, Optional
 
 import pytest
+from celery.result import AsyncResult
 from highlander.models.sqlalchemy import Request
-from restapi.connectors import celery, sqlalchemy
+from restapi.connectors import sqlalchemy
 from restapi.tests import API_URI, BaseTests, FlaskClient
 
 __author__ = "Giuseppe Trotta (g.trotta@cineca.it)"
@@ -61,9 +62,8 @@ class TestApp(BaseTests):
     ) -> None:
 
         # check task execution results
-        c = celery.get_instance()
         task_id = data_request.task_id
-        task = c.celery_app.AsyncResult(task_id)
+        task = AsyncResult(task_id)
         assert task is not None
         result = task.get(timeout=5)  # FIXME to manage
         assert result is None
@@ -84,7 +84,7 @@ class TestApp(BaseTests):
         client: FlaskClient,
         data_filter: Dict[str, Any],
         headers: Optional[Dict[str, str]],
-    ) -> Request:
+    ) -> Iterator[Request]:
         """submit data request"""
         endpoint = f"{API_URI}/requests"
         r = client.post(f"{endpoint}/{DATASET_NAME}", data=data_filter, headers=headers)
