@@ -22,7 +22,6 @@ export class CustomNavbarComponent {
   public collapse() {
     this.onClick.emit();
   }
-
 }
 
 @Component({
