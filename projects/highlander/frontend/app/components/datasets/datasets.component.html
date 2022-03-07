@@ -59,11 +59,13 @@
                     </ng-template>
                   </h3>
                   <ng-container *ngIf="dataset.description">
-                    <i class="fa fa-quote-left fa-gray mr-2"></i>
-                    <p
-                      [innerHTML]="dataset.description"
-                      class="text d-inline"
-                    ></p>
+                    <div class="description-container">
+                      <i class="fa fa-quote-left fa-gray mr-2"></i>
+                      <p
+                        [innerHTML]="dataset.description"
+                        class="text d-inline"
+                      ></p>
+                    </div>
                   </ng-container>
                 </div>
               </div>
@@ -84,8 +86,10 @@
                 }}</a>
               </h3>
               <ng-container *ngIf="dataset.description">
-                <i class="fa fa-quote-left fa-gray mr-2"></i>
-                <p [innerHTML]="dataset.description" class="text d-inline"></p>
+                <div class="description-container">
+                  <i class="fa fa-quote-left fa-gray mr-2"></i>
+                  <p [innerHTML]="dataset.description" class="text d-inline"></p>
+                </div>
               </ng-container>
             </div>
           </ng-template>
