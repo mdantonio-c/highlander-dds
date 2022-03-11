@@ -59,6 +59,7 @@ def extract_data(
         data_size_estimate = dds.broker.estimate_size(
             dataset_name=dataset_name, request=req_body.copy()
         )
+        log.debug("DATA SIZE ESTIMATE: {}", data_size_estimate)
         user_quota = db.session.query(db.User.disk_quota).filter_by(id=user_id).scalar()  # type: ignore
         log.debug("USER QUOTA for user<{}>: {}", user_id, user_quota)
         used_quota = (
@@ -66,7 +67,9 @@ def extract_data(
             .join(db.Request)  # type: ignore
             .filter(db.Request.user_id == user_id, db.OutputFile.size is not None)
             .all()[0][0]
+            or 0
         )
+        log.debug("USED QUOTA: {}", used_quota)
         if used_quota + data_size_estimate > user_quota:
             free_space = max(user_quota - used_quota, 0)
             # save error message in db

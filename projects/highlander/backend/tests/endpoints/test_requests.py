@@ -65,12 +65,9 @@ class TestApp(BaseTests):
         task_id = data_request.task_id
         task = AsyncResult(task_id)
         assert task is not None
-        result = task.get(timeout=5)  # FIXME to manage
+        result = task.get(timeout=5)
         assert result is None
-
-        db = sqlalchemy.get_instance()  # can we do better?
-        db_request = db.Request.query.filter_by(task_id=task_id).first()
-        assert db_request.status == "SUCCESS"
+        assert task.state == "SUCCESS"
 
     @pytest.fixture
     def headers(self, client: FlaskClient) -> Optional[Dict[str, str]]:
