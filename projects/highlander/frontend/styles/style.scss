@@ -49,8 +49,7 @@ h2 {
 
  &.active{
     color: #1e9a2f !important; 
-    border-bottom:solid 1px #1e9a2f;
-    box-shadow: 0 5px 3px -3px #1e9a2f;
+    border-bottom:solid 2px #1e9a2f;
   }
 }
 .no-results {
@@ -205,3 +204,30 @@ a.ng-star-inserted {
   text-transform: uppercase;
 }
 
+/*buttons & checkbox/radio*/
+
+.leaflet-control-zoom-out, .leaflet-control-zoom-in {
+  border-radius: 25px !important;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+
+}
+
+.leaflet-touch .leaflet-bar a {
+  margin-bottom: 2px;
+	width: 34px !important;
+	height: 33px !important;
+  line-height: 29px;
+  
+}
+.leaflet-control-zoom {
+  border: none !important;
+}
+
+input[type="radio"]:checked, input[type="checkbox"]:checked {
+  color: #1a7dc1 !important;
+  background-color: #1a7dc1 !important;
+  fill: #1a7dc1;
+  appearance: none;
+  border: 7px solid #1a7dc1;
+  border-radius: 7px;
+}
