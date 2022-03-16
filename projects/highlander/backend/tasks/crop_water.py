@@ -22,7 +22,6 @@ def retrieve_data(self: Task):
     /{USER}/{AREA}/{YEAR}/monthlyForecast/{YY}-{MM}-{DD}
     """
     log.info("Retrieve data from FTP Server")
-    f: ftp.FTPExt = None
     with ftp.get_instance() as f:
         log.info("FTP server connected successfully")
         # suppress ftp debugging
