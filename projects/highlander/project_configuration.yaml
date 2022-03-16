@@ -43,3 +43,4 @@ variables:
 
     RUN_SCHEMATHESIS: 0
     DATA_PATH: "/catalog/download"
+    DATASETS_PATH: "/catalog/datasets"

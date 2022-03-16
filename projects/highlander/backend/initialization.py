@@ -1,16 +1,28 @@
-# from restapi.connectors import sqlalchemy
+from restapi.connectors import celery
+from restapi.utilities.logs import log
 
 
 class Initializer:
-
     """
     This class is instantiated just after restapi init
     Implement the constructor to add operations performed one-time at initialization
     """
 
     def __init__(self) -> None:
-        # c = sqlalchemy.get_instance()
-        pass
+        celery_app = celery.get_instance()
+        crop_water_crontab_task_name = "crop-water-data-sync"
+        task = celery_app.get_periodic_task(name=crop_water_crontab_task_name)
+        if task:
+            log.info(f"Delete existing task <{crop_water_crontab_task_name}>")
+            celery_app.delete_periodic_task(name=crop_water_crontab_task_name)
+        # Executes every Tuesday morning at 19:30 a.m.
+        celery_app.create_crontab_task(
+            name=crop_water_crontab_task_name,
+            task="retrieve_data",
+            day_of_week="2",
+            hour="19",
+            minute="30",
+        )
 
     # This method is called after normal initialization if TESTING mode is enabled
     def initialize_testing_environment(self) -> None:
