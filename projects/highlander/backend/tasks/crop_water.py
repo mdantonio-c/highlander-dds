@@ -13,7 +13,7 @@ CROP_WATER_AREAS = ["C4", "C5", "C7"]
 
 
 @CeleryExt.task(idempotent=True)
-def retrieve_data(self: Task):
+def retrieve_data(self: Task) -> None:
     """
     Retrieve 'crop-water' data from a FTP server.
     They are forecast data updated weekly every Tuesday.
