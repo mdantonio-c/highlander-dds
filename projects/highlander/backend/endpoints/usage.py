@@ -24,7 +24,7 @@ class Usage(EndpointResource):
         db = sqlalchemy.get_instance()
         total_used = (
             db.session.query(func.sum(db.OutputFile.size).label("total_used"))
-            .join(db.Request)  # type: ignore
+            .join(db.Request)
             .filter(db.Request.user_id == user.id, db.OutputFile.size is not None)
             .all()[0][0]
         )

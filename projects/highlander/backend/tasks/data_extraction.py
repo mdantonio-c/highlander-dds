@@ -60,11 +60,11 @@ def extract_data(
             dataset_name=dataset_name, request=req_body.copy()
         )
         log.debug("DATA SIZE ESTIMATE: {}", data_size_estimate)
-        user_quota = db.session.query(db.User.disk_quota).filter_by(id=user_id).scalar()  # type: ignore
+        user_quota = db.session.query(db.User.disk_quota).filter_by(id=user_id).scalar()
         log.debug("USER QUOTA for user<{}>: {}", user_id, user_quota)
         used_quota = (
             db.session.query(func.sum(db.OutputFile.size).label("total_used"))
-            .join(db.Request)  # type: ignore
+            .join(db.Request)
             .filter(db.Request.user_id == user_id, db.OutputFile.size is not None)
             .all()[0][0]
             or 0
