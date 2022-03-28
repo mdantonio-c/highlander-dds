@@ -26,23 +26,19 @@ variables:
 
     ACTIVATE_ALCHEMY: 1
     ACTIVATE_POSTGRES: 1
-    ACTIVATE_RABBIT: 1
     ACTIVATE_REDIS: 1
     ACTIVATE_CELERY: 1
-    ACTIVATE_FLOWER: 1
+    # ACTIVATE_FLOWER: 1
     ACTIVATE_CELERYBEAT: 1
     ACTIVATE_BROKER: 1
     ACTIVATE_GEOSERVER: 1
 
     CELERY_ENABLE_CONNECTOR: 1
+    CELERY_POOL_MODE: solo
     BROKER_ENABLE_CONNECTOR: 1
     BROKER_HOST: nohost
     BROKER_PORT: 0
     BROKER_CATALOG_DIR: "/catalog"
-
-    CELERY_BROKER: RABBIT
-    CELERY_BACKEND: REDIS
-    CELERY_POOL_MODE: solo
 
     SET_CSP_IMG_SRC: "https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org"
     SET_CSP_FONT_SRC: https://netdna.bootstrapcdn.com
