@@ -83,13 +83,6 @@ jobs:
         with:
           project: ${PROJECT}
 
-      - name: Coverage
-        uses: rapydo/actions/coverage@v1
-        with:
-          repository: projects/${PROJECT}
-          project: ${PROJECT}
-          step: backend
-
       - name: Production mode
         run: |
 
