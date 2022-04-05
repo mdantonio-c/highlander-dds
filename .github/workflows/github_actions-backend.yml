@@ -101,6 +101,10 @@ jobs:
           rm projects/highlander/confs/geoserver.service
           touch projects/highlander/confs/geoserver.service
 
+          sudo mkdir -p /data/datasets/human-wellbeing
+          sudo mkdir -p /data/datasets/vhr-rea
+          sudo mkdir -p /data/ECMWF/Sub_SEA/Italy
+
           rapydo --testing --prod -e ACTIVATE_GEOSERVER=0 init --force
           rapydo pull --quiet
           rapydo build
