@@ -7,7 +7,7 @@ env:
   PROJECT: highlander
 
 jobs:
-  frontend-tests:
+  Development-mode:
     runs-on: ubuntu-20.04
     timeout-minutes: 20
 
@@ -39,6 +39,20 @@ jobs:
           project: ${PROJECT}
           step: frontend
 
+  Production-mode:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+
+      - uses: rapydo/actions/install@v1
+        with:
+          project: ${PROJECT}
+
       - name: Production mode
         run: |
 
@@ -47,6 +61,7 @@ jobs:
 
           rapydo remove --all
           rapydo --testing --prod -e MAPS_URL=XXX init --force
+
           rapydo pull --quiet frontend proxy
 
           rm projects/highlander/confs/geoserver.service
