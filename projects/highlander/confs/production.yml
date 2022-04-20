@@ -6,11 +6,13 @@ services:
       - /data/datasets/vhr-rea:/catalog/datasets/era5-downscaled
       - /data/ECMWF/Sub_SEA/Italy:/catalog/datasets/sub-sea
       - /data/datasets/human-wellbeing:/catalog/datasets/human-wellbeing
+      - /data/datasets/crop-water:/catalog/datasets/crop-water
   celery:
     volumes:
       - /data/datasets/vhr-rea:/catalog/datasets/era5-downscaled
       - /data/ECMWF/Sub_SEA/Italy:/catalog/datasets/sub-sea
       - /data/datasets/human-wellbeing:/catalog/datasets/human-wellbeing
+      - /data/datasets/crop-water:/catalog/datasets/crop-water
   proxy:
     volumes:
       - ${PROJECT_DIR}/confs/geoserver.service:/etc/nginx/sites-enabled/geoserver.service

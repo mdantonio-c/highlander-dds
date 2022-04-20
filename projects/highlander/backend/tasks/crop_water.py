@@ -12,14 +12,19 @@ DATASET_DIR = Env.get("DATASETS_DIR", "/catalog/datasets") + "/crop-water"
 CROP_WATER_AREAS = ["C4", "C5", "C7"]
 
 
-@CeleryExt.task(idempotent=True)
-def retrieve_data(self: Task) -> None:
+@CeleryExt.task(idempotent=True, autoretry_for=(ConnectionResetError,))
+def retrieve_crop_water(self: Task, mirror: bool = False) -> None:
     """
-    Retrieve 'crop-water' data from a FTP server.
-    They are forecast data updated weekly every Tuesday.
+    Retrieve the latest 'crop-water' forecast data from an FTP server.
+    Updated weekly every Tuesday.
+
+    Specifying the mirror mode allows to retrieve all data.
 
     For each area of interest the target directory is composed as follows:
     /{USER}/{AREA}/{YEAR}/monthlyForecast/{YY}-{MM}-{DD}
+
+        parameters:
+            mirror (bool): Enable data mirroring into local directory. Default false.
     """
     log.info("Retrieve data from FTP Server")
     with ftp.get_instance() as f:
@@ -43,10 +48,17 @@ def retrieve_data(self: Task) -> None:
                 continue
 
             filenames = f.connection.nlst()
-            local_path = Path(f"{DATASET_DIR}/{relative_path}")
+            local_path = Path(DATASET_DIR, relative_path)
             # make directories if they don't exist
             local_path.mkdir(parents=True, exist_ok=True)
-
+            # do not retrieve data if local already contains some
+            if not not any(local_path.iterdir()):
+                log.warning(f"SKIP: local path {local_path} already contains files")
+                continue
+            if len(filenames) == 0:
+                log.warning(f"SKIP: no files available from server for area {area}")
+                continue
+            saved = 0
             for filename in filenames:
                 file_to_save = local_path.joinpath(filename)
                 print(f"Save <{filename}> file to: {local_path}")
@@ -54,3 +66,9 @@ def retrieve_data(self: Task) -> None:
                 with open(file_to_save, "wb") as file:
                     # Command for Downloading the file "RETR filename"
                     f.connection.retrbinary(f"RETR {filename}", file.write)
+                    saved += 1
+            log.info(
+                f"Download completed. Total file retrieved for area {area}: {saved}"
+            )
+
+        log.info(f"Retrieve crop-water {ref_time} completed")
