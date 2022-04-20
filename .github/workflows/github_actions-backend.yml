@@ -103,6 +103,7 @@ jobs:
 
           sudo mkdir -p /data/datasets/human-wellbeing
           sudo mkdir -p /data/datasets/vhr-rea
+          sudo mkdir -p /data/datasets/crop-water
           sudo mkdir -p /data/ECMWF/Sub_SEA/Italy
 
           rapydo --testing --prod -e FRONTEND_FRAMEWORK=nofrontend -e ACTIVATE_GEOSERVER=0 init --force
