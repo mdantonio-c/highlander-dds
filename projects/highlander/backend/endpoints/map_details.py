@@ -14,6 +14,7 @@ import pandas as pd
 import regionmask  # TO INSTALL --> OK
 import seaborn as sns  # TO INSTALL --> OK
 import xarray as xr
+from flask import send_file
 from matplotlib import colorbar, colors  # TO INSTALL --> OK
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes  # TO INSTALL --> OK
 from restapi import decorators
@@ -253,3 +254,42 @@ class MapDetails(EndpointResource):
         )
         output_plot_filepath = Path(output_dir, output_distribution_filename)
         plotDistribution(df_stas, output_plot_filepath)
+
+        res = {
+            "map": output_map_filename,
+            "boxplot": output_boxplot_filename,
+            "distribution": output_distribution_filename,
+        }
+        return res
+
+    @decorators.auth.require()
+    @decorators.endpoint(
+        path="/map/<dataset_id>/details",
+        summary="Get a cropped map and/or its boxplot",
+        responses={
+            200: "Map details successfully retrieved",
+            404: "Requested detail not found",
+        },
+    )
+    @decorators.use_kwargs(
+        {
+            "model_id": fields.Str(required=True),
+            "filename": fields.Str(required=True),
+        },
+        location="query",
+    )
+    def get(
+        self, dataset_id: str, user: User, model_id: str, filename: str
+    ) -> Response:
+        output_dir = Path(OUTPUT_ROOT, dataset_id, model_id)
+        if not output_dir.is_dir():
+            raise NotFound(
+                f"details for dataset {dataset_id} and model {model_id} not found"
+            )
+
+        detail_filepath = Path(output_dir, filename)
+
+        if not detail_filepath.is_file():
+            raise NotFound(f"detail element named {filename} not found")
+
+        return send_file(detail_filepath, mimetype="image/png")
