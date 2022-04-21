@@ -80,6 +80,35 @@ def plotMapNetcdf(field, lat, lon, outputfile):
     plt.colorbar(cax=axins)
     fig1.savefig(outputfile, transparent=True)
 
+def plotMapNetcdf(field, lat, lon, outputfile):
+    """
+    This function plot with the xarray tool the field of netcdf
+    """
+    #fig1, (ax1) = plt.subplots(figsize=(len(lon)/100, len(lat)/100))
+    fig1 = plt.figure(figsize=(18,18))
+    ax1 = fig1.add_subplot(111, projection=ccrs.PlateCarree())
+    ax1.set(frame_on=False)
+    ax1.axis('off')
+    ax1.set_xticks(ax1.get_xticks())
+    ax1.set_yticks(ax1.get_yticks())
+    ax1.add_feature(cartopy.feature.LAND)
+    ax1.add_feature(cartopy.feature.OCEAN)
+    ax1.add_feature(cartopy.feature.COASTLINE)
+    ax1.add_feature(cartopy.feature.BORDERS, color='k', linestyle=':')
+    ax1.add_feature(cartopy.feature.LAKES)
+    ax1.add_feature(cartopy.feature.RIVERS, color='b')
+    ax1.gridlines(
+        crs=ccrs.PlateCarree(),
+        draw_labels=True,
+        linewidth=1,
+        color='gray',
+        alpha=0.5,
+        linestyle='--'
+    )
+    cmesh = ax1.pcolormesh(lon, lat, field ,cmap='hsv')#,vmin=0,vmax=10000)
+    fig1.colorbar(cmesh, ax=ax1, shrink=np.round(min(len(lon)/len(lat),len(lat)/len(lon)),2))
+    fig1.savefig(outputfile, transparent=True)
+
 
 def plotBoxplot(field, outputfile):
     """
@@ -204,17 +233,19 @@ class MapDetails(EndpointResource):
         lat = mask.lat.values
         lon = mask.lon.values
 
-        id_lon = lon[np.where(~np.all(np.isnan(mask), axis=0))]
-        id_lat = lat[np.where(~np.all(np.isnan(mask), axis=1))]
-
+        #id_lon = lon[np.where(~np.all(np.isnan(mask), axis=0))]
+        #id_lat = lat[np.where(~np.all(np.isnan(mask), axis=1))]
+        nc_cropped = ds[nc_var][0].where(sel_mask==np.isnan(sel_mask))
+        nc_cropped = nc_cropped.dropna('lat', how='all')
+        nc_cropped = nc_cropped.dropna('lon', how='all')
         # crop the data
-        nc_cropped = (
-            data_to_crop.sel(
-                lat=slice(id_lat[0], id_lat[-1]), lon=slice(id_lon[0], id_lon[-1])
-            )
-            .compute()
-            .where(mask == ID_COUNTRY)
-        )
+        #nc_cropped = (
+        #    data_to_crop.sel(
+        #        lat=slice(id_lat[0], id_lat[-1]), lon=slice(id_lon[0], id_lon[-1])
+        #    )
+        #    .compute()
+        #    .where(mask == ID_COUNTRY)
+        #)
 
         # define the output directory
         # TODO è ok usare una struttura file simile? oppure ci basta il filename con scritto tutto dentro?
@@ -228,7 +259,11 @@ class MapDetails(EndpointResource):
         # plot the cropped map
         # TODO risalire al nome della variabile leggendola dal netcdf
         data_variable = "rf"
-        plotMapNetcdf(nc_cropped[data_variable][0], id_lat, id_lon, output_map_filepath)
+        plotMapNetcdf(
+                nc_cropped.values,
+                nc_cropped.lat.values,
+                nc_cropped.lon.values,
+                output_map_filepath)
 
         # plot the boxplot
         output_boxplot_filename = f"{dataset_id}_{model_id}_{area_name}_boxplot.png"
@@ -238,7 +273,7 @@ class MapDetails(EndpointResource):
             [
                 df_stas,
                 pd.DataFrame(
-                    np.array(nc_cropped[data_variable][0].values).ravel(),
+                    np.array(nc_cropped.values).ravel(),
                     columns=[str(data_to_crop_path)[:-21]],
                 ),
             ],
@@ -252,4 +287,4 @@ class MapDetails(EndpointResource):
             f"{dataset_id}_{model_id}_{area_name}_distribution.png"
         )
         output_plot_filepath = Path(output_dir, output_distribution_filename)
-        plotDistribution(df_stas, output_plot_filepath)
+        plotDistribution(np.array(nc_cropped.values).ravel(), output_plot_filepath)
