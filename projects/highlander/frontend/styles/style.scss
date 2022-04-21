@@ -16,10 +16,10 @@ a {
 }
 
 h2 {
-  font-family:'Raleway' !important;
+  font-family: "Raleway" !important;
   line-height: 1.1;
   font-weight: bold;
-  font-size:25px;
+  font-size: 25px;
 }
 .brand-title {
   margin-left: 0.5rem;
@@ -37,19 +37,16 @@ h2 {
   top: -0.4rem;
 }
 
-
-
 .navbar.sticky-top {
   margin-bottom: 0.8rem !important;
 }
 
-.nav-link{
+.nav-link {
   text-transform: uppercase;
 
-
- &.active{
-    color: #1e9a2f !important; 
-    border-bottom:solid 2px #1e9a2f;
+  &.active {
+    color: #1e9a2f !important;
+    border-bottom: solid 2px #1e9a2f;
   }
 }
 .no-results {
@@ -181,9 +178,9 @@ input[type="radio"] {
 /*img*/
 
 .img-thumbnail {
- border-radius:171px;
- border: none;
- height: 280px;
+  border-radius: 171px;
+  border: none;
+  height: 280px;
 }
 
 h3 {
@@ -196,34 +193,34 @@ h3 {
 }
 
 .description-container {
-  display:flex;
+  display: flex;
 }
 
 a.ng-star-inserted {
-  text-align:left !important;
+  text-align: left !important;
   text-transform: uppercase;
 }
 
 /*buttons & checkbox/radio*/
 
-.leaflet-control-zoom-out, .leaflet-control-zoom-in {
+.leaflet-control-zoom-out,
+.leaflet-control-zoom-in {
   border-radius: 25px !important;
   border: 2px solid rgba(0, 0, 0, 0.2);
-
 }
 
 .leaflet-touch .leaflet-bar a {
   margin-bottom: 2px;
-	width: 34px !important;
-	height: 33px !important;
+  width: 34px !important;
+  height: 33px !important;
   line-height: 29px;
-  
 }
 .leaflet-control-zoom {
   border: none !important;
 }
 
-input[type="radio"]:checked, input[type="checkbox"]:checked {
+input[type="radio"]:checked,
+input[type="checkbox"]:checked {
   color: #1a7dc1 !important;
   background-color: #1a7dc1 !important;
   fill: #1a7dc1;
