@@ -92,6 +92,7 @@ class FieldDetails(Schema):
         {
             "datetime64": NumpyDateTime(),
             "float32": fields.Float(),
+            "float64": fields.Float(),
             "list": fields.List(fields.Float()),
         }
     )
@@ -177,11 +178,19 @@ class CoordRange(Schema):
     stop = fields.Float()
 
 
+class SpatialArea(Schema):
+    north = fields.Float(required=True)
+    east = fields.Float(required=True)
+    south = fields.Float(required=True)
+    west = fields.Float(required=True)
+
+
 class DataExtraction(Schema):
     product = fields.Str(required=True)
     variable = fields.List(fields.Str())
     latitude = fields.Nested(CoordRange)
     longitude = fields.Nested(CoordRange)
+    area = fields.Nested(SpatialArea)
     time = fields.Dict(
         keys=fields.Str(validate=validate.OneOf(["year", "month", "day", "hour"])),
         values=fields.List(fields.Str(), min_items=1),

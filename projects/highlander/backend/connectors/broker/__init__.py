@@ -9,6 +9,13 @@ from dds_backend import DataBroker
 from restapi.connectors import Connector, ExceptionsList
 from restapi.utilities.logs import log
 
+wtypes = {
+    "int32": "IntList",
+    "int64": "IntList",
+    "int": "IntList",
+    "str": "StringList",
+}
+
 
 class BrokerExt(Connector):
     broker: Any
@@ -332,6 +339,7 @@ class BrokerExt(Connector):
         aux_coords = [coord for coord in coords if coord not in main_coords]
         if aux_coords:
             for coord in aux_coords:
+                dtype = BrokerExt.unwrap(coords[coord].get("dds_dtype", "str"))
                 w = Widget(
                     wname=coord,
                     wlabel=BrokerExt.unwrap(coords[coord]["label"]),
@@ -352,13 +360,14 @@ class BrokerExt(Connector):
                     }
                     for val in coords[coord]["value"]
                 ]
+                wtype = wtypes.get(dtype, "StringList")
 
                 w = Widget(
                     wname=f"{coord}_list",
                     wlabel=BrokerExt.unwrap(coords[coord]["label"]),
                     wrequired=False,
                     wparameter=coord,
-                    wtype="StringList",
+                    wtype=wtype,
                     wdetails={"_values": values},
                 )
                 data["widgets"].append(w.to_dict())

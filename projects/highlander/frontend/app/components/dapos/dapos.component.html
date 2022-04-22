@@ -1,0 +1,31 @@
+<ng-container *ngIf="dataset">
+  <div class="page-header">
+    <div class="container-fluid px-4 pt-0">
+      <div class="page-header-content">
+        <div class="row gx-4 align-items-center justify-content-between">
+          <div class="col-auto">
+            <h2>{{ dataset.label }}</h2>
+            <ol class="breadcrumb mb-0 px-3 py-2 rounded">
+              <li class="breadcrumb-item">
+                <a routerLink="/app/applications" routerLinkActive="active"
+                  >Applications</a
+                >
+              </li>
+              <li class="breadcrumb-item active">
+                <span>{{ dataset.id }}</span>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-container [ngSwitch]="dataset.id">
+    <app-soil-erosion *ngSwitchCase="'soil-erosion'" [dataset]="dataset">
+    </app-soil-erosion>
+    <app-crop-water *ngSwitchCase="'crop-water'" [dataset]="dataset">
+    </app-crop-water>
+    <app-human-wellbeing *ngSwitchCase="'human-wellbeing'" [dataset]="dataset">
+    </app-human-wellbeing>
+  </ng-container>
+</ng-container>

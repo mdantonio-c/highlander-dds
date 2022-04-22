@@ -1,0 +1,26 @@
+<div id="parameters">
+  <div class="card bg-light">
+    <div class="card-body">
+      <form [formGroup]="filterForm">
+        <!-- AREA -->
+        <div class="form-group">
+          <label class="col-form-label"><strong>Area:</strong></label>
+          <select id="areaGroup" formControlName="area" class="form-control">
+            <option *ngFor="let i of areas" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+        </div>
+        <!-- LAYER -->
+        <div class="form-group">
+          <label class="col-form-label"><strong>Layer:</strong></label>
+          <select id="layerGroup" formControlName="layer" class="form-control">
+            <option *ngFor="let l of layers" [value]="l">
+              {{ l }}
+            </option>
+          </select>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

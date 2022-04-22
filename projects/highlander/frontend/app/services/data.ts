@@ -8,9 +8,9 @@ export interface LegendConfig {
 
 export const LEGEND_DATA: LegendConfig[] = [
   {
-    id: "prp",
-    legend_type: "legend_prec",
-    title: "R-factor</br><small>[MJ mm ha-1 h-1 yr-1]</small>",
+    id: "RF",
+    legend_type: "legend_box",
+    title: "Rainfall erosivity</br><small>[MJ mm ha-1 h-1 yr-1]</small>",
     colors: [
       "rgba(255, 255, 102, 1)",
       "rgba(153, 255, 102, 1)",
@@ -35,5 +35,23 @@ export const LEGEND_DATA: LegendConfig[] = [
       "6000-8000",
       ">8000",
     ],
+  },
+  {
+    id: "SL",
+    legend_type: "legend_box",
+    title: "Soil loss</br><small>[t ha-1 yr-1]</small>",
+    colors: [
+      "#ffffd4",
+      "#ffefb5",
+      "#ffde96",
+      "#fec46c",
+      "#fea73f",
+      "#f68c23",
+      "#e67217",
+      "#d25a0c",
+      "#b64708",
+      "#993404"
+    ],
+    labels: ["0", "1", "2.5", "5", "10", "50", "100", "500", "1000", ">2000"],
   },
 ];

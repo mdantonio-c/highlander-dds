@@ -82,4 +82,13 @@ export class DataService {
   getAdministrativeAreas(area = "regions"): Observable<any> {
     return this.http.get(`/app/custom/assets/geojson/italy-${area}.json`);
   }
+
+  /**
+   * Get crop-water geo data.
+   */
+  getCropWaterForecasts(): Observable<any> {
+    return this.http.get(
+      "/app/custom/assets/geojson/seasonalForecast_C5_2021_MJJ.geojson"
+    );
+  }
 }
