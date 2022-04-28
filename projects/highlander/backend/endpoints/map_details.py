@@ -43,71 +43,30 @@ def plotMapNetcdf(field, lat, lon, outputfile):
     """
     This function plot with the xarray tool the field of netcdf
     """
-    # TODO fix bug sulle legende che non si vedono complete
-
-    fig1, (ax1) = plt.subplots(figsize=(len(lon) / 10, len(lat) / 10))
-    ax1.set(frame_on=False)
-    ax1.axis("off")
-    cbar = colorbar.ColorbarBase(
-        ax1, cmap=plt.get_cmap("viridis"), norm=colors.Normalize(vmin=500, vmax=10000)
-    )
-    ax1 = plt.axes(projection=ccrs.PlateCarree())
-    ax1.set_xticks(ax1.get_xticks())
-    ax1.set_yticks(ax1.get_yticks())
-    ax1.add_feature(cartopy.feature.LAND)
-    ax1.add_feature(cartopy.feature.OCEAN)
-    ax1.add_feature(cartopy.feature.COASTLINE)
-    ax1.add_feature(cartopy.feature.BORDERS, linestyle=":")
-    ax1.add_feature(cartopy.feature.LAKES, alpha=0.5)
-    ax1.add_feature(cartopy.feature.RIVERS)
-    ax1.gridlines(
-        crs=ccrs.PlateCarree(),
-        draw_labels=True,
-        linewidth=2,
-        color="gray",
-        alpha=0.5,
-        linestyle="--",
-    )
-    plt.pcolormesh(lon, lat, field, cmap="viridis", vmin=0, vmax=10000)
-    axins = inset_axes(
-        ax1,
-        width="2.5%",  # width = 5% of parent_bbox width
-        height="100%",  # height : 50%
-        loc="lower left",
-        bbox_to_anchor=(1.1, 0.0, 1, 1),
-        bbox_transform=ax1.transAxes,
-        borderpad=0,
-    )
-    plt.colorbar(cax=axins)
-    fig1.savefig(outputfile, transparent=True)
-
-def plotMapNetcdf(field, lat, lon, outputfile):
-    """
-    This function plot with the xarray tool the field of netcdf
-    """
-    #fig1, (ax1) = plt.subplots(figsize=(len(lon)/100, len(lat)/100))
-    fig1 = plt.figure(figsize=(18,18))
+    fig1 = plt.figure(figsize=(18, 18))
     ax1 = fig1.add_subplot(111, projection=ccrs.PlateCarree())
     ax1.set(frame_on=False)
-    ax1.axis('off')
+    ax1.axis("off")
     ax1.set_xticks(ax1.get_xticks())
     ax1.set_yticks(ax1.get_yticks())
     ax1.add_feature(cartopy.feature.LAND)
     ax1.add_feature(cartopy.feature.OCEAN)
     ax1.add_feature(cartopy.feature.COASTLINE)
-    ax1.add_feature(cartopy.feature.BORDERS, color='k', linestyle=':')
+    ax1.add_feature(cartopy.feature.BORDERS, color="k", linestyle=":")
     ax1.add_feature(cartopy.feature.LAKES)
-    ax1.add_feature(cartopy.feature.RIVERS, color='b')
+    ax1.add_feature(cartopy.feature.RIVERS, color="b")
     ax1.gridlines(
         crs=ccrs.PlateCarree(),
         draw_labels=True,
         linewidth=1,
-        color='gray',
+        color="gray",
         alpha=0.5,
-        linestyle='--'
+        linestyle="--",
     )
-    cmesh = ax1.pcolormesh(lon, lat, field ,cmap='hsv')#,vmin=0,vmax=10000)
-    fig1.colorbar(cmesh, ax=ax1, shrink=np.round(min(len(lon)/len(lat),len(lat)/len(lon)),2))
+    cmesh = ax1.pcolormesh(lon, lat, field, cmap="viridis")  # ,vmin=0,vmax=10000)
+    fig1.colorbar(
+        cmesh, ax=ax1, shrink=np.round(min(len(lon) / len(lat), len(lat) / len(lon)), 2)
+    )
     fig1.savefig(outputfile, transparent=True)
 
 
@@ -186,7 +145,6 @@ class MapDetails(EndpointResource):
     def post(
         self, dataset_id: str, user: User, model_id: str, area_type: str, area_id: str
     ) -> Response:
-        # TODO check if the image already exists
 
         geojson_file = Path(GEOJSON_PATH, f"italy-{area_type}.json")
         areas = gpd.read_file(geojson_file)
@@ -197,6 +155,33 @@ class MapDetails(EndpointResource):
         else:
             area_name = area_id.title()
             area_index = "prov_name"
+
+        # TODO è ok usare una struttura file simile? oppure ci basta il filename con scritto tutto dentro?
+        output_dir = Path(OUTPUT_ROOT, dataset_id, model_id)
+        if output_dir.is_dir():
+            # check if the images already exists
+            cache_res = {}
+            for im in output_dir.iterdir():
+                if (
+                    im.is_file()
+                    and im.name.endswith(".png")
+                    and area_name in im.name
+                    and im.stat().st_size >= 1
+                ):
+                    if "map" in im.name:
+                        cache_res["map"] = im.name
+                    elif "boxplot" in im.name:
+                        cache_res["boxplot"] = im.name
+                    elif "distribution" in im.name:
+                        cache_res["distribution"] = im.name
+                if (
+                    "map" in cache_res.keys()
+                    and "boxplot" in cache_res.keys()
+                    and "distribution" in cache_res.keys()
+                ):
+                    # all the details has been previously created
+                    log.debug("all the files has already been created")
+                    return cache_res
 
         area = areas[areas[area_index] == area_name]
 
@@ -230,27 +215,14 @@ class MapDetails(EndpointResource):
         )
         mask = polygon_mask.mask(data_to_crop, lat_name="lat", lon_name="lon")
 
-        ID_COUNTRY = 0
-        lat = mask.lat.values
-        lon = mask.lon.values
+        # TODO risalire al nome della variabile leggendola dal netcdf
+        data_variable = "rf"
 
-        #id_lon = lon[np.where(~np.all(np.isnan(mask), axis=0))]
-        #id_lat = lat[np.where(~np.all(np.isnan(mask), axis=1))]
-        nc_cropped = ds[nc_var][0].where(sel_mask==np.isnan(sel_mask))
-        nc_cropped = nc_cropped.dropna('lat', how='all')
-        nc_cropped = nc_cropped.dropna('lon', how='all')
-        # crop the data
-        #nc_cropped = (
-        #    data_to_crop.sel(
-        #        lat=slice(id_lat[0], id_lat[-1]), lon=slice(id_lon[0], id_lon[-1])
-        #    )
-        #    .compute()
-        #    .where(mask == ID_COUNTRY)
-        #)
+        nc_cropped = data_to_crop[data_variable][0].where(mask == np.isnan(mask))
+        nc_cropped = nc_cropped.dropna("lat", how="all")
+        nc_cropped = nc_cropped.dropna("lon", how="all")
 
         # define the output directory
-        # TODO è ok usare una struttura file simile? oppure ci basta il filename con scritto tutto dentro?
-        output_dir = Path(OUTPUT_ROOT, dataset_id, model_id)
         if not output_dir.is_dir():
             # create it
             output_dir.mkdir(parents=True, exist_ok=True)
@@ -258,13 +230,12 @@ class MapDetails(EndpointResource):
         output_map_filepath = Path(output_dir, output_map_filename)
 
         # plot the cropped map
-        # TODO risalire al nome della variabile leggendola dal netcdf
-        data_variable = "rf"
         plotMapNetcdf(
-                nc_cropped.values,
-                nc_cropped.lat.values,
-                nc_cropped.lon.values,
-                output_map_filepath)
+            nc_cropped.values,
+            nc_cropped.lat.values,
+            nc_cropped.lon.values,
+            output_map_filepath,
+        )
 
         # plot the boxplot
         output_boxplot_filename = f"{dataset_id}_{model_id}_{area_name}_boxplot.png"
@@ -281,7 +252,7 @@ class MapDetails(EndpointResource):
             axis=1,
         )
 
-        # plotBoxplot(df_stas, output_boxplot_filepath)
+        plotBoxplot(df_stas, output_boxplot_filepath)
 
         # plot the distribution
         output_distribution_filename = (
