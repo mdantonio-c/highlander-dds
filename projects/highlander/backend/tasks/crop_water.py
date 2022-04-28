@@ -21,7 +21,7 @@ def download_data(f: FTPExt, filenames: List[str], target_path: str) -> int:
     local_path.mkdir(parents=True, exist_ok=True)
     if len(filenames) == 0:
         log.warning(f"SKIP: no files available from server @ {target_path}")
-        return
+        return 0
     saved = 0
     # save only allowed formats
     for filename in [x for x in filenames if x.lower().endswith(ALLOWED_FORMATS)]:
