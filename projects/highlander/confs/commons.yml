@@ -30,17 +30,19 @@ services:
     build: ${PROJECT_DIR}/builds/backend
     image: hl-dds/backend:${RAPYDO_VERSION}
   geoserver:
-    #    image: geonode/geoserver:2.19.1
-    build:
-      context: ${PROJECT_DIR}/builds/geoserver
-      args:
-        CURRENT_UID: ${CURRENT_UID}
-        CURRENT_GID: ${CURRENT_GID}
     image: hl-geoserver:${PROJECT_VERSION}
+    build:
+      context: ${SUBMODULE_DIR}/geoserver
+      args:
+        GEOSERVER_UID: ${CURRENT_UID}
+        GEOSERVER_GID: ${CURRENT_GID}
+        IMAGE_VERSION: 9.0-jdk11-openjdk-slim-buster
     environment:
       ACTIVATE: ${ACTIVATE_GEOSERVER}
+      STABLE_EXTENSIONS: netcdf-out-plugin
     volumes:
-      - ${DATA_DIR}/geoserver:/geoserver_data/data
+      - ${DATA_DIR}/geoserver:/opt/geoserver/data_dir
+      - ${DATA_DIR}/catalog/datasets:/opt/geoserver/datasets:ro
     networks:
       default:
         aliases:

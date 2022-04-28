@@ -14,6 +14,11 @@ variables:
   #   admin_root: YourCustomName
   #   extra_role: YourExtraRole
 
+  submodules:
+    geoserver:
+      online_url: https://github.com/kartoza/docker-geoserver
+      branch: 2.19.0
+
   env:
     FRONTEND_FRAMEWORK: angular
     ENABLE_ANGULAR_SSR: 0
