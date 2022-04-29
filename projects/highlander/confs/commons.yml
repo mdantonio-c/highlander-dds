@@ -40,6 +40,7 @@ services:
     environment:
       ACTIVATE: ${ACTIVATE_GEOSERVER}
       STABLE_EXTENSIONS: netcdf-out-plugin
+      TOMCAT_EXTRAS: false
     volumes:
       - ${DATA_DIR}/geoserver:/opt/geoserver/data_dir
       - ${DATA_DIR}/catalog/datasets:/opt/geoserver/datasets:ro
