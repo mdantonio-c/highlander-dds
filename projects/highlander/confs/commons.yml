@@ -39,7 +39,7 @@ services:
         IMAGE_VERSION: 9.0-jdk11-openjdk-slim-buster
     environment:
       ACTIVATE: ${ACTIVATE_GEOSERVER}
-      STABLE_EXTENSIONS: netcdf-out-plugin
+      STABLE_EXTENSIONS: netcdf-plugin
       TOMCAT_EXTRAS: false
     volumes:
       - ${DATA_DIR}/geoserver:/opt/geoserver/data_dir
