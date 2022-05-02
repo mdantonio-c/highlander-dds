@@ -4,28 +4,25 @@ import tempfile
 from pathlib import Path
 from typing import Optional
 
-import cartopy  # TO INSTALL --> OK
-import cartopy.crs as ccrs  # TO INSTALL --> OK
-import geopandas as gpd  # TO INSTALL --> OK
-import matplotlib as mpl  # TO INSTALL --> OK
-import matplotlib.pyplot as plt  # TO INSTALL --> OK
+import cartopy
+import cartopy.crs as ccrs
+import geopandas as gpd
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import regionmask  # TO INSTALL --> OK
-import seaborn as sns  # TO INSTALL --> OK
+import regionmask
+import seaborn as sns
 import xarray as xr
 from flask import send_file
-from matplotlib import colorbar, colors  # TO INSTALL --> OK
-from mpl_toolkits.axes_grid1.inset_locator import inset_axes  # TO INSTALL --> OK
+from matplotlib import colorbar, colors
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from restapi import decorators
 from restapi.exceptions import NotFound
 from restapi.models import fields, validate
 from restapi.rest.definition import EndpointResource, Response
 from restapi.services.authentication import User
 from restapi.utilities.logs import log
-
-# TODO manage all the installations in the dockerfile
-
 
 ADMINISTRATIVE_AREAS = ["regions", "provinces"]
 
