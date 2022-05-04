@@ -18,7 +18,7 @@ class Initializer:
         # Executes every Tuesday morning at 19:30 a.m.
         celery_app.create_crontab_task(
             name=crop_water_crontab_task_name,
-            task="retrieve_data",
+            task="retrieve_crop_water",
             day_of_week="2",
             hour="19",
             minute="30",
