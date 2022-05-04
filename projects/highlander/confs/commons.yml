@@ -43,7 +43,7 @@ services:
       TOMCAT_EXTRAS: false
     volumes:
       - ${DATA_DIR}/geoserver:/opt/geoserver/data_dir
-      - ${DATA_DIR}/catalog/datasets:/opt/geoserver/datasets:ro
+      - ${DATA_DIR}/catalog/datasets:/opt/geoserver/data_dir/datasets:ro
     networks:
       default:
         aliases:
