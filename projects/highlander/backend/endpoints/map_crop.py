@@ -1,6 +1,3 @@
-import glob
-import os
-import tempfile
 from pathlib import Path
 from typing import Optional
 
@@ -15,16 +12,15 @@ import regionmask
 import seaborn as sns
 import xarray as xr
 from flask import send_file
-from matplotlib import colorbar, colors
-from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from restapi import decorators
 from restapi.exceptions import NotFound
-from restapi.models import fields, validate
+from restapi.models import Schema, fields, validate
 from restapi.rest.definition import EndpointResource, Response
 from restapi.services.authentication import User
 from restapi.utilities.logs import log
 
 ADMINISTRATIVE_AREAS = ["regions", "provinces"]
+OUTPUT_TYPES = ["map", "plot"]
 
 # TODO definire i percorsi files "definitivi"
 GEOJSON_PATH = "/code/highlander/geoserver_data_fake/geojson_assets"
@@ -119,28 +115,53 @@ def plotDistribution(field, outputfile):
     fig3.savefig(outputfile)
 
 
-class MapDetails(EndpointResource):
+def cropArea(netcdf_path, area_name, area):
+    # read the netcdf file
+    data_to_crop = xr.open_dataset(netcdf_path)
+
+    # create the polygon mask
+    polygon_mask = regionmask.Regions(
+        name=area_name,
+        outlines=list(area.geometry.values[i] for i in range(0, area.shape[0])),
+    )
+    mask = polygon_mask.mask(data_to_crop, lat_name="lat", lon_name="lon")
+
+    # TODO risalire al nome della variabile leggendola dal netcdf
+    data_variable = "rf"
+
+    nc_cropped = data_to_crop[data_variable][0].where(mask == np.isnan(mask))
+    nc_cropped = nc_cropped.dropna("lat", how="all")
+    nc_cropped = nc_cropped.dropna("lon", how="all")
+    return nc_cropped
+
+
+class SubsetDetails(Schema):
+    model_id = fields.Str(required=True)
+    area_type = fields.Str(required=True, validate=validate.OneOf(ADMINISTRATIVE_AREAS))
+    area_id = fields.Str(required=True)
+    output_type = fields.Str(required=True, validate=validate.OneOf(OUTPUT_TYPES))
+
+
+class MapCrop(EndpointResource):
     @decorators.auth.require()
     @decorators.endpoint(
-        path="/map/<dataset_id>/details",
-        summary="Create a cropped map and its boxplot",
+        path="/datasets/<dataset_id>/products/<product_id>/subset",
+        summary="Create a subset of data",
         responses={
-            200: "Map details successfully created",
+            200: "Cropping successfully created",
             404: "Requested area not found",
         },
     )
-    @decorators.use_kwargs(
-        {
-            "model_id": fields.Str(required=True),
-            "area_type": fields.Str(
-                required=True, validate=validate.OneOf(ADMINISTRATIVE_AREAS)
-            ),
-            "area_id": fields.Str(required=True),
-        },
-        location="query",
-    )
+    @decorators.use_kwargs(SubsetDetails)
     def post(
-        self, dataset_id: str, user: User, model_id: str, area_type: str, area_id: str
+        self,
+        user: User,
+        dataset_id: str,
+        product_id: str,
+        model_id: str,
+        area_type: str,
+        area_id: str,
+        output_type: str,
     ) -> Response:
 
         geojson_file = Path(GEOJSON_PATH, f"italy-{area_type}.json")
@@ -154,31 +175,20 @@ class MapDetails(EndpointResource):
             area_index = "prov_name"
 
         # TODO è ok usare una struttura file simile? oppure ci basta il filename con scritto tutto dentro?
-        output_dir = Path(OUTPUT_ROOT, dataset_id, model_id)
+        output_dir = Path(
+            OUTPUT_ROOT, dataset_id, product_id, model_id, f"{output_type}s"
+        )
+        output_filename = f"{area_name.replace(' ','_').lower()}.png"
         if output_dir.is_dir():
             # check if the images already exists
-            cache_res = {}
             for im in output_dir.iterdir():
                 if (
                     im.is_file()
-                    and im.name.endswith(".png")
-                    and area_name in im.name
+                    and output_filename == im.name
                     and im.stat().st_size >= 1
                 ):
-                    if "map" in im.name:
-                        cache_res["map"] = im.name
-                    elif "boxplot" in im.name:
-                        cache_res["boxplot"] = im.name
-                    elif "distribution" in im.name:
-                        cache_res["distribution"] = im.name
-                if (
-                    "map" in cache_res.keys()
-                    and "boxplot" in cache_res.keys()
-                    and "distribution" in cache_res.keys()
-                ):
-                    # all the details has been previously created
-                    log.debug("all the files has already been created")
-                    return cache_res
+                    res = im.name
+                    return res
 
         area = areas[areas[area_index] == area_name]
 
@@ -199,100 +209,85 @@ class MapDetails(EndpointResource):
                     break
         if not data_to_crop_path:
             raise NotFound(
-                f"Not found a map for {model_id} model in {dataset_id} dataset"
+                f"Not found a map for {model_id} model and product {product_id}"
             )
 
-        # read the netcdf file
-        data_to_crop = xr.open_dataset(data_to_crop_path)
-
-        # create the polygon mask
-        polygon_mask = regionmask.Regions(
-            name=area_name,
-            outlines=list(area.geometry.values[i] for i in range(0, area.shape[0])),
-        )
-        mask = polygon_mask.mask(data_to_crop, lat_name="lat", lon_name="lon")
-
-        # TODO risalire al nome della variabile leggendola dal netcdf
-        data_variable = "rf"
-
-        nc_cropped = data_to_crop[data_variable][0].where(mask == np.isnan(mask))
-        nc_cropped = nc_cropped.dropna("lat", how="all")
-        nc_cropped = nc_cropped.dropna("lon", how="all")
+        nc_cropped = cropArea(data_to_crop_path, area_name, area)
 
         # define the output directory
         if not output_dir.is_dir():
             # create it
             output_dir.mkdir(parents=True, exist_ok=True)
-        output_map_filename = f"{dataset_id}_{model_id}_{area_name}_map.png"
-        output_map_filepath = Path(output_dir, output_map_filename)
+        output_filepath = Path(output_dir, output_filename)
 
-        # plot the cropped map
-        plotMapNetcdf(
-            nc_cropped.values,
-            nc_cropped.lat.values,
-            nc_cropped.lon.values,
-            output_map_filepath,
-        )
+        if output_type == "map":
+            # plot the cropped map
+            plotMapNetcdf(
+                nc_cropped.values,
+                nc_cropped.lat.values,
+                nc_cropped.lon.values,
+                output_filepath,
+            )
+        else:
+            # plot the boxplot
+            df_stas = pd.DataFrame([])
+            df_stas = pd.concat(
+                [
+                    df_stas,
+                    pd.DataFrame(
+                        np.array(nc_cropped.values).ravel(),
+                        columns=[str(data_to_crop_path)[:-21]],
+                    ),
+                ],
+                axis=1,
+            )
+            # boxplot
+            plotBoxplot(df_stas, output_filepath)
+            # distribution
+            # plotDistribution(df_stas, output_filepath)
 
-        # plot the boxplot
-        output_boxplot_filename = f"{dataset_id}_{model_id}_{area_name}_boxplot.png"
-        output_boxplot_filepath = Path(output_dir, output_boxplot_filename)
-        df_stas = pd.DataFrame([])
-        df_stas = pd.concat(
-            [
-                df_stas,
-                pd.DataFrame(
-                    np.array(nc_cropped.values).ravel(),
-                    columns=[str(data_to_crop_path)[:-21]],
-                ),
-            ],
-            axis=1,
-        )
-
-        plotBoxplot(df_stas, output_boxplot_filepath)
-
-        # plot the distribution
-        output_distribution_filename = (
-            f"{dataset_id}_{model_id}_{area_name}_distribution.png"
-        )
-        output_plot_filepath = Path(output_dir, output_distribution_filename)
-        plotDistribution(df_stas, output_plot_filepath)
-
-        res = {
-            "map": output_map_filename,
-            "boxplot": output_boxplot_filename,
-            "distribution": output_distribution_filename,
-        }
+        res = output_filename
         return res
 
     @decorators.auth.require()
     @decorators.endpoint(
-        path="/map/<dataset_id>/details",
-        summary="Get a cropped map and/or its boxplot",
+        path="/datasets/<dataset_id>/products/<product_id>/subset",
+        summary="Get a subset of data",
         responses={
-            200: "Map details successfully retrieved",
+            200: "subset successfully retrieved",
             404: "Requested detail not found",
         },
     )
     @decorators.use_kwargs(
         {
             "model_id": fields.Str(required=True),
-            "filename": fields.Str(required=True),
+            "area_id": fields.Str(required=True),
+            "output_type": fields.Str(
+                required=True, validate=validate.OneOf(OUTPUT_TYPES)
+            ),
         },
         location="query",
     )
     def get(
-        self, dataset_id: str, user: User, model_id: str, filename: str
+        self,
+        user: User,
+        dataset_id: str,
+        product_id: str,
+        model_id: str,
+        area_id: str,
+        output_type: str,
     ) -> Response:
-        output_dir = Path(OUTPUT_ROOT, dataset_id, model_id)
+        output_dir = Path(
+            OUTPUT_ROOT, dataset_id, product_id, model_id, f"{output_type}s"
+        )
         if not output_dir.is_dir():
             raise NotFound(
-                f"details for dataset {dataset_id} and model {model_id} not found"
+                f"details for product {product_id} and model {model_id} not found"
             )
+        filename = f"{area_id.replace(' ','_').lower()}.png"
+        filepath = Path(output_dir, filename)
 
-        detail_filepath = Path(output_dir, filename)
+        if not filepath.is_file():
+            raise NotFound(f"subset element for {area_id} not found")
 
-        if not detail_filepath.is_file():
-            raise NotFound(f"detail element named {filename} not found")
-
-        return send_file(detail_filepath, mimetype="image/png")
+        return send_file(filepath, mimetype="image/png")
