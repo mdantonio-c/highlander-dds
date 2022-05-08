@@ -9,11 +9,11 @@
 </div>
 <div class="container" *ngIf="ssr.isBrowser">
   <ngx-spinner
+    type="ball-scale-multiple"
     bdColor="rgba(255,255,255,0.8)"
     color="#6c757d"
     zIndex="1000"
     [fullScreen]="false"
-    type="ball-clip-rotate-multiple"
     size="medium"
   ></ngx-spinner>
   <h2>{{ title }}</h2>
@@ -88,7 +88,10 @@
               <ng-container *ngIf="dataset.description">
                 <div class="description-container">
                   <i class="fa fa-quote-left fa-gray mr-2"></i>
-                  <p [innerHTML]="dataset.description" class="text d-inline"></p>
+                  <p
+                    [innerHTML]="dataset.description"
+                    class="text d-inline"
+                  ></p>
                 </div>
               </ng-container>
             </div>
