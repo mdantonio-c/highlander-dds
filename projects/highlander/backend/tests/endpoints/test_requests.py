@@ -48,7 +48,7 @@ class TestApp(BaseTests):
         endpoint = f"{API_URI}/estimate-size"
 
         # submit size estimation request
-        r = client.post(f"{endpoint}/{DATASET_NAME}", data=data_filter, headers=headers)
+        r = client.post(f"{endpoint}/{DATASET_NAME}", json=data_filter, headers=headers)
         assert r.status_code == 200
 
         response_body = self.get_content(r)
@@ -84,7 +84,7 @@ class TestApp(BaseTests):
     ) -> Iterator[Request]:
         """submit data request"""
         endpoint = f"{API_URI}/requests"
-        r = client.post(f"{endpoint}/{DATASET_NAME}", data=data_filter, headers=headers)
+        r = client.post(f"{endpoint}/{DATASET_NAME}", json=data_filter, headers=headers)
         assert r.status_code == 202
 
         task_id = self.get_content(r)

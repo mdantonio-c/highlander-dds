@@ -2,17 +2,15 @@
   <h4 class="modal-title">Product: {{ productName }}</h4>
   <button
     type="button"
-    class="btn close"
+    class="btn-close"
     aria-label="Close"
     (click)="activeModal.dismiss()"
-  >
-    <span aria-hidden="true">&times;</span>
-  </button>
+  ></button>
 </div>
 <ngx-spinner
+  type="ball-scale-multiple"
   bdColor="rgba(255,255,255,0.8)"
   color="#6c757d"
-  type="ball-clip-rotate-multiple"
   size="medium"
   [fullScreen]="false"
   name="extSpinner"

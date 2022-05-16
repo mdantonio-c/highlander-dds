@@ -2,8 +2,8 @@
 project:
   title: Highlander
   description: "Data Delivery System"
-  version: "0.4"
-  rapydo: "2.2"
+  version: "0.5"
+  rapydo: "2.3"
 
 variables:
   # roles:
@@ -21,10 +21,9 @@ variables:
 
     ACTIVATE_ALCHEMY: 1
     ACTIVATE_POSTGRES: 1
-    ACTIVATE_RABBIT: 1
     ACTIVATE_REDIS: 1
     ACTIVATE_CELERY: 1
-    ACTIVATE_FLOWER: 1
+    # ACTIVATE_FLOWER: 1
     ACTIVATE_CELERYBEAT: 1
     ACTIVATE_BROKER: 1
     ACTIVATE_GEOSERVER: 1
@@ -34,9 +33,6 @@ variables:
     BROKER_HOST: nohost
     BROKER_PORT: 0
     BROKER_CATALOG_DIR: "/catalog"
-
-    CELERY_BROKER: RABBIT
-    CELERY_BACKEND: REDIS
 
     SET_CSP_IMG_SRC: "https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org"
     SET_CSP_FONT_SRC: https://netdna.bootstrapcdn.com

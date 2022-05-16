@@ -7,15 +7,15 @@ env:
   PROJECT: highlander
 
 jobs:
-  integration-tests:
-    runs-on: ubuntu-20.04
+  Cypress:
+    runs-on: ubuntu-latest
     timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.9
+          python-version: "3.10"
 
       - uses: rapydo/actions/install@v1
         with:
@@ -31,7 +31,7 @@ jobs:
 
           # Temporary fix, waiting for a public release
           cd projects/highlander/builds/backend
-          git clone --depth 1 https://${{ secrets.DDS_USER }}:${{ secrets.DDS_TOKEN }}@${{ secrets.DDS_URL }}/${{ secrets.DDS_USER }}/dds_backend.git packages
+          git clone --depth 1 https://${{ secrets.DDS_USER }}:${{ secrets.DDS_TOKEN }}@${{ secrets.DDS_URL }}.git packages
           cd -
 
           # Install sample datasets/catalog

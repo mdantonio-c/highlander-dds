@@ -7,26 +7,27 @@ env:
   PROJECT: highlander
 
 jobs:
-  backend-tests:
-    runs-on: ubuntu-20.04
+  Development-mode:
+    runs-on: ubuntu-latest
     timeout-minutes: 45
 
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: 3.9
+          python-version: "3.10"
 
       - uses: rapydo/actions/install@v1
         with:
           project: ${PROJECT}
+          extra_options: "-e FRONTEND_FRAMEWORK=nofrontend -e ACTIVATE_GEOSERVER=0"
 
       - name: Run Pytest
         run: |
 
           # Temporary fix, waiting for a public release
           cd projects/highlander/builds/backend
-          git clone --depth 1 https://${{ secrets.DDS_USER }}:${{ secrets.DDS_TOKEN }}@${{ secrets.DDS_URL }}/${{ secrets.DDS_USER }}/dds_backend.git packages
+          git clone --depth 1 https://${{ secrets.DDS_USER }}:${{ secrets.DDS_TOKEN }}@${{ secrets.DDS_URL }}.git packages
           cd -
 
           # Install sample datasets/catalog
@@ -36,7 +37,6 @@ jobs:
           # This mkdir will start to fail... in this case just remove it
           mkdir data/catalog/cache data/catalog/download data/catalog/logs
 
-          rapydo --testing -e ACTIVATE_GEOSERVER=0 init --force
           rapydo pull --quiet
           rapydo build
           rapydo add task test_task
@@ -57,15 +57,58 @@ jobs:
           project: ${PROJECT}
           step: backend
 
+      - name: Print Logs
+        if: failure()
+        run: tail -100 data/logs/backend-server.log
+
+      - name: Print Events
+        if: failure()
+        run: tail -100 data/logs/security-events.log
+
+      - name: Docker Logs
+        if: failure()
+        run: rapydo logs
+
+  Production-mode:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+
+      - uses: rapydo/actions/install@v1
+        with:
+          project: ${PROJECT}
+
       - name: Production mode
         run: |
-          rapydo remove --all
+
+          # Temporary fix, waiting for a public release
+          cd projects/highlander/builds/backend
+          git clone --depth 1 https://${{ secrets.DDS_USER }}:${{ secrets.DDS_TOKEN }}@${{ secrets.DDS_URL }}.git packages
+          cd -
+
+          # Install sample datasets/catalog
+          tar -xvf projects/highlander/builds/backend/packages/sample_datasets.tar.gz -C data/catalog/
+          cp projects/highlander/builds/backend/packages/confs/*.yaml data/catalog/
+          # When the cache, download and logs will be added to the repository with a .gitkeep
+          # This mkdir will start to fail... in this case just remove it
+          mkdir data/catalog/cache data/catalog/download data/catalog/logs
 
           rm projects/highlander/confs/geoserver.service
           touch projects/highlander/confs/geoserver.service
 
-          rapydo --testing --prod -e ACTIVATE_GEOSERVER=0 init --force
+          sudo mkdir -p /data/datasets/human-wellbeing
+          sudo mkdir -p /data/datasets/vhr-rea
+          sudo mkdir -p /data/datasets/crop-water
+          sudo mkdir -p /data/ECMWF/Sub_SEA/Italy
+
+          rapydo --testing --prod -e FRONTEND_FRAMEWORK=nofrontend -e ACTIVATE_GEOSERVER=0 init --force
           rapydo pull --quiet
+          rapydo build
           rapydo ssl --volatile
           rapydo -e AUTH_LOGIN_BAN_TIME=10 start
           sleep 60
@@ -89,5 +132,4 @@ jobs:
 
       - name: Docker Logs
         if: failure()
-        run: |
-          rapydo logs
+        run: rapydo logs
