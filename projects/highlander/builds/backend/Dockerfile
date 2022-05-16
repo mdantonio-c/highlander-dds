@@ -14,9 +14,29 @@ RUN apt-get upgrade  \
     && apt-get install -y libproj-dev proj-data proj-bin \
     && apt-get install -y libgeos-dev \
     && pip3 install cython \
-    && pip3 install cartopy==0.19.0.post1 # the latest version has problems with PROJ version
+    && pip3 install cartopy
 
 #########################################################
-# REGIONMASK SEABORN and MPL_TOOLKITS
+# REGIONMASK
 #########################################################
-RUN pip3 install regionmask && pip3 install seaborn && pip3 install matplotlib
+RUN apt-get install -y libgdal-dev  \
+    && pip3 install https://github.com/rasterio/rasterio/archive/master.zip  \
+    && pip3 install regionmask
+
+
+#########################################################
+# GEOPANDAS
+#########################################################
+RUN pip3 install geopandas
+
+########################################################
+# SEABORN
+#########################################################
+RUN pip3 install seaborn
+
+########################################################
+# MPL_TOOLKITS
+#########################################################
+RUN pip3 install matplotlib
+
+
