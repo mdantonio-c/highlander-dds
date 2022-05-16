@@ -67,7 +67,8 @@ def retrieve_crop_water(self: Task, mirror: bool = False) -> None:
         if not mirror:
             # get the last Tuesday
             today = datetime.utcnow()
-            last_tuesday = today - timedelta(days=today.weekday() - 1)
+            offset = (today.weekday() - 1) % 7
+            last_tuesday = today - timedelta(days=offset)
             ref_time = last_tuesday.strftime("%Y-%m-%d")
 
         for area in CROP_WATER_AREAS:
