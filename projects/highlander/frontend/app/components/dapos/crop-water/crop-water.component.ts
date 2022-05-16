@@ -50,8 +50,8 @@ export class CropWaterComponent implements OnInit {
     center: this.center,
   };
 
-  layers: L.Layer[] = [this.LAYER_OSM];
-  public filter: CropWaterFilter;
+  // layers: L.Layer[] = [this.LAYER_OSM];
+  private filter: CropWaterFilter;
   private geoData: L.LayerGroup = new L.LayerGroup();
   referenceDate: string = "2021-07-07";
 
@@ -65,14 +65,13 @@ export class CropWaterComponent implements OnInit {
 
   onMapReady(map: L.Map) {
     this.map = map;
-    // posizion to selected area
+    // position to selected area
     this.map.setView(this.center, this.zoom);
 
     // load geo data
-    console.log("load geo data");
     this.loadGeoData();
+    // this.geoData.addTo(map);
 
-    this.geoData.addTo(map);
     this.initLegends(map);
     // add a legend
     if (this.legends[this.filter.layer]) {
@@ -123,6 +122,8 @@ export class CropWaterComponent implements OnInit {
 
   applyFilter(data: CropWaterFilter) {
     console.log("apply filter", data);
+    const previousLayer = this.filter?.layer || null;
+    this.filter = data;
 
     const selectedArea = ADMINISTRATIVE_AREAS.find((x) => x.code === data.area);
     this.zoom = selectedArea.zLevel ? selectedArea.zLevel : this.zoom;
@@ -130,19 +131,18 @@ export class CropWaterComponent implements OnInit {
 
     if (this.map) {
       // change area
+      // console.log(`change area to ${data.area}`);
       this.map.setView(this.center, this.zoom);
 
       this.loadGeoData();
 
-      if (data.layer !== this.filter.layer) {
+      if (previousLayer && data.layer !== previousLayer) {
         // remove the previous legend
-        this.map.removeControl(this.legends[this.filter.layer]);
+        this.map.removeControl(this.legends[previousLayer]);
         // add the new legend
         this.legends[data.layer].addTo(this.map);
       }
     }
-
-    this.filter = data;
   }
 
   /**
@@ -153,7 +153,15 @@ export class CropWaterComponent implements OnInit {
       console.warn("Cannot load geo data. Map not available");
       return;
     }
+    console.log(`loading geo data... area <${this.filter.area}>`);
+
+    // first clean up the map from the existing overlays
+    // this.geoData.eachLayer((l:  L.Layer) => {
+    //   this.map.removeLayer(l);
+    // })
+    this.map.removeLayer(this.geoData);
     this.geoData.clearLayers();
+
     /*this.dataService
       .getCropWaterForecasts()
       .subscribe((json) => {
@@ -180,9 +188,12 @@ export class CropWaterComponent implements OnInit {
       minZoom: MIN_ZOOM,
     });
     this.geoData.addLayer(myLayer);
+    this.geoData.addTo(this.map);
+    // console.log("How many layers?", this.geoData.getLayers().length);
   }
 
-  printLayerDescription(code: string): string {
+  printLayerDescription(): string {
+    const code = this.filter.layer;
     const found = LAYERS.find((x) => x.code === code);
     return found.label || code;
   }
