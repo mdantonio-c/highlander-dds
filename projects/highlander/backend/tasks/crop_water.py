@@ -12,7 +12,7 @@ from restapi.utilities.logs import log
 
 DATASET_DIR = Env.get("DATASETS_DIR", "/catalog/datasets") + "/crop-water"
 CROP_WATER_AREAS = ["C4", "C5", "C7"]
-ALLOWED_FORMATS = (".nc",)  # other existing formats are .dbf .prj .shp .shx .cpg
+ALLOWED_FORMATS = (".nc", ".dbf", ".prj", ".shp", ".shx", ".cpg")
 
 
 def download_data(f: FTPExt, filenames: List[str], target_path: str) -> int:
