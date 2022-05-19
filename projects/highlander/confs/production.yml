@@ -7,6 +7,8 @@ services:
       - /data/ECMWF/Sub_SEA/Italy:/catalog/datasets/sub-sea
       - /data/datasets/human-wellbeing:/catalog/datasets/human-wellbeing
       - /data/datasets/crop-water:/catalog/datasets/crop-water
+      - /data/datasets/changes-land-suit-vegetation:/catalog/datasets/changes-land-suit-vegetation
+      - /data/datasets/soil-erosion:/catalog/datasets/soil-erosion
   celery:
     volumes:
       - /data/datasets/vhr-rea:/catalog/datasets/era5-downscaled
