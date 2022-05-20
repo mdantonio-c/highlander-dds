@@ -43,7 +43,7 @@ def clean_cache(self: Task, apply_to: List[str] = []) -> None:
     # remove cache file(s)
     for path in paths:
         path.unlink()
-        log.debug("Removed cache file: {}", path.name)
+        log.info("Removed cache file: {}", path.name)
 
     dds = broker.get_instance()
     log.debug("Update cache for dataset(s): {}", to_be_updated)
