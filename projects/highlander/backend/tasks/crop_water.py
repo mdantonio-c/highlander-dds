@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List
 
 from celery.app.task import Task
-from restapi.connectors import ftp
+from restapi.connectors import celery, ftp
 from restapi.connectors.celery import CeleryExt
 from restapi.connectors.ftp import FTPExt
 from restapi.env import Env
@@ -61,6 +61,7 @@ def retrieve_crop_water(self: Task, mirror: bool = False) -> None:
         log.info(f"FTP server <{f.variables.get('host')}> connected successfully")
         # suppress ftp debugging
         f.connection.debug(0)
+        total_saved = 0
 
         root_dir = f.connection.pwd()
 
@@ -108,7 +109,11 @@ def retrieve_crop_water(self: Task, mirror: bool = False) -> None:
                                     f"{area}/{year}/monthlyForecast/{ref_time}"
                                 )
                                 filenames = f.connection.nlst()
-                                download_data(f, filenames, relative_path)
+                                saved = download_data(f, filenames, relative_path)
+                                log.info(
+                                    f"Total files download for <{area}> area, on <{ref_time}>: {saved}"
+                                )
+                                total_saved += saved
 
                             except ValueError:
                                 log.warning(
@@ -139,5 +144,11 @@ def retrieve_crop_water(self: Task, mirror: bool = False) -> None:
                 log.info(
                     f"Download completed. Total files retrieved for area <{area}>: {saved}"
                 )
+                total_saved += saved
+
+        if total_saved:
+            # trigger cache refresh task to allow access to the newly loaded data
+            c = celery.get_instance()
+            c.celery_app.send_task("clean_cache", args=[["crop-water_crop-water"]])
 
         log.info("Retrieve crop-water completed")
