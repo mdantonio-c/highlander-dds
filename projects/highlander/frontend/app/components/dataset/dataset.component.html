@@ -17,8 +17,7 @@
           <img
             src="{{ backendURI + '/api/datasets/' + dataset.id + '/image' }}"
             alt="no img"
-            style="float: left"
-            class="mr-md-4 w-50"
+            class="mb-3 mr-3"
             *ngIf="dataset.image"
           />
           <span [innerHTML]="dataset.description" class="text"></span>
