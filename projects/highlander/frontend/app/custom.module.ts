@@ -27,6 +27,7 @@ import { MapFilterComponent as HumanWellbeingFilter } from "./components/dapos/h
 import { ReplacePipe } from "./pipes/replace.pipe";
 import { AbsPipe } from "./pipes/abs.pipe";
 import { ClickStopPropagation } from "./directives/click-stop-propagation";
+import { EventStopPropagation } from "./directives/event-stop-propagation";
 
 const routes: Routes = [
   { path: "app/datasets", component: DatasetsComponent },
@@ -75,6 +76,7 @@ const routes: Routes = [
     ReplacePipe,
     AbsPipe,
     ClickStopPropagation,
+    EventStopPropagation,
   ],
   schemas: [],
   providers: [],

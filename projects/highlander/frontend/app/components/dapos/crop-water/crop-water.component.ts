@@ -105,7 +105,13 @@ export class CropWaterComponent implements OnInit {
     const legend = new L.Control({ position: this.LEGEND_POSITION });
     legend.onAdd = () => {
       let div = L.DomUtil.create("div", config.legend_type);
-      div.style.clear = "unset";
+      if (!L.Browser.touch) {
+        L.DomEvent.disableClickPropagation(div);
+        L.DomEvent.on(div, "mousewheel", L.DomEvent.stopPropagation);
+      } else {
+        L.DomEvent.on(div, "click", L.DomEvent.stopPropagation);
+      }
+
       div.innerHTML += `<h6>${config.title}</h6>`;
       for (let i = 0; i < config.labels.length; i++) {
         div.innerHTML +=
