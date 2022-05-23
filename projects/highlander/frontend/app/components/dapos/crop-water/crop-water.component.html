@@ -24,9 +24,24 @@
           <!-- Period -->
           <div class="leaflet-top leaflet-right mb-4 mt-2 mr-1">
             <div class="leaflet-box leaflet-control" event-stop-propagation>
-              Period:
-              <span class="font-weight-bold">{{ referenceDate }}</span>
-              <br />
+              <div class="form-group" *ngIf="filter.period">
+                <label for="selectPeriod" class="mb-0 font-weight-bold"
+                  >Period:</label
+                >
+                <select
+                  [(ngModel)]="selectedPeriod"
+                  id="selectPeriod"
+                  class="form-control form-control-sm"
+                  (ngModelChange)="onPeriodChange($event)"
+                  [compareWith]="isSamePeriod"
+                >
+                  <option *ngFor="let run of availableRuns" [ngValue]="run">
+                    {{ run.year }}-{{ run.month | number: "2.0" }}-{{
+                      run.day | number: "2.0"
+                    }}
+                  </option>
+                </select>
+              </div>
               <span>{{ printLayerDescription() }}</span>
             </div>
           </div>

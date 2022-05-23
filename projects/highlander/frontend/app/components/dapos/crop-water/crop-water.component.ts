@@ -1,12 +1,14 @@
 import { Component, OnInit, Input } from "@angular/core";
-import { DatasetInfo, CropWaterFilter } from "../../../types";
+import { DatasetInfo, CropWaterFilter, DateStruct } from "../../../types";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 
 import * as L from "leaflet";
+import * as _ from "lodash";
 import { DataService } from "../../../services/data.service";
 import { ADMINISTRATIVE_AREAS, LAYERS, LEGEND_DATA } from "./data";
 import { LegendConfig } from "../../../services/data";
+import { AVAILABLE_RUNS, DEFAULT_RUN } from "./data.mock";
 
 const MAX_ZOOM = 16;
 const MIN_ZOOM = 10;
@@ -33,6 +35,8 @@ export class CropWaterComponent implements OnInit {
   zoom: number = 12;
   center: L.LatLng = L.latLng([44.49895, 11.32759]); // default Bologna City
   readonly LEGEND_POSITION = "bottomleft";
+  availableRuns: DateStruct[] = AVAILABLE_RUNS;
+  selectedPeriod: DateStruct;
 
   LAYER_OSM = L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -51,9 +55,9 @@ export class CropWaterComponent implements OnInit {
   };
 
   // layers: L.Layer[] = [this.LAYER_OSM];
-  private filter: CropWaterFilter;
+  filter: CropWaterFilter;
   private geoData: L.LayerGroup = new L.LayerGroup();
-  referenceDate: string = "2021-07-07";
+  // referenceDate: string = "2021-07-07";
 
   constructor(
     private dataService: DataService,
@@ -127,9 +131,14 @@ export class CropWaterComponent implements OnInit {
   }
 
   applyFilter(data: CropWaterFilter) {
-    console.log("apply filter", data);
+    if (!data.period) {
+      data.period = DEFAULT_RUN;
+    }
+    this.selectedPeriod = data.period;
+
     const previousLayer = this.filter?.layer || null;
     this.filter = data;
+    console.log("apply filter", this.filter);
 
     const selectedArea = ADMINISTRATIVE_AREAS.find((x) => x.code === data.area);
     this.zoom = selectedArea.zLevel ? selectedArea.zLevel : this.zoom;
@@ -168,23 +177,13 @@ export class CropWaterComponent implements OnInit {
     this.map.removeLayer(this.geoData);
     this.geoData.clearLayers();
 
-    /*this.dataService
-      .getCropWaterForecasts()
-      .subscribe((json) => {
-        const jsonLayer = L.geoJSON(json, {
-          style: NORMAL_STYLE
-        });
-        this.geoData.addLayer(L.geoJSON(json));
-      });*/
-
-    const year: number = 2021,
-      month: string = "07",
-      day: string = "07";
-
     let myLayer = L.tileLayer.wms(`${WMS_ENDPOINT}`, {
       layers: `highlander:${this.filter.layer.toUpperCase()}_${
         this.filter.area
-      }_${year}_${month}_${day}`,
+      }_${this.filter.period.year}_${String(this.filter.period.month).padStart(
+        2,
+        "0"
+      )}_${String(this.filter.period.day).padStart(2, "0")}`,
       version: "1.1.0",
       format: "image/png",
       opacity: 0.8,
@@ -192,6 +191,10 @@ export class CropWaterComponent implements OnInit {
       attribution: "'&copy; CMCC",
       maxZoom: MAX_ZOOM,
       minZoom: MIN_ZOOM,
+    });
+    myLayer.on("tileerror", (error) => {
+      // console.warn(error);
+      this.notify.showWarning("No data layer available.");
     });
     this.geoData.addLayer(myLayer);
     this.geoData.addTo(this.map);
@@ -202,5 +205,15 @@ export class CropWaterComponent implements OnInit {
     const code = this.filter.layer;
     const found = LAYERS.find((x) => x.code === code);
     return found.label || code;
+  }
+
+  onPeriodChange(val) {
+    console.log("period changed", val);
+    this.filter.period = val;
+    this.applyFilter(this.filter);
+  }
+
+  isSamePeriod(a: DateStruct, b: DateStruct) {
+    return _.isEqual(a, b);
   }
 }
