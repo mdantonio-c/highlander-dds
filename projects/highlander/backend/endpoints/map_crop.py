@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 import cartopy
 import cartopy.crs as ccrs
@@ -12,24 +12,26 @@ import regionmask
 import seaborn as sns
 import xarray as xr
 from flask import send_file
+from marshmallow import ValidationError, pre_load
 from restapi import decorators
-from restapi.exceptions import NotFound
+from restapi.exceptions import NotFound, ServerError
 from restapi.models import Schema, fields, validate
 from restapi.rest.definition import EndpointResource, Response
 from restapi.services.authentication import User
 from restapi.utilities.logs import log
 
-ADMINISTRATIVE_AREAS = ["regions", "provinces"]
-OUTPUT_TYPES = ["map", "plot"]
+AREA_TYPES = ["region", "province", "bbox", "polygon"]
+TYPES = ["map", "plot"]
+PLOT_TYPES = ["boxplot", "distribution"]
+FORMATS = ["png", "json"]
 
 
-GEOJSON_PATH = "/catalog/subsets/geojson_assets"
+GEOJSON_PATH = "/catalog/assets"
 DATASETS_ROOT = (
     "/code/highlander/geoserver_data_fake"  # TODO le mappe sono in data/geoserver ?
 )
-# OUTPUT_ROOT = tempfile.gettempdir()
-# for debugging
-OUTPUT_ROOT = "/catalog/subsets/"
+
+CROPS_OUTPUT_ROOT = "/catalog/crops/"
 
 
 def plotMapNetcdf(field, lat, lon, outputfile):
@@ -137,134 +139,53 @@ def cropArea(netcdf_path, area_name, area):
 
 class SubsetDetails(Schema):
     model_id = fields.Str(required=True)
-    area_type = fields.Str(required=True, validate=validate.OneOf(ADMINISTRATIVE_AREAS))
-    area_id = fields.Str(required=True)
-    output_type = fields.Str(required=True, validate=validate.OneOf(OUTPUT_TYPES))
+    area_id = fields.Str(required=False)
+    area_type = fields.Str(required=True, validate=validate.OneOf(AREA_TYPES))
+    area_coords = fields.List(fields.Float(), required=False)
+    type = fields.Str(required=True, validate=validate.OneOf(TYPES))
+    plot_type = fields.Str(required=False, validate=validate.OneOf(PLOT_TYPES))
+    plot_format = fields.Str(required=False, validate=validate.OneOf(FORMATS))
+
+    @pre_load
+    def params_validation(self, data, **kwargs):
+        area_type = data.get("area_type")
+        area_coords = data.get("area_coords", None)
+        area_id = data.get("area_id", None)
+        # check if area coords are needed
+        if area_type == "bbox" or area_type == "polygon":
+            if not area_coords:
+                raise ValidationError(
+                    f"coordinates have to be specified for {area_type} area type"
+                )
+        # check if area_id is needed
+        elif area_type == "region" or area_type == "province":
+            if not area_id:
+                raise ValidationError(
+                    f"an areaa id has to be specified for {area_type} area type"
+                )
+
+        # check if plot type is needed
+        type = data.get("type")
+        plot_type = data.get("plot_type", None)
+        if type == "plot" and not plot_type:
+            raise ValidationError("a plot type have to be specified")
+
+        return data
 
 
 class MapCrop(EndpointResource):
     @decorators.auth.require()
     @decorators.endpoint(
-        path="/datasets/<dataset_id>/products/<product_id>/subset",
-        summary="Create a subset of data",
-        responses={
-            200: "Cropping successfully created",
-            404: "Requested area not found",
-        },
-    )
-    @decorators.use_kwargs(SubsetDetails)
-    def post(
-        self,
-        user: User,
-        dataset_id: str,
-        product_id: str,
-        model_id: str,
-        area_type: str,
-        area_id: str,
-        output_type: str,
-    ) -> Response:
-
-        geojson_file = Path(GEOJSON_PATH, f"italy-{area_type}.json")
-        areas = gpd.read_file(geojson_file)
-
-        if area_type == "regions":
-            area_name = area_id.lower()
-            area_index = "name"
-        else:
-            area_name = area_id.title()
-            area_index = "prov_name"
-
-        output_dir = Path(
-            OUTPUT_ROOT, dataset_id, product_id, model_id, f"{output_type}s"
-        )
-        output_filename = f"{area_name.replace(' ','_').lower()}.png"
-        if output_dir.is_dir():
-            # check if the images already exists
-            for im in output_dir.iterdir():
-                if (
-                    im.is_file()
-                    and output_filename == im.name
-                    and im.stat().st_size >= 1
-                ):
-                    res = im.name
-                    return res
-
-        area = areas[areas[area_index] == area_name]
-
-        if area.empty:
-            raise NotFound(f"Area {area_id} not found in {area_type}")
-
-        # get the map to crop
-        dataset_dir = Path(DATASETS_ROOT, dataset_id)
-        if not dataset_dir.is_dir():
-            raise NotFound(f"{dataset_id} not found")
-
-        # get the file corresponding to the requested model
-        data_to_crop_path: Optional[Path] = None
-        for f in dataset_dir.iterdir():
-            if f.is_file and f.suffix == ".nc":
-                if model_id in f.name:
-                    data_to_crop_path = f
-                    break
-        if not data_to_crop_path:
-            raise NotFound(
-                f"Not found a map for {model_id} model and product {product_id}"
-            )
-
-        nc_cropped = cropArea(data_to_crop_path, area_name, area)
-
-        # define the output directory
-        if not output_dir.is_dir():
-            # create it
-            output_dir.mkdir(parents=True, exist_ok=True)
-        output_filepath = Path(output_dir, output_filename)
-
-        if output_type == "map":
-            # plot the cropped map
-            plotMapNetcdf(
-                nc_cropped.values,
-                nc_cropped.lat.values,
-                nc_cropped.lon.values,
-                output_filepath,
-            )
-        else:
-            # plot the boxplot
-            df_stas = pd.DataFrame([])
-            df_stas = pd.concat(
-                [
-                    df_stas,
-                    pd.DataFrame(
-                        np.array(nc_cropped.values).ravel(),
-                        columns=[str(data_to_crop_path)[:-21]],
-                    ),
-                ],
-                axis=1,
-            )
-            # boxplot
-            plotBoxplot(df_stas, output_filepath)
-            # distribution
-            # plotDistribution(df_stas, output_filepath)
-
-        res = output_filename
-        return res
-
-    @decorators.auth.require()
-    @decorators.endpoint(
-        path="/datasets/<dataset_id>/products/<product_id>/subset",
+        path="/datasets/<dataset_id>/products/<product_id>/crop",
         summary="Get a subset of data",
         responses={
             200: "subset successfully retrieved",
-            404: "Requested detail not found",
+            404: "Area or model not found",
+            500: "Errors in cropping or plotting the data",
         },
     )
     @decorators.use_kwargs(
-        {
-            "model_id": fields.Str(required=True),
-            "area_id": fields.Str(required=True),
-            "output_type": fields.Str(
-                required=True, validate=validate.OneOf(OUTPUT_TYPES)
-            ),
-        },
+        SubsetDetails,
         location="query",
     )
     def get(
@@ -273,20 +194,120 @@ class MapCrop(EndpointResource):
         dataset_id: str,
         product_id: str,
         model_id: str,
-        area_id: str,
-        output_type: str,
+        area_type: str,
+        type: str,
+        area_id: Optional[str] = None,
+        area_coords: Optional[List[float]] = None,
+        plot_type: Optional[str] = None,
+        plot_format: str = "png",
     ) -> Response:
-        output_dir = Path(
-            OUTPUT_ROOT, dataset_id, product_id, model_id, f"{output_type}s"
-        )
-        if not output_dir.is_dir():
-            raise NotFound(
-                f"details for product {product_id} and model {model_id} not found"
+        if area_type == "region" or area_type == "province":
+            # get the geojson file
+            geojson_file = Path(GEOJSON_PATH, f"italy-{area_type}s.json")
+            areas = gpd.read_file(geojson_file)
+            # get the names that cope with the different geojson structures
+            # TODO params and names in the two geojson files can be modified in order to correspond?
+            if area_type == "region":
+                area_name = area_id.lower()
+                area_index = "name"
+            else:
+                area_name = area_id.title()
+                area_index = "prov_name"
+
+            # get the path of the crop
+            output_dir = Path(
+                CROPS_OUTPUT_ROOT, dataset_id, product_id, model_id, f"{area_type}s"
             )
-        filename = f"{area_id.replace(' ','_').lower()}.png"
-        filepath = Path(output_dir, filename)
+            if type == "plot":
+                output_filename = (
+                    f"{area_name.replace(' ', '_').lower()}_{plot_type}.{plot_format}"
+                )
+            else:
+                output_filename = f"{area_name.replace(' ', '_').lower()}_map.png"
 
-        if not filepath.is_file():
-            raise NotFound(f"subset element for {area_id} not found")
+            filepath = Path(output_dir, output_filename)
+            # get the mimetype
+            if filepath.suffix == ".png":
+                mimetype = "image/png"
+            elif filepath.suffix == ".json":
+                mimetype = "application/json"
 
-        return send_file(filepath, mimetype="image/png")
+            # check if the crop has already been created
+            if filepath.is_file() and filepath.stat().st_size >= 1:
+                return send_file(filepath, mimetype=mimetype)
+
+            # get the area
+            area = areas[areas[area_index] == area_name]
+            if area.empty:
+                raise NotFound(f"Area {area_id} not found in {area_type}s")
+
+            # get the map to crop
+            # TODO implement the method to have the right location in the catalog
+            dataset_dir = Path(DATASETS_ROOT, dataset_id)
+            if not dataset_dir.is_dir():
+                raise NotFound(f"{dataset_id} not found")
+
+            # get the file corresponding to the requested model
+            data_to_crop_path: Optional[Path] = None
+            for f in dataset_dir.iterdir():
+                if f.is_file and f.suffix == ".nc":
+                    if model_id in f.name:
+                        data_to_crop_path = f
+                        break
+            if not data_to_crop_path:
+                raise NotFound(
+                    f"Not found a map for {model_id} model and product {product_id}"
+                )
+
+            # crop the area
+            try:
+                nc_cropped = cropArea(data_to_crop_path, area_name, area)
+            except Exception as exc:
+                raise ServerError(f"Errors in cropping the data: {exc}")
+
+            # create the output directory if it does not exists
+            if not output_dir.is_dir():
+                output_dir.mkdir(parents=True, exist_ok=True)
+
+            try:
+                if type == "map":
+                    # plot the cropped map
+                    plotMapNetcdf(
+                        nc_cropped.values,
+                        nc_cropped.lat.values,
+                        nc_cropped.lon.values,
+                        filepath,
+                    )
+                else:
+                    # plot the boxplot
+                    df_stas = pd.DataFrame([])
+                    df_stas = pd.concat(
+                        [
+                            df_stas,
+                            pd.DataFrame(
+                                np.array(nc_cropped.values).ravel(),
+                                columns=[str(data_to_crop_path)[:-21]],
+                            ),
+                        ],
+                        axis=1,
+                    )
+                    if plot_type == "boxplot":
+                        plotBoxplot(df_stas, filepath)
+                    elif plot_type == "distribution":
+                        plotDistribution(df_stas, filepath)
+                    # TODO implement the case json format is requested
+            except Exception as exc:
+                raise ServerError(f"Errors in plotting the data: {exc}")
+
+            # check that the output has been correctly created
+            if not filepath.is_file() or not filepath.stat().st_size >= 1:
+                raise ServerError("Errors in plotting the data")
+
+            return send_file(filepath, mimetype=mimetype)
+
+        else:
+            # case of custom areas:
+            # The data are cropped and streamed. Cropped data are not saved in the folders and
+            # TODO: to be implemented
+            log.debug("Custom area cropping")
+            return self.empty_response()
