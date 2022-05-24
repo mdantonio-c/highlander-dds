@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 import cartopy
 import cartopy.crs as ccrs
@@ -12,8 +12,10 @@ import regionmask
 import seaborn as sns
 import xarray as xr
 from flask import send_file
+from highlander.connectors import broker
 from marshmallow import ValidationError, pre_load
 from restapi import decorators
+from restapi.connectors import Connector
 from restapi.exceptions import NotFound, ServerError
 from restapi.models import Schema, fields, validate
 from restapi.rest.definition import EndpointResource, Response
@@ -27,9 +29,6 @@ FORMATS = ["png", "json"]
 
 
 GEOJSON_PATH = "/catalog/assets"
-DATASETS_ROOT = (
-    "/code/highlander/geoserver_data_fake"  # TODO le mappe sono in data/geoserver ?
-)
 
 CROPS_OUTPUT_ROOT = "/catalog/crops/"
 
@@ -117,7 +116,7 @@ def plotDistribution(field, outputfile):
     fig3.savefig(outputfile)
 
 
-def cropArea(netcdf_path, area_name, area):
+def cropArea(netcdf_path, area_name, area, data_variable):
     # read the netcdf file
     data_to_crop = xr.open_dataset(netcdf_path)
 
@@ -127,9 +126,6 @@ def cropArea(netcdf_path, area_name, area):
         outlines=list(area.geometry.values[i] for i in range(0, area.shape[0])),
     )
     mask = polygon_mask.mask(data_to_crop, lat_name="lat", lon_name="lon")
-
-    # TODO risalire al nome della variabile leggendola dal netcdf
-    data_variable = "rf"
 
     nc_cropped = data_to_crop[data_variable][0].where(mask == np.isnan(mask))
     nc_cropped = nc_cropped.dropna("lat", how="all")
@@ -242,26 +238,50 @@ class MapCrop(EndpointResource):
                 raise NotFound(f"Area {area_id} not found in {area_type}s")
 
             # get the map to crop
-            # TODO implement the method to have the right location in the catalog
-            dataset_dir = Path(DATASETS_ROOT, dataset_id)
-            if not dataset_dir.is_dir():
-                raise NotFound(f"{dataset_id} not found")
+            dds = broker.get_instance()
+            # check if the dataset exists
+            dataset_details = dds.get_dataset_details(dataset_id)
+            if not dataset_details["data"]:
+                raise NotFound(f"dataset {dataset_id} not found")
+
+            # check if product exists
+            dataset_products = dataset_details["data"][0]["products"]
+            product_details: Optional[Dict[str, Any]] = None
+            for p in dataset_products:
+                if p["id"] == product_id:
+                    product_details = p
+                    break
+            if not product_details:
+                raise NotFound(
+                    f"product {product_id} for dataset {dataset_id} not found"
+                )
+
+            product_urlpath = dds.broker.catalog[dataset_id][product_id].urlpath
+
+            product_dir = Path(product_urlpath).parents[0]
+            if not product_dir.is_dir():
+                raise NotFound(f"data for product {product_id} not found")
 
             # get the file corresponding to the requested model
-            data_to_crop_path: Optional[Path] = None
-            for f in dataset_dir.iterdir():
-                if f.is_file and f.suffix == ".nc":
-                    if model_id in f.name:
-                        data_to_crop_path = f
-                        break
-            if not data_to_crop_path:
+            data_to_crop_filename = (
+                Path(product_urlpath)
+                .name.replace("*", model_id, 1)
+                .replace("*", "regular")
+            )
+            data_to_crop_filepath = product_dir.joinpath(data_to_crop_filename)
+            if not data_to_crop_filepath.is_file():
+                log.debug(data_to_crop_filepath)
                 raise NotFound(
-                    f"Not found a map for {model_id} model and product {product_id}"
+                    f"Data not found for {model_id} model and product {product_id}"
                 )
+            # get the data variable
+            nc_variable = product_details["variables"][0]["value"]
 
             # crop the area
             try:
-                nc_cropped = cropArea(data_to_crop_path, area_name, area)
+                nc_cropped = cropArea(
+                    data_to_crop_filepath, area_name, area, nc_variable
+                )
             except Exception as exc:
                 raise ServerError(f"Errors in cropping the data: {exc}")
 
@@ -286,7 +306,7 @@ class MapCrop(EndpointResource):
                             df_stas,
                             pd.DataFrame(
                                 np.array(nc_cropped.values).ravel(),
-                                columns=[str(data_to_crop_path)[:-21]],
+                                columns=[str(data_to_crop_filepath)[:-21]],
                             ),
                         ],
                         axis=1,
