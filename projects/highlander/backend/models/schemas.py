@@ -185,6 +185,12 @@ class SpatialArea(Schema):
     west = fields.Float(required=True)
 
 
+class DateStruct(Schema):
+    year = fields.Int(required=True)
+    month = fields.Int(required=True)
+    day = fields.Int(required=True)
+
+
 class DataExtraction(Schema):
     product = fields.Str(required=True)
     variable = fields.List(fields.Str())
