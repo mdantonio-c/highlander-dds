@@ -113,11 +113,11 @@ class DatasetProductReady(EndpointResource):
                 output.add(Path(name).name)
             for val in sorted(output, reverse=True):
                 year, month, day = val.split("-")
-                period = DateStruct()
-                period.year = int(year)
-                period.month = int(month)
-                period.day = int(day)
-                data.append(period)
+                data.append(
+                    DateStruct().dump(
+                        {"year": int(year), "month": int(month), "day": int(day)}
+                    )
+                )
         else:
             raise NotYetImplemented(
                 f"Extraction of 'run periods' for <{dataset_id}:{product_id}> NOT yet implemented"
