@@ -160,11 +160,13 @@ class SubsetDetails(Schema):
                     f"an areaa id has to be specified for {area_type} area type"
                 )
 
-        # check if plot type is needed
+        # check if plot type is needed. A plot type has to be specified only if the requested output is a png
         type = data.get("type")
         plot_type = data.get("plot_type", None)
-        if type == "plot" and not plot_type:
-            raise ValidationError("a plot type have to be specified")
+        plot_format = data.get("plot_format", None)
+        if not plot_format or plot_format == "png":
+            if type == "plot" and not plot_type:
+                raise ValidationError("a plot type have to be specified")
 
         return data
 
@@ -215,9 +217,12 @@ class MapCrop(EndpointResource):
                 CROPS_OUTPUT_ROOT, dataset_id, product_id, model_id, f"{area_type}s"
             )
             if type == "plot":
-                output_filename = (
-                    f"{area_name.replace(' ', '_').lower()}_{plot_type}.{plot_format}"
-                )
+                if plot_format == "png":
+                    output_filename = f"{area_name.replace(' ', '_').lower()}_{plot_type}.{plot_format}"
+                else:
+                    output_filename = (
+                        f"{area_name.replace(' ', '_').lower()}.{plot_format}"
+                    )
             else:
                 output_filename = f"{area_name.replace(' ', '_').lower()}_map.png"
 
@@ -311,11 +316,16 @@ class MapCrop(EndpointResource):
                         ],
                         axis=1,
                     )
+                    if plot_format == "json":
+                        df_stas.to_json(path_or_buf=filepath)
+                        return send_file(filepath, mimetype=mimetype)
+
+                    # if not json plot the image
                     if plot_type == "boxplot":
                         plotBoxplot(df_stas, filepath)
                     elif plot_type == "distribution":
                         plotDistribution(df_stas, filepath)
-                    # TODO implement the case json format is requested
+
             except Exception as exc:
                 raise ServerError(f"Errors in plotting the data: {exc}")
 
