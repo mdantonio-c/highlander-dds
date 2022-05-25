@@ -35,7 +35,7 @@ export class CropWaterComponent implements OnInit {
   zoom: number = 12;
   center: L.LatLng = L.latLng([44.49895, 11.32759]); // default Bologna City
   readonly LEGEND_POSITION = "bottomleft";
-  availableRuns: DateStruct[] = AVAILABLE_RUNS;
+  availableRuns: DateStruct[]; // = AVAILABLE_RUNS;
   selectedPeriod: DateStruct;
 
   LAYER_OSM = L.tileLayer(
@@ -65,16 +65,21 @@ export class CropWaterComponent implements OnInit {
     protected spinner: NgxSpinnerService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    /*runs$.subscribe(
+        (runPeriods) =>{
+          console.log(runPeriods);
+        },
+        (error) => {
+          this.notify.showError(error);
+        }
+      );*/
+  }
 
   onMapReady(map: L.Map) {
     this.map = map;
     // position to selected area
     this.map.setView(this.center, this.zoom);
-
-    // load geo data
-    this.loadGeoData();
-    // this.geoData.addTo(map);
 
     this.initLegends(map);
     // add a legend
@@ -130,16 +135,27 @@ export class CropWaterComponent implements OnInit {
     return legend;
   }
 
-  applyFilter(data: CropWaterFilter) {
-    if (!data.period) {
-      data.period = DEFAULT_RUN;
-    }
-    this.selectedPeriod = data.period;
-
+  async applyFilter(data: CropWaterFilter) {
     const previousLayer = this.filter?.layer || null;
     this.filter = data;
-    console.log("apply filter", this.filter);
 
+    // need to wait for the available runs to load
+    if (!this.availableRuns) {
+      await this.dataService
+        .getRunPeriods("crop-water", "crop-water")
+        .toPromise()
+        .then((periods) => (this.availableRuns = periods));
+    }
+
+    if (!this.selectedPeriod) {
+      // default to the last run
+      data.period = this.availableRuns[0];
+      this.selectedPeriod = data.period;
+    } else {
+      data.period = this.selectedPeriod;
+    }
+
+    console.log("apply filter", this.filter);
     const selectedArea = ADMINISTRATIVE_AREAS.find((x) => x.code === data.area);
     this.zoom = selectedArea.zLevel ? selectedArea.zLevel : this.zoom;
     this.center = selectedArea.coords;
@@ -193,12 +209,10 @@ export class CropWaterComponent implements OnInit {
       minZoom: MIN_ZOOM,
     });
     myLayer.on("tileerror", (error) => {
-      // console.warn(error);
       this.notify.showWarning("No data layer available.");
     });
     this.geoData.addLayer(myLayer);
     this.geoData.addTo(this.map);
-    // console.log("How many layers?", this.geoData.getLayers().length);
   }
 
   printLayerDescription(): string {
