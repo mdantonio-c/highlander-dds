@@ -8,16 +8,14 @@ from highlander.constants import DATASETS_DIR
 from restapi.connectors import celery, ftp
 from restapi.connectors.celery import CeleryExt
 from restapi.connectors.ftp import FTPExt
-from restapi.env import Env
 from restapi.utilities.logs import log
 
-DATASET_DIR = Env.get("DATASETS_DIR", DATASETS_DIR) + "/crop-water"
 CROP_WATER_AREAS = ["C4", "C5", "C7"]
 ALLOWED_FORMATS = (".nc", ".dbf", ".prj", ".shp", ".shx", ".cpg")
 
 
 def download_data(f: FTPExt, filenames: List[str], target_path: str) -> int:
-    local_path = Path(DATASET_DIR, target_path)
+    local_path = Path(DATASETS_DIR.joinpath("crop-water"), target_path)
     # make directories if they don't exist
     local_path.mkdir(parents=True, exist_ok=True)
     if len(filenames) == 0:
