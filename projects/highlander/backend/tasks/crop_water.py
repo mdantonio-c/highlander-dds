@@ -10,7 +10,7 @@ from restapi.connectors.ftp import FTPExt
 from restapi.env import Env
 from restapi.utilities.logs import log
 
-DATASET_DIR = Env.get("DATASETS_DIR", "/catalog/datasets") + "/crop-water"
+DATASET_DIR = Env.get("DATASETS_DIR", "/catalog/datasets/datasets") + "/crop-water"
 CROP_WATER_AREAS = ["C4", "C5", "C7"]
 ALLOWED_FORMATS = (".nc", ".dbf", ".prj", ".shp", ".shx", ".cpg")
 
