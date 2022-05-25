@@ -20,6 +20,19 @@
             </option>
           </select>
         </div>
+        <!-- PERCENTILE -->
+        <div class="form-group">
+          <label class="col-form-label"><strong>Percentile:</strong></label>
+          <select
+            id="percentileGroup"
+            formControlName="percentile"
+            class="form-control"
+          >
+            <option *ngFor="let p of percentiles" [value]="p">
+              {{ p }}
+            </option>
+          </select>
+        </div>
       </form>
     </div>
   </div>

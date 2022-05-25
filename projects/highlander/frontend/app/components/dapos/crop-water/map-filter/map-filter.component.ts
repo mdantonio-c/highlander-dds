@@ -17,12 +17,14 @@ export class MapFilterComponent implements OnInit {
 
   readonly crops = [];
   readonly areas = ADMINISTRATIVE_AREAS;
+  readonly percentiles = [5, 25, 50, 75, 95];
   readonly layers: string[] = LAYERS.map((x) => x.code);
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.filterForm = this.fb.group({
       layer: [LAYERS[0].code],
       area: [ADMINISTRATIVE_AREAS[0].code],
+      percentile: [50],
     });
   }
 

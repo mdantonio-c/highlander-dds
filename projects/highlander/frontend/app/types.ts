@@ -156,6 +156,7 @@ export interface HumanWellbeingFilter {
 export interface CropWaterFilter {
   area: string;
   layer: string;
+  percentile: number;
   period?: DateStruct;
 }
 

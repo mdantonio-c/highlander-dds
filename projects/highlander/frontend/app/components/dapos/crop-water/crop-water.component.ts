@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { DatasetInfo, CropWaterFilter, DateStruct } from "../../../types";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
@@ -8,7 +8,6 @@ import * as _ from "lodash";
 import { DataService } from "../../../services/data.service";
 import { ADMINISTRATIVE_AREAS, LAYERS, LEGEND_DATA } from "./data";
 import { LegendConfig } from "../../../services/data";
-import { AVAILABLE_RUNS, DEFAULT_RUN } from "./data.mock";
 
 const MAX_ZOOM = 16;
 const MIN_ZOOM = 10;
@@ -18,18 +17,18 @@ const NORMAL_STYLE = {
   color: "gray",
   fillOpacity: 0.9,
 };
-const WMS_ENDPOINT = "https://dds.highlander.cineca.it/geoserver/wms"; // FIXME
+// FIXME
+const WMS_ENDPOINT = "https://dds.highlander.cineca.it/geoserver/wms";
 
 @Component({
   selector: "app-crop-water",
   templateUrl: "./crop-water.component.html",
   styleUrls: ["./crop-water.component.scss"],
 })
-export class CropWaterComponent implements OnInit {
+export class CropWaterComponent {
   @Input()
   dataset: DatasetInfo;
   isFilterCollapsed = false;
-  private collapsed = false;
   map: L.Map;
   private legends: { [key: string]: L.Control } = {};
   zoom: number = 12;
@@ -64,17 +63,6 @@ export class CropWaterComponent implements OnInit {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService
   ) {}
-
-  ngOnInit() {
-    /*runs$.subscribe(
-        (runPeriods) =>{
-          console.log(runPeriods);
-        },
-        (error) => {
-          this.notify.showError(error);
-        }
-      );*/
-  }
 
   onMapReady(map: L.Map) {
     this.map = map;
@@ -162,7 +150,6 @@ export class CropWaterComponent implements OnInit {
 
     if (this.map) {
       // change area
-      // console.log(`change area to ${data.area}`);
       this.map.setView(this.center, this.zoom);
 
       this.loadGeoData();
@@ -187,9 +174,6 @@ export class CropWaterComponent implements OnInit {
     console.log(`loading geo data... area <${this.filter.area}>`);
 
     // first clean up the map from the existing overlays
-    // this.geoData.eachLayer((l:  L.Layer) => {
-    //   this.map.removeLayer(l);
-    // })
     this.map.removeLayer(this.geoData);
     this.geoData.clearLayers();
 
