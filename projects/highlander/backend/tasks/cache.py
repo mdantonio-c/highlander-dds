@@ -3,6 +3,7 @@ from typing import List, Set
 
 from celery.app.task import Task
 from highlander.connectors import broker
+from highlander.constants import CACHE_DIR
 from restapi.connectors.celery import CeleryExt
 from restapi.env import Env
 from restapi.utilities.logs import log
@@ -18,7 +19,7 @@ def clean_cache(self: Task, apply_to: List[str] = []) -> None:
     """
     log.info("clean cache for datasets: {}", apply_to or "ALL")
 
-    cache_path = Path(Env.get("CACHE_PATH", "/catalog/cache"))
+    cache_path = Path(Env.get("CACHE_PATH", CACHE_DIR))
     log.debug("CACHE PATH: {}", cache_path)
     if not cache_path.is_dir():
         raise OSError("Invalid CACHE_PATH config: {}", cache_path)
