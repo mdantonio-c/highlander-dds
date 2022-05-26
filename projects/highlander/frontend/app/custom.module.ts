@@ -28,6 +28,7 @@ import { ReplacePipe } from "./pipes/replace.pipe";
 import { AbsPipe } from "./pipes/abs.pipe";
 import { ClickStopPropagation } from "./directives/click-stop-propagation";
 import { EventStopPropagation } from "./directives/event-stop-propagation";
+import { FirstWordPipe } from "./pipes/first-word.pipe";
 
 const routes: Routes = [
   { path: "app/datasets", component: DatasetsComponent },
@@ -75,6 +76,7 @@ const routes: Routes = [
     HumanWellbeingFilter,
     ReplacePipe,
     AbsPipe,
+    FirstWordPipe,
     ClickStopPropagation,
     EventStopPropagation,
   ],

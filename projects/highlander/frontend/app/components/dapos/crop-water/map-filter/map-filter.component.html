@@ -15,8 +15,8 @@
         <div class="form-group">
           <label class="col-form-label"><strong>Layer:</strong></label>
           <select id="layerGroup" formControlName="layer" class="form-control">
-            <option *ngFor="let l of layers" [value]="l">
-              {{ l }}
+            <option *ngFor="let l of layers" [value]="l.code">
+              {{ l.label | firstWord }}
             </option>
           </select>
         </div>
@@ -27,8 +27,11 @@
             id="percentileGroup"
             formControlName="percentile"
             class="form-control"
+            [attr.disabled]="
+              this.filterForm.controls.layer.value == 'crop' || null
+            "
           >
-            <option *ngFor="let p of percentiles" [value]="p">
+            <option *ngFor="let p of percentiles" [ngValue]="p">
               {{ p }}
             </option>
           </select>

@@ -178,12 +178,10 @@ export class CropWaterComponent {
     this.geoData.clearLayers();
 
     let myLayer = L.tileLayer.wms(`${WMS_ENDPOINT}`, {
-      layers: `highlander:${this.filter.layer.toUpperCase()}_${
-        this.filter.area
-      }_${this.filter.period.year}_${String(this.filter.period.month).padStart(
-        2,
-        "0"
-      )}_${String(this.filter.period.day).padStart(2, "0")}`,
+      // wms layer in form of: {area}_{YYYY-MM-DD}_{layer}{percentile}
+      layers: `highlander:${this.filter.area}_${this.periodToString(
+        this.filter.period
+      )}_${this.filter.layer}${this.filter.percentile || ""}`,
       version: "1.1.0",
       format: "image/png",
       opacity: 0.8,
@@ -213,5 +211,11 @@ export class CropWaterComponent {
 
   isSamePeriod(a: DateStruct, b: DateStruct) {
     return _.isEqual(a, b);
+  }
+
+  periodToString(p: DateStruct): string {
+    return `${p.year}-${String(p.month).padStart(2, "0")}-${String(
+      p.day
+    ).padStart(2, "0")}`;
   }
 }

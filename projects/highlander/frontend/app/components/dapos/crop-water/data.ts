@@ -30,22 +30,22 @@ export const ADMINISTRATIVE_AREAS: Area[] = [
 
 export const LAYERS: CodeLabel[] = [
   {
-    code: "Irrigation",
+    code: "irri",
     label: "Irrigation monthly forecast",
   },
   {
-    code: "Precipitation",
+    code: "prp",
     label: "Precipitation monthly forecast",
   },
   {
-    code: "Crop",
+    code: "crop",
     label: "Crop cultures",
   },
 ];
 
 export const LEGEND_DATA: LegendConfig[] = [
   {
-    id: "Irrigation",
+    id: "irri",
     legend_type: "legend_box",
     title: "Monthly forecasted irrigation</br><small>[mm]</small>",
     colors: [
@@ -74,7 +74,7 @@ export const LEGEND_DATA: LegendConfig[] = [
     ],
   },
   {
-    id: "Precipitation",
+    id: "prp",
     legend_type: "legend_box",
     title: "Monthly forecasted precipitation</br><small>[mm]</small>",
     colors: [
@@ -103,7 +103,7 @@ export const LEGEND_DATA: LegendConfig[] = [
     ],
   },
   {
-    id: "Crop",
+    id: "crop",
     legend_type: "legend_box",
     title: "Crop",
     colors: [
