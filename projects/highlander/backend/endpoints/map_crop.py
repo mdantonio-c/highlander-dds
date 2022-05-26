@@ -1,3 +1,4 @@
+import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -57,11 +58,22 @@ def plotMapNetcdf(field, lat, lon, outputfile):
         alpha=0.5,
         linestyle="--",
     )
-    cmesh = ax1.pcolormesh(lon, lat, field, cmap="viridis")  # ,vmin=0,vmax=10000)
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message="This usage of Quadmesh is deprecated: Parameters meshWidth and meshHeights will be removed; coordinates must be 2D; all parameters except coordinates will be keyword-only.",
+        )
+        cmesh = ax1.pcolormesh(lon, lat, field, cmap="viridis")  # ,vmin=0,vmax=10000)
+
     fig1.colorbar(
         cmesh, ax=ax1, shrink=np.round(min(len(lon) / len(lat), len(lat) / len(lon)), 2)
     )
-    fig1.savefig(outputfile, transparent=True)
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message='facecolor will have no effect as it has been defined as "never".',
+        )
+        fig1.savefig(outputfile, transparent=True)
 
 
 def plotBoxplot(field, outputfile):
