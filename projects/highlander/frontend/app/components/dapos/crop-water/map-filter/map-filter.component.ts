@@ -17,7 +17,7 @@ export class MapFilterComponent implements OnInit {
 
   readonly crops = [];
   readonly areas = ADMINISTRATIVE_AREAS;
-  readonly percentiles = [5, 25, 50, 75, 95];
+  readonly percentiles = [05, 25, 50, 75, 95];
   readonly layers: CodeLabel[] = LAYERS;
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
