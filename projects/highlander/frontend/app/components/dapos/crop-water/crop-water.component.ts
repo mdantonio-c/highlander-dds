@@ -181,7 +181,9 @@ export class CropWaterComponent {
       // wms layer in form of: {area}_{YYYY-MM-DD}_{layer}{percentile}
       layers: `highlander:${this.filter.area}_${this.periodToString(
         this.filter.period
-      )}_${this.filter.layer}${this.filter.percentile || ""}`,
+      )}_${this.filter.layer}${
+        String(this.filter.percentile).padStart(2, "0") || ""
+      }`,
       version: "1.1.0",
       format: "image/png",
       opacity: 0.8,
