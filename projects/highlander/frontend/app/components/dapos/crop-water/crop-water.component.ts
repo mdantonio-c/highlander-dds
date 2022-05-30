@@ -176,14 +176,14 @@ export class CropWaterComponent {
     // first clean up the map from the existing overlays
     this.map.removeLayer(this.geoData);
     this.geoData.clearLayers();
-
+    const percentile: string = this.filter.percentile
+      ? String(this.filter.percentile).padStart(2, "0")
+      : "";
     let myLayer = L.tileLayer.wms(`${WMS_ENDPOINT}`, {
       // wms layer in form of: {area}_{YYYY-MM-DD}_{layer}{percentile}
       layers: `highlander:${this.filter.area}_${this.periodToString(
         this.filter.period
-      )}_${this.filter.layer}${
-        String(this.filter.percentile).padStart(2, "0") || ""
-      }`,
+      )}_${this.filter.layer}${percentile}`,
       version: "1.1.0",
       format: "image/png",
       opacity: 0.8,
