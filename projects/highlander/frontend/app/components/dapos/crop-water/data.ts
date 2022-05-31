@@ -38,7 +38,7 @@ export const LAYERS: CodeLabel[] = [
     label: "Precipitation monthly forecast",
   },
   {
-    code: "crop",
+    code: "ID_CROP",
     label: "Crop cultures",
   },
 ];
