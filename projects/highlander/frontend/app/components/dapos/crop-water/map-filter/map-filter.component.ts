@@ -38,7 +38,7 @@ export class MapFilterComponent implements OnInit {
 
   private onChanges(): void {
     this.filterForm.valueChanges.subscribe((val) => {
-      if (val.layer == "crop") {
+      if (val.layer == "ID_CROP") {
         delete val.percentile;
       }
       this.onFilterChange.emit(val);
