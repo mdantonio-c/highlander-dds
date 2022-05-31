@@ -103,7 +103,7 @@ export const LEGEND_DATA: LegendConfig[] = [
     ],
   },
   {
-    id: "crop",
+    id: "ID_CROP",
     legend_type: "legend_box",
     title: "Crop",
     colors: [
@@ -120,14 +120,15 @@ export const LEGEND_DATA: LegendConfig[] = [
       "rgba(85,26,139,100)",
       "rgba(255,162,0,100)",
       "rgba(139,139,139,100)",
-      "rgba(241.6,28.64,99.3,0)",
+      "rgba(242,29,99,0)",
+      "rgba(247,135,173,0)",
     ],
     labels: [
-      "summer crop",
-      "winter crop",
-      "meadow alfalfa and all season crop",
+      "Summer crop",
+      "Winter crop",
+      "Meadow alfalfa and all season crop",
       "Vineyard",
-      "orchard generic",
+      "Orchard generic",
       "Kiwi",
       "Apricot",
       "Cherry",
@@ -136,7 +137,8 @@ export const LEGEND_DATA: LegendConfig[] = [
       "Pear",
       "Peach",
       "Plum",
-      "woods",
+      "Woods",
+      "All other crops"
     ],
   },
 ];
