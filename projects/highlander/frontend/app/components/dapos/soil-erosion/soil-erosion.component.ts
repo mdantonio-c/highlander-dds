@@ -14,6 +14,7 @@ import {
   ProvinceFeature,
   RegionFeature,
   SoilErosionFilter,
+  SoilErosionMapCrop,
 } from "../../../types";
 import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
@@ -113,6 +114,9 @@ export class SoilErosionComponent implements OnInit {
   private administrativeArea: L.LayerGroup = new L.LayerGroup();
   private filter: SoilErosionFilter;
 
+  administrative: string;
+  currentModel: string;
+  mapCropDetails: SoilErosionMapCrop;
   isPanelCollapsed: boolean = true;
 
   constructor(
@@ -121,7 +125,9 @@ export class SoilErosionComponent implements OnInit {
     protected spinner: NgxSpinnerService,
     private ssr: SSRService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.mapCropDetails = {};
+  }
 
   ngOnInit() {
     if (this.ssr.isBrowser) {
@@ -135,6 +141,10 @@ export class SoilErosionComponent implements OnInit {
       map.invalidateSize();
     }, 200);
     this.initLegends(map);
+    // detect the change of model
+    map.on("baselayerchange", (e) => {
+      this.getTheSelectedModel(e.layer._leaflet_id);
+    });
   }
 
   private setOverlaysToMap() {
@@ -158,6 +168,8 @@ export class SoilErosionComponent implements OnInit {
     });
     this.layersControl["baseLayers"] = overlays;
     overlays[`${ind}${SOIL_EROSION_WMS[ind].models[0]}`].addTo(this.map);
+    // set the current model as the first baselayer
+    this.currentModel = `${ind}1`;
   }
 
   private initLegends(map: L.Map) {
@@ -227,6 +239,7 @@ export class SoilErosionComponent implements OnInit {
     }
 
     // ADMINISTRATIVE AREA
+    this.administrative = data.administrative;
     // clear current administrative layer
     if (this.map) {
       this.administrativeArea.clearLayers();
@@ -252,6 +265,15 @@ export class SoilErosionComponent implements OnInit {
         this.administrativeArea.addLayer(jsonLayer);
         this.administrativeArea.addTo(this.map);
       });
+
+    // update the map crop details model
+    // get the indicator
+    let indicator_code = this.filter.indicator;
+    const indicator = INDICATORS.find((x) => x.code == indicator_code);
+    this.mapCropDetails.product = indicator.product;
+    this.mapCropDetails.area_type = this.administrative;
+    //force the ngonChanges of the child component
+    this.mapCropDetails = Object.assign({}, this.mapCropDetails);
   }
 
   private highlightFeature(e) {
@@ -264,6 +286,19 @@ export class SoilErosionComponent implements OnInit {
     layer.setStyle(NORMAL_STYLE);
   }
 
+  getTheSelectedModel(leaflet_id) {
+    for (const [key, value] of Object.entries(
+      this.layersControl["baseLayers"]
+    )) {
+      if (value["_leaflet_id"] == leaflet_id) {
+        this.currentModel = key;
+        break;
+      }
+    }
+    this.cdr.detectChanges();
+    //console.log(`current model:${this.mapCropDetails.model}`)
+  }
+
   private loadDetails(e) {
     this.isPanelCollapsed = false;
     this.cdr.detectChanges();
@@ -273,14 +308,23 @@ export class SoilErosionComponent implements OnInit {
 
     const layer = e.target;
     this.map.fitBounds(layer.getBounds());
-    switch (this.filter.administrative) {
+
+    switch (this.administrative) {
       case "regions":
-        console.log((layer.feature.properties as RegionFeature).name);
+        this.mapCropDetails.area_id = (
+          layer.feature.properties as RegionFeature
+        ).name;
+        //console.log("region: "+this.mapCropDetails.area_id);
         break;
       case "provinces":
-        console.log((layer.feature.properties as ProvinceFeature).prov_name);
+        this.mapCropDetails.area_id = (
+          layer.feature.properties as ProvinceFeature
+        ).prov_name;
+        //console.log("province: "+this.mapCropDetails.area_id);
         break;
     }
+    //force the ngonChanges of the child component
+    this.mapCropDetails = Object.assign({}, this.mapCropDetails);
   }
 
   closeDetails() {

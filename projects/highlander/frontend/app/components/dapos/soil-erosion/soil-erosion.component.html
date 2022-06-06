@@ -100,8 +100,14 @@
             </button>
           </div>
           <div class="card-body">
-            <!-- TODO show selected administrative area -->
-            <!-- TODO show box plot -->
+            <span *ngIf mapCropDetails>
+              {{ mapCropDetails.area_id | titlecase }}
+            </span>
+            <hl-map-detail
+              [cropDetails]="mapCropDetails"
+              [modelId]="currentModel"
+            >
+            </hl-map-detail>
           </div>
         </div>
       </div>

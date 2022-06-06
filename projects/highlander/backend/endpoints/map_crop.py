@@ -23,7 +23,7 @@ from restapi.rest.definition import EndpointResource, Response
 from restapi.services.authentication import User
 from restapi.utilities.logs import log
 
-AREA_TYPES = ["region", "province", "bbox", "polygon"]
+AREA_TYPES = ["regions", "provinces", "bbox", "polygon"]
 TYPES = ["map", "plot"]
 PLOT_TYPES = ["boxplot", "distribution"]
 FORMATS = ["png", "json"]
@@ -166,7 +166,7 @@ class SubsetDetails(Schema):
                     f"coordinates have to be specified for {area_type} area type"
                 )
         # check if area_id is needed
-        elif area_type == "region" or area_type == "province":
+        elif area_type == "regions" or area_type == "provinces":
             if not area_id:
                 raise ValidationError(
                     f"an areaa id has to be specified for {area_type} area type"
@@ -211,13 +211,13 @@ class MapCrop(EndpointResource):
         plot_type: Optional[str] = None,
         plot_format: str = "png",
     ) -> Response:
-        if area_type == "region" or area_type == "province":
+        if area_type == "regions" or area_type == "provinces":
             # get the geojson file
-            geojson_file = Path(GEOJSON_PATH, f"italy-{area_type}s.json")
+            geojson_file = Path(GEOJSON_PATH, f"italy-{area_type}.json")
             areas = gpd.read_file(geojson_file)
             # get the names that cope with the different geojson structures
             # TODO params and names in the two geojson files can be modified in order to correspond?
-            if area_type == "region":
+            if area_type == "regions":
                 area_name = area_id.lower()
                 area_index = "name"
             else:
@@ -226,7 +226,7 @@ class MapCrop(EndpointResource):
 
             # get the path of the crop
             output_dir = Path(
-                CROPS_OUTPUT_ROOT, dataset_id, product_id, model_id, f"{area_type}s"
+                CROPS_OUTPUT_ROOT, dataset_id, product_id, model_id, area_type
             )
             if type == "plot":
                 if plot_format == "png":
@@ -252,7 +252,7 @@ class MapCrop(EndpointResource):
             # get the area
             area = areas[areas[area_index] == area_name]
             if area.empty:
-                raise NotFound(f"Area {area_id} not found in {area_type}s")
+                raise NotFound(f"Area {area_id} not found in {area_type}")
 
             # get the map to crop
             dds = broker.get_instance()

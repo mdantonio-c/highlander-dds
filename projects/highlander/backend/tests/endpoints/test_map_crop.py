@@ -34,7 +34,7 @@ class TestApp(BaseTests):
         assert r.status_code == 400
 
         # request an administrative without the id
-        query_params = f"model_id={MODEL_ID}&area_type=region&type=map"
+        query_params = f"model_id={MODEL_ID}&area_type=regions&type=map"
         endpoint = (
             f"{API_URI}/datasets/{DATASET_ID}/products/{PRODUCT_ID}/crop?{query_params}"
         )
@@ -43,7 +43,7 @@ class TestApp(BaseTests):
 
         # request a plot without specifying the plot type
         query_params = (
-            f"model_id={MODEL_ID}&area_type=region&area_id={faker.pystr()}&type=plot"
+            f"model_id={MODEL_ID}&area_type=regions&area_id={faker.pystr()}&type=plot"
         )
         endpoint = (
             f"{API_URI}/datasets/{DATASET_ID}/products/{PRODUCT_ID}/crop?{query_params}"
@@ -57,7 +57,7 @@ class TestApp(BaseTests):
 
         # get a region that does not exists
         query_params = (
-            f"model_id={MODEL_ID}&area_type=region&area_id={faker.pystr()}&type=map"
+            f"model_id={MODEL_ID}&area_type=regions&area_id={faker.pystr()}&type=map"
         )
         endpoint = (
             f"{API_URI}/datasets/{DATASET_ID}/products/{PRODUCT_ID}/crop?{query_params}"
@@ -67,7 +67,7 @@ class TestApp(BaseTests):
 
         # get a dataset that does not exists
         query_params = (
-            f"model_id={MODEL_ID}&area_type=region&area_id={REGION_ID}&type=map"
+            f"model_id={MODEL_ID}&area_type=regions&area_id={REGION_ID}&type=map"
         )
         endpoint = f"{API_URI}/datasets/{faker.pystr()}/products/{PRODUCT_ID}/crop?{query_params}"
         r = client.get(endpoint, headers=self.get("auth_header"))
@@ -75,7 +75,7 @@ class TestApp(BaseTests):
 
         # get a product that does not exists
         query_params = (
-            f"model_id={MODEL_ID}&area_type=region&area_id={REGION_ID}&type=map"
+            f"model_id={MODEL_ID}&area_type=regions&area_id={REGION_ID}&type=map"
         )
         endpoint = f"{API_URI}/datasets/{DATASET_ID}/products/{faker.pystr()}/crop?{query_params}"
         r = client.get(endpoint, headers=self.get("auth_header"))
@@ -83,7 +83,7 @@ class TestApp(BaseTests):
 
         # get a model that does not exists
         query_params = (
-            f"model_id={faker.pystr()}&area_type=region&area_id={REGION_ID}&type=map"
+            f"model_id={faker.pystr()}&area_type=regions&area_id={REGION_ID}&type=map"
         )
         endpoint = (
             f"{API_URI}/datasets/{DATASET_ID}/products/{PRODUCT_ID}/crop?{query_params}"
@@ -94,7 +94,7 @@ class TestApp(BaseTests):
     def test_map_crop_get_a_map(self, client: FlaskClient, faker: Faker) -> None:
         # crop a region
         query_params = (
-            f"model_id={MODEL_ID}&area_type=region&area_id={REGION_ID}&type=map"
+            f"model_id={MODEL_ID}&area_type=regions&area_id={REGION_ID}&type=map"
         )
         endpoint = (
             f"{API_URI}/datasets/{DATASET_ID}/products/{PRODUCT_ID}/crop?{query_params}"
@@ -121,7 +121,7 @@ class TestApp(BaseTests):
 
         # crop a province
         query_params = (
-            f"model_id={MODEL_ID}&area_type=province&area_id={PROVINCE_ID}&type=map"
+            f"model_id={MODEL_ID}&area_type=provinces&area_id={PROVINCE_ID}&type=map"
         )
         endpoint = (
             f"{API_URI}/datasets/{DATASET_ID}/products/{PRODUCT_ID}/crop?{query_params}"
@@ -152,7 +152,7 @@ class TestApp(BaseTests):
 
     def test_map_crop_get_a_plot(self, client: FlaskClient, faker: Faker) -> None:
         # get a json plot
-        query_params = f"model_id={MODEL_ID}&area_type=region&area_id={REGION_ID}&type=plot&plot_format=json"
+        query_params = f"model_id={MODEL_ID}&area_type=regions&area_id={REGION_ID}&type=plot&plot_format=json"
         endpoint = (
             f"{API_URI}/datasets/{DATASET_ID}/products/{PRODUCT_ID}/crop?{query_params}"
         )
@@ -176,7 +176,7 @@ class TestApp(BaseTests):
 
         file_creation_time = region_json_output_file.stat().st_mtime
         # check naming is independent of plot type
-        query_params = f"model_id={MODEL_ID}&area_type=region&area_id={REGION_ID}&type=plot&plot_format=json&plot_type=boxplot"
+        query_params = f"model_id={MODEL_ID}&area_type=regions&area_id={REGION_ID}&type=plot&plot_format=json&plot_type=boxplot"
         endpoint = (
             f"{API_URI}/datasets/{DATASET_ID}/products/{PRODUCT_ID}/crop?{query_params}"
         )
@@ -191,7 +191,7 @@ class TestApp(BaseTests):
         assert region_json_output_file.stat().st_mtime == file_creation_time
 
         # test boxplot
-        query_params = f"model_id={MODEL_ID2}&area_type=region&area_id={REGION_ID}&type=plot&plot_type=boxplot"
+        query_params = f"model_id={MODEL_ID2}&area_type=regions&area_id={REGION_ID}&type=plot&plot_type=boxplot"
         endpoint = f"{API_URI}/datasets/{DATASET_ID}/products/{PRODUCT_ID2}/crop?{query_params}"
         r = client.get(endpoint, headers=self.get("auth_header"))
         assert r.status_code == 200
@@ -215,7 +215,7 @@ class TestApp(BaseTests):
         assert region_output_file.stat().st_mtime == file_creation_time
 
         # test distribution
-        query_params = f"model_id={MODEL_ID}&area_type=province&area_id={PROVINCE_ID}&type=plot&plot_type=distribution"
+        query_params = f"model_id={MODEL_ID}&area_type=provinces&area_id={PROVINCE_ID}&type=plot&plot_type=distribution"
         endpoint = (
             f"{API_URI}/datasets/{DATASET_ID}/products/{PRODUCT_ID}/crop?{query_params}"
         )

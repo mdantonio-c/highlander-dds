@@ -148,6 +148,13 @@ export interface SoilErosionFilter {
   administrative: string;
 }
 
+export interface SoilErosionMapCrop {
+  product?: string;
+  model?: string;
+  area_type?: string;
+  area_id?: string;
+}
+
 export interface HumanWellbeingFilter {
   indicator: string;
   administrative: string;
@@ -162,6 +169,14 @@ export interface CropWaterFilter {
 export interface CodeLabel {
   code: string;
   label: string;
+  /** @nullable */
+  [key: string]: any;
+}
+
+export interface IndicatorsCodeLabel {
+  code: string;
+  label: string;
+  product: string;
   /** @nullable */
   [key: string]: any;
 }
