@@ -1,3 +1,20 @@
 .card-body {
   padding: 0.8rem !important;
 }
+
+.col-form-label {
+  word-break: break-all;
+}
+
+@media  (max-width: 1004px) {
+
+
+  .form-control {
+    font-size: 13px !important;
+  }
+
+  .col-form-label{
+    font-size:13px;
+  }
+}
+

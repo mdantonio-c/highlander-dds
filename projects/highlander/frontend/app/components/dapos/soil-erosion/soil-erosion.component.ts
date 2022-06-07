@@ -283,6 +283,8 @@ export class SoilErosionComponent implements OnInit {
     }
   }
 
+  isCollapsed = true;
+  
   closeDetails() {
     this.isPanelCollapsed = true;
     this.map.setView(L.latLng([42.0, 13.0]), 6);
@@ -294,7 +296,7 @@ export class SoilErosionComponent implements OnInit {
   toggleCollapse() {
     this.isFilterCollapsed = !this.isFilterCollapsed;
   }
-
+ 
   private setCollapse(width: number) {
     if (width < 991.98) {
       if (!this.collapsed) {
