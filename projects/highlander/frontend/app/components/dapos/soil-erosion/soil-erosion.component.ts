@@ -265,6 +265,8 @@ export class SoilErosionComponent implements OnInit {
         this.administrativeArea.addLayer(jsonLayer);
         this.administrativeArea.addTo(this.map);
       });
+    //if the detail panel is opened, close it
+    this.closeDetails();
 
     // update the map crop details model
     // get the indicator
@@ -300,7 +302,6 @@ export class SoilErosionComponent implements OnInit {
   }
 
   private loadDetails(e) {
-    this.isPanelCollapsed = false;
     this.cdr.detectChanges();
     setTimeout(() => {
       this.map.invalidateSize();
@@ -325,10 +326,11 @@ export class SoilErosionComponent implements OnInit {
     }
     //force the ngonChanges of the child component
     this.mapCropDetails = Object.assign({}, this.mapCropDetails);
+    this.isPanelCollapsed = false;
   }
 
   isCollapsed = true;
-  
+
   closeDetails() {
     this.isPanelCollapsed = true;
     this.map.setView(L.latLng([42.0, 13.0]), 6);
@@ -340,7 +342,7 @@ export class SoilErosionComponent implements OnInit {
   toggleCollapse() {
     this.isFilterCollapsed = !this.isFilterCollapsed;
   }
- 
+
   private setCollapse(width: number) {
     if (width < 991.98) {
       if (!this.collapsed) {

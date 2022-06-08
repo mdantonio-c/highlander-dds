@@ -42,26 +42,27 @@
 }
 
 .show {
-  top:0 !important;
-  
+  top: 0 !important;
 }
 
-.collapse:not(.show) + .toggle{
-  display:block;
-  
+.collapse:not(.show) + .toggle {
+  display: block;
 }
 
 .collapse:not(.collapsed):not(.chart-container) {
-  display:block;
+  display: block;
   position: absolute;
   top: 44px;
   transition: 0.6s;
-  width:100%;
-  word-break: break-word; 
+  width: 100%;
+  word-break: break-word;
 }
 
 .chart-container {
-  display:block;
+  display: block;
+}
+.details-card {
+  max-width: 50%;
 }
 
 .toggle {
@@ -74,13 +75,13 @@
   height: 35px;
   transition: 0.6s;
   margin-top: -5px;
-  display:none;
+  display: none;
 
   &.collapsed {
     margin-left: 8px;
     background-image: url("/app/custom/assets/images/menu_burger.svg");
     left: 0;
-    display:none;
+    display: none;
   }
 }
 
@@ -88,42 +89,41 @@
   .col-auto {
     flex: 0 0 0 100%;
     max-width: 96%;
-    width:100%;
+    width: 100%;
     margin-left: 2%;
     margin-top: 18px;
     align-self: self-end;
-    
+
     .chart-container {
-      position:initial;
-      width:100%
+      position: initial;
+      width: 100%;
     }
-}
-@media  (max-width: 850px) {
-  .filters{
-    display:block;
-    max-width: 50%;
-    flex: 0 0 100%;
-    margin-left:15px;
-    margin-top:14px;   
-    position: absolute;
   }
+  @media (max-width: 850px) {
+    .filters {
+      display: block;
+      max-width: 50%;
+      flex: 0 0 100%;
+      margin-left: 15px;
+      margin-top: 14px;
+      position: absolute;
+    }
 
-  .collapse {
-    z-index: 99999;
-  }
+    .collapse {
+      z-index: 99999;
+    }
 
-  .toggle.collapsed{
-    margin-left:0;
-  }
+    .toggle.collapsed {
+      margin-left: 0;
+    }
 
-  .col-12 {
-    margin-bottom:30px;
-  }
+    .col-12 {
+      margin-bottom: 30px;
+    }
 
-  .collapse:not(.collapsed, .chart-container) {
-    width: 64%;
-    margin-top: -8px;
+    .collapse:not(.collapsed, .chart-container) {
+      width: 64%;
+      margin-top: -8px;
+    }
   }
-  }
-
 }
