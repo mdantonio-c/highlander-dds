@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { AuthService } from "@rapydo/services/auth";
 import { ADMINISTRATIVE_AREAS, LAYERS } from "../data";
-import { CropWaterFilter } from "../../../../types";
+import { CodeLabel, CropWaterFilter } from "../../../../types";
 
 @Component({
   selector: "crop-water-filter",
@@ -17,12 +17,14 @@ export class MapFilterComponent implements OnInit {
 
   readonly crops = [];
   readonly areas = ADMINISTRATIVE_AREAS;
-  readonly layers: string[] = LAYERS.map((x) => x.code);
+  readonly percentiles = [5, 25, 50, 75, 95];
+  readonly layers: CodeLabel[] = LAYERS;
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.filterForm = this.fb.group({
       layer: [LAYERS[0].code],
       area: [ADMINISTRATIVE_AREAS[0].code],
+      percentile: [50],
     });
   }
 
@@ -36,6 +38,9 @@ export class MapFilterComponent implements OnInit {
 
   private onChanges(): void {
     this.filterForm.valueChanges.subscribe((val) => {
+      if (val.layer == "ID_CROP") {
+        delete val.percentile;
+      }
       this.onFilterChange.emit(val);
     });
   }

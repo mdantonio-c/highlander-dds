@@ -12,12 +12,12 @@
     </div>
     <div class="col-md-8">
       <hr />
-      <div class="mb-4 d-flex">
+      <div class="mb-4">
         <p class="text-justify mb-0">
           <img
             src="{{ backendURI + '/api/datasets/' + dataset.id + '/image' }}"
             alt="no img"
-            class="mb-3 mr-3"
+            class="mb-3 w-100"
             *ngIf="dataset.image"
           />
           <span [innerHTML]="dataset.description" class="text"></span>

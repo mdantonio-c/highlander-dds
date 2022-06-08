@@ -30,22 +30,22 @@ export const ADMINISTRATIVE_AREAS: Area[] = [
 
 export const LAYERS: CodeLabel[] = [
   {
-    code: "Irrigation",
+    code: "irri",
     label: "Irrigation monthly forecast",
   },
   {
-    code: "Precipitation",
+    code: "prp",
     label: "Precipitation monthly forecast",
   },
   {
-    code: "Crop",
+    code: "ID_CROP",
     label: "Crop cultures",
   },
 ];
 
 export const LEGEND_DATA: LegendConfig[] = [
   {
-    id: "Irrigation",
+    id: "irri",
     legend_type: "legend_box",
     title: "Monthly forecasted irrigation</br><small>[mm]</small>",
     colors: [
@@ -74,7 +74,7 @@ export const LEGEND_DATA: LegendConfig[] = [
     ],
   },
   {
-    id: "Precipitation",
+    id: "prp",
     legend_type: "legend_box",
     title: "Monthly forecasted precipitation</br><small>[mm]</small>",
     colors: [
@@ -103,7 +103,7 @@ export const LEGEND_DATA: LegendConfig[] = [
     ],
   },
   {
-    id: "Crop",
+    id: "ID_CROP",
     legend_type: "legend_box",
     title: "Crop",
     colors: [
@@ -119,15 +119,16 @@ export const LEGEND_DATA: LegendConfig[] = [
       "rgba(205,133,0,100)",
       "rgba(85,26,139,100)",
       "rgba(255,162,0,100)",
-      "rgba(139,139,139,100)",
-      "rgba(241.6,28.64,99.3,0)",
+      "rgba(110,110,110,100)",
+      "rgba(247,135,173,100)",
+      "rgba(130,130,130,100)",
     ],
     labels: [
-      "summer crop",
-      "winter crop",
-      "meadow alfalfa and all season crop",
+      "Summer crop",
+      "Winter crop",
+      "Meadow alfalfa and all season crop",
       "Vineyard",
-      "orchard generic",
+      "Orchard generic",
       "Kiwi",
       "Apricot",
       "Cherry",
@@ -136,7 +137,8 @@ export const LEGEND_DATA: LegendConfig[] = [
       "Pear",
       "Peach",
       "Plum",
-      "woods",
+      "Woods",
+      "All other crops"
     ],
   },
 ];

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { DatasetInfo, CropWaterFilter, DateStruct } from "../../../types";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
@@ -8,7 +8,6 @@ import * as _ from "lodash";
 import { DataService } from "../../../services/data.service";
 import { ADMINISTRATIVE_AREAS, LAYERS, LEGEND_DATA } from "./data";
 import { LegendConfig } from "../../../services/data";
-import { AVAILABLE_RUNS, DEFAULT_RUN } from "./data.mock";
 
 const MAX_ZOOM = 16;
 const MIN_ZOOM = 10;
@@ -18,24 +17,24 @@ const NORMAL_STYLE = {
   color: "gray",
   fillOpacity: 0.9,
 };
-const WMS_ENDPOINT = "https://dds.highlander.cineca.it/geoserver/wms"; // FIXME
+// FIXME
+const WMS_ENDPOINT = "https://dds.highlander.cineca.it/geoserver/wms";
 
 @Component({
   selector: "app-crop-water",
   templateUrl: "./crop-water.component.html",
   styleUrls: ["./crop-water.component.scss"],
 })
-export class CropWaterComponent implements OnInit {
+export class CropWaterComponent {
   @Input()
   dataset: DatasetInfo;
   isFilterCollapsed = false;
-  private collapsed = false;
   map: L.Map;
   private legends: { [key: string]: L.Control } = {};
   zoom: number = 12;
   center: L.LatLng = L.latLng([44.49895, 11.32759]); // default Bologna City
   readonly LEGEND_POSITION = "bottomleft";
-  availableRuns: DateStruct[] = AVAILABLE_RUNS;
+  availableRuns: DateStruct[]; // = AVAILABLE_RUNS;
   selectedPeriod: DateStruct;
 
   LAYER_OSM = L.tileLayer(
@@ -65,16 +64,10 @@ export class CropWaterComponent implements OnInit {
     protected spinner: NgxSpinnerService
   ) {}
 
-  ngOnInit() {}
-
   onMapReady(map: L.Map) {
     this.map = map;
     // position to selected area
     this.map.setView(this.center, this.zoom);
-
-    // load geo data
-    this.loadGeoData();
-    // this.geoData.addTo(map);
 
     this.initLegends(map);
     // add a legend
@@ -130,23 +123,33 @@ export class CropWaterComponent implements OnInit {
     return legend;
   }
 
-  applyFilter(data: CropWaterFilter) {
-    if (!data.period) {
-      data.period = DEFAULT_RUN;
-    }
-    this.selectedPeriod = data.period;
-
+  async applyFilter(data: CropWaterFilter) {
     const previousLayer = this.filter?.layer || null;
     this.filter = data;
-    console.log("apply filter", this.filter);
 
+    // need to wait for the available runs to load
+    if (!this.availableRuns) {
+      await this.dataService
+        .getRunPeriods("crop-water", "crop-water")
+        .toPromise()
+        .then((periods) => (this.availableRuns = periods));
+    }
+
+    if (!this.selectedPeriod) {
+      // default to the last run
+      data.period = this.availableRuns[0];
+      this.selectedPeriod = data.period;
+    } else {
+      data.period = this.selectedPeriod;
+    }
+
+    console.log("apply filter", this.filter);
     const selectedArea = ADMINISTRATIVE_AREAS.find((x) => x.code === data.area);
     this.zoom = selectedArea.zLevel ? selectedArea.zLevel : this.zoom;
     this.center = selectedArea.coords;
 
     if (this.map) {
       // change area
-      // console.log(`change area to ${data.area}`);
       this.map.setView(this.center, this.zoom);
 
       this.loadGeoData();
@@ -171,19 +174,16 @@ export class CropWaterComponent implements OnInit {
     console.log(`loading geo data... area <${this.filter.area}>`);
 
     // first clean up the map from the existing overlays
-    // this.geoData.eachLayer((l:  L.Layer) => {
-    //   this.map.removeLayer(l);
-    // })
     this.map.removeLayer(this.geoData);
     this.geoData.clearLayers();
-
+    const percentile: string = this.filter.percentile
+      ? String(this.filter.percentile).padStart(2, "0")
+      : "";
     let myLayer = L.tileLayer.wms(`${WMS_ENDPOINT}`, {
-      layers: `highlander:${this.filter.layer.toUpperCase()}_${
-        this.filter.area
-      }_${this.filter.period.year}_${String(this.filter.period.month).padStart(
-        2,
-        "0"
-      )}_${String(this.filter.period.day).padStart(2, "0")}`,
+      // wms layer in form of: {area}_{YYYY-MM-DD}_{layer}{percentile}
+      layers: `highlander:${this.filter.area}_${this.periodToString(
+        this.filter.period
+      )}_${this.filter.layer}${percentile}`,
       version: "1.1.0",
       format: "image/png",
       opacity: 0.8,
@@ -193,12 +193,10 @@ export class CropWaterComponent implements OnInit {
       minZoom: MIN_ZOOM,
     });
     myLayer.on("tileerror", (error) => {
-      // console.warn(error);
       this.notify.showWarning("No data layer available.");
     });
     this.geoData.addLayer(myLayer);
     this.geoData.addTo(this.map);
-    // console.log("How many layers?", this.geoData.getLayers().length);
   }
 
   printLayerDescription(): string {
@@ -215,5 +213,11 @@ export class CropWaterComponent implements OnInit {
 
   isSamePeriod(a: DateStruct, b: DateStruct) {
     return _.isEqual(a, b);
+  }
+
+  periodToString(p: DateStruct): string {
+    return `${p.year}-${String(p.month).padStart(2, "0")}-${String(
+      p.day
+    ).padStart(2, "0")}`;
   }
 }

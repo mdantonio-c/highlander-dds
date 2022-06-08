@@ -3,13 +3,20 @@
     <div class="col-12">
       <hr class="mt-1 mb-3" />
     </div>
-    <div class="col-2 mb-2">
+    <div 
+      class="col-2 mb-2 filters"
+      >
       <hl-map-filter
-        class="collapse"
+        [class.collapsed]="isCollapsed"
         id="filters"
         [ngbCollapse]="isFilterCollapsed"
         (onFilterChange)="applyFilter($event)"
       ></hl-map-filter>
+      <label
+      class="toggle"
+      (click)="isCollapsed = !isCollapsed"
+      [class.collapsed]="isCollapsed"
+    ></label>
     </div>
     <div class="col px-3">
       <div id="map-wrapper" class="fill">
@@ -87,7 +94,7 @@
       </div>
     </div>
     <div class="col-auto">
-      <div #collapse="ngbCollapse" [ngbCollapse]="isPanelCollapsed">
+      <div #collapse="ngbCollapse" [ngbCollapse]="isPanelCollapsed" class="chart-container">
         <div class="card bg-light" style="min-width: 300px">
           <div class="px-2">
             <button

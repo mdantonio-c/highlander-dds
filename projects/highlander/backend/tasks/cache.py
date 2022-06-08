@@ -3,8 +3,8 @@ from typing import List, Set
 
 from celery.app.task import Task
 from highlander.connectors import broker
+from highlander.constants import CACHE_DIR
 from restapi.connectors.celery import CeleryExt
-from restapi.env import Env
 from restapi.utilities.logs import log
 
 
@@ -18,18 +18,17 @@ def clean_cache(self: Task, apply_to: List[str] = []) -> None:
     """
     log.info("clean cache for datasets: {}", apply_to or "ALL")
 
-    cache_path = Path(Env.get("CACHE_PATH", "/catalog/cache"))
-    log.debug("CACHE PATH: {}", cache_path)
-    if not cache_path.is_dir():
-        raise OSError("Invalid CACHE_PATH config: {}", cache_path)
+    log.debug("CACHE PATH: {}", CACHE_DIR)
+    if not CACHE_DIR.is_dir():
+        raise OSError("Invalid CACHE_PATH config: {}", CACHE_DIR)
     # use list of unique elements as a dataset can contain multiple products
     to_be_updated: Set[str] = set()
     if len(apply_to) == 0:
-        apply_to = [x.stem for x in Path(cache_path).glob("**/*.cache")]
+        apply_to = [x.stem for x in CACHE_DIR.glob("**/*.cache")]
     # iterate over .cache files
     paths: List[Path] = []
     for d in apply_to:
-        cache_file = Path(cache_path, f"{d}.cache")
+        cache_file = Path(CACHE_DIR, f"{d}.cache")
         if not cache_file.exists():
             log.warning(f"Dataset <{d}>: .cache file NOT FOUND in {cache_file}")
             continue
