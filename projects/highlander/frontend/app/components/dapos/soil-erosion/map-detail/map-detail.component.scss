@@ -7,7 +7,38 @@
   flex-direction: column;
 }
 
+.details-image-container{
+  display:flex !important;
+  flex-direction: column;
+
+  & .image-detail {
+      width:450px !important;
+
+    & img {
+    object-fit: contain;
+    max-width: 450px;
+    }
+  }
+}
+
+.details-card {
+  max-width: 33%;
+}
+
 /*img{
   width:50%;
   height: auto;
 }*/
+
+@media (max-width: 1186px) {
+
+  .details-image-container {
+    flex-direction: row !important;
+    justify-content: center;
+    align-items: center;
+
+    & .image-detail img {
+      max-width: 412px !important;
+    }
+  }
+}

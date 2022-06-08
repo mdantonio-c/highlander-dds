@@ -13,6 +13,23 @@
     <h2>No Details Available</h2>
     <p>Try to apply a different set of filters</p>
   </div>
-  <img *ngIf="mapImage" [src]="mapImage" />
-  <img *ngIf="plotImage" [src]="plotImage" />
+  <div class="details-text-container">
+    <h3>
+      Position: 45.25°N, 10.75°E
+    </h3>
+    <h3>
+      R factor &nbsp;<br>
+      RF 2 &nbsp;<br>
+      Historical &nbsp;<br>
+
+    </h3>
+  </div>
+  <div class="details-image-container">
+    <div class="image-detail">
+    <img *ngIf="mapImage" [src]="mapImage" />
+  </div>
+  <div class="image-detail">
+    <img *ngIf="plotImage" [src]="plotImage" />
+  </div>
+  </div>
 </div>

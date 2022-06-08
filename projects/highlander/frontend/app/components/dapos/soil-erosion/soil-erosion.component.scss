@@ -58,12 +58,28 @@
   word-break: break-word;
 }
 
+
 .chart-container {
-  display: block;
+  
+  &.collaspe  {
+    display:none !important; 
+  }
+  .px-2{
+  position: absolute !important;
+  right: 0 !important;
+  width:100px !important;
+  }
+
+  
+
+  .details-text-container {
+    margin-top:-30px !important;
+  }
+ 
+
 }
-.details-card {
-  max-width: 50%;
-}
+
+
 
 .toggle {
   cursor: pointer;
@@ -89,15 +105,16 @@
   .col-auto {
     flex: 0 0 0 100%;
     max-width: 96%;
-    width: 100%;
-    margin-left: 2%;
+    width: 85%;
+    margin-left: 14%;
     margin-top: 18px;
     align-self: self-end;
 
     .chart-container {
       position: initial;
-      width: 100%;
     }
+
+    
   }
   @media (max-width: 850px) {
     .filters {
