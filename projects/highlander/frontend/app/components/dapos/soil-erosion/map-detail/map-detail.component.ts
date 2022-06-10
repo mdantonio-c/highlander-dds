@@ -64,6 +64,7 @@ export class MapDetailComponent implements OnChanges {
             this.loading = true;
           },
           (error) => {
+            this.loading = false;
             error.text().then((value) => {
               this.notify.showError(value);
             });

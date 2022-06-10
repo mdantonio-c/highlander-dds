@@ -309,6 +309,10 @@ export class SoilErosionComponent implements OnInit {
 
     const layer = e.target;
     this.map.fitBounds(layer.getBounds());
+    if (!this.isPanelCollapsed) {
+      this.closeDetails();
+      this.isPanelCollapsed = true;
+    }
 
     switch (this.administrative) {
       case "regions":
