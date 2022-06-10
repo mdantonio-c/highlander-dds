@@ -7,16 +7,18 @@
   flex-direction: column;
 }
 
-.details-image-container{
-  display:flex !important;
+.details-image-container {
+  display: flex !important;
   flex-direction: column;
+  overflow: auto;
+  height: 50vh;
 
   & .image-detail {
-      width:450px !important;
+    width: 450px !important;
 
     & img {
-    object-fit: contain;
-    max-width: 450px;
+      object-fit: contain;
+      max-width: 450px;
     }
   }
 }
@@ -31,7 +33,6 @@
 }*/
 
 @media (max-width: 1186px) {
-
   .details-image-container {
     flex-direction: row !important;
     justify-content: center;
