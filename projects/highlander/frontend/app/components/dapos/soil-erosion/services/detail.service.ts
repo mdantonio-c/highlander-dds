@@ -3,6 +3,7 @@ import { HttpClient } from "@angular/common/http";
 import { Observable, forkJoin, of } from "rxjs";
 import { ApiService } from "@rapydo/services/api";
 import { SoilErosionMapCrop } from "../../../../types";
+import { INDICATORS } from "../data";
 
 @Injectable({
   providedIn: "root",
@@ -43,25 +44,4 @@ export class DetailService {
     }
     return forkJoin(observables);
   }
-
-  /*  getMapImage(params: MeteoFilter, offset: string): Observable<Blob> {
-    const options = {
-      conf: {
-        responseType: "blob",
-      },
-    };
-    return this.api.get(
-      `${this.maps_url}/api/maps/offset/${offset}`,
-      this.get_params(params),
-      options
-    );
-  }*/
-
-  /*getAllMapImages(params: MeteoFilter, offsets: string[]): Observable<any[]> {
-    const observables = [];
-    for (let i = 0; i < offsets.length; i++) {
-      observables.push(this.getMapImage(params, offsets[i]));
-    }
-    return forkJoin(observables);
-  }*/
 }

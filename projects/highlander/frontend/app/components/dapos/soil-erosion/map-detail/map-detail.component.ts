@@ -26,6 +26,7 @@ export class MapDetailComponent implements OnChanges {
 
   mapImage: any;
   plotImage: any;
+  productLabel: string;
 
   loading = false;
   constructor(
@@ -40,6 +41,10 @@ export class MapDetailComponent implements OnChanges {
       // add the model id to the crop details
       this.cropDetails.model = this.modelId;
       console.log("get details for:", this.cropDetails);
+      //add the label to be display in the panel
+      this.productLabel = INDICATORS.find(
+        (x) => x.product == this.cropDetails.product
+      ).label;
 
       setTimeout(() => {
         this.spinner.show();
