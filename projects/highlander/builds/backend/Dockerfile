@@ -9,14 +9,17 @@ ENV CATALOG_DIR="/catalog"
 #########################################################
 # CARTOPY
 #########################################################
-RUN apt-get upgrade  \
-    && apt-get update \
-    && apt-get install -y libproj-dev proj-data proj-bin \
-    && apt-get install -y libgeos-dev \
-    && pip3 install cython \
-    && pip3 install cartopy==0.19.0.post1 # the latest version has problems with PROJ version
+RUN apt-get update -qq \
+    && apt-get dist-upgrade --yes -qq \
+    && apt-get install --yes libproj-dev proj-data proj-bin libgeos-dev \
+    && pip3 install --upgrade --no-cache-dir Cython \
+    # the latest version has problems with PROJ version
+    && pip3 install --upgrade --no-cache-dir Cartopy==0.19.0.post1  \
+    && apt-get autoremove --yes && apt-get clean
 
 #########################################################
 # REGIONMASK SEABORN and MPL_TOOLKITS
 #########################################################
-RUN pip3 install regionmask && pip3 install seaborn && pip3 install matplotlib
+RUN pip3 install --upgrade --no-cache-dir regionmask \
+    && pip3 install --upgrade --no-cache-dir seaborn \
+    && pip3 install --upgrade --no-cache-dir matplotlib
