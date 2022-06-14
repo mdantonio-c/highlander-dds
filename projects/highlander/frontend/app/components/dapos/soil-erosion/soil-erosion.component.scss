@@ -42,27 +42,44 @@
 }
 
 .show {
-  top:0 !important;
-  
+  top: 0 !important;
 }
 
-.collapse:not(.show) + .toggle{
-  display:block;
-  
+.collapse:not(.show) + .toggle {
+  display: block;
 }
 
 .collapse:not(.collapsed):not(.chart-container) {
-  display:block;
+  display: block;
   position: absolute;
   top: 44px;
   transition: 0.6s;
-  width:100%;
-  word-break: break-word; 
+  width: 100%;
+  word-break: break-word;
 }
 
+
 .chart-container {
-  display:block;
+  
+  &.collaspe  {
+    display:none !important; 
+  }
+  .px-2{
+  position: absolute !important;
+  right: 0 !important;
+  width:100px !important;
+  }
+
+  
+
+  .details-text-container {
+    margin-top:-30px !important;
+  }
+ 
+
 }
+
+
 
 .toggle {
   cursor: pointer;
@@ -74,56 +91,56 @@
   height: 35px;
   transition: 0.6s;
   margin-top: -5px;
-  display:none;
+  display: none;
 
   &.collapsed {
     margin-left: 8px;
     background-image: url("/app/custom/assets/images/menu_burger.svg");
     left: 0;
-    display:none;
+    display: none;
   }
 }
 
 @media (max-width: 1186px) {
   .col-auto {
     flex: 0 0 0 100%;
-    max-width: 96%;
-    width:100%;
+    max-width: 98%;
+    width: 97%;
     margin-left: 2%;
     margin-top: 18px;
     align-self: self-end;
-    
+
     .chart-container {
-      position:initial;
-      width:100%
+      position: initial;
     }
-}
-@media  (max-width: 850px) {
-  .filters{
-    display:block;
-    max-width: 50%;
-    flex: 0 0 100%;
-    margin-left:15px;
-    margin-top:14px;   
-    position: absolute;
-  }
 
-  .collapse {
-    z-index: 99999;
+    
   }
+  @media (max-width: 850px) {
+    .filters {
+      display: block;
+      max-width: 50%;
+      flex: 0 0 100%;
+      margin-left: 15px;
+      margin-top: 14px;
+      position: absolute;
+    }
 
-  .toggle.collapsed{
-    margin-left:0;
-  }
+    .collapse {
+      z-index: 99999;
+    }
 
-  .col-12 {
-    margin-bottom:30px;
-  }
+    .toggle.collapsed {
+      margin-left: 0;
+    }
 
-  .collapse:not(.collapsed, .chart-container) {
-    width: 64%;
-    margin-top: -8px;
-  }
-  }
+    .col-12 {
+      margin-bottom: 30px;
+    }
 
+    .collapse:not(.collapsed, .chart-container) {
+      width: 64%;
+      margin-top: -8px;
+    }
+  }
 }
