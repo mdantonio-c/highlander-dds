@@ -128,7 +128,7 @@ def plotDistribution(field: Any, outputfile: Path) -> None:
     fig3.savefig(outputfile)
 
 
-def cropArea(netcdf_path: Path, area_name: str, area: Any, data_variable: str) -> None:
+def cropArea(netcdf_path: Path, area_name: str, area: Any, data_variable: str) -> Any:
     # read the netcdf file
     data_to_crop = xr.open_dataset(netcdf_path)
 
