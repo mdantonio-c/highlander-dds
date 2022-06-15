@@ -76,7 +76,7 @@ def plotMapNetcdf(field: Any, lat: Any, lon: Any, outputfile: Path) -> None:
         fig1.savefig(outputfile, transparent=True)
 
 
-def plotBoxplot(field: pd.DataFrame, outputfile: Path):
+def plotBoxplot(field: Any, outputfile: Path) -> None:
     """
     This function plot with the xarray tool the field of netcdf
     """
@@ -99,7 +99,7 @@ def plotBoxplot(field: pd.DataFrame, outputfile: Path):
     fig4.savefig(outputfile)
 
 
-def plotDistribution(field: pd.DataFrame, outputfile: Path):
+def plotDistribution(field: Any, outputfile: Path) -> None:
     """
     This function plot with the xarray tool the field of netcdf
     """
@@ -128,9 +128,7 @@ def plotDistribution(field: pd.DataFrame, outputfile: Path):
     fig3.savefig(outputfile)
 
 
-def cropArea(
-    netcdf_path: Path, area_name: str, area: Dict[str, Any], data_variable: str
-):
+def cropArea(netcdf_path: Path, area_name: str, area: Any, data_variable: str) -> None:
     # read the netcdf file
     data_to_crop = xr.open_dataset(netcdf_path)
 
@@ -157,7 +155,9 @@ class SubsetDetails(Schema):
     plot_format = fields.Str(required=False, validate=validate.OneOf(FORMATS))
 
     @pre_load
-    def params_validation(self, data: Dict[str, Union[str, list[float]]], **kwargs):
+    def params_validation(
+        self, data: Dict[str, Union[str, list[float]]], **kwargs: Any
+    ) -> Dict[str, Union[str, list[float]]]:
         area_type = data.get("area_type")
         area_coords = data.get("area_coords", None)
         area_id = data.get("area_id", None)
