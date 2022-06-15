@@ -1,17 +1,17 @@
 import warnings
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
-import cartopy
-import cartopy.crs as ccrs
-import geopandas as gpd
-import matplotlib as mpl
-import matplotlib.pyplot as plt
+import cartopy  # type: ignore
+import cartopy.crs as ccrs  # type: ignore
+import geopandas as gpd  # type: ignore
+import matplotlib as mpl  # type: ignore
+import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
-import pandas as pd
-import regionmask
-import seaborn as sns
-import xarray as xr
+import pandas as pd  # type: ignore
+import regionmask  # type: ignore
+import seaborn as sns  # type: ignore
+import xarray as xr  # type: ignore
 from flask import send_file
 from highlander.connectors import broker
 from marshmallow import ValidationError, pre_load
@@ -34,7 +34,7 @@ GEOJSON_PATH = "/catalog/assets"
 CROPS_OUTPUT_ROOT = "/catalog/crops/"
 
 
-def plotMapNetcdf(field, lat, lon, outputfile):
+def plotMapNetcdf(field: Any, lat: Any, lon: Any, outputfile: Path) -> None:
     """
     This function plot with the xarray tool the field of netcdf
     """
@@ -76,7 +76,7 @@ def plotMapNetcdf(field, lat, lon, outputfile):
         fig1.savefig(outputfile, transparent=True)
 
 
-def plotBoxplot(field, outputfile):
+def plotBoxplot(field: pd.DataFrame, outputfile: Path):
     """
     This function plot with the xarray tool the field of netcdf
     """
@@ -99,7 +99,7 @@ def plotBoxplot(field, outputfile):
     fig4.savefig(outputfile)
 
 
-def plotDistribution(field, outputfile):
+def plotDistribution(field: pd.DataFrame, outputfile: Path):
     """
     This function plot with the xarray tool the field of netcdf
     """
@@ -128,7 +128,9 @@ def plotDistribution(field, outputfile):
     fig3.savefig(outputfile)
 
 
-def cropArea(netcdf_path, area_name, area, data_variable):
+def cropArea(
+    netcdf_path: Path, area_name: str, area: Dict[str, Any], data_variable: str
+):
     # read the netcdf file
     data_to_crop = xr.open_dataset(netcdf_path)
 
@@ -155,7 +157,7 @@ class SubsetDetails(Schema):
     plot_format = fields.Str(required=False, validate=validate.OneOf(FORMATS))
 
     @pre_load
-    def params_validation(self, data, **kwargs):
+    def params_validation(self, data: Dict[str, Union[str, list[float]]], **kwargs):
         area_type = data.get("area_type")
         area_coords = data.get("area_coords", None)
         area_id = data.get("area_id", None)
@@ -210,19 +212,20 @@ class MapCrop(EndpointResource):
         area_coords: Optional[List[float]] = None,
         plot_type: Optional[str] = None,
         plot_format: str = "png",
-    ) -> Response:
+    ) -> Any:
         if area_type == "regions" or area_type == "provinces":
             # get the geojson file
             geojson_file = Path(GEOJSON_PATH, f"italy-{area_type}.json")
             areas = gpd.read_file(geojson_file)
             # get the names that cope with the different geojson structures
             # TODO params and names in the two geojson files can be modified in order to correspond?
-            if area_type == "regions":
-                area_name = area_id.lower()
-                area_index = "name"
-            else:
-                area_name = area_id.title()
-                area_index = "prov_name"
+            if area_id:
+                if area_type == "regions":
+                    area_name = area_id.lower()
+                    area_index = "name"
+                else:
+                    area_name = area_id.title()
+                    area_index = "prov_name"
 
             # get the path of the crop
             output_dir = Path(
@@ -257,7 +260,7 @@ class MapCrop(EndpointResource):
             # get the map to crop
             dds = broker.get_instance()
             # check if the dataset exists
-            dataset_details = dds.get_dataset_details(dataset_id)
+            dataset_details = dds.get_dataset_details([dataset_id])
             if not dataset_details["data"]:
                 raise NotFound(f"dataset {dataset_id} not found")
 
