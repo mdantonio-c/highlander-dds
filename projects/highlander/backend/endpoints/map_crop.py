@@ -33,6 +33,9 @@ GEOJSON_PATH = "/catalog/assets"
 
 CROPS_OUTPUT_ROOT = "/catalog/crops/"
 
+# variable used for the cases where the model name and the file name does not match
+MODELS_MAPPING = {"RF": "R"}
+
 
 def plotMapNetcdf(field: Any, lat: Any, lon: Any, outputfile: Path) -> None:
     """
@@ -282,10 +285,16 @@ class MapCrop(EndpointResource):
             if not product_dir.is_dir():
                 raise NotFound(f"data for product {product_id} not found")
 
+            # check if the model name and the filename correspond
+            model_filename: str = model_id
+            for m, v in MODELS_MAPPING.items():
+                if m in model_id:
+                    model_filename = model_id.replace(m, v)
+
             # get the file corresponding to the requested model
             data_to_crop_filename = (
                 Path(product_urlpath)
-                .name.replace("*", model_id, 1)
+                .name.replace("*", model_filename, 1)
                 .replace("*", "regular")
             )
             data_to_crop_filepath = product_dir.joinpath(data_to_crop_filename)
