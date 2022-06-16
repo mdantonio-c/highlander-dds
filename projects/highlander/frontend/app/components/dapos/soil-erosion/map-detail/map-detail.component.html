@@ -16,9 +16,7 @@
     <h3>
       {{ cropDetails.area_id | titlecase }}
     </h3>
-    Product: {{ productLabel }} &nbsp;<br />
-    Model: {{ cropDetails.model }} &nbsp;<br />
-    Period: Historical &nbsp;<br />
+    {{ productLabel }} - {{ cropDetails.model }} - Historical
   </div>
   <div class="details-image-container" *ngIf="loading">
     <div class="image-detail">
