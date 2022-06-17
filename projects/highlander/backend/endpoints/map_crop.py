@@ -1,3 +1,4 @@
+import os
 import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
@@ -30,6 +31,12 @@ FORMATS = ["png", "json"]
 
 
 GEOJSON_PATH = "/catalog/assets"
+
+# set the cartopy data_dir
+cartopy.config["data_dir"] = os.getenv(
+    "CARTOPY_DATA_DIR", cartopy.config.get("data_dir")
+)
+
 
 CROPS_OUTPUT_ROOT = "/catalog/crops/"
 

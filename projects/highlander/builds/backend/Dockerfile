@@ -17,6 +17,32 @@ RUN apt-get update -qq \
     && pip3 install --upgrade --no-cache-dir Cartopy==0.19.0.post1  \
     && apt-get autoremove --yes && apt-get clean
 
+# prepare the cartopy data dir
+ENV CARTOPY_DATA_DIR "/cartopy"
+RUN mkdir ${CARTOPY_DATA_DIR}
+#physical data
+ENV NE_PHYSICAL "${CARTOPY_DATA_DIR}/shapefiles/natural_earth/physical"
+RUN mkdir -p ${NE_PHYSICAL}
+
+RUN curl "https://naciscdn.org/naturalearth/10m/physical/ne_10m_ocean.zip"  -o "${CARTOPY_DATA_DIR}/ne_10m_ocean.zip" \
+    && curl "https://naciscdn.org/naturalearth/10m/physical/ne_10m_coastline.zip"  -o "${CARTOPY_DATA_DIR}/ne_10m_coastline.zip" \
+    && curl "https://naciscdn.org/naturalearth/10m/physical/ne_10m_lakes.zip" -o "${CARTOPY_DATA_DIR}/ne_10m_lakes.zip"  \
+    && curl "https://naciscdn.org/naturalearth/10m/physical/ne_10m_rivers_lake_centerlines.zip" -o "${CARTOPY_DATA_DIR}/ne_10m_rivers_lake_centerlines.zip"  \
+    && curl "https://naciscdn.org/naturalearth/10m/physical/ne_10m_land.zip" -o "${CARTOPY_DATA_DIR}/ne_10m_land.zip"
+RUN apt-get -yq install unzip
+RUN unzip ${CARTOPY_DATA_DIR}/\*.zip -d "${NE_PHYSICAL}"
+RUN rm ${CARTOPY_DATA_DIR}/*.zip
+
+# cultural data
+ENV NE_CULTURAL "${CARTOPY_DATA_DIR}/shapefiles/natural_earth/cultural"
+RUN mkdir -p ${NE_CULTURAL}
+RUN curl "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_boundary_lines_land.zip" -o "${CARTOPY_DATA_DIR}/ne_10m_admin_0_boundary_lines_land.zip"
+RUN unzip ${CARTOPY_DATA_DIR}/\*.zip -d "${NE_CULTURAL}"
+RUN rm ${CARTOPY_DATA_DIR}/*.zip
+
+# change the ownership
+RUN chown "developer:developer" -R ${CARTOPY_DATA_DIR}
+
 #########################################################
 # REGIONMASK SEABORN and MPL_TOOLKITS
 #########################################################

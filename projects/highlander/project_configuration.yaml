@@ -51,3 +51,4 @@ variables:
     DATA_PATH: "/catalog/download"
     DATASETS_PATH: "/catalog/datasets"
     CACHE_PATH: "/catalog/cache"
+    CARTOPY_DATA_DIR: "/cartopy"
