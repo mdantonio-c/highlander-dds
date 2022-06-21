@@ -60,7 +60,7 @@
   word-break: break-word; 
 }
 
-.chart-container {
+.chart-container:not(.collapsed) {
   display:block;
 }
 
