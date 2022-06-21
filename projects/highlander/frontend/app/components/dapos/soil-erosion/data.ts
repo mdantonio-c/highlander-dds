@@ -1,13 +1,15 @@
-import { CodeLabel } from "../../../types";
+import { IndicatorsCodeLabel } from "../../../types";
 
-export const INDICATORS: CodeLabel[] = [
+export const INDICATORS: IndicatorsCodeLabel[] = [
   {
     code: "RF",
     label: "R Factor",
+    product: "rainfall-erosivity",
   },
   {
     code: "SL",
     label: "Soil Loss",
+    product: "soil-loss",
   },
 ];
 

@@ -22,6 +22,7 @@ import { SoilErosionComponent } from "./components/dapos/soil-erosion/soil-erosi
 import { CropWaterComponent } from "./components/dapos/crop-water/crop-water.component";
 import { HumanWellbeingComponent } from "./components/dapos/human-wellbeing/human-wellbeing.component";
 import { MapFilterComponent as SoilErosionFilter } from "./components/dapos/soil-erosion/map-filter/map-filter.component";
+import { MapDetailComponent as SoilErosionDetail } from "./components/dapos/soil-erosion/map-detail/map-detail.component";
 import { MapFilterComponent as CropWaterFilter } from "./components/dapos/crop-water/map-filter/map-filter.component";
 import { MapFilterComponent as HumanWellbeingFilter } from "./components/dapos/human-wellbeing/map-filter/map-filter.component";
 import { ReplacePipe } from "./pipes/replace.pipe";
@@ -72,6 +73,7 @@ const routes: Routes = [
     CropWaterComponent,
     HumanWellbeingComponent,
     SoilErosionFilter,
+    SoilErosionDetail,
     CropWaterFilter,
     HumanWellbeingFilter,
     ReplacePipe,

@@ -33,7 +33,7 @@ export class CropWaterComponent {
   private legends: { [key: string]: L.Control } = {};
   zoom: number = 12;
   center: L.LatLng = L.latLng([44.49895, 11.32759]); // default Bologna City
-  readonly LEGEND_POSITION = "bottomleft";
+  readonly LEGEND_POSITION = "bottomright";
   availableRuns: DateStruct[]; // = AVAILABLE_RUNS;
   selectedPeriod: DateStruct;
 
@@ -188,7 +188,7 @@ export class CropWaterComponent {
       format: "image/png",
       opacity: 0.8,
       transparent: true,
-      attribution: "'&copy; CMCC",
+      attribution: "'&copy; Arpae",
       maxZoom: MAX_ZOOM,
       minZoom: MIN_ZOOM,
     });

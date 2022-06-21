@@ -3,9 +3,7 @@
     <div class="col-12">
       <hr class="mt-1 mb-3" />
     </div>
-    <div 
-      class="col-2 mb-2 filters"
-      >
+    <div class="col-2 mb-2 filters">
       <hl-map-filter
         [class.collapsed]="isCollapsed"
         id="filters"
@@ -13,14 +11,14 @@
         (onFilterChange)="applyFilter($event)"
       ></hl-map-filter>
       <label
-      class="toggle"
-      (click)="isCollapsed = !isCollapsed"
-      [class.collapsed]="isCollapsed"
-    ></label>
+        class="toggle"
+        (click)="isCollapsed = !isCollapsed"
+        [class.collapsed]="isCollapsed"
+      ></label>
     </div>
     <div class="col px-3">
       <div id="map-wrapper" class="fill">
-        <ngx-spinner
+        <!--        <ngx-spinner
           bdColor="rgba(255,255,255,0.8)"
           color="#6c757d"
           zIndex="1000"
@@ -28,7 +26,7 @@
           type="ball-clip-rotate-multiple"
           size="medium"
         >
-        </ngx-spinner>
+        </ngx-spinner>-->
         <!--<div class="no-results" *ngIf="!loading">
           <h2>No Maps Available</h2>
           <p>Try to apply a different set of filters</p>
@@ -93,8 +91,12 @@
         </div>
       </div>
     </div>
-    <div class="col-auto">
-      <div #collapse="ngbCollapse" [ngbCollapse]="isPanelCollapsed" class="chart-container">
+    <div class="col-auto details-card">
+      <div
+        #collapse="ngbCollapse"
+        [ngbCollapse]="isPanelCollapsed"
+        class="chart-container"
+      >
         <div class="card bg-light" style="min-width: 300px">
           <div class="px-2">
             <button
@@ -107,8 +109,12 @@
             </button>
           </div>
           <div class="card-body">
-            <!-- TODO show selected administrative area -->
-            <!-- TODO show box plot -->
+            <hl-map-detail
+              [cropDetails]="mapCropDetails"
+              [modelId]="currentModel"
+              [isPanelCollapsed]="isPanelCollapsed"
+            >
+            </hl-map-detail>
           </div>
         </div>
       </div>
