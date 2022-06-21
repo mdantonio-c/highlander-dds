@@ -38,7 +38,7 @@ export const LAYERS: CodeLabel[] = [
     label: "Precipitation monthly forecast",
   },
   {
-    code: "ID_CROP",
+    code: "crop",
     label: "Crop cultures",
   },
 ];
@@ -103,7 +103,7 @@ export const LEGEND_DATA: LegendConfig[] = [
     ],
   },
   {
-    id: "ID_CROP",
+    id: "crop",
     legend_type: "legend_box",
     title: "Crop",
     colors: [
@@ -140,5 +140,29 @@ export const LEGEND_DATA: LegendConfig[] = [
       "Woods",
       "All other crops"
     ],
+    ids: [1, 2, 3, 12, 13, 14, 20, 21, 22, 23, 24, 25, 26, 27]
   },
 ];
+
+export interface CropInfo {
+  ANNO: number;
+  AREA__HA_: number;
+  ID_CASE: string;
+  ID_CLASS: string;
+  ID_CROP: number;
+  ID_METEO: string;
+  ID_SOIL: number;
+  Id: number;
+  crop: number;
+  hectares: number;
+  irri_05: number;
+  irri_25: number;
+  irri_50: number;
+  irri_75: number;
+  irri_95: number;
+  prec_05: number;
+  prec_25: number;
+  prec_50: number;
+  prec_75: number;
+  prec_95: number;
+}

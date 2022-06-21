@@ -6,6 +6,7 @@ import { SharedModule } from "@rapydo/shared.module";
 import { LeafletModule } from "@asymmetrik/ngx-leaflet";
 import { LeafletDrawModule } from "@asymmetrik/ngx-leaflet-draw";
 import { LeafletMarkerClusterModule } from "@asymmetrik/ngx-leaflet-markercluster";
+import { NgxChartsModule } from "@swimlane/ngx-charts";
 
 import { DatasetsComponent } from "./components/datasets/datasets.component";
 import { DatasetComponent } from "./components/dataset/dataset.component";
@@ -30,6 +31,8 @@ import { AbsPipe } from "./pipes/abs.pipe";
 import { ClickStopPropagation } from "./directives/click-stop-propagation";
 import { EventStopPropagation } from "./directives/event-stop-propagation";
 import { FirstWordPipe } from "./pipes/first-word.pipe";
+import {CropDetailsComponent} from "./components/dapos/crop-water/crop-details/crop-details.component";
+import {UppercaseFilterPipe} from "./pipes/uppercase-filter.pipe";
 
 const routes: Routes = [
   { path: "app/datasets", component: DatasetsComponent },
@@ -56,6 +59,7 @@ const routes: Routes = [
     LeafletModule,
     LeafletDrawModule,
     LeafletMarkerClusterModule,
+    NgxChartsModule,
   ],
   declarations: [
     DatasetsComponent,
@@ -71,6 +75,7 @@ const routes: Routes = [
     DaposComponent,
     SoilErosionComponent,
     CropWaterComponent,
+    CropDetailsComponent,
     HumanWellbeingComponent,
     SoilErosionFilter,
     SoilErosionDetail,
@@ -79,10 +84,11 @@ const routes: Routes = [
     ReplacePipe,
     AbsPipe,
     FirstWordPipe,
+    UppercaseFilterPipe,
     ClickStopPropagation,
     EventStopPropagation,
   ],
-  schemas: [],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [],
   exports: [RouterModule],
 })

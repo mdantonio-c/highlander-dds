@@ -1,14 +1,16 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
+import { tap, map, share } from "rxjs/operators";
 import { ApiService } from "@rapydo/services/api";
 import { StorageUsage, DatasetInfo, ProductInfo, DateStruct } from "../types";
 import { HttpClient } from "@angular/common/http";
-import { AVAILABLE_RUNS } from "../components/dapos/crop-water/data.mock";
 
 @Injectable({
   providedIn: "root",
 })
 export class DataService {
+  private _runPeriods: DateStruct[];
+
   constructor(private api: ApiService, private http: HttpClient) {}
 
   /**
@@ -17,7 +19,7 @@ export class DataService {
    */
   getDatasets(isApplication?: boolean): Observable<DatasetInfo[]> {
     const params = isApplication ? { application: true } : {};
-    return this.api.get("/api/datasets", params);
+    return this.api.get<DatasetInfo[]>("/api/datasets", params);
   }
 
   /**
@@ -25,11 +27,11 @@ export class DataService {
    * @param dataset_id
    */
   getDataset(dataset_id: string): Observable<DatasetInfo> {
-    return this.api.get(`/api/datasets/${dataset_id}`);
+    return this.api.get<DatasetInfo>(`/api/datasets/${dataset_id}`);
   }
 
   /**
-   *
+   * Submit data request.
    * @param dataset
    */
   submit(dataset: string, args: any): Observable<any> {
@@ -58,7 +60,7 @@ export class DataService {
   }
 
   /**
-   *
+   * Get user storage info.
    */
   getStorageUsage(): Observable<StorageUsage> {
     return this.api.get("/api/usage");
@@ -87,18 +89,43 @@ export class DataService {
   /**
    * Get crop-water geo data.
    */
-  getCropWaterForecasts(): Observable<any> {
-    return this.http.get(
-      "/app/custom/assets/geojson/seasonalForecast_C5_2021_MJJ.geojson"
-    );
+  getShapefile(filename: string): Observable<any> {
+    // FIXME retrieve data from geoserver
+    return this.http
+        .get(`/app/custom/assets/${filename}`, {
+          responseType: 'arraybuffer'
+        });
   }
 
+  /**
+   * Get available run for a give dataset product.
+   * Used for Crop-water dataset.
+   * @param datasetId
+   * @param productId
+   */
   getRunPeriods(
     datasetId: string,
     productId: string
   ): Observable<DateStruct[]> {
-    return this.api.get(
+    const source$ = this.api.get<DateStruct[]>(
       `/api/datasets/${datasetId}/products/${productId}/ready`
+    ).pipe(
+        tap(val => {
+          this._runPeriods = val as DateStruct[];
+        }),
+        share()
     );
+    return (this._runPeriods) ? of(this._runPeriods) : source$;
+  }
+
+  readFileContent(file: File) {
+    let fileReader: FileReader = new FileReader();
+    fileReader.readAsArrayBuffer(file);
+    return Observable.create(observer => {
+      fileReader.onloadend = () => {
+        observer.next(fileReader.result);
+        observer.complete();
+      };
+    });
   }
 }

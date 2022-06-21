@@ -4,6 +4,7 @@ export interface LegendConfig {
   legend_type: string;
   colors: string[];
   labels: string[];
+  ids?: number[];
 }
 
 export const LEGEND_DATA: LegendConfig[] = [

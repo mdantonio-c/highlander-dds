@@ -204,6 +204,10 @@ a.ng-star-inserted {
 
 /*buttons & checkbox/radio*/
 
+button.close:focus-visible {
+  outline: none;
+}
+
 .leaflet-control-zoom-out,
 .leaflet-control-zoom-in {
   border-radius: 25px !important;
