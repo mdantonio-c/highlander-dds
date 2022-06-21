@@ -143,9 +143,12 @@ export class SoilErosionComponent implements OnInit {
     this.initLegends(map);
     // detect the change of model
     const ref = this;
-    map.on("baselayerchange", (e: L.LayerEvent, comp: SoilErosionComponent = ref) => {
-      comp.getTheSelectedModel(e.layer['_leaflet_id']);
-    });
+    map.on(
+      "baselayerchange",
+      (e: L.LayerEvent, comp: SoilErosionComponent = ref) => {
+        comp.getTheSelectedModel(e.layer["_leaflet_id"]);
+      }
+    );
   }
 
   private setOverlaysToMap() {

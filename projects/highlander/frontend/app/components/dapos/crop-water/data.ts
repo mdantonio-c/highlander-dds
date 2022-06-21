@@ -138,9 +138,9 @@ export const LEGEND_DATA: LegendConfig[] = [
       "Peach",
       "Plum",
       "Woods",
-      "All other crops"
+      "All other crops",
     ],
-    ids: [1, 2, 3, 12, 13, 14, 20, 21, 22, 23, 24, 25, 26, 27]
+    ids: [1, 2, 3, 12, 13, 14, 20, 21, 22, 23, 24, 25, 26, 27],
   },
 ];
 

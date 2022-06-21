@@ -91,10 +91,9 @@ export class DataService {
    */
   getShapefile(filename: string): Observable<any> {
     // FIXME retrieve data from geoserver
-    return this.http
-        .get(`/app/custom/assets/${filename}`, {
-          responseType: 'arraybuffer'
-        });
+    return this.http.get(`/app/custom/assets/${filename}`, {
+      responseType: "arraybuffer",
+    });
   }
 
   /**
@@ -107,21 +106,23 @@ export class DataService {
     datasetId: string,
     productId: string
   ): Observable<DateStruct[]> {
-    const source$ = this.api.get<DateStruct[]>(
-      `/api/datasets/${datasetId}/products/${productId}/ready`
-    ).pipe(
-        tap(val => {
+    const source$ = this.api
+      .get<DateStruct[]>(
+        `/api/datasets/${datasetId}/products/${productId}/ready`
+      )
+      .pipe(
+        tap((val) => {
           this._runPeriods = val as DateStruct[];
         }),
         share()
-    );
-    return (this._runPeriods) ? of(this._runPeriods) : source$;
+      );
+    return this._runPeriods ? of(this._runPeriods) : source$;
   }
 
   readFileContent(file: File) {
     let fileReader: FileReader = new FileReader();
     fileReader.readAsArrayBuffer(file);
-    return Observable.create(observer => {
+    return Observable.create((observer) => {
       fileReader.onloadend = () => {
         observer.next(fileReader.result);
         observer.complete();

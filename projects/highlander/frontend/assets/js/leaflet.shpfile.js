@@ -1,5 +1,5 @@
-'use strict';
-import * as shp from 'shpjs';
+"use strict";
+import * as shp from "shpjs";
 
 /* global cw, shp */
 L.Shapefile = L.GeoJSON.extend({
@@ -7,38 +7,59 @@ L.Shapefile = L.GeoJSON.extend({
     importUrl: 'shpjs/dist/shp.js'
   },*/
 
-  initialize: function(file, options) {
+  initialize: function (file, options) {
     L.Util.setOptions(this, options);
-    if (typeof cw !== 'undefined') {
+    if (typeof cw !== "undefined") {
       /*eslint-disable no-new-func*/
       if (!options.isArrayBuffer) {
-        this.worker = cw(new Function('data', 'cb', 'importScripts("' + this.options.importUrl + '");shp(data).then(cb);'));
+        this.worker = cw(
+          new Function(
+            "data",
+            "cb",
+            'importScripts("' +
+              this.options.importUrl +
+              '");shp(data).then(cb);'
+          )
+        );
       } else {
-        this.worker = cw(new Function('data', 'importScripts("' + this.options.importUrl + '"); return shp.parseZip(data);'));
+        this.worker = cw(
+          new Function(
+            "data",
+            'importScripts("' +
+              this.options.importUrl +
+              '"); return shp.parseZip(data);'
+          )
+        );
       }
       /*eslint-enable no-new-func*/
     }
-    L.GeoJSON.prototype.initialize.call(this, {
-      features: []
-    }, options);
+    L.GeoJSON.prototype.initialize.call(
+      this,
+      {
+        features: [],
+      },
+      options
+    );
     this.addFileData(file);
   },
 
-  addFileData: function(file) {
+  addFileData: function (file) {
     var self = this;
-    this.fire('data:loading');
-    if (typeof file !== 'string' && !('byteLength' in file)) {
+    this.fire("data:loading");
+    if (typeof file !== "string" && !("byteLength" in file)) {
       var data = this.addData(file);
-      this.fire('data:loaded');
+      this.fire("data:loaded");
       return data;
     }
     if (!this.worker) {
-      shp(file).then(function(data) {
-        self.addData(data);
-        self.fire('data:loaded');
-      }).catch(function(err) {
-        self.fire('data:error', err);
-      })
+      shp(file)
+        .then(function (data) {
+          self.addData(data);
+          self.fire("data:loaded");
+        })
+        .catch(function (err) {
+          self.fire("data:error", err);
+        });
       return this;
     }
     var promise;
@@ -48,17 +69,22 @@ L.Shapefile = L.GeoJSON.extend({
       promise = this.worker.data(cw.makeUrl(file));
     }
 
-    promise.then(function(data) {
-      self.addData(data);
-      self.fire('data:loaded');
-      self.worker.close();
-    }).then(function() {}, function(err) {
-      self.fire('data:error', err);
-    })
+    promise
+      .then(function (data) {
+        self.addData(data);
+        self.fire("data:loaded");
+        self.worker.close();
+      })
+      .then(
+        function () {},
+        function (err) {
+          self.fire("data:error", err);
+        }
+      );
     return this;
-  }
+  },
 });
 
-L.shapefile = function(a, b, c) {
+L.shapefile = function (a, b, c) {
   return new L.Shapefile(a, b, c);
 };

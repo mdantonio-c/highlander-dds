@@ -58,28 +58,20 @@
   word-break: break-word;
 }
 
-
 .chart-container {
-  
-  &.collaspe  {
-    display:none !important; 
+  &.collaspe {
+    display: none !important;
   }
-  .px-2{
-  position: absolute !important;
-  right: 0 !important;
-  width:100px !important;
+  .px-2 {
+    position: absolute !important;
+    right: 0 !important;
+    width: 100px !important;
   }
-
-  
 
   .details-text-container {
-    margin-top:-30px !important;
+    margin-top: -30px !important;
   }
- 
-
 }
-
-
 
 .toggle {
   cursor: pointer;
@@ -113,8 +105,6 @@
     .chart-container {
       position: initial;
     }
-
-    
   }
   @media (max-width: 850px) {
     .filters {

@@ -4,7 +4,7 @@ import { DataService } from "../../../../services/data.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 import { CropWaterFilter } from "../../../../types";
-import { CropInfo, LEGEND_DATA} from "../data";
+import { CropInfo, LEGEND_DATA } from "../data";
 import { LegendConfig } from "../../../../services/data";
 
 @Component({
@@ -24,10 +24,10 @@ export class CropDetailsComponent implements OnInit {
   gradient: boolean = true;
   showLegend: boolean = true;
   showXAxisLabel: boolean = true;
-  xAxisLabel: string = 'Percentile';
+  xAxisLabel: string = "Percentile";
   showYAxisLabel: boolean = true;
-  yAxisLabel: string = 'mm';
-  legendTitle: string = 'Products';
+  yAxisLabel: string = "mm";
+  legendTitle: string = "Products";
 
   active;
 
@@ -36,7 +36,7 @@ export class CropDetailsComponent implements OnInit {
     public activeModal: NgbActiveModal,
     private notify: NotificationService,
     private spinner: NgxSpinnerService
-  ) { }
+  ) {}
 
   ngOnInit() {
     let multi = this.normalize();
@@ -44,43 +44,47 @@ export class CropDetailsComponent implements OnInit {
   }
 
   colorScheme = {
-    domain: ['#5AA454', '#C7B42C', '#AAAAAA']
+    domain: ["#5AA454", "#C7B42C", "#AAAAAA"],
   };
 
-  getCropType():string {
-     let legend: LegendConfig = LEGEND_DATA.find((x) => x.id === 'crop');
-     const idx = legend.ids.indexOf(this.crop.ID_CROP);
-      if (idx !== -1) {
-        return legend.labels[idx];
-      }
-     return "n/a";
+  getCropType(): string {
+    let legend: LegendConfig = LEGEND_DATA.find((x) => x.id === "crop");
+    const idx = legend.ids.indexOf(this.crop.ID_CROP);
+    if (idx !== -1) {
+      return legend.labels[idx];
+    }
+    return "n/a";
   }
 
-    private normalize() {
-      /*
-       * [{name: "", series: [{name:"", value:""}, ..]}, ...]
-       */
-      let multi = [];
+  private normalize() {
+    /*
+     * [{name: "", series: [{name:"", value:""}, ..]}, ...]
+     */
+    let multi = [];
 
-      let irri: any[] = Object.entries(this.crop).filter(([key]) => key.startsWith('irri_'));
-      irri.forEach(val => {
-        let a = {
-          name: val[0].split('_', 2)[1],
-          series: []
-        };
-        a.series.push({name: "irri", value: val[1]})
-        multi.push(a);
-      })
+    let irri: any[] = Object.entries(this.crop).filter(([key]) =>
+      key.startsWith("irri_")
+    );
+    irri.forEach((val) => {
+      let a = {
+        name: val[0].split("_", 2)[1],
+        series: [],
+      };
+      a.series.push({ name: "irri", value: val[1] });
+      multi.push(a);
+    });
 
-      let prec = Object.entries(this.crop).filter(([key]) => key.startsWith('prec_'));
-      prec.forEach(val => {
-        let name = val[0].split('_', 2)[1];
-        // find percentile and push the series
-        const matched = multi.find((x) => x.name === name)
-        if (matched) {
-          matched.series.push({name: "prec", value: val[1]})
-        }
-      })
-      return multi;
-    }
+    let prec = Object.entries(this.crop).filter(([key]) =>
+      key.startsWith("prec_")
+    );
+    prec.forEach((val) => {
+      let name = val[0].split("_", 2)[1];
+      // find percentile and push the series
+      const matched = multi.find((x) => x.name === name);
+      if (matched) {
+        matched.series.push({ name: "prec", value: val[1] });
+      }
+    });
+    return multi;
+  }
 }

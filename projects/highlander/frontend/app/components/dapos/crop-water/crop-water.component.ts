@@ -19,7 +19,7 @@ const NORMAL_STYLE = {
   color: "gray",
   weight: 1,
   opacity: 1,
-  fillOpacity: 0.8
+  fillOpacity: 0.8,
 };
 const HIGHLIGHT_STYLE = {
   weight: 1,
@@ -136,7 +136,7 @@ export class CropWaterComponent {
   }
 
   async applyFilter(data: CropWaterFilter) {
-    this.spinner.show()
+    this.spinner.show();
 
     const previousLayer = this.filter?.layer || null;
     const previousPeriod = this.filter?.period || null;
@@ -172,7 +172,9 @@ export class CropWaterComponent {
       }
 
       // update ONLY on area and period
-      const update = previousArea !== this.filter.area || previousPeriod !== this.filter.period;
+      const update =
+        previousArea !== this.filter.area ||
+        previousPeriod !== this.filter.period;
       // load layer on the map
       this.loadGeoData(update);
 
@@ -210,18 +212,22 @@ export class CropWaterComponent {
       this.filter.period
     )}.zip`;
     this.dataService.getShapefile(filename).subscribe(
-        (data) => {
-          const blob = new Blob([data], {
-            type: 'application/zip'
-          });
-          this.SHPtoGEOJSON(
-            new File([blob], filename, { lastModified: new Date().getTime(), type: blob.type }));
-        },
-        (error) => {
-          console.log('error', error);
-          this.notify.showError("Error to load data layer.");
-          this.spinner.hide();
-        }
+      (data) => {
+        const blob = new Blob([data], {
+          type: "application/zip",
+        });
+        this.SHPtoGEOJSON(
+          new File([blob], filename, {
+            lastModified: new Date().getTime(),
+            type: blob.type,
+          })
+        );
+      },
+      (error) => {
+        console.log("error", error);
+        this.notify.showError("Error to load data layer.");
+        this.spinner.hide();
+      }
     );
   }
 
@@ -248,41 +254,50 @@ export class CropWaterComponent {
   }
 
   private async SHPtoGEOJSON(file: File) {
-    await this.dataService.readFileContent(file)
-      .toPromise().then(
-        res => {
-          shp(res).then((geojson) => {
+    await this.dataService
+      .readFileContent(file)
+      .toPromise()
+      .then((res) => {
+        shp(res)
+          .then((geojson) => {
             // console.log(geojson);
             this.geojson = geojson;
             this.renderOnMap();
           })
-          .catch(err => {
-            console.error(err)
+          .catch((err) => {
+            console.error(err);
             this.notify.showError("Error in displaying data on the map");
             this.spinner.hide();
           });
-        }
-      );
+      });
   }
 
   private renderOnMap() {
-    const legend: LegendConfig = LEGEND_DATA.find((x) => x.id === this.filter.layer);
+    const legend: LegendConfig = LEGEND_DATA.find(
+      (x) => x.id === this.filter.layer
+    );
     const comp: CropWaterComponent = this;
     const startTime = new Date();
     const jsonLayer = L.geoJSON(this.geojson, {
-     style: (feature) => {
-       let style = NORMAL_STYLE;
-       style.fillColor = comp.getColorIndex(feature.properties as CropInfo, legend);
-       return style;
-     },
-     onEachFeature: (feature, layer) => {
-       const fillColor = comp.getColorIndex(feature.properties as CropInfo, legend);
-       layer.on({
-         mouseover: (e) => this.highlightFeature(e),
-         mouseout: (e) => this.resetFeature(e, fillColor),
-         click: (e) => this.openDetails(e),
-       })
-     },
+      style: (feature) => {
+        let style = NORMAL_STYLE;
+        style.fillColor = comp.getColorIndex(
+          feature.properties as CropInfo,
+          legend
+        );
+        return style;
+      },
+      onEachFeature: (feature, layer) => {
+        const fillColor = comp.getColorIndex(
+          feature.properties as CropInfo,
+          legend
+        );
+        layer.on({
+          mouseover: (e) => this.highlightFeature(e),
+          mouseout: (e) => this.resetFeature(e, fillColor),
+          click: (e) => this.openDetails(e),
+        });
+      },
     });
     this.geoData.addLayer(jsonLayer);
     this.geoData.addTo(this.map);
@@ -292,18 +307,20 @@ export class CropWaterComponent {
   private getColorIndex(props: CropInfo, legend: LegendConfig): string {
     let layer = this.filter.layer;
     // fix layer id to match value from shapefile
-    if (layer === 'prp') {
-      layer = 'prec';
+    if (layer === "prp") {
+      layer = "prec";
     }
     const percentile: string = this.filter.percentile
       ? String(this.filter.percentile).padStart(2, "0")
       : "";
     // console.log(`get color index for layer<${layer}>, percentile<${percentile}>`);
-    if (layer !== 'crop') {
+    if (layer !== "crop") {
       for (const [idx, val] of legend.labels.entries()) {
-        const min_max: number[] = val.split('-', 2).map(num => parseInt(num, 10));
+        const min_max: number[] = val
+          .split("-", 2)
+          .map((num) => parseInt(num, 10));
         const num: number = props[`${layer}_${percentile}`];
-        if (num >= min_max[0] && num <= min_max[1] ) {
+        if (num >= min_max[0] && num <= min_max[1]) {
           return legend.colors[idx];
         }
       }
@@ -340,6 +357,4 @@ export class CropWaterComponent {
     // need to trigger resize event
     window.dispatchEvent(new Event("resize"));
   }
-
 }
-
