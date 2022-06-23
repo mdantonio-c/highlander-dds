@@ -14,7 +14,7 @@ RUN apt-get update -qq \
     && apt-get install --yes libproj-dev proj-data proj-bin libgeos-dev \
     && pip3 install --upgrade --no-cache-dir Cython \
     # the latest version has problems with PROJ version
-    && pip3 install --upgrade --no-cache-dir Cartopy==0.19.0.post1  \
+    && pip3 install --upgrade --no-cache-dir Cartopy==0.18.0  \
     && apt-get autoremove --yes && apt-get clean
 
 # prepare the cartopy data dir
@@ -48,4 +48,5 @@ RUN chown "developer:developer" -R ${CARTOPY_DATA_DIR}
 #########################################################
 RUN pip3 install --upgrade --no-cache-dir regionmask \
     && pip3 install --upgrade --no-cache-dir seaborn \
-    && pip3 install --upgrade --no-cache-dir matplotlib
+    && pip3 install --upgrade --no-cache-dir matplotlib \
+    && pip3 install --upgrade numpy==1.22.4
