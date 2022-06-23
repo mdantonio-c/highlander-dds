@@ -1,9 +1,12 @@
 import { Injectable } from "@angular/core";
 import { Observable, of } from "rxjs";
-import { tap, map, share } from "rxjs/operators";
+import { tap, share } from "rxjs/operators";
 import { ApiService } from "@rapydo/services/api";
 import { StorageUsage, DatasetInfo, ProductInfo, DateStruct } from "../types";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
+
+// FIXME
+export const WMS_ENDPOINT = "http://localhost:8070/geoserver/wms"; //"https://dds.highlander.cineca.it/geoserver/wms";
 
 @Injectable({
   providedIn: "root",
@@ -89,11 +92,21 @@ export class DataService {
   /**
    * Get crop-water geo data.
    */
-  getShapefile(filename: string): Observable<any> {
+  getZippedShapefile(filename: string): Observable<any> {
     // FIXME retrieve data from geoserver
     return this.http.get(`/app/custom/assets/${filename}`, {
       responseType: "arraybuffer",
     });
+  }
+
+  getGeoJson(datastore: string): Observable<any> {
+    let params = new HttpParams();
+    params = params.append("service", "WFS");
+    params = params.append("version", "1.0.0");
+    params = params.append("request", "GetFeature");
+    params = params.append("typeName", `highlander:${datastore}`);
+    params = params.append("outputFormat", "application/json");
+    return this.http.get(`${WMS_ENDPOINT}`, { params: params });
   }
 
   /**

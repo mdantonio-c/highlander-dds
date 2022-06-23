@@ -7,7 +7,7 @@ import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import * as L from "leaflet";
 import * as shp from "shpjs";
 import * as _ from "lodash";
-import { DataService } from "../../../services/data.service";
+import { DataService, WMS_ENDPOINT } from "../../../services/data.service";
 import { ADMINISTRATIVE_AREAS, CropInfo, LAYERS, LEGEND_DATA } from "./data";
 import { LegendConfig } from "../../../services/data";
 import { CropDetailsComponent } from "./crop-details/crop-details.component";
@@ -26,8 +26,6 @@ const HIGHLIGHT_STYLE = {
   color: "#ccc",
   fillOpacity: 0.7,
 };
-// FIXME
-const WMS_ENDPOINT = "https://dds.highlander.cineca.it/geoserver/wms";
 
 @Component({
   selector: "app-crop-water",
@@ -206,12 +204,27 @@ export class CropWaterComponent {
     }
 
     console.log(`loading geo data... area <${this.filter.area}>`);
+    const datastore = `${
+      this.filter.area
+    }_monthlyForecast_${this.periodToString(this.filter.period)}`;
+    this.dataService.getGeoJson(datastore).subscribe(
+      (geojson) => {
+        console.log(geojson);
+        this.geojson = geojson;
+        this.renderOnMap();
+      },
+      (error) => {
+        console.log("error", error);
+        this.notify.showError("Error to load data layer.");
+        this.spinner.hide();
+      }
+    );
 
     // filename in form of: {area}_monthlyForecast_{YYYY-MM-DD}.zip
-    const filename = `${this.filter.area}_monthlyForecast_${this.periodToString(
+    /*const filename = `${this.filter.area}_monthlyForecast_${this.periodToString(
       this.filter.period
     )}.zip`;
-    this.dataService.getShapefile(filename).subscribe(
+    this.dataService.getZippedShapefile(filename).subscribe(
       (data) => {
         const blob = new Blob([data], {
           type: "application/zip",
@@ -228,7 +241,7 @@ export class CropWaterComponent {
         this.notify.showError("Error to load data layer.");
         this.spinner.hide();
       }
-    );
+    );*/
   }
 
   printLayerDescription(): string {
@@ -277,7 +290,6 @@ export class CropWaterComponent {
       (x) => x.id === this.filter.layer
     );
     const comp: CropWaterComponent = this;
-    const startTime = new Date();
     const jsonLayer = L.geoJSON(this.geojson, {
       style: (feature) => {
         let style = NORMAL_STYLE;
