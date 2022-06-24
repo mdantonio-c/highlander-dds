@@ -349,8 +349,8 @@ export class SoilErosionComponent implements OnInit {
       // set the normal style to the previously selected layer
       this.selectedLayer.setStyle(NORMAL_STYLE);
     }
-    var bounds = layer.getBounds();
-    var layerCenter = bounds.getCenter();
+    const bounds = layer.getBounds();
+    const layerCenter = bounds.getCenter();
 
     setTimeout(() => {
       this.map.setView(layerCenter);

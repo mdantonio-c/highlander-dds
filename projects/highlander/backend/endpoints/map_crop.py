@@ -16,7 +16,7 @@ import xarray as xr  # type: ignore
 from flask import send_file
 from highlander.connectors import broker
 from marshmallow import ValidationError, pre_load
-from matplotlib import cm  # type: ignore
+from matplotlib import cm
 from restapi import decorators
 from restapi.connectors import Connector
 from restapi.exceptions import NotFound, ServerError
