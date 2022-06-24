@@ -43,6 +43,13 @@ const NORMAL_STYLE = {
   color: "gray",
   fillOpacity: 0,
 };
+const SELECT_STYLE = {
+  weight: 5,
+  color: "#466c91",
+  dashArray: "",
+  fillOpacity: 0.7,
+  zIndex: 100,
+};
 
 @Component({
   selector: "app-soil-erosion",
@@ -118,6 +125,7 @@ export class SoilErosionComponent implements OnInit {
   currentModel: string;
   mapCropDetails: SoilErosionMapCrop;
   isPanelCollapsed: boolean = true;
+  selectedLayer;
 
   constructor(
     private dataService: DataService,
@@ -282,14 +290,41 @@ export class SoilErosionComponent implements OnInit {
     this.mapCropDetails = Object.assign({}, this.mapCropDetails);
   }
 
+  checkSelectedFeature(layer) {
+    let layerName = null;
+    switch (this.administrative) {
+      case "regions":
+        layerName = layer.feature.properties.name;
+        break;
+      case "provinces":
+        layerName = layer.feature.properties.prov_name;
+        break;
+    }
+    if (this.mapCropDetails && layerName) {
+      if (this.mapCropDetails.area_id !== layerName) {
+        return false;
+      }
+    } else {
+      // no area has been selected
+      return false;
+    }
+    return true;
+  }
+
   private highlightFeature(e) {
     const layer = e.target;
-    layer.setStyle(HIGHLIGHT_STYLE);
+    const isSelected = this.checkSelectedFeature(layer);
+    if (!isSelected) {
+      layer.setStyle(HIGHLIGHT_STYLE);
+    }
   }
 
   private resetFeature(e) {
     const layer = e.target;
-    layer.setStyle(NORMAL_STYLE);
+    const isSelected = this.checkSelectedFeature(layer);
+    if (!isSelected) {
+      layer.setStyle(NORMAL_STYLE);
+    }
   }
 
   getTheSelectedModel(leaflet_id) {
@@ -306,17 +341,20 @@ export class SoilErosionComponent implements OnInit {
   }
 
   private loadDetails(e) {
-    this.cdr.detectChanges();
     setTimeout(() => {
       this.map.invalidateSize();
     }, 0);
-
     const layer = e.target;
-    this.map.fitBounds(layer.getBounds());
-    if (!this.isPanelCollapsed) {
-      this.closeDetails();
-      this.isPanelCollapsed = true;
+    if (this.selectedLayer) {
+      // set the normal style to the previously selected layer
+      this.selectedLayer.setStyle(NORMAL_STYLE);
     }
+    var bounds = layer.getBounds();
+    var layerCenter = bounds.getCenter();
+
+    setTimeout(() => {
+      this.map.setView(layerCenter);
+    }, 1);
 
     switch (this.administrative) {
       case "regions":
@@ -335,6 +373,14 @@ export class SoilErosionComponent implements OnInit {
     //force the ngonChanges of the child component
     this.mapCropDetails = Object.assign({}, this.mapCropDetails);
     this.isPanelCollapsed = false;
+
+    // change the layer style
+    layer.setStyle(SELECT_STYLE);
+    // set the current selected layer
+    setTimeout(() => {
+      this.selectedLayer = layer;
+    }, 0);
+    this.cdr.detectChanges();
   }
 
   isCollapsed = true;

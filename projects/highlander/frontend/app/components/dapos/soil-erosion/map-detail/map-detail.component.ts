@@ -2,6 +2,7 @@ import {
   Component,
   Input,
   OnChanges,
+  ChangeDetectorRef,
   SimpleChanges,
   Output,
   EventEmitter,
@@ -33,11 +34,13 @@ export class MapDetailComponent implements OnChanges {
     private detailService: DetailService,
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnChanges() {
     if (!this.isPanelCollapsed) {
+      this.loading = true;
       // add the model id to the crop details
       this.cropDetails.model = this.modelId;
       console.log("get details for:", this.cropDetails);
@@ -61,7 +64,6 @@ export class MapDetailComponent implements OnChanges {
             this.plotImage = this.sanitizer.bypassSecurityTrustUrl(
               URL.createObjectURL(blobs[1])
             );
-            this.loading = true;
           },
           (error) => {
             this.loading = false;
@@ -72,6 +74,7 @@ export class MapDetailComponent implements OnChanges {
         )
         .add(() => {
           this.spinner.hide();
+          this.cdr.detectChanges();
         });
     }
   }
