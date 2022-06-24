@@ -16,6 +16,7 @@ import xarray as xr  # type: ignore
 from flask import send_file
 from highlander.connectors import broker
 from marshmallow import ValidationError, pre_load
+from matplotlib import cm  # type: ignore
 from restapi import decorators
 from restapi.connectors import Connector
 from restapi.exceptions import NotFound, ServerError
@@ -44,10 +45,14 @@ CROPS_OUTPUT_ROOT = "/catalog/crops/"
 MODELS_MAPPING = {"RF": "R"}
 
 
-def plotMapNetcdf(field: Any, lat: Any, lon: Any, outputfile: Path) -> None:
+def plotMapNetcdf(field: Any, lat: Any, lon: Any, units: Any, outputfile: Path) -> None:
     """
     This function plot with the xarray tool the field of netcdf
     """
+    log.debug(f"plotting map on {outputfile}")
+    cmap = mpl.cm.viridis_r
+    bounds = [0, 500, 1000, 1500, 2000, 2500, 3000, 4000, 6000, 8000, 10000]
+    norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
     fig1 = plt.figure(figsize=(18, 18))
     ax1 = fig1.add_subplot(111, projection=ccrs.PlateCarree())
     ax1.set(frame_on=False)
@@ -73,23 +78,30 @@ def plotMapNetcdf(field: Any, lat: Any, lon: Any, outputfile: Path) -> None:
             "ignore",
             message="This usage of Quadmesh is deprecated: Parameters meshWidth and meshHeights will be removed; coordinates must be 2D; all parameters except coordinates will be keyword-only.",
         )
-        cmesh = ax1.pcolormesh(lon, lat, field, cmap="viridis")  # ,vmin=0,vmax=10000)
+        cmesh = ax1.pcolormesh(lon, lat, field, cmap=cmap)  # ,vmin=0,vmax=10000)
 
     fig1.colorbar(
-        cmesh, ax=ax1, shrink=np.round(min(len(lon) / len(lat), len(lat) / len(lon)), 2)
+        mpl.cm.ScalarMappable(cmap=cmap, norm=norm),
+        ax=ax1,
+        ticks=bounds,
+        spacing="uniform",
+        orientation="vertical",
+        label=units,
+        shrink=np.round(min(len(lon) / len(lat), len(lat) / len(lon)), 2),
     )
     with warnings.catch_warnings():
         warnings.filterwarnings(
             "ignore",
             message='facecolor will have no effect as it has been defined as "never".',
         )
-        fig1.savefig(outputfile, transparent=True)
+        fig1.savefig(outputfile, transparent=True, bbox_inches="tight", pad_inches=0)
 
 
 def plotBoxplot(field: Any, outputfile: Path) -> None:
     """
     This function plot with the xarray tool the field of netcdf
     """
+    log.debug(f"plotting boxplot on {outputfile}")
     fig4, (ax4) = plt.subplots(
         1, 1, figsize=(15, 7)
     )  # len(field.lon)/100, len(field.lat)/100))
@@ -332,6 +344,7 @@ class MapCrop(EndpointResource):
                         nc_cropped.values,
                         nc_cropped.lat.values,
                         nc_cropped.lon.values,
+                        nc_cropped.units,
                         filepath,
                     )
                 else:
