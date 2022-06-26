@@ -49,3 +49,6 @@ services:
       default:
         aliases:
           - geoserver.dockerized.io
+  frontend:
+    environment:
+      INJECT_MAPS_URL: ${MAPS_URL}

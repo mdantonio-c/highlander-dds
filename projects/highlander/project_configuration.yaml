@@ -52,3 +52,4 @@ variables:
     DATASETS_PATH: "/catalog/datasets"
     CACHE_PATH: "/catalog/cache"
     CARTOPY_DATA_DIR: "/cartopy"
+    MAPS_URL: "**PLACEHOLDER**"

@@ -7,7 +7,7 @@ import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 import * as L from "leaflet";
 import * as shp from "shpjs";
 import * as _ from "lodash";
-import { DataService, WMS_ENDPOINT } from "../../../services/data.service";
+import { DataService } from "../../../services/data.service";
 import { ADMINISTRATIVE_AREAS, CropInfo, LAYERS, LEGEND_DATA } from "./data";
 import { LegendConfig } from "../../../services/data";
 import { CropDetailsComponent } from "./crop-details/crop-details.component";
@@ -60,12 +60,9 @@ export class CropWaterComponent {
     center: this.center,
   };
 
-  // layers: L.Layer[] = [this.LAYER_OSM];
   filter: CropWaterFilter;
   private geoData: L.LayerGroup = new L.LayerGroup();
-  // private jsonLayer: L.GeoJSON;
   private geojson;
-  // referenceDate: string = "2021-07-07";
 
   constructor(
     private dataService: DataService,
@@ -134,6 +131,7 @@ export class CropWaterComponent {
   }
 
   async applyFilter(data: CropWaterFilter) {
+    console.log("start spinner");
     this.spinner.show();
 
     const previousLayer = this.filter?.layer || null;
@@ -145,7 +143,10 @@ export class CropWaterComponent {
     await this.dataService
       .getRunPeriods("crop-water", "crop-water")
       .toPromise()
-      .then((periods) => (this.availableRuns = periods));
+      .then((periods) => {
+        console.log("done");
+        this.availableRuns = periods;
+      });
 
     if (!this.selectedPeriod) {
       // default to the last run
@@ -204,33 +205,34 @@ export class CropWaterComponent {
     }
 
     console.log(`loading geo data... area <${this.filter.area}>`);
+    // datastore in form of: {area}_monthlyForecast_{YYYY-MM-DD}
     const datastore = `${
       this.filter.area
     }_monthlyForecast_${this.periodToString(this.filter.period)}`;
-    this.dataService.getGeoJson(datastore).subscribe(
+
+    // get geojson
+    /*this.dataService.getGeoJson(datastore).subscribe(
       (geojson) => {
         console.log(geojson);
         this.geojson = geojson;
         this.renderOnMap();
+        //L.geoJSON(geojson).addTo(this.map);
       },
       (error) => {
         console.log("error", error);
         this.notify.showError("Error to load data layer.");
         this.spinner.hide();
       }
-    );
+    );*/
 
-    // filename in form of: {area}_monthlyForecast_{YYYY-MM-DD}.zip
-    /*const filename = `${this.filter.area}_monthlyForecast_${this.periodToString(
-      this.filter.period
-    )}.zip`;
-    this.dataService.getZippedShapefile(filename).subscribe(
+    // get zipped shapefile
+    this.dataService.getZippedShapefile(datastore).subscribe(
       (data) => {
         const blob = new Blob([data], {
           type: "application/zip",
         });
         this.SHPtoGEOJSON(
-          new File([blob], filename, {
+          new File([blob], `${datastore}.zip`, {
             lastModified: new Date().getTime(),
             type: blob.type,
           })
@@ -241,7 +243,7 @@ export class CropWaterComponent {
         this.notify.showError("Error to load data layer.");
         this.spinner.hide();
       }
-    );*/
+    );
   }
 
   printLayerDescription(): string {
@@ -251,7 +253,7 @@ export class CropWaterComponent {
   }
 
   onPeriodChange(val) {
-    console.log("period changed", val);
+    // console.log("period changed", val);
     this.filter.period = val;
     this.applyFilter(this.filter);
   }

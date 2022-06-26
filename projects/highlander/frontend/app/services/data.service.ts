@@ -4,17 +4,22 @@ import { tap, share } from "rxjs/operators";
 import { ApiService } from "@rapydo/services/api";
 import { StorageUsage, DatasetInfo, ProductInfo, DateStruct } from "../types";
 import { HttpClient, HttpParams } from "@angular/common/http";
-
-// FIXME
-export const WMS_ENDPOINT = "http://localhost:8070/geoserver/wms"; //"https://dds.highlander.cineca.it/geoserver/wms";
+import { environment } from "@rapydo/../environments/environment";
 
 @Injectable({
   providedIn: "root",
 })
 export class DataService {
   private _runPeriods: DateStruct[];
+  private readonly _maps_url: string;
 
-  constructor(private api: ApiService, private http: HttpClient) {}
+  constructor(private api: ApiService, private http: HttpClient) {
+    this._maps_url = environment.CUSTOM.MAPS_URL;
+    console.info(`Map server URL: ${this._maps_url}`);
+    if (!this._maps_url) {
+      throw new Error("Missing MAPS_URL config");
+    }
+  }
 
   /**
    * Get all the available datasets.
@@ -90,23 +95,42 @@ export class DataService {
   }
 
   /**
-   * Get crop-water geo data.
+   * Get crop-water zipped shapefile data.
+   * @param datastore
    */
-  getZippedShapefile(filename: string): Observable<any> {
-    // FIXME retrieve data from geoserver
-    return this.http.get(`/app/custom/assets/${filename}`, {
+  getZippedShapefile(datastore: string): Observable<any> {
+    const params = this.getOWSParams("highlander", datastore, "shape-zip");
+    return this.http.get(`${this._maps_url}/ows`, {
+      params: params,
       responseType: "arraybuffer",
     });
   }
 
+  /**
+   * Get crop-water geojson data.
+   * @param datastore
+   */
   getGeoJson(datastore: string): Observable<any> {
+    const params = this.getOWSParams(
+      "highlander",
+      datastore,
+      "application/json"
+    );
+    return this.http.get(`${this._maps_url}/ows`, { params: params });
+  }
+
+  private getOWSParams(
+    workspace: string,
+    datastore: string,
+    outputFormat: string
+  ) {
     let params = new HttpParams();
     params = params.append("service", "WFS");
     params = params.append("version", "1.0.0");
     params = params.append("request", "GetFeature");
-    params = params.append("typeName", `highlander:${datastore}`);
-    params = params.append("outputFormat", "application/json");
-    return this.http.get(`${WMS_ENDPOINT}`, { params: params });
+    params = params.append("typeName", `${workspace}:${datastore}`);
+    params = params.append("outputFormat", outputFormat);
+    return params;
   }
 
   /**
