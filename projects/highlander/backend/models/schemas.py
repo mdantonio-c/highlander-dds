@@ -50,6 +50,7 @@ class DatasetInfo(Schema):
     license = fields.Nested(License)
     publication_date = fields.DateTime(allow_none=True, format=ISO8601UTC)
     application = fields.Boolean(dump_default=False)
+    category = fields.Str()
     related_data = fields.List(fields.Nested(RelatedData))
     products = fields.List(
         fields.Nested(ProductReference),

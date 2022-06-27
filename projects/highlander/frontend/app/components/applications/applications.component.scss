@@ -1,0 +1,38 @@
+.category-box {
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+.category-title {
+  margin-top: 30px;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+
+.flex-child {
+  width: 350px;
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.flex-child img {
+  background-size: auto;
+  width: 200px;
+  height: 200px;
+  border-radius: 200px;
+}
+
+.flex-child h3,
+.category-title {
+  text-transform: uppercase;
+  color: #1a7dc1;
+}
+
+.flex-child p {
+  text-align: justify;
+}

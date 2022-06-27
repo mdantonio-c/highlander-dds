@@ -30,49 +30,17 @@
     </ng-template>
 
     <div class="col" *ngIf="datasets.length > 0; else noResults">
-      <div class="search-result" *ngFor="let dataset of datasets">
-        <div class="row">
-          <!-- view applications -->
-          <ng-container *ngIf="isApplication; else datasetsView">
-            <div class="col">
-              <div class="d-flex">
-                <div class="text-justify mb-0">
-                  <img
-                    src="{{
-                      backendURI + '/api/datasets/' + dataset.id + '/image'
-                    }}"
-                    alt="no img"
-                    style="float: left; width: 280px"
-                    class="mr-3 mb-2 hld-preview-thumbnail"
-                    *ngIf="dataset.image"
-                  />
-                  <h3>
-                    <a
-                      *ngIf="user; else notLogged"
-                      href
-                      [routerLink]="['../applications/' + dataset.id]"
-                      [state]="dataset"
-                      >{{ dataset.label }}</a
-                    >
-                    <ng-template #notLogged>
-                      {{ dataset.label }}
-                    </ng-template>
-                  </h3>
-                  <ng-container *ngIf="dataset.description">
-                    <div class="description-container">
-                      <i class="fa fa-quote-left fa-gray mr-2"></i>
-                      <p
-                        [innerHTML]="dataset.description"
-                        class="text d-inline"
-                      ></p>
-                    </div>
-                  </ng-container>
-                </div>
-              </div>
-            </div>
-          </ng-container>
-          <!-- view datasets -->
-          <ng-template #datasetsView>
+      <!-- view applications -->
+      <ng-container *ngIf="isApplication; else datasetsView">
+        <hld-applications
+          [datasets]="datasets"
+          [user]="user"
+        ></hld-applications>
+      </ng-container>
+      <!-- view datasets -->
+      <ng-template #datasetsView>
+        <div class="search-result" *ngFor="let dataset of datasets">
+          <div class="row">
             <div class="col-xs-1 d-none d-sm-block col-sm-1 text-center">
               <span
                 class="fa fa-database fa-2x fa-blue"
@@ -95,9 +63,9 @@
                 </div>
               </ng-container>
             </div>
-          </ng-template>
+          </div>
         </div>
-      </div>
+      </ng-template>
     </div>
   </div>
 </div>

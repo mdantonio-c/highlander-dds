@@ -35,8 +35,11 @@ export interface DatasetInfo {
   publication_date: string;
   /** @nullable */
   update_frequency?: string;
-  related_data: any[];
-  products: ProductReference[];
+  related_data?: any[];
+  products?: ProductReference[];
+  application?: boolean;
+  category?: string;
+  url?: string;
 }
 
 export interface DatasetVariables {
