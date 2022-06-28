@@ -13,7 +13,7 @@ export class ApplicationsComponent implements OnInit {
   @Input() user: User;
 
   waterApps: DatasetInfo[] = [];
-  forestApps: DatasetInfo[] = [];
+  paneveggioApps: DatasetInfo[] = [];
   otherApps: DatasetInfo[] = [];
   readonly backendURI = environment.backendURI;
 
@@ -27,15 +27,15 @@ export class ApplicationsComponent implements OnInit {
         case "water":
           this.waterApps.push(ds);
           break;
-        case "forest":
-          this.forestApps.push(ds);
+        case "paneveggio":
+          this.paneveggioApps.push(ds);
           break;
         default:
           this.otherApps.push(ds);
       }
     });
     console.log("water", this.waterApps);
-    console.log("forest", this.forestApps);
+    console.log("paneveggio", this.paneveggioApps);
     console.log("others", this.otherApps);
   }
 }

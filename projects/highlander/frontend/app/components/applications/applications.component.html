@@ -1,193 +1,76 @@
-<div class="search-result" *ngFor="let dataset of datasets">
-  <p>{{ dataset.label }} ({{ dataset.category || "others" }})</p>
-</div>
-
-<!-- FOREST -->
-<div class="category-box border-bottom border-top">
-  <h2 class="category-title mt-3">Paneveggio park management</h2>
-  <div class="d-flex p-2 justify-content-evenly flex-wrap">
-    <div class="flex-child text-center my-3 mx-3">
-      <img class="rounded-circle" src="./tree-talker.jpg" alt="picture" />
-      <h3 class="mt-2">Tree Talker</h3>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis atque
-        ullam sunt, a voluptatum quas, dolorem iure qui obcaecati, cum saepe
-        maiores facere. Nesciunt est neque at adipisci accusantium delectus.
-      </p>
-    </div>
-    <div class="flex-child text-center my-3 mx-3">
-      <img
-        class="rounded-circle"
-        src="./pasture-monitoring.png"
-        alt="picture"
-      />
-      <h3 class="mt-2">Pasture Monitoring</h3>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis atque
-        ullam sunt, a voluptatum quas, dolorem iure qui obcaecati, cum saepe
-        maiores facere. Nesciunt est neque at adipisci accusantium delectus.
-      </p>
-    </div>
-    <div class="flex-child text-center my-3 mx-3">
-      <img class="rounded-circle" src="./forest.jpg" alt="picture" />
-      <h3 class="mt-2">Forest</h3>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis atque
-        ullam sunt, a voluptatum quas, dolorem iure qui obcaecati, cum saepe
-        maiores facere. Nesciunt est neque at adipisci accusantium delectus.
-      </p>
-    </div>
-    <div class="flex-child text-center my-3 mx-3">
-      <img class="rounded-circle" src="./vaia-storm.jpg" alt="picture" />
-      <h3 class="mt-2">VAIA Storm</h3>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis atque
-        ullam sunt, a voluptatum quas, dolorem iure qui obcaecati, cum saepe
-        maiores facere. Nesciunt est neque at adipisci accusantium delectus.
-      </p>
-    </div>
+<div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
+  <h2 class="category-title mt-3 w-100" *ngIf="paneveggioApps"> Paneveggio Parks Managnment</h2>
+  <div class="flex-child my-3 mx-3" *ngFor="let dataset of paneveggioApps">
+    <img
+          src="/app/custom/assets/images/{{dataset.image}}"
+          alt="no img"
+          class="mr-3 mb-2 hld-preview-thumbnail"
+          *ngIf="dataset.image"
+    />
+    <h3 class="mt-2 text-center">
+      <a
+        *ngIf="user; else notLogged"
+        href="{{dataset.url}}"
+       >{{ dataset.label }}</a>
+      <ng-template #notLogged>
+              {{ dataset.label }}
+      </ng-template>
+    </h3>
+    <p>
+      {{dataset.description}}
+    </p>
   </div>
 </div>
-
-<!-- WATER -->
-<div class="category-box border-bottom">
-  <h2 class="category-title mt-3">Water</h2>
-  <div class="d-flex p-2 justify-content-evenly flex-wrap">
-    <div class="flex-child text-center my-3 mx-3">
-      <img class="rounded-circle" src="./cmcc.jpg" alt="picture" />
-      <h3 class="mt-2">Water cycle and sustainability of competing use</h3>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis atque
-        ullam sunt, a voluptatum quas, dolorem iure qui obcaecati, cum saepe
-        maiores facere. Nesciunt est neque at adipisci accusantium delectus.
-      </p>
-    </div>
-    <div class="flex-child text-center">
-      <img class="rounded-circle" src="./crop-water.jpg" alt="picture" />
-      <h3 class="mt-2">Crop Water</h3>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis atque
-        ullam sunt, a voluptatum quas, dolorem iure qui obcaecati, cum saepe
-        maiores facere. Nesciunt est neque at adipisci accusantium delectus.
-      </p>
-    </div>
+<div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
+  <h2 class="category-title mt-3 w-100 " *ngIf="waterApps"> Water</h2>
+  <div class="flex-child my-3 mx-3 {{dataset.category}}" *ngFor="let dataset of waterApps">
+    <img
+          src="/app/custom/assets/images/{{dataset.image}}"
+          alt="no img"
+          class="mr-3 mb-2 hld-preview-thumbnail"
+          *ngIf="dataset.image"
+    />
+    <h3 class="mt-2 text-center">
+      <a
+        *ngIf="user; else notLogged"
+        href
+          [routerLink]="['../applications/' + dataset.id]"
+          [state]="dataset"
+       >{{ dataset.label }}</a>
+      <ng-template #notLogged>
+              {{ dataset.label }}
+      </ng-template>
+    </h3>
+    <p>
+      {{dataset.description}}
+    </p>
   </div>
 </div>
-
-<!-- FOREST -->
-<div class="category-box border-bottom">
-  <h2 class="category-title mt-3">Forest fire</h2>
-  <div class="d-flex p-2 justify-content-evenly flex-wrap">
-    <div class="flex-child text-center my-3 mx-3">
-      <img
-        class="rounded-circle"
-        src="./forest-fire-prediction.jpg"
-        alt="picture"
-      />
-      <h3 class="mt-2">Forest fire prediction and control</h3>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis atque
-        ullam sunt, a voluptatum quas, dolorem iure qui obcaecati, cum saepe
-        maiores facere. Nesciunt est neque at adipisci accusantium delectus.
-      </p>
-    </div>
-    <div class="flex-child text-center my-3 mx-3">
-      <img
-        class="rounded-circle"
-        src="./forest-fire-control.jpg"
-        alt="picture"
-      />
-      <h3 class="mt-2">Forest fire potential</h3>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis atque
-        ullam sunt, a voluptatum quas, dolorem iure qui obcaecati, cum saepe
-        maiores facere. Nesciunt est neque at adipisci accusantium delectus.
-      </p>
-    </div>
+<div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
+  <h2 class="category-title mt-3 w-100" *ngIf="otherApps"> Other</h2>
+  <div class="flex-child my-3 mx-3 {{dataset.id}}" *ngFor="let dataset of otherApps">
+    <img
+          src="/app/custom/assets/images/{{dataset.image}}"
+          alt="no img"
+          class="mr-3 mb-2 hld-preview-thumbnail"
+          *ngIf="dataset.image"
+    />
+    <h3 class="mt-2 text-center">
+      <a
+        *ngIf="user; else notLogged"
+        href
+          [routerLink]="['../applications/' + dataset.id]"
+          [state]="dataset"
+       >{{ dataset.label }}</a>
+      <ng-template #notLogged>
+              {{ dataset.label }}
+      </ng-template>
+    </h3>
+    <p>
+      {{dataset.description}}
+    </p>
   </div>
-  <div class="category-box border-top">
-    <h2 class="category-title mt-3">Other applications</h2>
-    <div class="d-flex p-2 justify-content-evenly flex-wrap">
-      <div class="flex-child text-center my-3 mx-3">
-        <img
-          class="rounded-circle"
-          src="./land-suitability.jpg"
-          alt="picture"
-        />
-        <h3 class="mt-2">Animal welfare and land suitability (for farming)</h3>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis
-          atque ullam sunt, a voluptatum quas, dolorem iure qui obcaecati, cum
-          saepe maiores facere. Nesciunt est neque at adipisci accusantium
-          delectus.
-        </p>
-      </div>
-      <div class="flex-child text-center my-3 mx-3">
-        <img
-          class="rounded-circle"
-          src="./land-suitability-forest.jpg"
-          alt="picture"
-        />
-        <h3 class="mt-2">Land suitability for vegetation (forest)</h3>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis
-          atque ullam sunt, a voluptatum quas, dolorem iure qui obcaecati, cum
-          saepe maiores facere. Nesciunt est neque at adipisci accusantium
-          delectus.
-        </p>
-      </div>
-      <div class="flex-child text-center my-3 mx-3">
-        <img
-          class="rounded-circle"
-          src="./animal-wellbeing.jpg"
-          alt="picture"
-        />
-        <h3 class="mt-2">IoT for Animal wellbeing</h3>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis
-          atque ullam sunt, a voluptatum quas, dolorem iure qui obcaecati, cum
-          saepe maiores facere. Nesciunt est neque at adipisci accusantium
-          delectus.
-        </p>
-      </div>
-      <div class="flex-child text-center my-3 mx-3">
-        <img class="rounded-circle" src="./soil-erosion.jpg" alt="picture" />
-        <h3 class="mt-2">Soil Erosion</h3>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis
-          atque ullam sunt, a voluptatum quas, dolorem iure qui obcaecati, cum
-          saepe maiores facere. Nesciunt est neque at adipisci accusantium
-          delectus.
-        </p>
-      </div>
-      <div class="flex-child text-center my-3 mx-3">
-        <img
-          class="rounded-circle"
-          src="./change-land-suitability.jpg"
-          alt="picture"
-        />
-        <h3 class="mt-2">
-          Changes in the land suitability for vegetation (forest, crop)
-        </h3>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis
-          atque ullam sunt, a voluptatum quas, dolorem iure qui obcaecati, cum
-          saepe maiores facere. Nesciunt est neque at adipisci accusantium
-          delectus.
-        </p>
-      </div>
-      <div class="flex-child text-center my-3 mx-3">
-        <img class="rounded-circle" src="./human-weelbeing.jpg" alt="picture" />
-        <h3 class="mt-2">Human wellbeing</h3>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Veritatis
-          atque ullam sunt, a voluptatum quas, dolorem iure qui obcaecati, cum
-          saepe maiores facere. Nesciunt est neque at adipisci accusantium
-          delectus.
-        </p>
-      </div>
-    </div>
-  </div>
+</div>
 
   <!--
   <div class="search-result" *ngFor="let dataset of datasets">
@@ -229,5 +112,5 @@
         </div>
       </div>
     </div>
-  </div>-->
-</div>
+  </div>
+</div>-->
