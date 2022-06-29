@@ -330,9 +330,9 @@ class MapCrop(EndpointResource):
             #        levels = [0, 500, 1000, 1500, 2000, 2500, 3000, 4000, 6000, 8000, 10000]
             #        norm = mpl.colors.BoundaryNorm(levels, cmap.N)
             #    elif nc_variable == 'sl':
-                    cmap = mpl.cm.Oranges
-                    levels = [0, 1, 2.5, 5, 10, 50, 100, 500, 1000, 2000]
-                    norm = mpl.colors.BoundaryNorm(levels, cmap.N)
+            cmap = mpl.cm.Oranges
+            levels = [0, 1, 2.5, 5, 10, 50, 100, 500, 1000, 2000]
+            norm = mpl.colors.BoundaryNorm(levels, cmap.N)
             #except Exception as e:
             #    raise ServerError(f"Errors in passing data variable: {e}")
 
