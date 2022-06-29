@@ -50,10 +50,8 @@ def plotMapNetcdf(field: Any, lat: Any, lon: Any, units: Any, outputfile: Path) 
     This function plot with the xarray tool the field of netcdf
     """
     log.debug(f"plotting map on {outputfile}")
-    cmap = mpl.cm.viridis_r
-    bounds = [0, 500, 1000, 1500, 2000, 2500, 3000, 4000, 6000, 8000, 10000]
-    norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
-    fig1 = plt.figure(figsize=(18, 18))
+    fig1 = plt.figure(figsize=(15,15))
+    mpl.rcParams['font.size'] = 15
     ax1 = fig1.add_subplot(111, projection=ccrs.PlateCarree())
     ax1.set(frame_on=False)
     ax1.axis("off")
@@ -78,17 +76,17 @@ def plotMapNetcdf(field: Any, lat: Any, lon: Any, units: Any, outputfile: Path) 
             "ignore",
             message="This usage of Quadmesh is deprecated: Parameters meshWidth and meshHeights will be removed; coordinates must be 2D; all parameters except coordinates will be keyword-only.",
         )
-        cmesh = ax1.pcolormesh(lon, lat, field, cmap=cmap)  # ,vmin=0,vmax=10000)
 
-    fig1.colorbar(
-        mpl.cm.ScalarMappable(cmap=cmap, norm=norm),
+    fig1.colorbar(mpl.cm.ScalarMappable(cmap=cmap, norm=norm),
         ax=ax1,
-        ticks=bounds,
-        spacing="uniform",
-        orientation="vertical",
-        label=units,
-        shrink=np.round(min(len(lon) / len(lat), len(lat) / len(lon)), 2),
-    )
+        ticks=levels,
+        spacing='uniform',
+        orientation='vertical',
+        label=nc_cropped.long_name+"["+nc_cropped.units+"]",
+        anchor=(0.5, 0.5),
+        shrink=0.8
+        )
+    cmesh = ax1.pcolormesh(lon, lat, field , cmap=cmap, alpha=1,norm=norm)
     with warnings.catch_warnings():
         warnings.filterwarnings(
             "ignore",
@@ -324,6 +322,19 @@ class MapCrop(EndpointResource):
                 )
             # get the data variable
             nc_variable = product_details["variables"][0]["value"]
+            log.debug(nc_variable)
+
+            #try:
+            #    if(nc_variable == 'rf'):
+            #        cmap = mpl.cm.viridis_r
+            #        levels = [0, 500, 1000, 1500, 2000, 2500, 3000, 4000, 6000, 8000, 10000]
+            #        norm = mpl.colors.BoundaryNorm(levels, cmap.N)
+            #    elif nc_variable == 'sl':
+                    cmap = mpl.cm.Oranges
+                    levels = [0, 1, 2.5, 5, 10, 50, 100, 500, 1000, 2000]
+                    norm = mpl.colors.BoundaryNorm(levels, cmap.N)
+            #except Exception as e:
+            #    raise ServerError(f"Errors in passing data variable: {e}")
 
             # crop the area
             try:
