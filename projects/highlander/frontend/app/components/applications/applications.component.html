@@ -1,0 +1,116 @@
+<div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
+  <h2 class="category-title mt-3 w-100" *ngIf="paneveggioApps"> Paneveggio Parks Managnment</h2>
+  <div class="flex-child my-3 mx-3" *ngFor="let dataset of paneveggioApps">
+    <img
+          src="/app/custom/assets/images/{{dataset.image}}"
+          alt="no img"
+          class="mr-3 mb-2 hld-preview-thumbnail"
+          *ngIf="dataset.image"
+    />
+    <h3 class="mt-2 text-center">
+      <a
+        *ngIf="user; else notLogged"
+        href="{{dataset.url}}"
+       >{{ dataset.label }}</a>
+      <ng-template #notLogged>
+              {{ dataset.label }}
+      </ng-template>
+    </h3>
+    <p>
+      {{dataset.description}}
+    </p>
+  </div>
+</div>
+<div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
+  <h2 class="category-title mt-3 w-100 " *ngIf="waterApps"> Water</h2>
+  <div class="flex-child my-3 mx-3 {{dataset.category}}" *ngFor="let dataset of waterApps">
+    <img
+          src="/app/custom/assets/images/{{dataset.image}}"
+          alt="no img"
+          class="mr-3 mb-2 hld-preview-thumbnail"
+          *ngIf="dataset.image"
+    />
+    <h3 class="mt-2 text-center">
+      <a
+        *ngIf="user; else notLogged"
+        href
+          [routerLink]="['../applications/' + dataset.id]"
+          [state]="dataset"
+       >{{ dataset.label }}</a>
+      <ng-template #notLogged>
+              {{ dataset.label }}
+      </ng-template>
+    </h3>
+    <p>
+      {{dataset.description}}
+    </p>
+  </div>
+</div>
+<div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
+  <h2 class="category-title mt-3 w-100" *ngIf="otherApps"> Other</h2>
+  <div class="flex-child my-3 mx-3 {{dataset.id}}" *ngFor="let dataset of otherApps">
+    <img
+          src="/app/custom/assets/images/{{dataset.image}}"
+          alt="no img"
+          class="mr-3 mb-2 hld-preview-thumbnail"
+          *ngIf="dataset.image"
+    />
+    <h3 class="mt-2 text-center">
+      <a
+        *ngIf="user; else notLogged"
+        href
+          [routerLink]="['../applications/' + dataset.id]"
+          [state]="dataset"
+       >{{ dataset.label }}</a>
+      <ng-template #notLogged>
+              {{ dataset.label }}
+      </ng-template>
+    </h3>
+    <p>
+      {{dataset.description}}
+    </p>
+  </div>
+</div>
+
+  <!--
+  <div class="search-result" *ngFor="let dataset of datasets">
+    <div class="row">
+      <div class="col">
+        <div class="d-flex">
+          <div class="text-justify mb-0">
+            <img
+                src="{{
+                        backendURI + '/api/datasets/' + dataset.id + '/image'
+                      }}"
+                alt="no img"
+                style="float: left; width: 280px"
+                class="mr-3 mb-2 hld-preview-thumbnail"
+                *ngIf="dataset.image"
+            />
+            <h3>
+              <a
+                  *ngIf="user; else notLogged"
+                  href
+                  [routerLink]="['../applications/' + dataset.id]"
+                  [state]="dataset"
+              >{{ dataset.label }}</a
+              >
+              <ng-template #notLogged>
+                {{ dataset.label }}
+              </ng-template>
+            </h3>
+            <ng-container *ngIf="dataset.description">
+              <div class="description-container">
+                <i class="fa fa-quote-left fa-gray mr-2"></i>
+                <p
+                    [innerHTML]="dataset.description"
+                    class="text d-inline"
+                ></p>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>-->

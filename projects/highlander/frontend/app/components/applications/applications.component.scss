@@ -1,0 +1,30 @@
+.flex-child {
+  width:47%;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.flex-child  img {
+  width:250px;
+  height: 250px;
+ 
+}
+ 
+.water{
+  width: 100%;
+}
+
+.soil-erosion, .human-wellbeing {
+  width:46%;
+}
+.flex-child h3, .category-title {
+  color:#1a7dc1;
+}
+
+.flex-child p{
+  text-align: justify;
+}
+
+.others .flex-child{
+  width:40%;
+}
