@@ -45,7 +45,7 @@ CROPS_OUTPUT_ROOT = "/catalog/crops/"
 MODELS_MAPPING = {"RF": "R"}
 
 
-def plotMapNetcdf(field: Any, lat: Any, lon: Any, units: Any, outputfile: Path) -> None:
+def plotMapNetcdf(field: Any, lat: Any, lon: Any, units: Any, product: str, outputfile: Path) -> None:
     """
     This function plot with the xarray tool the field of netcdf
     """
@@ -76,15 +76,26 @@ def plotMapNetcdf(field: Any, lat: Any, lon: Any, units: Any, outputfile: Path) 
             "ignore",
             message="This usage of Quadmesh is deprecated: Parameters meshWidth and meshHeights will be removed; coordinates must be 2D; all parameters except coordinates will be keyword-only.",
         )
+    try:
+        if(product == 'r-factor'):
+            cmap = mpl.cm.viridis_r
+            levels = [0, 500, 1000, 1500, 2000, 2500, 3000, 4000, 6000, 8000, 10000]
+            norm = mpl.colors.BoundaryNorm(levels, cmap.N)
+        elif product == 'soil-loss':
+            cmap = mpl.cm.Oranges
+            levels = [0, 1, 2.5, 5, 10, 50, 100, 500, 1000, 2000]
+            norm = mpl.colors.BoundaryNorm(levels, cmap.N)
+    except Exception as e:
+        raise ServerError(f"Errors in passing data variable: {e}")
 
     fig1.colorbar(mpl.cm.ScalarMappable(cmap=cmap, norm=norm),
         ax=ax1,
         ticks=levels,
         spacing='uniform',
         orientation='vertical',
-        label=nc_cropped.long_name+"["+nc_cropped.units+"]",
+        label=f"{product} [{units}]",
         anchor=(0.5, 0.5),
-        shrink=0.8
+        shrink=np.round(min(len(lon)/len(lat),len(lat)/len(lon)),2)#0.8
         )
     cmesh = ax1.pcolormesh(lon, lat, field , cmap=cmap, alpha=1,norm=norm)
     with warnings.catch_warnings():
@@ -124,7 +135,7 @@ def plotDistribution(field: Any, outputfile: Path) -> None:
     This function plot with the xarray tool the field of netcdf
     """
     fig3, (ax3) = plt.subplots(
-        1, 1, figsize=(3, 8)
+        1, 1, figsize=(8, 3)
     )  # len(field.lon)/100, len(field.lat)/100))
     sns.set_theme(style="ticks")
     sns.despine(fig3)
@@ -141,9 +152,14 @@ def plotDistribution(field: Any, outputfile: Path) -> None:
     # TODO label not hardcoded
     # ax3.set_xlabel('R-factor')  # ,fontsize=14)
     # TODO this label to have not to be hardcoded or it's the same for all the boxplots?
+    ax3.set_xlabel(f'{field.columns[0][-4:].replace("/", "")}')
     ax3.set_ylabel("Count")  # ,fontsize=14)
     ax3.tick_params(axis="both", which="major")  # , labelsize=14)
     ax3.tick_params(axis="both", which="minor")  # , labelsize = 14)
+    ax3.set_title(f'{field.columns[0][-4:].replace("/", "")} histogram')
+    ax3.get_legend().remove()    #handles = legend.legendHandles
+    #legend.remove()
+    #ax3.legend(handles, ['dep-', 'ind-', 'ind+', 'dep+'], title='Stat.ind.')
 
     fig3.savefig(outputfile)
 
@@ -322,20 +338,6 @@ class MapCrop(EndpointResource):
                 )
             # get the data variable
             nc_variable = product_details["variables"][0]["value"]
-            log.debug(nc_variable)
-
-            #try:
-            #    if(nc_variable == 'rf'):
-            #        cmap = mpl.cm.viridis_r
-            #        levels = [0, 500, 1000, 1500, 2000, 2500, 3000, 4000, 6000, 8000, 10000]
-            #        norm = mpl.colors.BoundaryNorm(levels, cmap.N)
-            #    elif nc_variable == 'sl':
-            cmap = mpl.cm.Oranges
-            levels = [0, 1, 2.5, 5, 10, 50, 100, 500, 1000, 2000]
-            norm = mpl.colors.BoundaryNorm(levels, cmap.N)
-            #except Exception as e:
-            #    raise ServerError(f"Errors in passing data variable: {e}")
-
             # crop the area
             try:
                 nc_cropped = cropArea(
@@ -356,6 +358,7 @@ class MapCrop(EndpointResource):
                         nc_cropped.lat.values,
                         nc_cropped.lon.values,
                         nc_cropped.units,
+                        nc_cropped.long_name,
                         filepath,
                     )
                 else:
