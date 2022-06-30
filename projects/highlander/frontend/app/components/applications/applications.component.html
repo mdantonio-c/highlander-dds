@@ -16,9 +16,7 @@
               {{ dataset.label }}
       </ng-template>
     </h3>
-    <p>
-      {{dataset.description}}
-    </p>
+    <p innerHTML="dataset.description"></p>
   </div>
 </div>
 <div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
@@ -41,9 +39,7 @@
               {{ dataset.label }}
       </ng-template>
     </h3>
-    <p>
-      {{dataset.description}}
-    </p>
+    <p [innerHTML]="dataset.description"></p>
   </div>
 </div>
 <div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
@@ -66,9 +62,7 @@
               {{ dataset.label }}
       </ng-template>
     </h3>
-    <p>
-      {{dataset.description}}
-    </p>
+    <p [innerHTML]="dataset.description"></p>
   </div>
 </div>
 
