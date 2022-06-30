@@ -2,51 +2,6 @@ import { DatasetInfo } from "../types";
 
 export const ADDITIONAL_APPLICATIONS: DatasetInfo[] = [
   {
-    id: "crop-water",
-    label: "Sub-seasonal irrigation forecasts",
-    default: "crop-water",
-    description: "These forecasts are the outcomes of a climate service addressed to irrigation water management in agriculture developed by ARPAE, including seasonal probabilistic forecasts and deterministic weekly forecasts of irrigation, as described in Villani et al., 2021. The sub-seasonal (4 weeks) forecasts of irrigation needs for crops are the result of the combination of different data sources such as information on agricultural land use from satellite data, Emilia-Romagna Region soil map, observed weather data and HIGHLANDER sub-seasonal forecast, by means of a soil water balance model.Provided data are irrigation and precipitation forecasts expressed as a statistical distribution, of which 5th, 25th, 50th, 75th and 95th percentiles of this distribution are available.The sub-seasonal irrigation forecasts cover 3 Land reclamation and Irrigation Boards (consorzi di bonifica) of Emilia-Romagna region: Consorzio di Bonifica della Burana, Consorzio di Bonifica della Renana and Consorzio di Bonifica della Romagna. The delivery of the forecast is weekly (usually on Tuesday) according to the emission of sub-seasonal forecasts produced by ECMWF.",
-    attribution: "",
-    contact: {
-      name: "Fausto Tomei",
-      email: "ftomei@arpae.it",
-      webpage: null,
-    },
-    image: "crop-water.jpg",
-    doi: null,
-    update_frequency: "weekly",
-    license: {
-      name: "Free for research",
-      url: null,
-    },
-    publication_date: "2021-08-10T00:00:00.000000Z",
-    application: true,
-    category: "water",
-    url: "http://cineca.it",
-  },
-  {
-    id: "human-wellbeing",
-    label: "Wellbeing Indicators using ERA5 downscaled @2.2 km over Italy",
-    default: "human-wellbeing",
-    description: "The downscaling at very high resolution of ERA5 reanalysis (see dataset ERA5-DOWNSCALED-OVER-ITALY) allows to reproduce the interactions between atmosphere and surface considering spatially detailed land use distribution and was used to calculate the four indicators presented in this dataset: Wind Chill (°C), Humidex (°C), Discomfort Index (°C), Apparent Temperature (°C). The Wind Chill (WC) expresses the cooling sensation caused by the combined effect of temperature and wind; it is based on the formulation of Osczevski & Bluestein (2005). The discomfort index (DI) is considered one of the best indices to estimate, in a single value, the effect of temperature and humidity on the sensation of heat or cold perceived by the human body; it is derived from Thom and Bosen (1959). The Humidex (H) it is based on a simple empirical relationship that considers the air temperature and vapor pressure, the latter in turn function of temperature and relative humidity, and calculated according to Masterton and Richardson (1979). Finally, the Apparent Temperature (AT) considers all the environmental and body conditions that influence human thermoregulation; Steadman (1984) implemented an empirical formula for AT, under outside shaded environment, that combines air temperature, vapor pressure and wind speed. The temporal coverage of the dataset is from 01/01/1989 31/12/2020 in terms of daily statistics (minimum, mean, maximum).",
-    attribution: "",
-    contact: {
-      name: "Fausto Tomei",
-      email: "ftomei@arpae.it",
-      webpage: null,
-    },
-    image: "human-wellbeing.jpg",
-    doi: null,
-    update_frequency: "weekly",
-    license: {
-      name: "Free for research",
-      url: null,
-    },
-    publication_date: "2021-08-10T00:00:00.000000Z",
-    application: true,
-    category: "others"
-  },
-  {
     id: "pasture",
     label: "Mountain pasture monitoring",
     default: "pasture",

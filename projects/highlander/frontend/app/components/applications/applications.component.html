@@ -1,5 +1,5 @@
 <div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
-  <h2 class="category-title mt-3 w-100" *ngIf="paneveggioApps"> Paneveggio Parks Managnment</h2>
+  <h2 class="category-title mt-3 w-100" *ngIf="paneveggioApps"> Paneveggio Parks Management</h2>
   <div class="flex-child my-3 mx-3" *ngFor="let dataset of paneveggioApps">
     <img
           src="/app/custom/assets/images/{{dataset.image}}"
@@ -16,9 +16,7 @@
               {{ dataset.label }}
       </ng-template>
     </h3>
-    <p>
-      {{dataset.description}}
-    </p>
+    <p innerHTML="dataset.description"></p>
   </div>
 </div>
 <div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
@@ -41,9 +39,7 @@
               {{ dataset.label }}
       </ng-template>
     </h3>
-    <p>
-      {{dataset.description}}
-    </p>
+    <p [innerHTML]="dataset.description"></p>
   </div>
 </div>
 <div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
@@ -66,9 +62,7 @@
               {{ dataset.label }}
       </ng-template>
     </h3>
-    <p>
-      {{dataset.description}}
-    </p>
+    <p [innerHTML]="dataset.description"></p>
   </div>
 </div>
 

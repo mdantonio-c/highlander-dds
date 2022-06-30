@@ -338,19 +338,6 @@ class MapCrop(EndpointResource):
                 )
             # get the data variable
             nc_variable = product_details["variables"][0]["value"]
-
-            # try:
-            #     if(nc_variable == 'rf'):
-            #         cmap = mpl.cm.viridis_r
-            #         levels = [0, 500, 1000, 1500, 2000, 2500, 3000, 4000, 6000, 8000, 10000]
-            #         norm = mpl.colors.BoundaryNorm(levels, cmap.N)
-            #     elif nc_variable == 'sl':
-            #         cmap = mpl.cm.Oranges
-            #         levels = [0, 1, 2.5, 5, 10, 50, 100, 500, 1000, 2000]
-            #         norm = mpl.colors.BoundaryNorm(levels, cmap.N)
-            # except Exception as e:
-            #     raise ServerError(f"Errors in passing data variable: {e}")
-
             # crop the area
             try:
                 nc_cropped = cropArea(
