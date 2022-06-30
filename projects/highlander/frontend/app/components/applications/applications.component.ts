@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from "@angular/core";
 import { DatasetInfo } from "../../types";
 import { User } from "@rapydo/types";
 import { environment } from "@rapydo/../environments/environment";
+import {Directive, HostListener} from "@angular/core";
+
 
 @Component({
   selector: "hld-applications",
@@ -38,4 +40,7 @@ export class ApplicationsComponent implements OnInit {
     console.log("paneveggio", this.paneveggioApps);
     console.log("others", this.otherApps);
   }
+
+  isTruncate= true;
 }
+

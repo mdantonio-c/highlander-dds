@@ -16,7 +16,13 @@
               {{ dataset.label }}
       </ng-template>
     </h3>
-    <p innerHTML="dataset.description"></p>
+    <p 
+    [innerHTML]="dataset.description"
+    ></p>
+    <!--<button
+        class="btn btn-primary toggle"
+        (click)="isTruncate = !isTruncate;"
+      >Show full description</button>-->
   </div>
 </div>
 <div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
@@ -39,7 +45,9 @@
               {{ dataset.label }}
       </ng-template>
     </h3>
-    <p [innerHTML]="dataset.description"></p>
+    <p 
+    [innerHTML]="dataset.description"
+    ></p>
   </div>
 </div>
 <div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">

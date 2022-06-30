@@ -1,19 +1,20 @@
 .flex-child {
-  width:47%;
+  width:22%;
   vertical-align: middle;
   text-align: center;
 }
 
 .flex-child  img {
-  width:250px;
-  height: 250px;
+  width:200px;
+  height: 200px;
  
 }
 
 .soil-erosion, .human-wellbeing, .water{
   width:46%;
 }
-.flex-child h3, .category-title {
+.flex-child h3, .category-
+title {
   color:#1a7dc1;
 }
 
@@ -24,3 +25,30 @@
 .others .flex-child{
   width:40%;
 }
+
+button {
+  background-color: #1a7dc1
+}
+
+
+@media  (max-width:1121px) {
+  .flex-child {
+    width: 45%;
+  }
+}
+
+@media (max-width:683px){
+  .flex-child {
+    width: 90%;
+  }
+
+  .category-box {
+    justify-content: center;
+  }
+}
+/*.truncate { 
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}*/
