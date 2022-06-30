@@ -27,7 +27,7 @@ export class DetailService {
       area_id: detailsFilter.area_id,
     };
     if (detailType == "plot") {
-      params["plot_type"] = "boxplot";
+      params["plot_type"] = "distribution";
     }
     return this.api.get(
       `/api/datasets/soil-erosion/products/${detailsFilter.product}/crop`,
