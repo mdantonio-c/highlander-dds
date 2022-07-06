@@ -19,6 +19,13 @@
     <p >
     {{dataset.description}}
    </p>
+   <p>
+      <i class="fas fa-external-link-alt"></i>
+      <a
+      *ngIf="dataset.url"
+      href="{{dataset.url}}"
+      >{{ dataset.label }}</a>
+    </p>
     <!--<button
         class="btn btn-primary toggle"
         (click)="isTruncate = !isTruncate;"
