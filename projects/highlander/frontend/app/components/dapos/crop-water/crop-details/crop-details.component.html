@@ -1,0 +1,58 @@
+<div class="modal-header">
+  <h4 class="modal-title">Soil {{ crop.ID_SOIL }} - {{ getCropType() }}</h4>
+  <button
+    type="button"
+    class="close"
+    aria-label="Close"
+    (click)="activeModal.dismiss()"
+  >
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div class="row .g-0">
+    <div class="col-lg-3 mb-2">
+      <div class="card mb-3" style="max-width: 18rem">
+        <div class="card-header">
+          <i class="fas fa-circle-info me-1"></i>Crop details
+        </div>
+        <div class="card-body text-dark px-3 py-1">
+          <ul class="list-group list-group-flush">
+            <li
+              class="list-group-item px-0 py-1"
+              *ngFor="let item of crop | uppercaseFilter | keyvalue"
+            >
+              <h6 class="my-0 font-weight-bold">
+                {{ item.key | titlecase | replace: "_":" " }}
+              </h6>
+              <small>{{ item.value }}</small>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-9">
+      <div class="card text-center">
+        <div class="card-body">
+          <div #containerRef>
+            <ngx-charts-bar-vertical-2d
+              [view]="[containerRef.offsetWidth, 400]"
+              [scheme]="colorScheme"
+              [results]="multi"
+              [gradient]="gradient"
+              [xAxis]="showXAxis"
+              [yAxis]="showYAxis"
+              [legend]="showLegend"
+              [showXAxisLabel]="showXAxisLabel"
+              [showYAxisLabel]="showYAxisLabel"
+              [xAxisLabel]="xAxisLabel"
+              [yAxisLabel]="yAxisLabel"
+              [legendTitle]="legendTitle"
+            >
+            </ngx-charts-bar-vertical-2d>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -35,8 +35,11 @@ export interface DatasetInfo {
   publication_date: string;
   /** @nullable */
   update_frequency?: string;
-  related_data: any[];
-  products: ProductReference[];
+  related_data?: any[];
+  products?: ProductReference[];
+  application?: boolean;
+  category?: string;
+  url?: string;
 }
 
 export interface DatasetVariables {
@@ -148,6 +151,13 @@ export interface SoilErosionFilter {
   administrative: string;
 }
 
+export interface SoilErosionMapCrop {
+  product?: string;
+  model?: string;
+  area_type?: string;
+  area_id?: string;
+}
+
 export interface HumanWellbeingFilter {
   indicator: string;
   administrative: string;
@@ -156,11 +166,21 @@ export interface HumanWellbeingFilter {
 export interface CropWaterFilter {
   area: string;
   layer: string;
+  percentile: number;
+  period?: DateStruct;
 }
 
 export interface CodeLabel {
   code: string;
   label: string;
+  /** @nullable */
+  [key: string]: any;
+}
+
+export interface IndicatorsCodeLabel {
+  code: string;
+  label: string;
+  product: string;
   /** @nullable */
   [key: string]: any;
 }
@@ -180,4 +200,19 @@ export interface RegionFeature {
   name: string;
   length: number;
   area: number;
+}
+
+export interface DateStruct {
+  /**
+   * The year, for example 2016
+   */
+  year: number;
+  /**
+   * The month, for example 1=Jan ... 12=Dec
+   */
+  month: number;
+  /**
+   * The day of month, starting at 1
+   */
+  day: number;
 }

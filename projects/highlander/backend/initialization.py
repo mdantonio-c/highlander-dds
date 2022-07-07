@@ -15,10 +15,10 @@ class Initializer:
         if task:
             log.info(f"Delete existing task <{crop_water_crontab_task_name}>")
             celery_app.delete_periodic_task(name=crop_water_crontab_task_name)
-        # Executes every Tuesday morning at 19:30 a.m.
+        # Executes every Tuesday evening at 19:30 p.m.
         celery_app.create_crontab_task(
             name=crop_water_crontab_task_name,
-            task="retrieve_data",
+            task="retrieve_crop_water",
             day_of_week="2",
             hour="19",
             minute="30",

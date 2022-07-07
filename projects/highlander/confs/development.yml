@@ -3,3 +3,5 @@ services:
   geoserver:
     ports:
       - 8070:8080
+    volumes:
+      - ${DATA_DIR}/catalog/datasets:/opt/geoserver/data_dir/datasets

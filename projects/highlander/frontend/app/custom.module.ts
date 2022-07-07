@@ -6,8 +6,10 @@ import { SharedModule } from "@rapydo/shared.module";
 import { LeafletModule } from "@asymmetrik/ngx-leaflet";
 import { LeafletDrawModule } from "@asymmetrik/ngx-leaflet-draw";
 import { LeafletMarkerClusterModule } from "@asymmetrik/ngx-leaflet-markercluster";
+import { NgxChartsModule } from "@swimlane/ngx-charts";
 
 import { DatasetsComponent } from "./components/datasets/datasets.component";
+import { ApplicationsComponent } from "./components/applications/applications.component";
 import { DatasetComponent } from "./components/dataset/dataset.component";
 import { DataExtractionModalComponent } from "./components/data-extraction-modal/data-extraction-modal.component";
 import { SpatialCoverageComponent } from "./components/data-extraction-modal/spatial-coverage/spatial-coverage.component";
@@ -22,11 +24,16 @@ import { SoilErosionComponent } from "./components/dapos/soil-erosion/soil-erosi
 import { CropWaterComponent } from "./components/dapos/crop-water/crop-water.component";
 import { HumanWellbeingComponent } from "./components/dapos/human-wellbeing/human-wellbeing.component";
 import { MapFilterComponent as SoilErosionFilter } from "./components/dapos/soil-erosion/map-filter/map-filter.component";
+import { MapDetailComponent as SoilErosionDetail } from "./components/dapos/soil-erosion/map-detail/map-detail.component";
 import { MapFilterComponent as CropWaterFilter } from "./components/dapos/crop-water/map-filter/map-filter.component";
 import { MapFilterComponent as HumanWellbeingFilter } from "./components/dapos/human-wellbeing/map-filter/map-filter.component";
 import { ReplacePipe } from "./pipes/replace.pipe";
 import { AbsPipe } from "./pipes/abs.pipe";
 import { ClickStopPropagation } from "./directives/click-stop-propagation";
+import { EventStopPropagation } from "./directives/event-stop-propagation";
+import { FirstWordPipe } from "./pipes/first-word.pipe";
+import { CropDetailsComponent } from "./components/dapos/crop-water/crop-details/crop-details.component";
+import { UppercaseFilterPipe } from "./pipes/uppercase-filter.pipe";
 
 const routes: Routes = [
   { path: "app/datasets", component: DatasetsComponent },
@@ -53,9 +60,11 @@ const routes: Routes = [
     LeafletModule,
     LeafletDrawModule,
     LeafletMarkerClusterModule,
+    NgxChartsModule,
   ],
   declarations: [
     DatasetsComponent,
+    ApplicationsComponent,
     DatasetComponent,
     DataExtractionModalComponent,
     SpatialCoverageComponent,
@@ -68,15 +77,20 @@ const routes: Routes = [
     DaposComponent,
     SoilErosionComponent,
     CropWaterComponent,
+    CropDetailsComponent,
     HumanWellbeingComponent,
     SoilErosionFilter,
+    SoilErosionDetail,
     CropWaterFilter,
     HumanWellbeingFilter,
     ReplacePipe,
     AbsPipe,
+    FirstWordPipe,
+    UppercaseFilterPipe,
     ClickStopPropagation,
+    EventStopPropagation,
   ],
-  schemas: [],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [],
   exports: [RouterModule],
 })

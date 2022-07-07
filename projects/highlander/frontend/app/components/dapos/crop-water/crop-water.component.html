@@ -12,7 +12,14 @@
       ></crop-water-filter>
     </div>
     <div class="col pl-3">
-      <div id="map-wrapper" class="fill">
+      <div id="map-wrapper" class="fill" style="position: relative">
+        <ngx-spinner
+          bdColor="rgba(255,255,255,0.8)"
+          color="#6c757d"
+          [fullScreen]="false"
+          type="ball-clip-rotate-multiple"
+          size="medium"
+        ></ngx-spinner>
         <div
           class="map"
           leaflet
@@ -21,19 +28,43 @@
           (leafletMapZoomEnd)="onMapZoomEnd($event)"
           (leafletMapMove)="onMapMove($event)"
         >
+          <!--
+          <div class="leaflet-bottom leaflet-left">
+            <div class="leaflet-control">
+              <button class="btn btn-light btn-sm" (click)="loadGeoData()">
+                <i class="fa fa-sync"></i>
+              </button>
+            </div>
+          </div>
+          -->
           <!-- Period -->
           <div class="leaflet-top leaflet-right mb-4 mt-2 mr-1">
-            <div class="leaflet-box">
-              Period:
-              <span class="font-weight-bold">{{ referenceDate }}</span>
-              <br />
-              <span>{{ printLayerDescription(filter.layer) }}</span>
+            <div class="leaflet-box leaflet-control" event-stop-propagation>
+              <div class="form-group" *ngIf="filter?.period">
+                <label for="selectPeriod" class="mb-0 font-weight-bold"
+                  >Period:</label
+                >
+                <select
+                  [(ngModel)]="selectedPeriod"
+                  id="selectPeriod"
+                  class="form-control form-control-sm"
+                  (ngModelChange)="onPeriodChange($event)"
+                  [compareWith]="isSamePeriod"
+                >
+                  <option *ngFor="let run of availableRuns" [ngValue]="run">
+                    {{ run.year }}-{{ run.month | number: "2.0" }}-{{
+                      run.day | number: "2.0"
+                    }}
+                  </option>
+                </select>
+              </div>
+              <span>{{ printLayerDescription() }}</span>
             </div>
           </div>
 
           <!-- Zoom Level -->
-          <div class="leaflet-bottom leaflet-right mb-4 mr-1">
-            <div class="leaflet-box">
+          <!--<div class="leaflet-bottom leaflet-right mb-4 mr-1">
+            <div class="leaflet-box leaflet-control" event-stop-propagation>
               Zoom Level:
               <span class="font-weight-bold">{{ zoom }}</span>
               <br />
@@ -43,7 +74,7 @@
                 {{ center.lng | number: "1.1-5" }}</span
               >
             </div>
-          </div>
+          </div>-->
         </div>
       </div>
     </div>

@@ -14,6 +14,7 @@ import {
   ProvinceFeature,
   RegionFeature,
   SoilErosionFilter,
+  SoilErosionMapCrop,
 } from "../../../types";
 import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
@@ -42,6 +43,13 @@ const NORMAL_STYLE = {
   color: "gray",
   fillOpacity: 0,
 };
+const SELECT_STYLE = {
+  weight: 5,
+  color: "#466c91",
+  dashArray: "",
+  fillOpacity: 0.7,
+  zIndex: 100,
+};
 
 @Component({
   selector: "app-soil-erosion",
@@ -60,7 +68,7 @@ export class SoilErosionComponent implements OnInit {
   private legends: { [key: string]: L.Control } = {};
   baseUrl: string = environment.production
     ? `${environment.backendURI}`
-    : "http://localhost:8070";
+    : "http://localhost:8080";
 
   bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
   readonly timeRanges = ["historical", "future"];
@@ -113,7 +121,11 @@ export class SoilErosionComponent implements OnInit {
   private administrativeArea: L.LayerGroup = new L.LayerGroup();
   private filter: SoilErosionFilter;
 
+  administrative: string;
+  currentModel: string;
+  mapCropDetails: SoilErosionMapCrop;
   isPanelCollapsed: boolean = true;
+  selectedLayer;
 
   constructor(
     private dataService: DataService,
@@ -121,7 +133,9 @@ export class SoilErosionComponent implements OnInit {
     protected spinner: NgxSpinnerService,
     private ssr: SSRService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.mapCropDetails = {};
+  }
 
   ngOnInit() {
     if (this.ssr.isBrowser) {
@@ -135,6 +149,14 @@ export class SoilErosionComponent implements OnInit {
       map.invalidateSize();
     }, 200);
     this.initLegends(map);
+    // detect the change of model
+    const ref = this;
+    map.on(
+      "baselayerchange",
+      (e: L.LayerEvent, comp: SoilErosionComponent = ref) => {
+        comp.getTheSelectedModel(e.layer["_leaflet_id"]);
+      }
+    );
   }
 
   private setOverlaysToMap() {
@@ -158,6 +180,8 @@ export class SoilErosionComponent implements OnInit {
     });
     this.layersControl["baseLayers"] = overlays;
     overlays[`${ind}${SOIL_EROSION_WMS[ind].models[0]}`].addTo(this.map);
+    // set the current model as the first baselayer
+    this.currentModel = `${ind}1`;
   }
 
   private initLegends(map: L.Map) {
@@ -227,6 +251,7 @@ export class SoilErosionComponent implements OnInit {
     }
 
     // ADMINISTRATIVE AREA
+    this.administrative = data.administrative;
     // clear current administrative layer
     if (this.map) {
       this.administrativeArea.clearLayers();
@@ -252,36 +277,113 @@ export class SoilErosionComponent implements OnInit {
         this.administrativeArea.addLayer(jsonLayer);
         this.administrativeArea.addTo(this.map);
       });
+    //if the detail panel is opened, close it
+    this.closeDetails();
+
+    // update the map crop details model
+    // get the indicator
+    let indicator_code = this.filter.indicator;
+    const indicator = INDICATORS.find((x) => x.code == indicator_code);
+    this.mapCropDetails.product = indicator.product;
+    this.mapCropDetails.area_type = this.administrative;
+    //force the ngonChanges of the child component
+    this.mapCropDetails = Object.assign({}, this.mapCropDetails);
+  }
+
+  checkSelectedFeature(layer) {
+    let layerName = null;
+    switch (this.administrative) {
+      case "regions":
+        layerName = layer.feature.properties.name;
+        break;
+      case "provinces":
+        layerName = layer.feature.properties.prov_name;
+        break;
+    }
+    if (this.mapCropDetails && layerName) {
+      if (this.mapCropDetails.area_id !== layerName) {
+        return false;
+      }
+    } else {
+      // no area has been selected
+      return false;
+    }
+    return true;
   }
 
   private highlightFeature(e) {
     const layer = e.target;
-    layer.setStyle(HIGHLIGHT_STYLE);
+    const isSelected = this.checkSelectedFeature(layer);
+    if (!isSelected) {
+      layer.setStyle(HIGHLIGHT_STYLE);
+    }
   }
 
   private resetFeature(e) {
     const layer = e.target;
-    layer.setStyle(NORMAL_STYLE);
+    const isSelected = this.checkSelectedFeature(layer);
+    if (!isSelected) {
+      layer.setStyle(NORMAL_STYLE);
+    }
+  }
+
+  getTheSelectedModel(leaflet_id) {
+    for (const [key, value] of Object.entries(
+      this.layersControl["baseLayers"]
+    )) {
+      if (value["_leaflet_id"] == leaflet_id) {
+        this.currentModel = key;
+        break;
+      }
+    }
+    this.cdr.detectChanges();
+    //console.log(`current model:${this.mapCropDetails.model}`)
   }
 
   private loadDetails(e) {
-    this.isPanelCollapsed = false;
-    this.cdr.detectChanges();
     setTimeout(() => {
       this.map.invalidateSize();
     }, 0);
-
     const layer = e.target;
-    this.map.fitBounds(layer.getBounds());
-    switch (this.filter.administrative) {
+    if (this.selectedLayer) {
+      // set the normal style to the previously selected layer
+      this.selectedLayer.setStyle(NORMAL_STYLE);
+    }
+    const bounds = layer.getBounds();
+    const layerCenter = bounds.getCenter();
+
+    setTimeout(() => {
+      this.map.setView(layerCenter);
+    }, 1);
+
+    switch (this.administrative) {
       case "regions":
-        console.log((layer.feature.properties as RegionFeature).name);
+        this.mapCropDetails.area_id = (
+          layer.feature.properties as RegionFeature
+        ).name;
+        //console.log("region: "+this.mapCropDetails.area_id);
         break;
       case "provinces":
-        console.log((layer.feature.properties as ProvinceFeature).prov_name);
+        this.mapCropDetails.area_id = (
+          layer.feature.properties as ProvinceFeature
+        ).prov_name;
+        //console.log("province: "+this.mapCropDetails.area_id);
         break;
     }
+    //force the ngonChanges of the child component
+    this.mapCropDetails = Object.assign({}, this.mapCropDetails);
+    this.isPanelCollapsed = false;
+
+    // change the layer style
+    layer.setStyle(SELECT_STYLE);
+    // set the current selected layer
+    setTimeout(() => {
+      this.selectedLayer = layer;
+    }, 0);
+    this.cdr.detectChanges();
   }
+
+  isCollapsed = true;
 
   closeDetails() {
     this.isPanelCollapsed = true;

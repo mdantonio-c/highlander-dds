@@ -11,6 +11,7 @@ services:
       BROKER_HOST: ${BROKER_HOST}
       BROKER_PORT: ${BROKER_PORT}
       BROKER_CATALOG_DIR: ${BROKER_CATALOG_DIR}
+      CARTOPY_DATA_DIR: ${CARTOPY_DATA_DIR}
   celery:
     build: ${PROJECT_DIR}/builds/backend
     image: hl-dds/backend:${RAPYDO_VERSION}
@@ -23,6 +24,7 @@ services:
       BROKER_PORT: ${BROKER_PORT}
       BROKER_CATALOG_DIR: ${BROKER_CATALOG_DIR}
       DATASETS_PATH: ${DATASETS_PATH}
+      CACHE_PATH: ${CACHE_PATH}
   celerybeat:
     build: ${PROJECT_DIR}/builds/backend
     image: hl-dds/backend:${RAPYDO_VERSION}
@@ -30,18 +32,23 @@ services:
     build: ${PROJECT_DIR}/builds/backend
     image: hl-dds/backend:${RAPYDO_VERSION}
   geoserver:
-    #    image: geonode/geoserver:2.19.1
-    build:
-      context: ${PROJECT_DIR}/builds/geoserver
-      args:
-        CURRENT_UID: ${CURRENT_UID}
-        CURRENT_GID: ${CURRENT_GID}
     image: hl-geoserver:${PROJECT_VERSION}
+    build:
+      context: ${SUBMODULE_DIR}/geoserver
+      args:
+        GEOSERVER_UID: ${CURRENT_UID}
+        GEOSERVER_GID: ${CURRENT_GID}
+        IMAGE_VERSION: 9.0-jdk11-openjdk-slim-buster
     environment:
       ACTIVATE: ${ACTIVATE_GEOSERVER}
+      STABLE_EXTENSIONS: netcdf-plugin
+      TOMCAT_EXTRAS: false
     volumes:
-      - ${DATA_DIR}/geoserver:/geoserver_data/data
+      - ${DATA_DIR}/geoserver:/opt/geoserver/data_dir
     networks:
       default:
         aliases:
           - geoserver.dockerized.io
+  frontend:
+    environment:
+      INJECT_MAPS_URL: ${MAPS_URL}

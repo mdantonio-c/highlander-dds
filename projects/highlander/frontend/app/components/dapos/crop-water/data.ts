@@ -30,22 +30,22 @@ export const ADMINISTRATIVE_AREAS: Area[] = [
 
 export const LAYERS: CodeLabel[] = [
   {
-    code: "Irrigation",
+    code: "irri",
     label: "Irrigation monthly forecast",
   },
   {
-    code: "Precipitation",
+    code: "prp",
     label: "Precipitation monthly forecast",
   },
   {
-    code: "Crop",
+    code: "crop",
     label: "Crop cultures",
   },
 ];
 
 export const LEGEND_DATA: LegendConfig[] = [
   {
-    id: "Irrigation",
+    id: "irri",
     legend_type: "legend_box",
     title: "Monthly forecasted irrigation</br><small>[mm]</small>",
     colors: [
@@ -74,7 +74,7 @@ export const LEGEND_DATA: LegendConfig[] = [
     ],
   },
   {
-    id: "Precipitation",
+    id: "prp",
     legend_type: "legend_box",
     title: "Monthly forecasted precipitation</br><small>[mm]</small>",
     colors: [
@@ -103,7 +103,7 @@ export const LEGEND_DATA: LegendConfig[] = [
     ],
   },
   {
-    id: "Crop",
+    id: "crop",
     legend_type: "legend_box",
     title: "Crop",
     colors: [
@@ -119,15 +119,16 @@ export const LEGEND_DATA: LegendConfig[] = [
       "rgba(205,133,0,100)",
       "rgba(85,26,139,100)",
       "rgba(255,162,0,100)",
-      "rgba(139,139,139,100)",
-      "rgba(241.6,28.64,99.3,0)",
+      "rgba(110,110,110,100)",
+      "rgba(247,135,173,100)",
+      "rgba(130,130,130,100)",
     ],
     labels: [
-      "summer crop",
-      "winter crop",
-      "meadow alfalfa and all season crop",
+      "Summer crop",
+      "Winter crop",
+      "Meadow alfalfa and all season crop",
       "Vineyard",
-      "orchard generic",
+      "Orchard generic",
       "Kiwi",
       "Apricot",
       "Cherry",
@@ -136,7 +137,32 @@ export const LEGEND_DATA: LegendConfig[] = [
       "Pear",
       "Peach",
       "Plum",
-      "woods",
+      "Woods",
+      "All other crops",
     ],
+    ids: [1, 2, 3, 12, 13, 14, 20, 21, 22, 23, 24, 25, 26, 27],
   },
 ];
+
+export interface CropInfo {
+  ANNO: number;
+  AREA__HA_: number;
+  ID_CASE: string;
+  ID_CLASS: string;
+  ID_CROP: number;
+  ID_METEO: string;
+  ID_SOIL: number;
+  Id: number;
+  crop: number;
+  hectares: number;
+  irri_05: number;
+  irri_25: number;
+  irri_50: number;
+  irri_75: number;
+  irri_95: number;
+  prec_05: number;
+  prec_25: number;
+  prec_50: number;
+  prec_75: number;
+  prec_95: number;
+}

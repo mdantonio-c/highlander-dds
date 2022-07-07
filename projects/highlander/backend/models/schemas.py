@@ -50,6 +50,7 @@ class DatasetInfo(Schema):
     license = fields.Nested(License)
     publication_date = fields.DateTime(allow_none=True, format=ISO8601UTC)
     application = fields.Boolean(dump_default=False)
+    category = fields.Str()
     related_data = fields.List(fields.Nested(RelatedData))
     products = fields.List(
         fields.Nested(ProductReference),
@@ -183,6 +184,12 @@ class SpatialArea(Schema):
     east = fields.Float(required=True)
     south = fields.Float(required=True)
     west = fields.Float(required=True)
+
+
+class DateStruct(Schema):
+    year = fields.Int(required=True)
+    month = fields.Int(required=True)
+    day = fields.Int(required=True)
 
 
 class DataExtraction(Schema):

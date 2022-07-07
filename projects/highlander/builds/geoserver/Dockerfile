@@ -20,7 +20,7 @@ RUN mkdir /tmp/geoserver-netcdf && \
     cp /tmp/geoserver-netcdf/*.jar $CATALINA_HOME/webapps/geoserver/WEB-INF/lib && \
     rm -rf /tmp/geoserver-netcdf && \
     apt-get update -qq && \
-    apt-get install --yes --no-install-recommends libnetcdf-dev && \
+    apt-get install --yes --no-install-recommends libnetcdf-dev vim && \
     apt-get autoremove --yes && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV TOMCAT_USER tomcat
@@ -36,6 +36,7 @@ RUN useradd \
 ENV JAVA_OPTS="${JAVA_OPTS} -Dlog4j2.formatMsgNoLookups=true"
 
 # Force tomcat to run as NO-root user
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN chown -R $(id tomcat -u) /usr/local/tomcat && \
-    sed -i  '107d' /usr/local/tomcat/tmp/entrypoint.sh && \
-    sed -i '106iexec env JAVA_OPTS="${JAVA_OPTS}" su -c "PATH=$PATH catalina.sh run" tomcat' /usr/local/tomcat/tmp/entrypoint.sh
+    sed -i  "$(grep -n 'catalina.sh run' /usr/local/tomcat/tmp/entrypoint.sh | cut -f1 -d:)d" /usr/local/tomcat/tmp/entrypoint.sh && \
+    sed -i '$aexec env JAVA_OPTS="${JAVA_OPTS}" su -c "PATH=$PATH catalina.sh run" tomcat' /usr/local/tomcat/tmp/entrypoint.sh

@@ -14,6 +14,11 @@ variables:
   #   admin_root: YourCustomName
   #   extra_role: YourExtraRole
 
+  submodules:
+    geoserver:
+      online_url: https://github.com/kartoza/docker-geoserver
+      branch: 2.19.0
+
   env:
     FRONTEND_FRAMEWORK: angular
     ENABLE_ANGULAR_SSR: 0
@@ -34,9 +39,16 @@ variables:
     BROKER_PORT: 0
     BROKER_CATALOG_DIR: "/catalog"
 
+    CELERY_BROKER: RABBIT
+    CELERY_BACKEND: REDIS
+    CELERY_POOL_MODE: solo
+
     SET_CSP_IMG_SRC: "https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org"
     SET_CSP_FONT_SRC: https://netdna.bootstrapcdn.com
 
     RUN_SCHEMATHESIS: 0
     DATA_PATH: "/catalog/download"
     DATASETS_PATH: "/catalog/datasets"
+    CACHE_PATH: "/catalog/cache"
+    CARTOPY_DATA_DIR: "/cartopy"
+    MAPS_URL: "**PLACEHOLDER**"

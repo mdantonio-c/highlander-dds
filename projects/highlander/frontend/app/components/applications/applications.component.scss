@@ -1,0 +1,59 @@
+.flex-child {
+  width:22%;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.flex-child  img {
+  width:200px;
+  height: 200px;
+ 
+}
+
+.soil-erosion, .human-wellbeing, .water{
+  width:46%;
+}
+.flex-child h3, .category-
+title {
+  color:#1a7dc1;
+}
+
+.flex-child p{
+  text-align: justify;
+}
+
+.others .flex-child{
+  width:40%;
+}
+
+button {
+  background-color: #1a7dc1
+}
+
+
+@media  (max-width:1121px) {
+  .flex-child {
+    width: 45%;
+  }
+}
+
+@media (max-width:683px){
+  .flex-child {
+    width: 90%;
+  }
+
+  .category-box {
+    justify-content: center;
+  }
+}
+
+.fa-external-link-alt {
+  color: #1a7dc1;
+  margin-right: 10px;
+}
+/*.truncate { 
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}*/

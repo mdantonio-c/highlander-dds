@@ -1,14 +1,19 @@
-from typing import Optional
+import glob
+from pathlib import Path
+from typing import List, Optional
 
 from flask import send_from_directory
 from highlander.connectors import broker
 from highlander.constants import CATALOG_DIR
-from highlander.models.schemas import DatasetInfo, ProductInfo
+from highlander.exceptions import NotYetImplemented
+from highlander.models.schemas import DatasetInfo, DateStruct, ProductInfo
 from restapi import decorators
 from restapi.exceptions import NotFound
 from restapi.models import fields
 from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
+
+AVAILABLE_PERIODIC_PRODUCTS = ["crop-water:crop-water"]
 
 
 class Datasets(EndpointResource):
@@ -74,6 +79,49 @@ class DatasetProduct(EndpointResource):
         dds = broker.get_instance()
         data = dds.get_product_for_dataset(dataset_id, product_id)
         # log.debug(data)
+        return self.response(data)
+
+
+class DatasetProductReady(EndpointResource):
+    @decorators.endpoint(
+        path="/datasets/<dataset_id>/products/<product_id>/ready",
+        summary="Get the all available run periods for a specific dataset product",
+        responses={
+            200: "Run periods successfully retrieved",
+            404: "Periodic runs not available for specified dataset product",
+        },
+    )
+    @decorators.marshal_with(DateStruct(many=True), code=200)
+    def get(self, dataset_id: str, product_id: str) -> Response:
+        log.debug("Get RUN periods for <{}:{}>", dataset_id, product_id)
+        # check for valid periodic dataset products
+        if f"{dataset_id}:{product_id}" not in AVAILABLE_PERIODIC_PRODUCTS:
+            raise NotFound(
+                f"Periodic runs not available for <{dataset_id}:{product_id}>"
+            )
+
+        data: List[DateStruct] = []
+
+        dds = broker.get_instance()
+        url_path = dds.broker.catalog[dataset_id][product_id].urlpath
+
+        if dataset_id == "crop-water":
+            p = url_path.partition("monthlyForecast")
+            my_path = Path(p[0], p[1])
+            output = set()
+            for name in glob.glob(f"{my_path.as_posix()}/*"):
+                output.add(Path(name).name)
+            for val in sorted(output, reverse=True):
+                year, month, day = val.split("-")
+                data.append(
+                    DateStruct().dump(
+                        {"year": int(year), "month": int(month), "day": int(day)}
+                    )
+                )
+        else:
+            raise NotYetImplemented(
+                f"Extraction of 'run periods' for <{dataset_id}:{product_id}> NOT yet implemented"
+            )
         return self.response(data)
 
 
