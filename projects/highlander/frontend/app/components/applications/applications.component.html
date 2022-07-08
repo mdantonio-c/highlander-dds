@@ -11,37 +11,38 @@
       <a
         *ngIf="user; else notLogged"
         href="{{dataset.url}}"
+        target="_blank"
        >{{ dataset.label }}</a>
-       <i *ngIf="user; else notLogged" 
-       class="fas fa-external-link-alt"></i>
+       <i 
+       *ngIf="user; else notLogged" 
+        class="fas fa-external-link-alt"></i>
       <ng-template #notLogged>
               {{ dataset.label }}
       </ng-template>
     </h3>
-   <div>
+    <div>
       <p 
-        #collapse="ngbCollapse" 
-        [(ngbCollapse)]="isTruncate"
-        [class.truncate]="isTruncate"  
-        [id]="dataset.id"  
-        attr.aria-label="{{dataset.id}}">
-            {{dataset.description}}
+      #collapse="ngbCollapse" 
+      [(ngbCollapse)]="isTruncate"
+      [class.truncate]="isTruncate"  
+      [id]="dataset.id"  
+      attr.aria-label="{{dataset.id}}">
+          {{dataset.description}}
       </p>
       <p>
         <button 
-          type="button" 
-          role="toggle" 
-          class="btn btn-primary" (
-          click)="isTruncate=!isTruncate" 
-          [attr.aria-expanded]="!isCollapsed"
-          [attr.aria-controls]="dataset.id"
-          attr.data-target="{{dataset.id}}"
+        type="button" 
+        role="toggle" 
+        class="btn btn-primary" 
+        (click)="isTruncate=!isTruncate" 
+        [attr.aria-expanded]="!isCollapsed"
+        [attr.aria-controls]="dataset.id"
+        attr.data-target="{{dataset.id}}"
         >
-          Show full description
+        Show full description
         </button>
       </p>
     </div>
-
     <!--<p >
     {{dataset.description}}
    </p>
@@ -76,11 +77,11 @@
     </h3>
     <div>
       <p 
-        #collapse="ngbCollapse" 
-        [(ngbCollapse)]="isTruncate"
-        [class.truncate]="isTruncate"  
-        [id]="dataset.id" 
-        [innerHTML]="dataset.description"> 
+      #collapse="ngbCollapse" 
+      [(ngbCollapse)]="isTruncate"
+      [class.truncate]="isTruncate"  
+      [id]="dataset.id" 
+      [innerHTML]="dataset.description"> 
       </p>
       <p>
         <button 
@@ -122,11 +123,11 @@
     </h3>
     <div>
       <p 
-        #collapse="ngbCollapse" 
-        [(ngbCollapse)]="isTruncate"
-        [class.truncate]="isTruncate"  
-        [id]="dataset.id" 
-        [innerHTML]="dataset.description"> 
+      #collapse="ngbCollapse" 
+      [(ngbCollapse)]="isTruncate"
+      [class.truncate]="isTruncate"  
+      [id]="dataset.id" 
+      [innerHTML]="dataset.description"> 
       </p>
       <p>
         <button 
