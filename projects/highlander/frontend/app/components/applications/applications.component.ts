@@ -40,7 +40,8 @@ export class ApplicationsComponent implements OnInit {
     console.log("paneveggio", this.paneveggioApps);
     console.log("others", this.otherApps);
   }
-
+  
+  isCollapsed= true;
   isTruncate= true;
 }
 

@@ -17,7 +17,21 @@
               {{ dataset.label }}
       </ng-template>
     </h3>
-    <p >
+   <div>
+    <p #collapse="ngbCollapse" [(ngbCollapse)]="isTruncate"
+    [class.truncate]="isTruncate"  [id]="dataset.id">
+          {{dataset.description}}
+    </p>
+    <p>
+      <button type="button" role="toggle" class="btn btn-primary" (click)="isTruncate=!isTruncate" [attr.aria-expanded]="!isCollapsed"
+        [attr.aria-controls]="dataset.id"
+        attr.data-target="{{dataset.id}}">
+        Show full description
+      </button>
+    </p>
+    </div>
+
+    <!--<p >
     {{dataset.description}}
    </p>
    <p>
@@ -26,11 +40,7 @@
       href="{{dataset.url}}"
       >{{ dataset.label }}</a>
       <i class="fas fa-external-link-alt"></i>
-    </p>
-    <!--<button
-        class="btn btn-primary toggle"
-        (click)="isTruncate = !isTruncate;"
-      >Show full description</button>-->
+    </p>-->
   </div>
 </div>
 <div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
