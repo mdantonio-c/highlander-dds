@@ -13,11 +13,14 @@
 .soil-erosion, .human-wellbeing, .water{
   width:46%;
 }
-.flex-child h3, .category-
-title {
+
+.flex-child h3, .category-title {
   color:#1a7dc1;
 }
 
+.flex-child h3 {
+  font-size: 1.2rem;
+}
 .flex-child p{
   text-align: justify;
 }

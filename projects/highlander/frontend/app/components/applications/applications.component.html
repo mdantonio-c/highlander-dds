@@ -12,10 +12,9 @@
         *ngIf="user; else notLogged"
         href="{{dataset.url}}"
         target="_blank"
-       >{{ dataset.label }}</a>
-       <i 
-       *ngIf="user; else notLogged" 
-        class="fas fa-external-link-alt"></i>
+       >{{ dataset.label }} 
+       <i class="fas fa-external-link-alt"></i>
+      </a>
       <ng-template #notLogged>
               {{ dataset.label }}
       </ng-template>
@@ -72,7 +71,7 @@
           [state]="dataset"
        >{{ dataset.label }}</a>
       <ng-template #notLogged>
-              {{ dataset.label }}
+            {{ dataset.label }}
       </ng-template>
     </h3>
     <div>
