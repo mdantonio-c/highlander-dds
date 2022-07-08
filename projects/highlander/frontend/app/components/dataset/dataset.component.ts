@@ -117,4 +117,11 @@ export class DatasetComponent implements OnInit {
       this.jobSubmit(args);
     });
   }
+
+  changeProduct(newVal: ProductReference) {
+    console.log(`change product to ${newVal.id}`);
+    this.selectedProduct = this.dataset.products.find(
+      (e) => e.id === newVal.id
+    );
+  }
 }
