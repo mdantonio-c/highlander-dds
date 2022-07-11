@@ -6,14 +6,25 @@
     *ngIf="dataset.image"
   />
   <h3 class="mt-2 text-center text-uppercase">
-    <a
-      class="text-justify"
-      *ngIf="isLoggedIn; else notLogged"
-      href="{{ dataset.url }}"
-      target="_blank"
-      >{{ dataset.label }}
-      <i class="fas fa-external-link-alt"></i>
-    </a>
+    <ng-container *ngIf="isLoggedIn; else notLogged">
+      <a
+        *ngIf="dataset.url; else localUrl"
+        class="text-justify"
+        [href]="dataset.url"
+        target="_blank"
+        >{{ dataset.label }}
+        <i class="fas fa-external-link-alt"></i>
+      </a>
+      <ng-template #localUrl>
+        <a
+          href
+          [routerLink]="['../applications/' + dataset.id]"
+          [state]="dataset"
+          >{{ dataset.label }}
+        </a>
+      </ng-template>
+    </ng-container>
+
     <ng-template #notLogged>
       {{ dataset.label }}
     </ng-template>
