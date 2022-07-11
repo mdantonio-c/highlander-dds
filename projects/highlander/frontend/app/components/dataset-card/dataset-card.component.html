@@ -1,0 +1,43 @@
+<div class="dataset-card">
+  <img
+    src="/app/custom/assets/images/{{ dataset.image }}"
+    alt="no img"
+    class="mr-3 ml-3 mb-2 hld-preview-thumbnail"
+    *ngIf="dataset.image"
+  />
+  <h3 class="mt-2 text-center">
+    <a
+      *ngIf="isLoggedIn; else notLogged"
+      href="{{ dataset.url }}"
+      target="_blank"
+      >{{ dataset.label }}
+      <i class="fas fa-external-link-alt"></i>
+    </a>
+    <ng-template #notLogged>
+      {{ dataset.label }}
+    </ng-template>
+  </h3>
+  <div>
+    <p
+      #collapse="ngbCollapse"
+      [(ngbCollapse)]="isTruncate"
+      [class.truncate]="isTruncate"
+      [id]="dataset.id"
+      [attr.aria-label]="dataset.id"
+      [innerHTML]="dataset.description"
+    ></p>
+    <p class="text-center">
+      <button
+        type="button"
+        role="toggle"
+        class="btn btn-primary btn-sm"
+        (click)="isTruncate = !isTruncate"
+        [attr.aria-expanded]="!isCollapsed"
+        [attr.aria-controls]="dataset.id"
+        [attr.data-target]="dataset.id"
+      >
+        Show full description
+      </button>
+    </p>
+  </div>
+</div>

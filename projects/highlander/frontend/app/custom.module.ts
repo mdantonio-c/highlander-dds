@@ -10,6 +10,7 @@ import { NgxChartsModule } from "@swimlane/ngx-charts";
 
 import { DatasetsComponent } from "./components/datasets/datasets.component";
 import { ApplicationsComponent } from "./components/applications/applications.component";
+import { DatasetCardComponent } from "./components/dataset-card/dataset-card.component";
 import { DatasetComponent } from "./components/dataset/dataset.component";
 import { DataExtractionModalComponent } from "./components/data-extraction-modal/data-extraction-modal.component";
 import { SpatialCoverageComponent } from "./components/data-extraction-modal/spatial-coverage/spatial-coverage.component";
@@ -65,6 +66,7 @@ const routes: Routes = [
   declarations: [
     DatasetsComponent,
     ApplicationsComponent,
+    DatasetCardComponent,
     DatasetComponent,
     DataExtractionModalComponent,
     SpatialCoverageComponent,

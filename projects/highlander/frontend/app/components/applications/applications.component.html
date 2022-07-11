@@ -1,189 +1,43 @@
-<div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
-  <h2 class="category-title mt-3 w-100" *ngIf="paneveggioApps"> Paneveggio Parks Management</h2>
+<hr class="m-0" />
+<div
+  class="category-box border-bottom d-flex p-2 justify-content-evenly flex-wrap"
+  *ngIf="paneveggioApps && paneveggioApps.length"
+>
+  <h2 class="category-title mt-3 w-100">Paneveggio Parks Management</h2>
   <div class="flex-child my-3 mx-3" *ngFor="let dataset of paneveggioApps">
-    <img
-          src="/app/custom/assets/images/{{dataset.image}}"
-          alt="no img"
-          class="mr-3 ml-3 mb-2 hld-preview-thumbnail"
-          *ngIf="dataset.image"
-    />
-    <h3 class="mt-2 text-center">
-      <a
-        *ngIf="user; else notLogged"
-        href="{{dataset.url}}"
-        target="_blank"
-       >{{ dataset.label }} 
-       <i class="fas fa-external-link-alt"></i>
-      </a>
-      <ng-template #notLogged>
-              {{ dataset.label }}
-      </ng-template>
-    </h3>
-    <div>
-      <p 
-      #collapse="ngbCollapse" 
-      [(ngbCollapse)]="isTruncate"
-      [class.truncate]="isTruncate"  
-      [id]="dataset.id"  
-      attr.aria-label="{{dataset.id}}">
-          {{dataset.description}}
-      </p>
-      <p class="text-center">
-        <button 
-        type="button" 
-        role="toggle" 
-        class="btn btn-primary btn-sm" 
-        (click)="isTruncate=!isTruncate" 
-        [attr.aria-expanded]="!isCollapsed"
-        [attr.aria-controls]="dataset.id"
-        attr.data-target="{{dataset.id}}"
-        >
-        Show full description
-        </button>
-      </p>
-    </div>
-    <!--<p >
-    {{dataset.description}}
-   </p>
-   <p>
-      <a
-      *ngIf="dataset.url"
-      href="{{dataset.url}}"
-      >{{ dataset.label }}</a>
-      <i class="fas fa-external-link-alt"></i>
-    </p>-->
+    <hld-dataset-card
+      [dataset]="dataset"
+      [isLoggedIn]="user || false"
+    ></hld-dataset-card>
   </div>
 </div>
-<div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
-  <h2 class="category-title mt-3 w-100 " *ngIf="waterApps"> Water</h2>
-  <div class="flex-child my-3 mx-3 {{dataset.category}}" *ngFor="let dataset of waterApps">
-    <img
-          src="/app/custom/assets/images/{{dataset.image}}"
-          alt="no img"
-          class="mr-3 ml-3 mb-2 hld-preview-thumbnail"
-          *ngIf="dataset.image"
-    />
-    <h3 class="mt-2 text-center">
-      <a
-        *ngIf="user; else notLogged"
-        href
-          [routerLink]="['../applications/' + dataset.id]"
-          [state]="dataset"
-       >{{ dataset.label }}</a>
-      <ng-template #notLogged>
-            {{ dataset.label }}
-      </ng-template>
-    </h3>
-    <div class="container">
-      <p 
-      #collapse="ngbCollapse" 
-      [(ngbCollapse)]="isTruncate"
-      [class.truncate]="isTruncate"  
-      [id]="dataset.id" 
-      [innerHTML]="dataset.description"> 
-      </p>
-      <p class="text-center">
-        <button 
-          type="button" 
-          role="toggle" 
-          class="btn btn-primary btn-sm" 
-          (click)="isTruncate=!isTruncate" 
-          [attr.aria-expanded]="!isCollapsed"
-          attr.aria-controls="{{dataset.id}}"
-          attr.data-target="{{dataset.id}}">
-          Show full description
-        </button>
-      </p>
-    </div>
-    <!--<p 
-    [innerHTML]="dataset.description"
-    ></p>-->
+<div
+  class="category-box border-bottom d-flex p-2 justify-content-evenly flex-wrap"
+  *ngIf="waterApps && waterApps.length"
+>
+  <h2 class="category-title mt-3 w-100">Water</h2>
+  <div
+    class="flex-child my-3 mx-3 {{ dataset.category }}"
+    *ngFor="let dataset of waterApps"
+  >
+    <hld-dataset-card
+      [dataset]="dataset"
+      [isLoggedIn]="user || false"
+    ></hld-dataset-card>
   </div>
 </div>
-<div class="category-box border-bottom border-top d-flex p-2 justify-content-evenly flex-wrap">
-  <h2 class="category-title mt-3 w-100" *ngIf="otherApps"> Other</h2>
-  <div class="flex-child my-3 mx-3 {{dataset.id}}" *ngFor="let dataset of otherApps">
-    <img
-          src="/app/custom/assets/images/{{dataset.image}}"
-          alt="no img"
-          class="mr-3 mb-2 hld-preview-thumbnail"
-          *ngIf="dataset.image"
-    />
-    <h3 class="mt-2 text-center">
-      <a
-        *ngIf="user; else notLogged"
-        href
-          [routerLink]="['../applications/' + dataset.id]"
-          [state]="dataset"
-       >{{ dataset.label }}</a>
-      <ng-template #notLogged>
-              {{ dataset.label }}
-      </ng-template>
-    </h3>
-    <div class="container">
-      <p 
-      #collapse="ngbCollapse" 
-      [(ngbCollapse)]="isTruncate"
-      [class.truncate]="isTruncate"  
-      [id]="dataset.id" 
-      [innerHTML]="dataset.description"> 
-      </p>
-      <p class="text-center">
-        <button 
-          type="button" 
-          role="toggle" 
-          class="btn btn-primary btn-sm" 
-          (click)="isTruncate=!isTruncate" 
-          [attr.aria-expanded]="!isCollapsed"
-          attr.aria-controls="{{dataset.id}}"
-          attr.data-target="{{dataset.id}}">
-          Show full description
-        </button>
-      </p>
-    </div>
-    <!--<p [innerHTML]="dataset.description"></p>-->
+<div
+  class="category-box border-bottom d-flex p-2 justify-content-evenly flex-wrap"
+  *ngIf="otherApps && otherApps.length"
+>
+  <h2 class="category-title mt-3 w-100">Other</h2>
+  <div
+    class="flex-child my-3 mx-3 {{ dataset.id }}"
+    *ngFor="let dataset of otherApps"
+  >
+    <hld-dataset-card
+      [dataset]="dataset"
+      [isLoggedIn]="user || false"
+    ></hld-dataset-card>
   </div>
 </div>
-
-  <!--
-  <div class="search-result" *ngFor="let dataset of datasets">
-    <div class="row">
-      <div class="col">
-        <div class="d-flex">
-          <div class="text-justify mb-0">
-            <img
-                src="{{
-                        backendURI + '/api/datasets/' + dataset.id + '/image'
-                      }}"
-                alt="no img"
-                style="float: left; width: 280px"
-                class="mr-3 mb-2 hld-preview-thumbnail"
-                *ngIf="dataset.image"
-            />
-            <h3>
-              <a
-                  *ngIf="user; else notLogged"
-                  href
-                  [routerLink]="['../applications/' + dataset.id]"
-                  [state]="dataset"
-              >{{ dataset.label }}</a
-              >
-              <ng-template #notLogged>
-                {{ dataset.label }}
-              </ng-template>
-            </h3>
-            <ng-container *ngIf="dataset.description">
-              <div class="description-container">
-                <i class="fa fa-quote-left fa-gray mr-2"></i>
-                <p
-                    [innerHTML]="dataset.description"
-                    class="text d-inline"
-                ></p>
-              </div>
-            </ng-container>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>-->
