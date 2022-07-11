@@ -10,23 +10,19 @@
  
 }
 
-.soil-erosion, .human-wellbeing, .water{
-  width:46%;
-}
 
 .flex-child h3, .category-title {
   color:#1a7dc1;
 }
 
 .flex-child h3 {
-  font-size: 1.2rem;
-}
-.flex-child p{
-  text-align: justify;
+  font-size: 1rem;
+  min-height: 38px;
 }
 
-.others .flex-child{
-  width:40%;
+.flex-child p{
+  text-align: justify;
+  font-size: 14px;
 }
 
 button {
@@ -53,6 +49,7 @@ button {
 .fa-external-link-alt {
   color: #1a7dc1;
   margin-left: 5px;
+  font-size: 1rem;
 }
 
 .truncate {
@@ -60,7 +57,6 @@ button {
   position: relative;
   max-height: calc(var(--lh) * var(--max-lines));
   overflow: hidden;
-  padding-right: 1rem; /* space for ellipsis */
   hyphens: auto;
   display: -webkit-box;
   -webkit-line-clamp: var(--line-clamp, 3);

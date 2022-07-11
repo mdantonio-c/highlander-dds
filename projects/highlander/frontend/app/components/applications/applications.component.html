@@ -4,7 +4,7 @@
     <img
           src="/app/custom/assets/images/{{dataset.image}}"
           alt="no img"
-          class="mr-3 mb-2 hld-preview-thumbnail"
+          class="mr-3 ml-3 mb-2 hld-preview-thumbnail"
           *ngIf="dataset.image"
     />
     <h3 class="mt-2 text-center">
@@ -28,11 +28,11 @@
       attr.aria-label="{{dataset.id}}">
           {{dataset.description}}
       </p>
-      <p>
+      <p class="text-center">
         <button 
         type="button" 
         role="toggle" 
-        class="btn btn-primary" 
+        class="btn btn-primary btn-sm" 
         (click)="isTruncate=!isTruncate" 
         [attr.aria-expanded]="!isCollapsed"
         [attr.aria-controls]="dataset.id"
@@ -60,7 +60,7 @@
     <img
           src="/app/custom/assets/images/{{dataset.image}}"
           alt="no img"
-          class="mr-3 mb-2 hld-preview-thumbnail"
+          class="mr-3 ml-3 mb-2 hld-preview-thumbnail"
           *ngIf="dataset.image"
     />
     <h3 class="mt-2 text-center">
@@ -74,7 +74,7 @@
             {{ dataset.label }}
       </ng-template>
     </h3>
-    <div>
+    <div class="container">
       <p 
       #collapse="ngbCollapse" 
       [(ngbCollapse)]="isTruncate"
@@ -82,11 +82,11 @@
       [id]="dataset.id" 
       [innerHTML]="dataset.description"> 
       </p>
-      <p>
+      <p class="text-center">
         <button 
           type="button" 
           role="toggle" 
-          class="btn btn-primary" 
+          class="btn btn-primary btn-sm" 
           (click)="isTruncate=!isTruncate" 
           [attr.aria-expanded]="!isCollapsed"
           attr.aria-controls="{{dataset.id}}"
@@ -120,7 +120,7 @@
               {{ dataset.label }}
       </ng-template>
     </h3>
-    <div>
+    <div class="container">
       <p 
       #collapse="ngbCollapse" 
       [(ngbCollapse)]="isTruncate"
@@ -128,11 +128,11 @@
       [id]="dataset.id" 
       [innerHTML]="dataset.description"> 
       </p>
-      <p>
+      <p class="text-center">
         <button 
           type="button" 
           role="toggle" 
-          class="btn btn-primary" 
+          class="btn btn-primary btn-sm" 
           (click)="isTruncate=!isTruncate" 
           [attr.aria-expanded]="!isCollapsed"
           attr.aria-controls="{{dataset.id}}"
