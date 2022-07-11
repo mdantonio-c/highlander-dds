@@ -5,8 +5,9 @@
     class="mr-3 ml-3 mb-2 hld-preview-thumbnail"
     *ngIf="dataset.image"
   />
-  <h3 class="mt-2 text-center">
+  <h3 class="mt-2 text-center text-uppercase">
     <a
+      class="text-justify"
       *ngIf="isLoggedIn; else notLogged"
       href="{{ dataset.url }}"
       target="_blank"
