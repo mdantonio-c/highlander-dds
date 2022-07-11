@@ -10,111 +10,136 @@
     <div class="col-12">
       <h2>{{ dataset.label }}</h2>
     </div>
-    <div class="col-md-8">
-      <hr />
+    <div class="w-100">
       <div class="mb-4">
-        <p class="text-justify mb-0">
+        <p class="text-justify mb-0 d-flex p-2">
           <img
-            src="{{ backendURI + '/api/datasets/' + dataset.id + '/image' }}"
+            src="/app/custom/assets/images/{{ dataset.image }}"
             alt="no img"
-            class="mb-3 w-100"
+            class="mb-3 mr-3 mt-3 dataset-image"
             *ngIf="dataset.image"
           />
-          <span [innerHTML]="dataset.description" class="text"></span>
+          <span [innerHTML]="dataset.description" class="text mt-3"></span>
         </p>
       </div>
-      <div class="form-group">
-        <h3>Product(s)</h3>
-        <ng-select
-          [items]="dataset.products"
-          class="disable-clear-all"
-          [clearable]="false"
-          [searchable]="false"
-          bindLabel="description"
-          [(ngModel)]="selectedProduct"
-        >
-        </ng-select>
-      </div>
-      <table class="table table-sm table-hover table-condensed">
-        <tbody>
-          <tr *ngFor="let v of selectedProduct.variables">
-            <th>{{ v.label }}</th>
-            <td>{{ v?.units }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <h3>Attribution</h3>
-      <p [innerHTML]="dataset.attribution"></p>
-    </div>
-    <div class="col-md-4 mb-5">
-      <hr />
-      <h3>Contact</h3>
-      <address class="mb-0">
-        <strong>{{ dataset.contact.name }}</strong>
-        <br />
-        <span class="text-truncate">
-          <i class="fas fa-envelope"></i>
-          {{ dataset.contact.email }}
-        </span>
-        <br />
-        <div *ngIf="dataset.contact.webpage" class="text-nowrap text-truncate">
-          <i class="fas fa-globe"></i>
-          <a [href]="dataset.contact.webpage" target="_blank" class="ml-1">{{
-            dataset.contact.webpage
-          }}</a>
+      <div class="d-flex border-top border-bottom">
+        <hr />
+        <div class="w-75 mt-3">
+          <div class="form-group">
+            <h3>Product(s)</h3>
+            <ng-container
+              *ngIf="
+                dataset.products && dataset.products.length > 1;
+                else singleProduct
+              "
+            >
+              <div class="form-check" *ngFor="let p of dataset.products">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  [checked]="selectedProduct.id === p.id"
+                  [id]="p.id"
+                  (change)="changeProduct(p)"
+                />
+                <label class="form-check-label" [for]="p.id">
+                  {{ p.description }}
+                </label>
+              </div>
+            </ng-container>
+
+            <ng-template #singleProduct>
+              <span>{{ dataset.products[0].description }}</span>
+            </ng-template>
+            <span *ngIf="!dataset.products"> No Products </span>
+          </div>
+          <table class="table table-sm table-hover table-condensed p-2">
+            <tbody>
+              <tr *ngFor="let v of selectedProduct.variables">
+                <th>{{ v.label }}</th>
+                <td>{{ v?.units }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <button
+            type="button"
+            class="btn btn-primary btn-lg"
+            *ngIf="user"
+            (click)="openDataExtractionModal()"
+          >
+            Get Data »
+          </button>
         </div>
-        <br />
-      </address>
-      <h3 class="m-0">Publication Date</h3>
-      <p>{{ dataset.publication_date | date }}</p>
-      <ng-container *ngIf="dataset.license">
-        <h3 class="m-0">License</h3>
-        <ng-container
-          [ngTemplateOutlet]="dataset.license.url ? simpleLink : plainName"
-          [ngTemplateOutletContext]="{
-            link: dataset.license.url,
-            name: dataset.license.name
-          }"
-        >
-        </ng-container>
-      </ng-container>
-      <h3 class="m-0">Update frequency</h3>
-      <p>{{ dataset.update_frequency || "n/a" }}</p>
-      <ng-container *ngIf="dataset.doi">
-        <h3 class="m-0">DOI</h3>
-        <p>
-          <a [href]="'https://doi.org/' + dataset.doi" target="_blank">
-            https://doi.org/{{ dataset.doi }}</a
-          >
-        </p>
-      </ng-container>
-      <ng-container *ngIf="dataset.related_data && dataset.related_data.length">
-        <h3 class="m-0">Related Data</h3>
-        <div class="d-block" *ngFor="let link of dataset.related_data">
-          <ng-container
-            [ngTemplateOutlet]="link.url ? simpleLink : plainName"
-            [ngTemplateOutletContext]="{ link: link.url, name: link.name }"
-          >
+        <div class="mb-3 ml-5 w-25 mt-3">
+          <h3>Contact</h3>
+          <address class="mb-0">
+            <strong>{{ dataset.contact.name }}</strong>
+            <br />
+            <span class="text-truncate">
+              <i class="fas fa-envelope"></i>
+              {{ dataset.contact.email }}
+            </span>
+            <br />
+            <div
+              *ngIf="dataset.contact.webpage"
+              class="text-nowrap text-truncate"
+            >
+              <i class="fas fa-globe"></i>
+              <a
+                [href]="dataset.contact.webpage"
+                target="_blank"
+                class="ml-1"
+                >{{ dataset.contact.webpage }}</a
+              >
+            </div>
+            <br />
+          </address>
+          <h3 class="m-0">Publication Date</h3>
+          <p>{{ dataset.publication_date | date }}</p>
+          <ng-container *ngIf="dataset.license">
+            <h3 class="m-0">License</h3>
+            <ng-container
+              [ngTemplateOutlet]="dataset.license.url ? simpleLink : plainName"
+              [ngTemplateOutletContext]="{
+                link: dataset.license.url,
+                name: dataset.license.name
+              }"
+            >
+            </ng-container>
           </ng-container>
+          <h3 class="m-0">Update frequency</h3>
+          <p>{{ dataset.update_frequency || "n/a" }}</p>
+          <ng-container *ngIf="dataset.doi">
+            <h3 class="m-0">DOI</h3>
+            <p>
+              <a [href]="'https://doi.org/' + dataset.doi" target="_blank">
+                https://doi.org/{{ dataset.doi }}</a
+              >
+            </p>
+          </ng-container>
+          <ng-container
+            *ngIf="dataset.related_data && dataset.related_data.length"
+          >
+            <h3 class="m-0">Related Data</h3>
+            <div class="d-block" *ngFor="let link of dataset.related_data">
+              <ng-container
+                [ngTemplateOutlet]="link.url ? simpleLink : plainName"
+                [ngTemplateOutletContext]="{ link: link.url, name: link.name }"
+              >
+              </ng-container>
+            </div>
+          </ng-container>
+          <ng-template #plainName let-name="name">
+            <p>{{ name }}</p>
+          </ng-template>
+          <ng-template #simpleLink let-name="name" let-link="link">
+            <p>
+              <a [href]="link" target="_blank">{{ name }}</a>
+            </p>
+          </ng-template>
         </div>
-      </ng-container>
-      <hr />
-      <button
-        type="button"
-        class="btn btn-primary btn-lg"
-        *ngIf="user"
-        (click)="openDataExtractionModal()"
-      >
-        Get Data »
-      </button>
-      <ng-template #plainName let-name="name">
-        <p>{{ name }}</p>
-      </ng-template>
-      <ng-template #simpleLink let-name="name" let-link="link">
-        <p>
-          <a [href]="link" target="_blank">{{ name }}</a>
-        </p>
-      </ng-template>
+      </div>
     </div>
+    <h3 class="mt-5">Attribution</h3>
+    <p [innerHTML]="dataset.attribution"></p>
   </div>
 </div>

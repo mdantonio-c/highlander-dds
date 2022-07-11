@@ -233,3 +233,11 @@ input[type="checkbox"]:checked {
   border: 7px solid #1a7dc1;
   border-radius: 7px;
 }
+
+
+/*custom dataset page*/
+.dataset-image {
+  object-fit: cover;
+  width: 400px;
+  height: auto;
+}

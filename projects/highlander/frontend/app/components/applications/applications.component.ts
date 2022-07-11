@@ -2,8 +2,6 @@ import { Component, OnInit, Input } from "@angular/core";
 import { DatasetInfo } from "../../types";
 import { User } from "@rapydo/types";
 import { environment } from "@rapydo/../environments/environment";
-import {Directive, HostListener} from "@angular/core";
-
 
 @Component({
   selector: "hld-applications",
@@ -22,7 +20,6 @@ export class ApplicationsComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    console.log("init applications");
     this.datasets.forEach((ds) => {
       const category = ds.category?.toLowerCase() || null;
       switch (category) {
@@ -36,11 +33,8 @@ export class ApplicationsComponent implements OnInit {
           this.otherApps.push(ds);
       }
     });
-    console.log("water", this.waterApps);
+    /*console.log("water", this.waterApps);
     console.log("paneveggio", this.paneveggioApps);
-    console.log("others", this.otherApps);
+    console.log("others", this.otherApps);*/
   }
-
-  isTruncate= true;
 }
-
