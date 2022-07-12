@@ -14,7 +14,7 @@ RUN apt-get update -qq \
     && apt-get install --yes libproj-dev proj-data proj-bin libgeos-dev \
     && pip3 install --upgrade --no-cache-dir Cython \
     # the latest version has problems with PROJ version
-    && pip3 install --upgrade --no-cache-dir Cartopy==0.18.0  \
+    && pip3 install --upgrade --no-cache-dir Cartopy \
     && apt-get autoremove --yes && apt-get clean
 
 # prepare the cartopy data dir
