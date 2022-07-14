@@ -8,6 +8,7 @@ import { DataService } from "../../services/data.service";
 @Component({
   selector: "app-dapos",
   templateUrl: "./dapos.component.html",
+  styleUrls: ["./dapos.component.scss"],
 })
 export class DaposComponent {
   dataset: DatasetInfo;

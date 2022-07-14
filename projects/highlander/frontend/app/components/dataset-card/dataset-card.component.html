@@ -2,7 +2,7 @@
   <img
     src="/app/custom/assets/images/{{ dataset.image }}"
     alt="no img"
-    class="mr-3 ml-3 mb-2 hld-preview-thumbnail"
+    class="me-3 ms-3 mb-2 hld-preview-thumbnail"
     *ngIf="dataset.image"
   />
   <h3 class="mt-2 text-center text-uppercase">
@@ -13,7 +13,7 @@
         [href]="dataset.url"
         target="_blank"
         >{{ dataset.label }}
-        <i class="fas fa-external-link-alt"></i>
+        <i class="fas fa-up-right-from-square"></i>
       </a>
       <ng-template #localUrl>
         <a

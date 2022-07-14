@@ -16,7 +16,7 @@
           *ngIf="spatialForm.get('coverageType').value === 'area'"
           @openClose
         >
-          <div class="form-group">
+          <div class="content-item">
             <label for="north"
               >North
               <!--<small>({{initialArea.north}})</small>--></label
@@ -31,7 +31,7 @@
               [readonly]="!editable"
             />
           </div>
-          <div class="form-group">
+          <div class="content-item">
             <label for="east"
               >East
               <!--<small>({{initialArea.east}})</small>--></label
@@ -46,7 +46,7 @@
               [readonly]="!editable"
             />
           </div>
-          <div class="form-group">
+          <div class="content-item">
             <label for="south"
               >South
               <!--<small>({{initialArea.south}})</small>--></label
@@ -61,7 +61,7 @@
               [readonly]="!editable"
             />
           </div>
-          <div class="form-group">
+          <div class="content-item">
             <label for="west"
               >West
               <!--<small>({{initialArea.west}})</small>--></label
@@ -78,7 +78,7 @@
           </div>
           <div class="d-flex mt-2">
             <button
-              class="btn btn-sm btn-secondary float-right"
+              class="btn btn-sm btn-secondary float-end"
               [disabled]="isWholeAreaSelected()"
               (click)="resetArea()"
             >
@@ -89,7 +89,7 @@
       </section>
       <section>
         <h6 class="title">
-          <i class="fas fa-map-marked-alt"></i>Location
+          <i class="fas fa-map-location-dot"></i>Location
           <input
             type="radio"
             name="coverageType"
@@ -102,7 +102,7 @@
           *ngIf="spatialForm.get('coverageType').value === 'location'"
           @openClose
         >
-          <div class="form-group">
+          <div class="content-item">
             <label for="lat">Latitude</label>
             <input
               type="number"
@@ -111,7 +111,7 @@
               formControlName="lat"
             />
           </div>
-          <div class="form-group">
+          <div class="content-item">
             <label for="lon">Longitude</label>
             <input
               type="number"
