@@ -2,22 +2,22 @@
   <div *ngFor="let dateType of date_list.details['widgets']" class="col-12">
     <div class="row mb-3">
       <div class="col-12 px-0">
-        <h6 class="text-muted font-weight-bold">
+        <h6 class="text-muted fw-bold">
           {{ dateType }}
         </h6>
       </div>
       <div
-        class="custom-control custom-checkbox col-sm-6 col-md-3"
+        class="form-check col-sm-6 col-md-3"
         *ngFor="let v of getWidget(dateType).details['values']"
       >
         <input
           [id]="dateType + '_' + v.value"
           [value]="v.value"
           type="checkbox"
-          class="custom-control-input"
+          class="form-check-input"
           (change)="onListChange($event, 'time_' + dateType)"
         />
-        <label [for]="dateType + '_' + v.value" class="custom-control-label">{{
+        <label [for]="dateType + '_' + v.value" class="form-check-label">{{
           v.label
         }}</label>
       </div>

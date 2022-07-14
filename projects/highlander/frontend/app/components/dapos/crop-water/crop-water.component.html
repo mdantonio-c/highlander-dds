@@ -1,5 +1,5 @@
 <div class="container-fluid px-4">
-  <div class="row no-gutters">
+  <div class="row g-0">
     <div class="col-12">
       <hr class="mt-1 mb-3" />
     </div>
@@ -11,7 +11,7 @@
         (onFilterChange)="applyFilter($event)"
       ></crop-water-filter>
     </div>
-    <div class="col pl-3">
+    <div class="col ps-3">
       <div id="map-wrapper" class="fill" style="position: relative">
         <ngx-spinner
           bdColor="rgba(255,255,255,0.8)"
@@ -32,22 +32,20 @@
           <div class="leaflet-bottom leaflet-left">
             <div class="leaflet-control">
               <button class="btn btn-light btn-sm" (click)="loadGeoData()">
-                <i class="fa fa-sync"></i>
+                <i class="fa fa-arrows-rotate"></i>
               </button>
             </div>
           </div>
           -->
           <!-- Period -->
-          <div class="leaflet-top leaflet-right mb-4 mt-2 mr-1">
+          <div class="leaflet-top leaflet-right mb-4 mt-2 me-1">
             <div class="leaflet-box leaflet-control" event-stop-propagation>
-              <div class="form-group" *ngIf="filter?.period">
-                <label for="selectPeriod" class="mb-0 font-weight-bold"
-                  >Period:</label
-                >
+              <div class="mb-3" *ngIf="filter?.period">
+                <label for="selectPeriod" class="mb-0 fw-bold">Period:</label>
                 <select
                   [(ngModel)]="selectedPeriod"
                   id="selectPeriod"
-                  class="form-control form-control-sm"
+                  class="form-select form-control-sm"
                   (ngModelChange)="onPeriodChange($event)"
                   [compareWith]="isSamePeriod"
                 >
@@ -63,13 +61,13 @@
           </div>
 
           <!-- Zoom Level -->
-          <!--<div class="leaflet-bottom leaflet-right mb-4 mr-1">
+          <!--<div class="leaflet-bottom leaflet-right mb-4 me-1">
             <div class="leaflet-box leaflet-control" event-stop-propagation>
               Zoom Level:
-              <span class="font-weight-bold">{{ zoom }}</span>
+              <span class="fw-bold">{{ zoom }}</span>
               <br />
               Center:
-              <span class="font-weight-bold"
+              <span class="fw-bold"
                 >{{ center.lat | number: "1.1-5" }},
                 {{ center.lng | number: "1.1-5" }}</span
               >

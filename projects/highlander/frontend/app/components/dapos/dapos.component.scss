@@ -1,0 +1,9 @@
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #e9ecef;
+
+  .breadcrumb-item a {
+    color: #1a7dc1;
+  }
+}
