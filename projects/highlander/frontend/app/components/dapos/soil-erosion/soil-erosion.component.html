@@ -1,5 +1,5 @@
 <div class="container-fluid px-4">
-  <div class="row no-gutters">
+  <div class="row g-0">
     <div class="col-12">
       <hr class="mt-1 mb-3" />
     </div>
@@ -44,10 +44,10 @@
           (leafletMapZoomEnd)="onMapZoomEnd($event)"
         >
           <!-- Period -->
-          <div class="leaflet-bottom leaflet-right mb-4 mr-1">
+          <div class="leaflet-bottom leaflet-right mb-4 me-1">
             <div class="leaflet-box">
               Period:
-              <span class="font-weight-bold">1991-2020</span>
+              <span class="fw-bold">1991-2020</span>
             </div>
           </div>
           <!--<div class="leaflet-top leaflet-right">
@@ -104,7 +104,7 @@
           <div class="px-2">
             <button
               type="button"
-              class="btn btn-sm float-right"
+              class="btn btn-sm float-end"
               (click)="closeDetails()"
               [attr.aria-expanded]="!isPanelCollapsed"
             >

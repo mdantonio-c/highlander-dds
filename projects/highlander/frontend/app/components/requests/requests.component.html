@@ -32,10 +32,10 @@
         ngx-datatable-row-detail-template
       >
         <div>
-          <div class="mr-2">
+          <div class="me-2">
             <strong>Request Details</strong>
             <div
-              class="btn-group btn-group-sm float-right"
+              class="btn-group btn-group-sm float-end"
               role="group"
               *ngIf="row.args | json as prettierJSON"
             >
@@ -58,7 +58,7 @@
                 container="body"
                 [ngbTooltip]="tipDownloadContent"
               >
-                <i class="fas fa-file-download"></i>
+                <i class="fas fa-file-arrow-down"></i>
               </button>
             </div>
             <div>Task ID: {{ row.task_id }}</div>
@@ -125,7 +125,7 @@
                             }}&maxlat={{ row.args.area.north }}"
                             target="_blank"
                           >
-                            <i class="fas fa-external-link-alt"></i>
+                            <i class="fas fa-up-right-from-square"></i>
                           </a>
                         </li>
                       </ul>
@@ -189,7 +189,7 @@
       <ng-template let-column="column" ngx-datatable-header-template>
         <span
           ><i
-            class="fa fa-sync clickable"
+            class="fa fa-arrows-rotate clickable"
             aria-hidden="true"
             (click)="list()"
           ></i
@@ -286,11 +286,11 @@
     >
       <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
         <span
-          class="badge badge-secondary"
+          class="badge bg-secondary"
           [ngClass]="{
-            'badge-success': row.status == 'SUCCESS',
-            'badge-danger': row.status == 'FAILURE',
-            'badge-info': row.status == 'PENDING'
+            'bg-success': row.status == 'SUCCESS',
+            'bg-danger': row.status == 'FAILURE',
+            'bg-info': row.status == 'PENDING'
           }"
           [ngbTooltip]="row.status == 'FAILURE' ? tipContent : ''"
           placement="left"
@@ -313,9 +313,9 @@
     >
       <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
         <div class="btn-toolbar justify-content-end" role="toolbar">
-          <div class="btn-group mr-1" role="group">
+          <div class="btn-group me-1" role="group">
             <button
-              class="btn p-0 mr-1"
+              class="btn p-0 me-1"
               *ngIf="row.status == 'SUCCESS' && row.output_file"
               (click)="downloadByUrl(row.output_file)"
             >

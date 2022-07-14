@@ -10,8 +10,7 @@ body {
 }
 
 h2,
-h3,
-a {
+h3 {
   color: #1a7dc1 !important;
 }
 
@@ -43,7 +42,9 @@ h2 {
 
 .nav-link {
   text-transform: uppercase;
-
+  &:not(.active) {
+    color: #1a7dc1 !important;
+  }
   &.active {
     color: #1e9a2f !important;
     border-bottom: solid 2px #1e9a2f;
@@ -59,11 +60,22 @@ h2 {
   padding: 1.6rem 1.5%;
 }
 
+.btn-link:hover,
+.btn-link:focus,
+a {
+  text-decoration: none;
+  outline: none;
+  border: 0;
+}
+
 .btn:focus,
 .btn:active,
+.form-select:focus,
 .form-control:focus,
 .btn-reset:focus,
 .btn-reset:active,
+.btn-close:focus,
+.btn-close:active,
 input[type="file"]:focus {
   outline: none !important;
   box-shadow: none;
@@ -86,13 +98,13 @@ input[type="file"]:focus {
   border-radius: 0.35rem;
   border: 0.25rem solid #e0e5ec;
   .hl-preview-content {
-    padding: 1.5rem;
+    padding: 1rem 1.5rem;
     border-bottom: 1px solid #e0e5ec;
     position: relative;
   }
 }
 
-.custom-control {
+/*.custom-control {
   position: relative;
   z-index: 1;
   display: block;
@@ -100,20 +112,20 @@ input[type="file"]:focus {
   padding-left: 1.5rem;
   -webkit-print-color-adjust: exact;
   color-adjust: exact;
-}
+}*/
 input[type="checkbox"],
 input[type="radio"] {
   box-sizing: border-box;
   padding: 0;
 }
-.custom-control-input {
+/*.custom-control-input {
   position: absolute;
   left: 0;
   z-index: -1;
   width: 1rem;
   height: 1.25rem;
   opacity: 0;
-}
+}*/
 
 /* Custom ngx-datatable styles */
 /* --------------------------- */
@@ -204,27 +216,24 @@ a.ng-star-inserted {
 
 /*buttons & checkbox/radio*/
 
-button.close:focus-visible {
-  outline: none;
-}
-
 .leaflet-control-zoom-out,
 .leaflet-control-zoom-in {
   border-radius: 25px !important;
   border: 2px solid rgba(0, 0, 0, 0.2);
+  color: #1a7dc1 !important;
 }
 
-.leaflet-touch .leaflet-bar a {
+/*.leaflet-touch .leaflet-bar a {
   margin-bottom: 2px;
   width: 34px !important;
   height: 33px !important;
   line-height: 29px;
-}
+}*/
 .leaflet-control-zoom {
   border: none !important;
 }
 
-input[type="radio"]:checked,
+/*input[type="radio"]:checked,
 input[type="checkbox"]:checked {
   color: #1a7dc1 !important;
   background-color: #1a7dc1 !important;
@@ -232,8 +241,7 @@ input[type="checkbox"]:checked {
   appearance: none;
   border: 7px solid #1a7dc1;
   border-radius: 7px;
-}
-
+}*/
 
 /*custom dataset page*/
 .dataset-image {
