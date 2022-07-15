@@ -14,6 +14,7 @@ import { CropDetailsComponent } from "./crop-details/crop-details.component";
 
 const MAX_ZOOM = 16;
 const MIN_ZOOM = 10;
+const INVALID_COLOR = "#000";
 const NORMAL_STYLE = {
   fillColor: null,
   color: "gray",
@@ -131,7 +132,6 @@ export class CropWaterComponent {
   }
 
   async applyFilter(data: CropWaterFilter) {
-    console.log("start spinner");
     this.spinner.show();
 
     const previousLayer = this.filter?.layer || null;
@@ -288,18 +288,9 @@ export class CropWaterComponent {
       });
   }
 
-  private getColorIndex(props: CropInfo, legend: LegendConfig): string {
+  private getColorIndex(num: number, legend: LegendConfig): string {
     let layer = this.filter.layer;
-    // fix layer id to match value from shapefile
-    if (layer === "prp") {
-      layer = "prec";
-    }
-    const percentile: string = this.filter.percentile
-      ? String(this.filter.percentile).padStart(2, "0")
-      : "";
-    // console.log(`get color index for layer<${layer}>, percentile<${percentile}>`);
     if (layer !== "crop") {
-      const num: number = props[`${layer}_${percentile}`];
       for (const [idx, val] of legend.labels.entries()) {
         const min_max: number[] = val
           .split("-", 2)
@@ -310,13 +301,30 @@ export class CropWaterComponent {
       }
       throw `No color index found: number ${num} - layer<${layer}>`;
     } else {
-      const idx = legend.ids.indexOf(props[`${layer}`]);
+      const idx = legend.ids.indexOf(num);
       if (idx !== -1) {
         return legend.colors[idx];
       }
     }
     // shouldn't be reached
     throw `No color index found: layer<${layer}>`;
+  }
+
+  private static getIndicatorValue(
+    props: CropInfo,
+    filter: CropWaterFilter
+  ): number {
+    let indicator = filter.layer;
+    // fix indicator id to match value from shapefile
+    if (indicator === "prp") {
+      indicator = "prec";
+    }
+    const percentile: string = filter.percentile
+      ? String(filter.percentile).padStart(2, "0")
+      : "";
+    return indicator !== "crop"
+      ? props[`${indicator}_${percentile}`]
+      : props[`${indicator}`];
   }
 
   private renderOnMap() {
@@ -327,22 +335,24 @@ export class CropWaterComponent {
     const jsonLayer = L.geoJSON(this.geojson, {
       style: (feature) => {
         let style = NORMAL_STYLE;
-        style.fillColor = comp.getColorIndex(
-          feature.properties as CropInfo,
-          legend
-        );
+        const props = feature.properties as CropInfo;
+        const num = CropWaterComponent.getIndicatorValue(props, comp.filter);
+        style.fillColor = !isNaN(num)
+          ? comp.getColorIndex(num, legend)
+          : INVALID_COLOR;
         return style;
       },
       onEachFeature: (feature, layer) => {
-        const fillColor = comp.getColorIndex(
-          feature.properties as CropInfo,
-          legend
-        );
-        layer.on({
-          mouseover: (e) => this.highlightFeature(e),
-          mouseout: (e) => this.resetFeature(e, fillColor),
-          click: (e) => this.openDetails(e),
-        });
+        const props = feature.properties as CropInfo;
+        const num = CropWaterComponent.getIndicatorValue(props, comp.filter);
+        if (!isNaN(num)) {
+          const fillColor = comp.getColorIndex(num, legend);
+          layer.on({
+            mouseover: (e) => this.highlightFeature(e),
+            mouseout: (e) => this.resetFeature(e, fillColor),
+            click: (e) => this.openDetails(e),
+          });
+        }
       },
     });
     this.geoData.addLayer(jsonLayer);
