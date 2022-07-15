@@ -144,7 +144,6 @@ export class CropWaterComponent {
       .getRunPeriods("crop-water", "crop-water")
       .toPromise()
       .then((periods) => {
-        console.log("done");
         this.availableRuns = periods;
       });
 
@@ -186,6 +185,7 @@ export class CropWaterComponent {
    * Load geo data on the map
    */
   loadGeoData(update: boolean = true) {
+    // console.log(`loading geo data [update: ${update}]`);
     if (!this.map) {
       console.warn("Cannot load geo data. Map not available");
       return;
@@ -254,8 +254,9 @@ export class CropWaterComponent {
 
   onPeriodChange(val) {
     // console.log("period changed", val);
-    this.filter.period = val;
-    this.applyFilter(this.filter);
+    const data = Object.assign({}, this.filter);
+    data.period = val;
+    this.applyFilter(data);
   }
 
   isSamePeriod(a: DateStruct, b: DateStruct) {
@@ -287,6 +288,37 @@ export class CropWaterComponent {
       });
   }
 
+  private getColorIndex(props: CropInfo, legend: LegendConfig): string {
+    let layer = this.filter.layer;
+    // fix layer id to match value from shapefile
+    if (layer === "prp") {
+      layer = "prec";
+    }
+    const percentile: string = this.filter.percentile
+      ? String(this.filter.percentile).padStart(2, "0")
+      : "";
+    // console.log(`get color index for layer<${layer}>, percentile<${percentile}>`);
+    if (layer !== "crop") {
+      const num: number = props[`${layer}_${percentile}`];
+      for (const [idx, val] of legend.labels.entries()) {
+        const min_max: number[] = val
+          .split("-", 2)
+          .map((num) => parseInt(num, 10));
+        if (num >= min_max[0] && num <= min_max[1]) {
+          return legend.colors[idx];
+        }
+      }
+      throw `No color index found: number ${num} - layer<${layer}>`;
+    } else {
+      const idx = legend.ids.indexOf(props[`${layer}`]);
+      if (idx !== -1) {
+        return legend.colors[idx];
+      }
+    }
+    // shouldn't be reached
+    throw `No color index found: layer<${layer}>`;
+  }
+
   private renderOnMap() {
     const legend: LegendConfig = LEGEND_DATA.find(
       (x) => x.id === this.filter.layer
@@ -316,36 +348,6 @@ export class CropWaterComponent {
     this.geoData.addLayer(jsonLayer);
     this.geoData.addTo(this.map);
     this.spinner.hide();
-  }
-
-  private getColorIndex(props: CropInfo, legend: LegendConfig): string {
-    let layer = this.filter.layer;
-    // fix layer id to match value from shapefile
-    if (layer === "prp") {
-      layer = "prec";
-    }
-    const percentile: string = this.filter.percentile
-      ? String(this.filter.percentile).padStart(2, "0")
-      : "";
-    // console.log(`get color index for layer<${layer}>, percentile<${percentile}>`);
-    if (layer !== "crop") {
-      for (const [idx, val] of legend.labels.entries()) {
-        const min_max: number[] = val
-          .split("-", 2)
-          .map((num) => parseInt(num, 10));
-        const num: number = props[`${layer}_${percentile}`];
-        if (num >= min_max[0] && num <= min_max[1]) {
-          return legend.colors[idx];
-        }
-      }
-    } else {
-      const idx = legend.ids.indexOf(props[`${layer}`]);
-      if (idx !== -1) {
-        return legend.colors[idx];
-      }
-    }
-    // shouldn't be reached
-    throw `No color index found: layer<${layer}>`;
   }
 
   private highlightFeature(e: L.LayerEvent) {
