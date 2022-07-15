@@ -147,6 +147,9 @@ export class CropWaterComponent {
         this.availableRuns = periods;
       });
 
+    // force await 100ms in order to show spinner
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     if (!this.selectedPeriod) {
       // default to the last run
       data.period = this.availableRuns[0];
