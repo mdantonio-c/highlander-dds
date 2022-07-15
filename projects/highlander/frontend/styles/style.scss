@@ -234,10 +234,31 @@ input[type="checkbox"]:checked {
   border-radius: 7px;
 }
 
-
 /*custom dataset page*/
 .dataset-image {
   object-fit: cover;
   width: 400px;
   height: auto;
+}
+
+.footer-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  .card-horizontal {
+    display: flex;
+    flex: 1 1 auto;
+    .card-title {
+      font-size: 80%;
+      font-weight: 400;
+    }
+  }
+}
+
+/*media query footer*/
+@media screen and (max-width: 574px) {
+  .footer {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
 }
