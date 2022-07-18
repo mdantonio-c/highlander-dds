@@ -14,7 +14,6 @@ import { CropDetailsComponent } from "./crop-details/crop-details.component";
 
 const MAX_ZOOM = 16;
 const MIN_ZOOM = 10;
-const INVALID_COLOR = "#000";
 const NORMAL_STYLE = {
   fillColor: null,
   color: "gray",
@@ -26,6 +25,12 @@ const HIGHLIGHT_STYLE = {
   weight: 1,
   color: "#ccc",
   fillOpacity: 0.7,
+};
+const NULL_STYLE = {
+  weight: 0,
+  opacity: 0,
+  fillOpacity: 0,
+  interactive: false,
 };
 
 @Component({
@@ -340,9 +345,10 @@ export class CropWaterComponent {
         let style = NORMAL_STYLE;
         const props = feature.properties as CropInfo;
         const num = CropWaterComponent.getIndicatorValue(props, comp.filter);
-        style.fillColor = !isNaN(num)
-          ? comp.getColorIndex(num, legend)
-          : INVALID_COLOR;
+        if (isNaN(num)) {
+          return NULL_STYLE;
+        }
+        style.fillColor = comp.getColorIndex(num, legend);
         return style;
       },
       onEachFeature: (feature, layer) => {
