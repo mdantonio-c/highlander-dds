@@ -45,13 +45,15 @@ CROPS_OUTPUT_ROOT = "/catalog/crops/"
 MODELS_MAPPING = {"RF": "R"}
 
 
-def plotMapNetcdf(field: Any, lat: Any, lon: Any, units: Any, product: str, outputfile: Path) -> None:
+def plotMapNetcdf(
+    field: Any, lat: Any, lon: Any, units: Any, product: str, outputfile: Path
+) -> None:
     """
     This function plot with the xarray tool the field of netcdf
     """
     log.debug(f"plotting map on {outputfile}")
-    fig1 = plt.figure(figsize=(15,15))
-    mpl.rcParams['font.size'] = 15
+    fig1 = plt.figure(figsize=(15, 15))
+    mpl.rcParams["font.size"] = 15
     ax1 = fig1.add_subplot(111, projection=ccrs.PlateCarree())
     ax1.set(frame_on=False)
     ax1.axis("off")
@@ -77,27 +79,28 @@ def plotMapNetcdf(field: Any, lat: Any, lon: Any, units: Any, product: str, outp
             message="This usage of Quadmesh is deprecated: Parameters meshWidth and meshHeights will be removed; coordinates must be 2D; all parameters except coordinates will be keyword-only.",
         )
     try:
-        if(product == 'r-factor'):
+        if product == "r-factor":
             cmap = mpl.cm.viridis_r
             levels = [0, 500, 1000, 1500, 2000, 2500, 3000, 4000, 6000, 8000, 10000]
             norm = mpl.colors.BoundaryNorm(levels, cmap.N)
-        elif product == 'soil-loss':
+        elif product == "soil-loss":
             cmap = mpl.cm.Oranges
             levels = [0, 1, 2.5, 5, 10, 50, 100, 500, 1000, 2000]
             norm = mpl.colors.BoundaryNorm(levels, cmap.N)
     except Exception as e:
         raise ServerError(f"Errors in passing data variable: {e}")
 
-    fig1.colorbar(mpl.cm.ScalarMappable(cmap=cmap, norm=norm),
+    fig1.colorbar(
+        mpl.cm.ScalarMappable(cmap=cmap, norm=norm),
         ax=ax1,
         ticks=levels,
-        spacing='uniform',
-        orientation='vertical',
+        spacing="uniform",
+        orientation="vertical",
         label=f"{product} [{units}]",
         anchor=(0.5, 0.5),
-        shrink=np.round(min(len(lon)/len(lat),len(lat)/len(lon)),2)#0.8
-        )
-    cmesh = ax1.pcolormesh(lon, lat, field , cmap=cmap, alpha=1,norm=norm)
+        shrink=np.round(min(len(lon) / len(lat), len(lat) / len(lon)), 2),  # 0.8
+    )
+    # cmesh = ax1.pcolormesh(lon, lat, field, cmap=cmap, alpha=1, norm=norm)
     with warnings.catch_warnings():
         warnings.filterwarnings(
             "ignore",
@@ -157,9 +160,9 @@ def plotDistribution(field: Any, outputfile: Path) -> None:
     ax3.tick_params(axis="both", which="major")  # , labelsize=14)
     ax3.tick_params(axis="both", which="minor")  # , labelsize = 14)
     ax3.set_title(f'{field.columns[0][-4:].replace("/", "")} histogram')
-    ax3.get_legend().remove()    #handles = legend.legendHandles
-    #legend.remove()
-    #ax3.legend(handles, ['dep-', 'ind-', 'ind+', 'dep+'], title='Stat.ind.')
+    ax3.get_legend().remove()  # handles = legend.legendHandles
+    # legend.remove()
+    # ax3.legend(handles, ['dep-', 'ind-', 'ind+', 'dep+'], title='Stat.ind.')
 
     fig3.savefig(outputfile)
 
