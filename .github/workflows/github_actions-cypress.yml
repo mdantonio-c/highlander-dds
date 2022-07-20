@@ -20,6 +20,7 @@ jobs:
       - uses: rapydo/actions/install@v1
         with:
           project: ${PROJECT}
+          extra_options: -e MAPS_URL=XXX
 
       - uses: rapydo/actions/setup-cypress@v1
         with:
