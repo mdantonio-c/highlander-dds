@@ -8,7 +8,7 @@ env:
 
 jobs:
   Development-mode:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     timeout-minutes: 20
 
     steps:
@@ -20,6 +20,7 @@ jobs:
       - uses: rapydo/actions/install@v1
         with:
           project: ${PROJECT}
+          extra_options: -e MAPS_URL=XXX
 
       - name: Run Karma
         run: |
@@ -51,11 +52,17 @@ jobs:
       - uses: rapydo/actions/install@v1
         with:
           project: ${PROJECT}
+          extra_options: -e MAPS_URL=XXX
 
       - name: Production mode
         run: |
 
-          rapydo --testing --prod init --force
+          sudo mkdir /data/sub-sea
+          sudo mkdir /data/vhr-rea
+
+          rapydo remove --all
+          rapydo --testing --prod -e MAPS_URL=XXX init --force
+
           rapydo pull --quiet frontend proxy
 
           rm projects/highlander/confs/geoserver.service

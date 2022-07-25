@@ -16,8 +16,8 @@ variables:
 
   submodules:
     geoserver:
-      online_url: https://github.com/kartoza/docker-geoserver
-      branch: 2.19.0
+      online_url: https://github.com/giuseppetrotta/docker-geoserver
+      branch: 2.21.0
 
   env:
     FRONTEND_FRAMEWORK: angular

@@ -20,7 +20,7 @@ jobs:
       - uses: rapydo/actions/install@v1
         with:
           project: ${PROJECT}
-          extra_options: "-e FRONTEND_FRAMEWORK=nofrontend -e ACTIVATE_GEOSERVER=0"
+          extra_options: "-e MAPS_URL=XXX -e ACTIVATE_GEOSERVER=0"
 
       - name: Run Pytest
         run: |
@@ -36,6 +36,8 @@ jobs:
           # When the cache, download and logs will be added to the repository with a .gitkeep
           # This mkdir will start to fail... in this case just remove it
           mkdir data/catalog/cache data/catalog/download data/catalog/logs
+
+          rapydo --testing -e MAPS_URL=XXX -e ACTIVATE_GEOSERVER=0 init --force
 
           rapydo pull --quiet
           rapydo build
@@ -88,7 +90,9 @@ jobs:
 
           # Temporary fix, waiting for a public release
           cd projects/highlander/builds/backend
+          
           git clone --depth 1 https://${{ secrets.DDS_USER }}:${{ secrets.DDS_TOKEN }}@${{ secrets.DDS_URL }}.git packages
+          
           cd -
 
           # Install sample datasets/catalog
@@ -106,7 +110,8 @@ jobs:
           sudo mkdir -p /data/datasets/crop-water
           sudo mkdir -p /data/ECMWF/Sub_SEA/Italy
 
-          rapydo --testing --prod -e FRONTEND_FRAMEWORK=nofrontend -e ACTIVATE_GEOSERVER=0 init --force
+          rapydo --testing --prod -e ACTIVATE_GEOSERVER=0 -e MAPS_URL=XXX init --force
+
           rapydo pull --quiet
           rapydo build
           rapydo ssl --volatile
