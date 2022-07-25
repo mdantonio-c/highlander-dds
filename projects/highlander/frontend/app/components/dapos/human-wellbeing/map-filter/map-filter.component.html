@@ -28,6 +28,27 @@
             </option>
           </select>
         </div>
+        <!-- DAILY METRICS -->
+        <div class="mb-3">
+          <label class="col-form-label"><strong>Daily metric:</strong> </label>
+          <div
+            *ngFor="let i of dailyMetrics"
+            id="dailyMetricsGroup"
+            class="form-check"
+          >
+            <input
+              mdbRadio
+              class="form-check-input"
+              type="radio"
+              id="flexRadioDefault1"
+              formControlName="daily_metric"
+              [value]="i.code"
+            />
+            <label class="form-check-label" for="flexRadioDefault1">
+              {{ i.label }}
+            </label>
+          </div>
+        </div>
       </form>
     </div>
   </div>

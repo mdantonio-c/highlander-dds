@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { AuthService } from "@rapydo/services/auth";
-import { ADMINISTRATIVE_AREAS, INDICATORS } from "../data";
+import { ADMINISTRATIVE_AREAS, INDICATORS, DAILY_METRICS } from "../data";
 
 @Component({
   selector: "human-wellbeing-filter",
@@ -17,13 +17,15 @@ export class MapFilterComponent implements OnInit {
   readonly administratives = ADMINISTRATIVE_AREAS;
   readonly landUseBased = [];
   readonly userSelectedItems = [];
+  readonly dailyMetrics = DAILY_METRICS;
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.filterForm = this.fb.group({
-      indicator: [""],
+      indicator: ["WC"],
       administrative: ["italy"],
       landUseBased: [""],
       userSelected: [""],
+      daily_metric: ["daymax"],
     });
   }
 

@@ -25,3 +25,9 @@ export const ADMINISTRATIVE_AREAS = [
   { code: "provinces", label: "Provinces" },
   // { code: "municipalities", label: "Municipalities" },
 ];
+
+export const DAILY_METRICS = [
+  { code: "daymax", label: "Maximum" },
+  { code: "daymin", label: "Minimum" },
+  { code: "daymean", label: "Mean" },
+];

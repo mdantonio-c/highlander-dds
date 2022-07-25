@@ -161,6 +161,7 @@ export interface SoilErosionMapCrop {
 export interface HumanWellbeingFilter {
   indicator: string;
   administrative: string;
+  daily_metric: string;
 }
 
 export interface CropWaterFilter {

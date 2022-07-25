@@ -1,11 +1,15 @@
 import { Component, OnInit, Input, HostListener } from "@angular/core";
 import { User } from "@rapydo/types";
+import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 import { SSRService } from "@rapydo/services/ssr";
 import { DatasetInfo, HumanWellbeingFilter } from "../../../types";
-
+import { environment } from "@rapydo/../environments/environment";
 import * as L from "leaflet";
 import "leaflet-timedimension/dist/leaflet.timedimension.src.js";
+import { DataService } from "../../../services/data.service";
+import { INDICATORS } from "../human-wellbeing/data";
+import { LEGEND_DATA, LegendConfig } from "../../../services/data";
 /*declare module "leaflet" {
   let timeDimension: any;
 }*/
@@ -22,11 +26,19 @@ export class HumanWellbeingComponent implements OnInit {
   @Input()
   dataset: DatasetInfo;
   user: User;
+  readonly backendURI = environment.backendURI;
   loading = false;
   isFilterCollapsed = false;
   private collapsed = false;
   map: L.Map;
+  private legends: { [key: string]: L.Control } = {};
+  baseUrl: string = environment.production
+    ? `${environment.backendURI}`
+    : "http://localhost:8080";
+
   bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
+  readonly timeRanges = ["historical", "future"];
+  readonly LEGEND_POSITION = "bottomleft";
 
   LAYER_OSM = L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -76,7 +88,12 @@ export class HumanWellbeingComponent implements OnInit {
 
   isPanelCollapsed: boolean = true;
 
-  constructor(protected spinner: NgxSpinnerService, private ssr: SSRService) {}
+  constructor(
+    private dataService: DataService,
+    protected notify: NotificationService,
+    protected spinner: NgxSpinnerService,
+    private ssr: SSRService
+  ) {}
 
   ngOnInit() {
     if (this.ssr.isBrowser) {
@@ -89,6 +106,60 @@ export class HumanWellbeingComponent implements OnInit {
     setTimeout(function () {
       map.invalidateSize();
     }, 200);
+    this.initLegends(map);
+  }
+
+  private setOverlaysToMap() {
+    let overlays = {};
+    const ind = this.filter.indicator;
+    const metric = this.filter.daily_metric;
+    overlays[`Historical`] = L.tileLayer.wms(`${this.baseUrl}/geoserver/wms`, {
+      layers: `highlander:${ind}_1989-2020_${metric}`,
+      version: "1.1.0",
+      format: "image/png",
+      opacity: 0.7,
+      transparent: true,
+      attribution: "'&copy; CMCC",
+      maxZoom: MAX_ZOOM,
+      minZoom: MIN_ZOOM,
+    });
+
+    //console.log(overlays)
+    this.layersControl["baseLayers"] = overlays;
+    // for the moment only a single overlay is available
+    overlays[`Historical`].addTo(this.map);
+  }
+
+  private initLegends(map: L.Map) {
+    INDICATORS.forEach((ind) => {
+      this.legends[ind.code] = this.createLegendControl(ind.code);
+      //console.log(`add legend <${ind.code}>`);
+    });
+  }
+
+  private createLegendControl(id: string): L.Control {
+    let config: LegendConfig = LEGEND_DATA.find((x) => x.id === id);
+    if (!config) {
+      console.error(`Legend data NOT found for ID<${id}>`);
+      this.notify.showError("Bad legend configuration");
+      return;
+    }
+    const legend = new L.Control({ position: this.LEGEND_POSITION });
+    legend.onAdd = () => {
+      let div = L.DomUtil.create("div", config.legend_type);
+      div.style.clear = "unset";
+      div.innerHTML += `<h6>${config.title}</h6>`;
+      for (let i = 0; i < config.labels.length; i++) {
+        div.innerHTML +=
+          '<i style="background:' +
+          config.colors[i] +
+          '"></i><span>' +
+          config.labels[i] +
+          "</span><br>";
+      }
+      return div;
+    };
+    return legend;
   }
 
   onMapZoomEnd($event) {
@@ -97,6 +168,37 @@ export class HumanWellbeingComponent implements OnInit {
 
   applyFilter(data: HumanWellbeingFilter) {
     console.log("apply filter", data);
+
+    if (!this.filter) {
+      this.filter = data;
+      this.setOverlaysToMap();
+      // add a legend
+      if (this.legends[data.indicator]) {
+        this.legends[data.indicator].addTo(this.map);
+      }
+    }
+
+    // INDICATORS and DAILY METRICS
+    if (
+      this.filter.indicator !== data.indicator ||
+      this.filter.daily_metric !== data.daily_metric
+    ) {
+      //console.log(`indicator changed to ${data.indicator}`);
+
+      // remove the previous legend
+      this.map.removeControl(this.legends[this.filter.indicator]);
+      // add the new legend
+      this.legends[data.indicator].addTo(this.map);
+      this.filter = data;
+
+      let overlays = this.layersControl["baseLayers"];
+      for (let name in overlays) {
+        if (this.map.hasLayer(overlays[name])) {
+          this.map.removeLayer(overlays[name]);
+        }
+      }
+      this.setOverlaysToMap();
+    }
   }
 
   closeDetails() {
