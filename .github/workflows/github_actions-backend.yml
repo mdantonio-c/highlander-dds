@@ -20,6 +20,7 @@ jobs:
       - uses: rapydo/actions/install@v1
         with:
           project: ${PROJECT}
+          extra_options: -e MAPS_URL=XXX
 
       - name: Run Pytest
         run: |
@@ -36,7 +37,7 @@ jobs:
           # This mkdir will start to fail... in this case just remove it
           mkdir data/catalog/cache data/catalog/download data/catalog/logs
 
-          rapydo --testing -e ACTIVATE_GEOSERVER=0 init --force
+          rapydo --testing -e MAPS_URL=XXX -e ACTIVATE_GEOSERVER=0 init --force
           rapydo pull --quiet
           rapydo build
           rapydo add task test_task
@@ -64,7 +65,7 @@ jobs:
           rm projects/highlander/confs/geoserver.service
           touch projects/highlander/confs/geoserver.service
 
-          rapydo --testing --prod -e ACTIVATE_GEOSERVER=0 init --force
+          rapydo --testing --prod -e ACTIVATE_GEOSERVER=0 -e MAPS_URL=XXX init --force
           rapydo pull --quiet
           rapydo ssl --volatile
           rapydo -e AUTH_LOGIN_BAN_TIME=10 start
