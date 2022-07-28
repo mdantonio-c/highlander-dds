@@ -22,8 +22,13 @@ export class CustomNavbarComponent {
   public collapse() {
     this.onClick.emit();
   }
-}
 
+ 
+}
+export class NgbdDropdownBasic {
+};
+
+  
 @Component({
   selector: "custombrand",
   templateUrl: "custom.navbar.brand.html",

@@ -15,15 +15,72 @@
       Datasets
     </a>
   </li>
-  <li class="nav-item">
+  <!--<li class="nav-item">
     <a
-      class="nav-link"
+      class="nav-link dropdown-toggle"
       routerLink="/app/applications"
       routerLinkActive="active"
       (click)="collapse()"
+      id="dropdownMenuButton"
     >
       Applications
+      <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+    </ul>
     </a>
+    
+  </li>-->
+  <li ngbDropdown class="nav-item">
+    <a role="button" class="nav-link link-disabled" id="dropdownBasic1" ngbDropdownToggle routerLinkActive="active" routerLink="/app/applications"
+    >Applications</a>
+    <ul ngbDropdownMenu aria-labelledby="dropdownBasic1" class="dropdown-menu">
+      <li ngbDropdownItem class="dropdown-item">
+        <a 
+        href="http://labora.dedagroup.it/dashboards/highlander/pascoli/index.html" 
+        target="_blank"
+        class="nav-link">Mountain pasture monitoring</a>
+      </li>
+      <li ngbDropdownItem class="dropdown-item">
+        <a 
+        href="http://labora.dedagroup.it/dashboards/highlander/pascoli/index.html" 
+        target="_blank"
+        class="nav-link">Forest monitoring </a>
+      </li>
+      <li ngbDropdownItem class="dropdown-item">
+        <a 
+        href="http://labora.dedagroup.it/dashboards/highlander/vaia/index.html" 
+        target="_blank"
+        class="nav-link">Vaia Storm</a>
+      </li>
+      <li ngbDropdownItem class="dropdown-item">
+        <a 
+        href="http://labora.dedagroup.it/dashboards/highlander/pascoli/index.html" 
+        target="_blank"
+        class="nav-link">Forest trees monitoring (treet</a>
+      </li>
+      <li ngbDropdownItem class="dropdown-item">
+        <a 
+        routerLink="/app/applications/crop-water"
+        class="nav-link">Sub-seasonal irrigation forecasts</a>
+      </li>
+      <li ngbDropdownItem class="dropdown-item">
+        <a 
+        routerLink="/app/applications/soil-erosion"
+        class="nav-link">Soil Erosion Indicators for Italy</a>
+      </li>
+      <li ngbDropdownItem class="dropdown-item">
+        <a 
+        routerLink="/app/applications/human-wellbeing"
+        class="nav-link">Wellbeing Indicators</a>
+      </li>
+      <li ngbDropdownItem class="dropdown-item">
+        <a 
+        routerLink="/app/applications/"
+        class="nav-link">See all</a>
+      </li>
+    </ul>
   </li>
   <li class="nav-item" *ngIf="user">
     <a
