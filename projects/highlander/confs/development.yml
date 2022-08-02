@@ -4,4 +4,6 @@ services:
     ports:
       - 8070:8080
     volumes:
-      - ${DATA_DIR}/catalog/datasets:/opt/geoserver/data_dir/datasets
+      - ${DATA_DIR}/catalog/datasets:/datasets
+    environment:
+      ROOT_WEBAPP_REDIRECT: true

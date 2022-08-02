@@ -9,7 +9,7 @@ services:
       - /data:/catalog/datasets
   geoserver:
     volumes:
-      - /data/datasets:/datasets
+      - ${DATA_DIR}/geoserver/datasets:/datasets
   proxy:
     volumes:
       - ${PROJECT_DIR}/confs/geoserver.service:/etc/nginx/sites-enabled/geoserver.service

@@ -40,6 +40,11 @@ variables:
     BROKER_PORT: 0
     BROKER_CATALOG_DIR: "/catalog"
 
+    GEOSERVER_EXISTING_DATA_DIR: true
+    GEOSERVER_ADMIN_USER: admin
+    GEOSERVER_ADMIN_PASSWORD: D3vMode!
+    GEOSERVER_RECREATE_DATADIR: false
+
     SET_CSP_IMG_SRC: "https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org"
     SET_CSP_FONT_SRC: https://netdna.bootstrapcdn.com
 

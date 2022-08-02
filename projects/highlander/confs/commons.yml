@@ -43,8 +43,13 @@ services:
       ACTIVATE: ${ACTIVATE_GEOSERVER}
       STABLE_EXTENSIONS: netcdf-plugin
       TOMCAT_EXTRAS: false
+      EXISTING_DATA_DIR: ${GEOSERVER_EXISTING_DATA_DIR}
+      GEOSERVER_ADMIN_USER: ${GEOSERVER_ADMIN_USER}
+      GEOSERVER_ADMIN_PASSWORD: ${GEOSERVER_ADMIN_PASSWORD}
+      RECREATE_DATADIR: ${GEOSERVER_RECREATE_DATADIR}
     volumes:
-      - ${DATA_DIR}/geoserver:/opt/geoserver/data_dir
+      - ${DATA_DIR}/geoserver/data_dir:/opt/geoserver/data_dir
+      - ${DATA_DIR}/geoserver/settings:/settings
     networks:
       default:
         aliases:
