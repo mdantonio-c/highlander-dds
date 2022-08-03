@@ -115,7 +115,9 @@ class BrokerExt(Connector):
         if product_id is None:
             product_id = default_product_id
         product = products[product_id]
+        exclude_widgets = info.get("exclude_widgets", [])
         coords, attrs = product["coordinates"], product.get("attributes", {})
+        log.debug(f"Excluded widgets: {exclude_widgets}")
         data: Dict[str, Any] = {
             "version": "v1",
             "status": "OK",
@@ -143,7 +145,7 @@ class BrokerExt(Connector):
         }
 
         # Variables
-        if "variables" in product:
+        if "variables" in product and "variable" not in exclude_widgets:
             values = []
             for api_name, var in product["variables"].items():
                 value = {
@@ -165,7 +167,10 @@ class BrokerExt(Connector):
             data["widgets_order"].append("variable")
 
         # Attributes
-        for attr_name, attr in attrs.items():
+        filtered_attrs = {
+            key: value for key, value in attrs.items() if key not in exclude_widgets
+        }
+        for attr_name, attr in filtered_attrs.items():
             values = []
             for val in attr["value"]:
                 value = {"value": val, "label": val}
@@ -181,7 +186,8 @@ class BrokerExt(Connector):
             data["widgets"].append(w.to_dict())
             data["widgets_order"].append(attr_name)
 
-        if "time" in coords:
+        # Temporal Coverage
+        if "time" in coords and "temporal_coverage" not in exclude_widgets:
             w = Widget(
                 wname="temporal_coverage",
                 wlabel="Temporal coverage",
@@ -281,7 +287,12 @@ class BrokerExt(Connector):
 
             data["widgets_order"].append("temporal_coverage")
 
-        if "latitude" in coords and "longitude" in coords:
+        # Spatial Coverage
+        if (
+            "latitude" in coords
+            and "longitude" in coords
+            and "spatial_coverage" not in exclude_widgets
+        ):
             w = Widget(
                 wname="spatial_coverage",
                 wlabel="Spatial coverage",
@@ -340,7 +351,8 @@ class BrokerExt(Connector):
         main_coords = {"time", "latitude", "longitude"}
         aux_coords = [coord for coord in coords if coord not in main_coords]
         if aux_coords:
-            for coord in aux_coords:
+            filtered_aux_coords = [i for i in aux_coords if i not in exclude_widgets]
+            for coord in filtered_aux_coords:
                 dtype = BrokerExt.unwrap(coords[coord].get("dds_dtype", "str"))
                 w = Widget(
                     wname=coord,
@@ -393,20 +405,21 @@ class BrokerExt(Connector):
         #            data['widgets_order'].append(f'{coord}_range')
 
         # Format
-        format_list = [
-            {"value": "netcdf", "label": "Netcdf", "ext": ".nc"},
-            # {'value': 'pickle', 'label': 'Pickle', 'ext': '.pickle'}
-        ]
-        w = Widget(
-            wname="format",
-            wlabel="Format",
-            wrequired=True,
-            wparameter="format",
-            wtype="FileFormat",
-            wdetails={"_values": format_list},
-        )
-        data["widgets"].append(w.to_dict())
-        data["widgets_order"].append("format")
+        if "format" not in exclude_widgets:
+            format_list = [
+                {"value": "netcdf", "label": "Netcdf", "ext": ".nc"},
+                # {'value': 'pickle', 'label': 'Pickle', 'ext': '.pickle'}
+            ]
+            w = Widget(
+                wname="format",
+                wlabel="Format",
+                wrequired=True,
+                wparameter="format",
+                wtype="FileFormat",
+                wdetails={"_values": format_list},
+            )
+            data["widgets"].append(w.to_dict())
+            data["widgets_order"].append("format")
 
         return data
 
