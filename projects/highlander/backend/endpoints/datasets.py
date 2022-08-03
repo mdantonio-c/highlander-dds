@@ -29,7 +29,7 @@ class Datasets(EndpointResource):
         {"application": fields.Bool(required=False)}, location="query"
     )
     @decorators.marshal_with(DatasetInfo(many=True), code=200)
-    @decorators.cache(timeout=None)
+    @decorators.cache(timeout=0)
     def get(self, application: Optional[bool] = None) -> Response:
         log.debug("Filter for application dataset? {}", application)
         dds = broker.get_instance()
