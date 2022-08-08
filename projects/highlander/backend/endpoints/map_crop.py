@@ -79,6 +79,7 @@ def plotMapNetcdf(
             message="This usage of Quadmesh is deprecated: Parameters meshWidth and meshHeights will be removed; coordinates must be 2D; all parameters except coordinates will be keyword-only.",
         )
     try:
+        levels: List[float] = []
         if product == "r-factor":
             cmap = mpl.cm.viridis_r
             levels = [0, 500, 1000, 1500, 2000, 2500, 3000, 4000, 6000, 8000, 10000]
