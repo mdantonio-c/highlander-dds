@@ -1,15 +1,14 @@
 from pathlib import Path
 from typing import List, Set
 
-from celery.app.task import Task
 from highlander.connectors import broker
 from highlander.constants import CACHE_DIR
-from restapi.connectors.celery import CeleryExt
+from restapi.connectors.celery import CeleryExt, Task
 from restapi.utilities.logs import log
 
 
 @CeleryExt.task(idempotent=True)
-def clean_cache(self: Task, apply_to: List[str] = []) -> None:
+def clean_cache(self: Task[[List[str]], None], apply_to: List[str] = []) -> None:
     """
     Procedure for automatic cache cleaning.
 

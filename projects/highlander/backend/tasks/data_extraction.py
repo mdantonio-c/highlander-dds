@@ -3,7 +3,6 @@ import pathlib
 from typing import Any, Dict, List, Optional
 
 from celery import states
-from celery.app.task import Task
 from celery.exceptions import Ignore
 from highlander.connectors import broker
 from highlander.exceptions import (
@@ -13,7 +12,7 @@ from highlander.exceptions import (
 )
 from highlander.models.sqlalchemy import Request
 from restapi.connectors import sqlalchemy
-from restapi.connectors.celery import CeleryExt
+from restapi.connectors.celery import CeleryExt, Task
 from restapi.utilities.logs import log
 from sqlalchemy.sql import func
 
@@ -27,7 +26,7 @@ def handle_exception(request: Optional[Request], error_msg: str) -> None:
 def human_size(
     bytes: int, units: List[str] = [" bytes", "KB", "MB", "GB", "TB", "PB", "EB"]
 ) -> str:
-    """Returns a human readable string representation of bytes
+    """Returns a human-readable string representation of bytes
     :rtype: string
     """
     return str(bytes) + units[0] if bytes < 1024 else human_size(bytes >> 10, units[1:])
@@ -35,7 +34,7 @@ def human_size(
 
 @CeleryExt.task(idempotent=True)
 def extract_data(
-    self: Task,
+    self: Task[[int, str, Dict[str, Any], int], None],
     user_id: int,
     dataset_name: str,
     req_body: Dict[str, Any],

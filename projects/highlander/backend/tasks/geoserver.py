@@ -4,16 +4,15 @@ from typing import Optional
 from zipfile import ZipFile
 
 import requests
-from celery.app.task import Task
 from highlander.constants import DATASETS_DIR
 from highlander.tasks.crop_water import CROP_WATER_AREAS
-from restapi.connectors.celery import CeleryExt
+from restapi.connectors.celery import CeleryExt, Task
 from restapi.env import Env
 from restapi.utilities.logs import log
 
 
 @CeleryExt.task(idempotent=True)
-def generate_layers(self: Task, ref_date: str):
+def generate_layers(self: Task[[str], None], ref_date: str):
     """
     Task for automatic layer creation in GeoServer.
 

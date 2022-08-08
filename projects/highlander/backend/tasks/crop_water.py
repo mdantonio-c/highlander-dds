@@ -3,10 +3,9 @@ from ftplib import all_errors, error_perm
 from pathlib import Path
 from typing import List
 
-from celery.app.task import Task
 from highlander.constants import DATASETS_DIR
 from restapi.connectors import celery, ftp
-from restapi.connectors.celery import CeleryExt
+from restapi.connectors.celery import CeleryExt, Task
 from restapi.connectors.ftp import FTPExt
 from restapi.utilities.logs import log
 
@@ -41,7 +40,7 @@ def download_data(f: FTPExt, filenames: List[str], target_path: str) -> int:
 
 
 @CeleryExt.task(idempotent=True, autoretry_for=(ConnectionResetError, OSError))
-def retrieve_crop_water(self: Task, mirror: bool = False) -> None:
+def retrieve_crop_water(self: Task[[bool], None], mirror: bool = False) -> None:
     """
     Retrieve the latest 'crop-water' forecast data from an FTP server.
     Updated weekly every Tuesday.
