@@ -22,7 +22,7 @@ jobs:
         with:
           project: ${PROJECT}
           submodule: http-api
-      - uses: rapydo/actions/mypy@v1
+      - uses: rapydo/actions/mypy@v2
         with:
           project: ${PROJECT}
           install: numpy
