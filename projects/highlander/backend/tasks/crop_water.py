@@ -145,9 +145,14 @@ def retrieve_crop_water(self: Task, mirror: bool = False) -> None:
                 )
                 total_saved += saved
 
-        if total_saved:
-            # trigger cache refresh task to allow access to the newly loaded data
-            c = celery.get_instance()
-            c.celery_app.send_task("clean_cache", args=[["crop-water_crop-water"]])
+    log.info("Retrieve crop-water completed")
 
-        log.info("Retrieve crop-water completed")
+    if total_saved:
+        c = celery.get_instance()
+
+        #  1. refresh cache to allow access to the newly loaded data
+        c.celery_app.send_task("clean_cache", args=[["crop-water_crop-water"]])
+
+        #  2. generate layers for map application
+        if not mirror and ref_time is not None:
+            c.celery_app.send_task("generate_layers", args=[ref_time])
