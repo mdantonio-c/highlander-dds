@@ -12,7 +12,7 @@ from restapi.utilities.logs import log
 
 
 @CeleryExt.task(idempotent=True)
-def generate_layers(self: Task[[str], None], ref_date: str):
+def generate_layers(self: Task[[str], None], ref_date: str) -> None:
     """
     Task for automatic layer creation in GeoServer.
 
@@ -99,5 +99,5 @@ class Geoserver:
                 return "The shapefile datastore created successfully!"
             else:
                 raise Exception(
-                    f"{r.status_code}: The shapefile datastore can not be created! {r.content}"
+                    f"{r.status_code}: The shapefile datastore can not be created! {r.content.decode('utf-8')}"
                 )
