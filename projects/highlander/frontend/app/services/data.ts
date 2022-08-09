@@ -103,7 +103,7 @@ export const LEGEND_DATA: LegendConfig[] = [
   {
     id: "WC",
     legend_type: "legend_box",
-    title: "Wind chill</br><small>[TODO]</small>",
+    title: "Wind chill</br><small>°C</small>",
     colors: [
       "#ffcc00",
       "#ff0000",
@@ -146,7 +146,7 @@ export const LEGEND_DATA: LegendConfig[] = [
   {
     id: "H",
     legend_type: "legend_box",
-    title: "Humidex</br><small>[TODO]</small>",
+    title: "Humidex</br><small>°C</small>",
     colors: [
       "#ffcc00",
       "#ff0000",
@@ -189,7 +189,7 @@ export const LEGEND_DATA: LegendConfig[] = [
   {
     id: "DI",
     legend_type: "legend_box",
-    title: "Discomfort index thom</br><small>[TODO]</small>",
+    title: "Discomfort index thom</br><small>°C</small>",
     colors: [
       "#ffcc00",
       "#ff0000",
@@ -232,7 +232,7 @@ export const LEGEND_DATA: LegendConfig[] = [
   {
     id: "AT",
     legend_type: "legend_box",
-    title: "Apparent temperature</br><small>[TODO]</small>",
+    title: "Apparent temperature</br><small>°C</small>",
     colors: [
       "#ffcc00",
       "#ff0000",
