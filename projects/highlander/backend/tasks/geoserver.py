@@ -73,7 +73,7 @@ class Geoserver:
         store_name: Optional[str] = None,
         workspace: Optional[str] = None,
         file_extension: str = "shp",
-    ):
+    ) -> str:
         if path is None:
             raise Exception("You must provide a full path to shapefile")
 

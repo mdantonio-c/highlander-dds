@@ -63,7 +63,7 @@ class TestApp(BaseTests):
 
         # check task execution results
         task_id = data_request.task_id
-        task = AsyncResult(task_id)
+        task: AsyncResult[Any] = AsyncResult(task_id)
         assert task is not None
         result = task.get(timeout=5)
         assert result is None
