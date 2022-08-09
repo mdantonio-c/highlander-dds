@@ -1,5 +1,16 @@
 FROM rapydo/backend:2.3
 
+USER root
+
+ARG CURRENT_UID
+RUN test -n "$CURRENT_UID"
+
+ARG CURRENT_GID
+RUN test -n "$CURRENT_GID"
+
+RUN usermod -u ${CURRENT_UID} developer \
+    && groupmod -og ${CURRENT_GID} developer
+
 COPY packages/*.whl /tmp/
 
 RUN pip3 install --no-cache-dir /tmp/dds_backend-0.5b3-py3-none-any.whl /tmp/intake_cmcc-0.5b1-py3-none-any.whl
