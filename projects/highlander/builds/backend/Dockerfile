@@ -49,4 +49,5 @@ RUN chown "developer:developer" -R ${CARTOPY_DATA_DIR}
 RUN pip3 install --upgrade --no-cache-dir regionmask \
     && pip3 install --upgrade --no-cache-dir seaborn \
     && pip3 install --upgrade --no-cache-dir matplotlib \
-    && pip3 install --upgrade numpy==1.22.4
+    && pip3 install --upgrade numpy==1.22.4 \
+    && pip3 install --upgrade shapely==1.8.2
