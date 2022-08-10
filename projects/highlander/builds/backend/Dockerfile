@@ -1,5 +1,16 @@
 FROM rapydo/backend:2.2
 
+USER root
+
+ARG CURRENT_UID
+RUN test -n "$CURRENT_UID"
+
+ARG CURRENT_GID
+RUN test -n "$CURRENT_GID"
+
+RUN usermod -u ${CURRENT_UID} developer \
+    && groupmod -og ${CURRENT_GID} developer
+
 COPY packages/*.whl /tmp/
 
 RUN pip3 install --no-cache-dir /tmp/dds_backend-0.5b3-py3-none-any.whl /tmp/intake_cmcc-0.5b1-py3-none-any.whl
@@ -49,4 +60,5 @@ RUN chown "developer:developer" -R ${CARTOPY_DATA_DIR}
 RUN pip3 install --upgrade --no-cache-dir regionmask \
     && pip3 install --upgrade --no-cache-dir seaborn \
     && pip3 install --upgrade --no-cache-dir matplotlib \
-    && pip3 install --upgrade numpy==1.22.4
+    && pip3 install --upgrade numpy==1.22.4  \
+    && pip3 install --upgrade shapely==1.8.2
