@@ -197,7 +197,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
 
   private buildRequest() {
     let res = {
-      product: this.productId,
+      product_type: this.productId,
     };
     Object.keys(this.filterForm.controls).forEach((key) => {
       let controlValue = this.filterForm.controls[key].value;

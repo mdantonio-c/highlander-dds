@@ -193,7 +193,7 @@ class DateStruct(Schema):
 
 
 class DataExtraction(Schema):
-    product = fields.Str(required=True)
+    product_type = fields.Str(required=True)
     variable = fields.List(fields.Str())
     latitude = fields.Nested(CoordRange)
     longitude = fields.Nested(CoordRange)

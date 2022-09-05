@@ -263,7 +263,7 @@ def build_request_args(**kwargs: RequestArgs) -> Mapping[str, Any]:
     payload = kwargs.copy()
     log.debug(json.dumps(payload, indent=2, sort_keys=True))
 
-    product: str = cast(str, kwargs.pop("product"))
+    product: str = cast(str, kwargs.pop("product_type"))
     variable: List[str] = cast(List[str], kwargs.pop("variable", []))
     time: Optional[Dict[str, List[str]]] = cast(
         Optional[Dict[str, List[str]]], kwargs.pop("time", None)
