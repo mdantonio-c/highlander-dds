@@ -104,7 +104,7 @@ class TestApp(BaseTests):
     @pytest.fixture
     def data_filter(self) -> Dict[str, Any]:
         data: Dict[str, Any] = {
-            "product": PRODUCT_NAME,
+            "product_type": PRODUCT_NAME,
             "format": PRODUCT_FORMAT,
             "variable": json.dumps(["air_temperature"]),
         }
