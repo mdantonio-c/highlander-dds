@@ -26,14 +26,15 @@ RUN apt-get update -qq \
     && apt-get install -y libgeos-dev \
     # Install proj dependencies \
     && apt install -y cmake sqlite3 curl \
-    && apt-get install -y libsqlite3-dev libtiff5-dev libcurl4-openssl-dev \
+    && apt-get install -y libsqlite3-dev libtiff5-dev libcurl4-openssl-dev libproj-dev \
     # As cartopy requires proj v8.0.0 as a minimum, but if you install proj using apt you can only install proj v6.3.1 \
     # build Proj from source
     && wget https://download.osgeo.org/proj/proj-9.0.0.tar.gz \
     && tar -xf proj-9.0.0.tar.gz \
     && cd proj-9.0.0 \
     && mkdir build && cd build \
-    && cmake .. && cmake --build . && cmake --build . --target install && ctest; exit 0 && cp ./bin/* /bin \
+    && cmake .. && cmake --build . && cmake --build . --target install \
+    && cp ./bin/* /bin \
     # finally install cartopy
     && pip3 install --upgrade --no-cache-dir Cartopy \
     && apt-get autoremove -y && apt-get clean
