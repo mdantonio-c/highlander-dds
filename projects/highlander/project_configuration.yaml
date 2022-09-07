@@ -20,6 +20,7 @@ variables:
       branch: 2.21.0
 
   env:
+    BACKEND_BUILD_MODE: backend-legacy39
     FRONTEND_FRAMEWORK: angular
     ENABLE_ANGULAR_SSR: 0
     AUTH_SERVICE: sqlalchemy

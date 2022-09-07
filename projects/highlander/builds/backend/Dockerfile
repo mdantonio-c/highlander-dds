@@ -1,4 +1,4 @@
-FROM rapydo/backend:2.3
+FROM rapydo/backend-legacy39:2.3
 
 USER root
 
@@ -21,17 +21,27 @@ ENV CATALOG_DIR="/catalog"
 # CARTOPY
 #########################################################
 RUN apt-get update -qq \
-    && apt-get dist-upgrade --yes -qq \
-    && apt-get install --yes libproj-dev proj-data proj-bin libgeos-dev \
-    && pip3 install --upgrade --no-cache-dir Cython \
-    # the latest version has problems with PROJ version
+    && apt-get dist-upgrade -y -qq \
+    #  Install GEOS \
+    && apt-get install -y libgeos-dev \
+    # Install proj dependencies \
+    && apt install -y cmake sqlite3 curl \
+    && apt-get install -y libsqlite3-dev libtiff5-dev libcurl4-openssl-dev \
+    # As cartopy requires proj v8.0.0 as a minimum, but if you install proj using apt you can only install proj v6.3.1 \
+    # build Proj from source
+    && wget https://download.osgeo.org/proj/proj-9.0.0.tar.gz \
+    && tar -xf proj-9.0.0.tar.gz \
+    && cd proj-9.0.0 \
+    && mkdir build && cd build \
+    && cmake .. && cmake --build . && cmake --build . --target install && ctest; exit 0 && cp ./bin/* /bin \
+    # finally install cartopy
     && pip3 install --upgrade --no-cache-dir Cartopy \
-    && apt-get autoremove --yes && apt-get clean
+    && apt-get autoremove -y && apt-get clean
 
 # prepare the cartopy data dir
 ENV CARTOPY_DATA_DIR "/cartopy"
 RUN mkdir ${CARTOPY_DATA_DIR}
-#physical data
+# physical data
 ENV NE_PHYSICAL "${CARTOPY_DATA_DIR}/shapefiles/natural_earth/physical"
 RUN mkdir -p ${NE_PHYSICAL}
 
