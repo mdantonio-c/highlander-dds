@@ -5,22 +5,27 @@
         *ngIf="area"
         [initialArea]="area"
         [editable]="editable"
-        [selectedArea]="selectedArea"
+        [selectedArea]="editableArea"
         (onAreaChange)="updateArea($event.area, $event.propagate)"
+        (onLocationChange)="updateLocation($event)"
       ></app-map-side-nav>
       <div
         style="height: 400px; margin-left: 220px"
         leaflet
-        leafletDraw
         [leafletOptions]="options"
-        [leafletDrawOptions]="drawAreaOptions"
         (leafletMapReady)="onMapReady($event)"
-        (leafletDrawEdited)="onDrawEdited($event)"
-        (leafletDrawEditResize)="resizeDraw($event)"
-        (leafletDrawEditMove)="moveDraw($event)"
-        (leafletDrawEditStart)="editable = true"
-        (leafletDrawEditStop)="onDrawEditStop($event)"
       >
+        <div
+          *ngIf="showDrawControl"
+          leafletDraw
+          [leafletDrawOptions]="drawOptions"
+          (leafletDrawReady)="onDrawReady($event)"
+          (leafletDrawEdited)="onDrawEdited($event)"
+          (leafletDrawEditResize)="resizeDraw($event)"
+          (leafletDrawEditMove)="moveDraw($event)"
+          (leafletDrawEditStart)="editable = true"
+          (leafletDrawEditStop)="onDrawEditStop($event)"
+        ></div>
         <div [leafletLayer]="drawnItems"></div>
       </div>
     </div>

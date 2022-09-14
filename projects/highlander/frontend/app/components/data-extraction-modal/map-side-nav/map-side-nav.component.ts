@@ -111,26 +111,28 @@ export class MapSideNavComponent implements OnInit {
           propagate: false,
         });
       } else if (this.spatialForm.get("coverageType").value === "location") {
+        console.log(this.initialArea);
         let newLocation: SpatialPoint = {
           lat: this.spatialForm.get("lat").value,
           lon: this.spatialForm.get("lon").value,
         };
-        // console.log('Emit location change');
+        if (!newLocation.lat || !newLocation.lon) {
+          // set default in the middle
+          newLocation.lat =
+            this.initialArea.north -
+            (this.initialArea.north - this.initialArea.south) / 2;
+          newLocation.lon =
+            this.initialArea.east -
+            (this.initialArea.east - this.initialArea.west) / 2;
+        }
+        console.log("Emit location change");
         this.onLocationChange.emit(newLocation);
       }
     });
   }
 
   resetArea() {
-    this.spatialForm.patchValue(
-      {
-        north: this.initialArea.north,
-        east: this.initialArea.east,
-        south: this.initialArea.south,
-        west: this.initialArea.west,
-      },
-      { emitEvent: false, onlySelf: true }
-    );
+    this.selectedArea = { ...this.initialArea };
     this.onAreaChange.emit({
       area: this.initialArea,
       propagate: true,
