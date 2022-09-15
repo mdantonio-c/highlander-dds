@@ -50,7 +50,12 @@ RUN curl "https://naciscdn.org/naturalearth/10m/physical/ne_10m_ocean.zip"  -o "
     && curl "https://naciscdn.org/naturalearth/10m/physical/ne_10m_coastline.zip"  -o "${CARTOPY_DATA_DIR}/ne_10m_coastline.zip" \
     && curl "https://naciscdn.org/naturalearth/10m/physical/ne_10m_lakes.zip" -o "${CARTOPY_DATA_DIR}/ne_10m_lakes.zip"  \
     && curl "https://naciscdn.org/naturalearth/10m/physical/ne_10m_rivers_lake_centerlines.zip" -o "${CARTOPY_DATA_DIR}/ne_10m_rivers_lake_centerlines.zip"  \
-    && curl "https://naciscdn.org/naturalearth/10m/physical/ne_10m_land.zip" -o "${CARTOPY_DATA_DIR}/ne_10m_land.zip"
+    && curl "https://naciscdn.org/naturalearth/10m/physical/ne_10m_land.zip" -o "${CARTOPY_DATA_DIR}/ne_10m_land.zip" \
+    && curl "https://naturalearth.s3.amazonaws.com/110m_physical/ne_110m_land.zip" -o "${CARTOPY_DATA_DIR}/ne_110m_land.zip" \
+    && curl "https://naturalearth.s3.amazonaws.com/110m_physical/ne_110m_ocean.zip" -o "${CARTOPY_DATA_DIR}/ne_110m_ocean.zip" \
+    && curl "https://naturalearth.s3.amazonaws.com/110m_physical/ne_110m_coastline.zip" -o "${CARTOPY_DATA_DIR}/ne_110m_coastline.zip" \
+    && curl "https://naturalearth.s3.amazonaws.com/110m_physical/ne_110m_lakes.zip" -o "${CARTOPY_DATA_DIR}/ne_110m_lakes.zip" \
+    && curl "https://naturalearth.s3.amazonaws.com/110m_physical/ne_110m_rivers_lake_centerlines.zip" -o "${CARTOPY_DATA_DIR}/ne_110m_rivers_lake_centerlines.zip"
 RUN apt-get -yq install unzip
 RUN unzip ${CARTOPY_DATA_DIR}/\*.zip -d "${NE_PHYSICAL}"
 RUN rm ${CARTOPY_DATA_DIR}/*.zip
@@ -58,7 +63,8 @@ RUN rm ${CARTOPY_DATA_DIR}/*.zip
 # cultural data
 ENV NE_CULTURAL "${CARTOPY_DATA_DIR}/shapefiles/natural_earth/cultural"
 RUN mkdir -p ${NE_CULTURAL}
-RUN curl "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_boundary_lines_land.zip" -o "${CARTOPY_DATA_DIR}/ne_10m_admin_0_boundary_lines_land.zip"
+RUN curl "https://naciscdn.org/naturalearth/10m/cultural/ne_10m_admin_0_boundary_lines_land.zip" -o "${CARTOPY_DATA_DIR}/ne_10m_admin_0_boundary_lines_land.zip" \
+    && curl "https://naturalearth.s3.amazonaws.com/110m_cultural/ne_110m_admin_0_boundary_lines_land.zip" -o "${CARTOPY_DATA_DIR}/ne_110m_admin_0_boundary_lines_land.zip"
 RUN unzip ${CARTOPY_DATA_DIR}/\*.zip -d "${NE_CULTURAL}"
 RUN rm ${CARTOPY_DATA_DIR}/*.zip
 
@@ -71,5 +77,4 @@ RUN chown "developer:developer" -R ${CARTOPY_DATA_DIR}
 RUN pip3 install --upgrade --no-cache-dir regionmask \
     && pip3 install --upgrade --no-cache-dir seaborn \
     && pip3 install --upgrade --no-cache-dir matplotlib \
-    && pip3 install --upgrade numpy==1.22.4 \
-    && pip3 install --upgrade shapely==1.8.2
+    && pip3 install --upgrade numpy==1.22.4
