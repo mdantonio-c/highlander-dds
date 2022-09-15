@@ -1,7 +1,14 @@
 import { Component, OnInit, Output, EventEmitter } from "@angular/core";
-import { FormBuilder, FormGroup } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { NgbDateStruct } from "@ng-bootstrap/ng-bootstrap";
 import { AuthService } from "@rapydo/services/auth";
-import { ADMINISTRATIVE_AREAS, INDICATORS, DAILY_METRICS } from "../data";
+import { NotificationService } from "@rapydo/services/notification";
+import {
+  ADMINISTRATIVE_AREAS,
+  INDICATORS,
+  DAILY_METRICS,
+  TIME_PERIODS,
+} from "../data";
 
 @Component({
   selector: "human-wellbeing-filter",
@@ -18,14 +25,34 @@ export class MapFilterComponent implements OnInit {
   readonly landUseBased = [];
   readonly userSelectedItems = [];
   readonly dailyMetrics = DAILY_METRICS;
+  readonly timePeriods = TIME_PERIODS;
+  readonly day = [];
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {
+  maxDate: NgbDateStruct = {
+    year: 2020,
+    month: 12,
+    day: 31,
+  };
+
+  minDate: NgbDateStruct = {
+    year: 1989,
+    month: 1,
+    day: 1,
+  };
+
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private notify: NotificationService
+  ) {
     this.filterForm = this.fb.group({
       indicator: ["WC"],
       administrative: ["italy"],
       landUseBased: [""],
       userSelected: [""],
       daily_metric: ["daymax"],
+      timePeriod: ["multi-year"],
+      day: [""],
     });
   }
 
@@ -41,6 +68,20 @@ export class MapFilterComponent implements OnInit {
 
   private onChanges(): void {
     this.filterForm.valueChanges.subscribe((val) => {
+      if (
+        this.filterForm.get("timePeriod").value === "day" &&
+        !this.filterForm.get("day").value
+      ) {
+        return;
+      }
+      if (this.filterForm.get("timePeriod").value === "multi-year") {
+        this.filterForm.patchValue(
+          {
+            day: null,
+          },
+          { emitEvent: false, onlySelf: true }
+        );
+      }
       this.onFilterChange.emit(val);
     });
   }

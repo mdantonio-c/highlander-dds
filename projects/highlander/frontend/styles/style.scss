@@ -233,6 +233,11 @@ a.ng-star-inserted {
   border: none !important;
 }
 
+.invalid-feedback {
+  display: block;
+  margin-top: 0;
+}
+
 /*input[type="radio"]:checked,
 input[type="checkbox"]:checked {
   color: #1a7dc1 !important;

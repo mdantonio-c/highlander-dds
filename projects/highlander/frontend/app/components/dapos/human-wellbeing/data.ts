@@ -31,3 +31,8 @@ export const DAILY_METRICS = [
   { code: "daymin", label: "Minimum" },
   { code: "daymean", label: "Mean" },
 ];
+
+export const TIME_PERIODS = [
+  { code: "multi-year", label: "Multi-year" },
+  { code: "day", label: "Day" },
+];

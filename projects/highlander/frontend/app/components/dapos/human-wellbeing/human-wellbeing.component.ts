@@ -6,6 +6,7 @@ import { SSRService } from "@rapydo/services/ssr";
 import { DatasetInfo, HumanWellbeingFilter } from "../../../types";
 import { environment } from "@rapydo/../environments/environment";
 import * as L from "leaflet";
+import * as moment from "moment";
 import "leaflet-timedimension/dist/leaflet.timedimension.src.js";
 import { DataService } from "../../../services/data.service";
 import { INDICATORS } from "../human-wellbeing/data";
@@ -113,8 +114,18 @@ export class HumanWellbeingComponent implements OnInit {
     let overlays = {};
     const ind = this.filter.indicator;
     const metric = this.filter.daily_metric;
+    let layers = null;
+    if (this.filter.timePeriod == "multi-year") {
+      layers = `highlander:${ind}_1989-2020_${metric}`;
+    } else {
+      // get the date
+      const year = moment(this.filter.day).format("YYYY");
+      const date = moment(this.filter.day).format("YYYY-MM-DD");
+      layers = `highlander:${ind}_${year}_${metric}-grid_regular?time=${date}`;
+    }
+
     overlays[`Historical`] = L.tileLayer.wms(`${this.baseUrl}/geoserver/wms`, {
-      layers: `highlander:${ind}_1989-2020_${metric}`,
+      layers: layers,
       version: "1.1.0",
       format: "image/png",
       opacity: 0.7,
@@ -124,7 +135,6 @@ export class HumanWellbeingComponent implements OnInit {
       minZoom: MIN_ZOOM,
     });
 
-    //console.log(overlays)
     this.layersControl["baseLayers"] = overlays;
     // for the moment only a single overlay is available
     overlays[`Historical`].addTo(this.map);
@@ -189,6 +199,22 @@ export class HumanWellbeingComponent implements OnInit {
       this.map.removeControl(this.legends[this.filter.indicator]);
       // add the new legend
       this.legends[data.indicator].addTo(this.map);
+      this.filter = data;
+
+      let overlays = this.layersControl["baseLayers"];
+      for (let name in overlays) {
+        if (this.map.hasLayer(overlays[name])) {
+          this.map.removeLayer(overlays[name]);
+        }
+      }
+      this.setOverlaysToMap();
+    }
+    // TIME PERIOD AND DAY
+    if (
+      this.filter.timePeriod !== data.timePeriod ||
+      this.filter.day !== data.day
+    ) {
+      // change the filter and the overlay
       this.filter = data;
 
       let overlays = this.layersControl["baseLayers"];

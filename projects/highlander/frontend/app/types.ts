@@ -162,6 +162,8 @@ export interface HumanWellbeingFilter {
   indicator: string;
   administrative: string;
   daily_metric: string;
+  timePeriod: string;
+  day?: Date;
 }
 
 export interface CropWaterFilter {
