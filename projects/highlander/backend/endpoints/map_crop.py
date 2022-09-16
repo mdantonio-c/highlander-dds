@@ -54,7 +54,14 @@ def plotMapNetcdf(
     log.debug(f"plotting map on {outputfile}")
     fig1 = plt.figure(figsize=(15, 15))
     mpl.rcParams["font.size"] = 15
-    ax1 = fig1.add_subplot(111, projection=ccrs.PlateCarree())
+
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message="The value of the smallest subnormal for <class 'numpy.float64'> type is zero",
+        )
+        ax1 = fig1.add_subplot(111, projection=ccrs.PlateCarree())
+
     ax1.set(frame_on=False)
     ax1.axis("off")
     ax1.set_xticks(ax1.get_xticks())
