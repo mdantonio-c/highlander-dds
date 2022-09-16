@@ -16,6 +16,14 @@ const DRAW_OPTIONS: L.Control.DrawOptions = {
   polyline: false,
   rectangle: false,
 };
+const MARKER_OPTIONS = {
+  icon: L.icon({
+    ...L.Icon.Default.prototype.options,
+    iconUrl: "app/custom/assets/images/marker-icon.png",
+    iconRetinaUrl: "app/custom/assets/images/marker-icon-2x.png",
+    shadowUrl: "app/custom/assets/images/marker-shadow.png",
+  }),
+};
 
 @Component({
   selector: "app-spatial-coverage",
@@ -269,7 +277,7 @@ export class SpatialCoverageComponent {
       } else if (l instanceof L.Rectangle) {
         this.resetAll();
         // create the updated marker location
-        const marker = L.marker([loc.latitude, loc.longitude]);
+        const marker = L.marker([loc.latitude, loc.longitude], MARKER_OPTIONS);
 
         // add to the map
         this.drawnItems.addLayer(marker);
