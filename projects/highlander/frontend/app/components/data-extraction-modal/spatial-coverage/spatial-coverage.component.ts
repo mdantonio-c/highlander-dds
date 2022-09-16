@@ -7,6 +7,15 @@ import { SpatialArea, SpatialPoint } from "../../../types";
 import { NotificationService } from "@rapydo/services/notification";
 
 const MAP_CENTER: L.LatLng = L.latLng({ lat: 41.88, lng: 12.28 });
+// Disable all drawing options. ONLY edit layer allowed.
+const DRAW_OPTIONS: L.Control.DrawOptions = {
+  marker: false,
+  polygon: false,
+  circlemarker: false,
+  circle: false,
+  polyline: false,
+  rectangle: false,
+};
 
 @Component({
   selector: "app-spatial-coverage",
@@ -17,8 +26,12 @@ export class SpatialCoverageComponent {
   @Input() area: SpatialArea;
   selectedArea: SpatialArea;
   editableArea: SpatialArea;
+  selectedLocation: SpatialPoint;
+  editableLocation: SpatialPoint;
   @Output() areaChanged: EventEmitter<SpatialArea> =
     new EventEmitter<SpatialArea>();
+  @Output() locationChanged: EventEmitter<SpatialPoint> =
+    new EventEmitter<SpatialPoint>();
   private _editable: boolean = false;
 
   @Input() set editable(value: boolean) {
@@ -30,7 +43,6 @@ export class SpatialCoverageComponent {
   }
 
   drawnItems: L.FeatureGroup = L.featureGroup();
-  // drawnArea: L.Rectangle;
   map: L.Map;
 
   options = {
@@ -48,21 +60,12 @@ export class SpatialCoverageComponent {
   // toolbar
   drawOptions: L.Control.DrawConstructorOptions = {
     position: "topright",
-    draw: {
-      marker: false,
-      polygon: false,
-      circlemarker: false,
-      circle: false,
-      polyline: false,
-      rectangle: false,
-    },
+    draw: DRAW_OPTIONS,
     edit: {
       featureGroup: this.drawnItems,
       remove: false,
     },
   };
-  showDrawControl: boolean = true;
-  drawControl: L.Control.Draw;
 
   constructor(private notify: NotificationService) {}
 
@@ -81,15 +84,8 @@ export class SpatialCoverageComponent {
     this.drawEntireArea();
   }
 
-  onDrawReady(drawControl: L.Control.Draw) {
-    this.drawControl = drawControl;
-  }
-
-  private clearAll() {
-    this.drawnItems.clearLayers();
-  }
-
   private resetAll() {
+    this.drawnItems.clearAllEventListeners();
     this.drawnItems.clearLayers();
   }
 
@@ -105,20 +101,18 @@ export class SpatialCoverageComponent {
     this.map.fitBounds(bounds, { padding: [20, 20] });
   }
 
-  onDrawEdited(e: L.DrawEvents.Edited) {
-    // console.log('draw edited: save button');
-    this.selectedArea = { ...this.editableArea };
-    this.areaChanged.emit(this.selectedArea);
-  }
-
   resizeDraw(e: L.DrawEvents.EditResize) {
     // console.log('resize area', e);
     this.updateEditableArea(e.layer);
   }
 
   moveDraw(e: L.DrawEvents.EditMove) {
-    // console.log('move area', e);
-    this.updateEditableArea(e.layer);
+    // console.log('move draw', e);
+    if (e.layer instanceof L.Marker) {
+      this.updateEditableLocation(e.layer);
+    } else if (e.layer instanceof L.Rectangle) {
+      this.updateEditableArea(e.layer);
+    }
   }
 
   private updateEditableArea(layer: L.Layer) {
@@ -132,6 +126,15 @@ export class SpatialCoverageComponent {
     };
   }
 
+  private updateEditableLocation(layer: L.Marker) {
+    if (!layer) return;
+    const point = layer.getLatLng();
+    this.editableLocation = {
+      latitude: point.lat,
+      longitude: point.lng,
+    };
+  }
+
   private updateSelectedArea(layer: L.Rectangle) {
     const coords = layer.getLatLngs();
     this.selectedArea = {
@@ -142,18 +145,53 @@ export class SpatialCoverageComponent {
     };
   }
 
+  private updateSelectedLocation(layer: L.Marker) {
+    if (!layer) return;
+    const point = layer.getLatLng();
+    this.selectedLocation = {
+      latitude: point.lat,
+      longitude: point.lng,
+    };
+  }
+
+  onDrawEdited(e: L.DrawEvents.Edited) {
+    // console.log('draw edited: save button');
+    this.drawnItems.eachLayer((layer) => {
+      if (layer instanceof L.Rectangle) {
+        this.selectedArea = { ...this.editableArea };
+        this.areaChanged.emit(this.selectedArea);
+      } else if (layer instanceof L.Marker) {
+        this.selectedLocation = { ...this.editableLocation };
+        this.locationChanged.emit(this.selectedLocation);
+      }
+    });
+  }
+
   onDrawEditStop(e: L.DrawEvents.EditStop) {
+    // console.log('draw edit stop', e);
     this.editable = false;
 
     // reset to the actual selected area (ON EDIT CANCEL)
     // detect 'Cancel' when editable and selected areas are different
-    if (!_.isEqual(this.selectedArea, this.editableArea)) {
-      // console.log('Cancel clicked');
+    if (
+      e.layer instanceof L.Rectangle &&
+      !_.isEqual(this.selectedArea, this.editableArea)
+    ) {
       this.updateArea(this.selectedArea, false);
       this.editableArea = { ...this.selectedArea };
+    } else if (
+      e.layer instanceof L.Marker &&
+      !_.isEqual(this.selectedLocation, this.editableLocation)
+    ) {
+      this.updateLocation(this.selectedLocation);
+      this.editableLocation = { ...this.selectedLocation };
     }
   }
 
+  /**
+   * Draw entire area
+   * @private
+   */
   private drawEntireArea() {
     // create the entire rectangle area
     if (Object.values(this.area).some((v) => v === null)) {
@@ -189,7 +227,7 @@ export class SpatialCoverageComponent {
    * @param propagate if true, propagate set spatial coverage and size estimate
    */
   updateArea(val: SpatialArea, propagate = true) {
-    // console.log(`Draw updated area on the map. Propagate? ${propagate}`);
+    console.log(`Draw updated area on the map. Propagate? ${propagate}`);
     // clean up
     this.resetAll();
 
@@ -223,11 +261,22 @@ export class SpatialCoverageComponent {
    * @param loc the new Location to draw
    */
   updateLocation(loc: SpatialPoint) {
-    console.log(`Draw updated location on the map: ${loc}`);
-    // TODO
-  }
+    // console.log(`Draw updated location on the map: <${loc.latitude}, ${loc.longitude}>`);
 
-  private toggleDrawControl() {
-    this.showDrawControl = !this.showDrawControl;
+    this.drawnItems.eachLayer((l: L.Layer) => {
+      if (l instanceof L.Marker) {
+        l.setLatLng(new L.LatLng(loc.latitude, loc.longitude));
+      } else if (l instanceof L.Rectangle) {
+        this.resetAll();
+        // create the updated marker location
+        const marker = L.marker([loc.latitude, loc.longitude]);
+
+        // add to the map
+        this.drawnItems.addLayer(marker);
+        this.updateSelectedLocation(marker);
+
+        this.locationChanged.emit(this.selectedLocation);
+      }
+    });
   }
 }

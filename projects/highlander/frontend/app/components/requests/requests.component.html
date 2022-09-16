@@ -131,24 +131,24 @@
                       </ul>
                     </dd>
                   </dl>
-                  <dl class="mb-0" *ngIf="row.args.latitude">
-                    <dt>Latitude</dt>
+                  <dl class="mb-0" *ngIf="row.args.location">
+                    <dt>Location</dt>
                     <dd>
                       <ul>
                         <li>
-                          [{{ row.args.latitude.start }},
-                          {{ row.args.latitude.stop }}]
-                        </li>
-                      </ul>
-                    </dd>
-                  </dl>
-                  <dl class="mb-0" *ngIf="row.args.longitude">
-                    <dt>Longitude</dt>
-                    <dd>
-                      <ul>
-                        <li>
-                          [{{ row.args.longitude.start }},
-                          {{ row.args.longitude.stop }}]
+                          <strong>LAT</strong>:
+                          {{ row.args.location.latitude | number: "1.3-3" }},
+                          <strong>LNG</strong>:
+                          {{ row.args.location.longitude | number: "1.3-3" }}
+                          <a
+                            href="http://openstreetmap.org/?mlat={{
+                              row.args.location.latitude
+                            }}&mlon={{ row.args.location.longitude }}#map=8/{{
+                              row.args.location.latitude
+                            }}/{{ row.args.location.longitude }}"
+                            target="_blank"
+                            ><i class="fas fa-up-right-from-square"></i>
+                          </a>
                         </li>
                       </ul>
                     </dd>

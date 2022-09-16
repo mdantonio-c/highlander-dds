@@ -17,7 +17,7 @@ import {
   StorageUsage,
   Widget,
   SpatialArea,
-  LatLngRange,
+  SpatialPoint,
 } from "../../types";
 import {
   AbstractControl,
@@ -37,14 +37,10 @@ import {
 } from "rxjs";
 import {
   startWith,
-  mergeMap,
   switchMap,
   tap,
   takeUntil,
   catchError,
-  debounceTime,
-  throttleTime,
-  distinctUntilChanged,
 } from "rxjs/operators";
 
 @Component({
@@ -71,8 +67,6 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
     west: null,
   };
   remaining: number;
-  private latitude: LatLngRange;
-  private longitude: LatLngRange;
   private loading: boolean;
   private destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
 
@@ -236,31 +230,34 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
     if (area) {
       res["area"] = area;
     }
-    /*if (this.latitude) {
-      res["latitude"] = this.latitude;
+    let location: SpatialPoint = (
+      this.filterForm.controls.point as AbstractControl
+    ).value;
+    if (location) {
+      res["location"] = {
+        latitude: location.latitude,
+        longitude: location.longitude,
+      };
     }
-    if (this.longitude) {
-      res["longitude"] = this.longitude;
-    }*/
     return res;
   }
 
   setSpatialCoverage(area: SpatialArea) {
     // console.log('set spatial coverage', area);
-    /*this.latitude = {
-      start: area.south,
-      stop: area.north,
-    };
-    this.longitude = {
-      start: area.west,
-      stop: area.east,
-    };*/
-    // this.area = area;
+    this.filterForm.controls.point.setValue(null, {
+      onlySelf: true,
+      emitEvent: false,
+    });
     this.filterForm.controls.area.setValue(area);
-    /*this.filterForm.updateValueAndValidity({
-      onlySelf: false,
-      emitEvent: true,
-    });*/
+  }
+
+  setLocationCoverage(loc: SpatialPoint) {
+    // console.log('set location coverage', loc);
+    this.filterForm.controls.area.setValue(null, {
+      onlySelf: true,
+      emitEvent: false,
+    });
+    this.filterForm.controls.point.setValue(loc);
   }
 
   private toFormGroup(data: ProductInfo) {
@@ -271,6 +268,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
       time_hour: this.fb.array([]),
       format: ["netcdf", Validators.required],
       area: [null],
+      point: [null],
     });
     data.widgets_order.forEach((w) => {
       let comp = this.getWidget(w);

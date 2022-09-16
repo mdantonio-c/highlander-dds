@@ -96,6 +96,7 @@
                         class="w-100"
                         [area]="initialArea"
                         (areaChanged)="setSpatialCoverage($event)"
+                        (locationChanged)="setLocationCoverage($event)"
                       >
                       </app-spatial-coverage>
                       <app-temporal-coverage

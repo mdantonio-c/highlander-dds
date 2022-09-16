@@ -8,7 +8,7 @@
               {
                 "glob": "**/*",
                 "input": "./node_modules/leaflet/dist/images",
-                "output": "leaflet/"
+                "output": "app/custom/assets/images"
               }
             ],
             "scripts": ["node_modules/iso8601-js-period/iso8601.js"]

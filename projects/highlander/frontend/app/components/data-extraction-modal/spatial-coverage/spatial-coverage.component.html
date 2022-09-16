@@ -6,6 +6,7 @@
         [initialArea]="area"
         [editable]="editable"
         [selectedArea]="editableArea"
+        [selectedLocation]="editableLocation"
         (onAreaChange)="updateArea($event.area, $event.propagate)"
         (onLocationChange)="updateLocation($event)"
       ></app-map-side-nav>
@@ -16,10 +17,8 @@
         (leafletMapReady)="onMapReady($event)"
       >
         <div
-          *ngIf="showDrawControl"
           leafletDraw
           [leafletDrawOptions]="drawOptions"
-          (leafletDrawReady)="onDrawReady($event)"
           (leafletDrawEdited)="onDrawEdited($event)"
           (leafletDrawEditResize)="resizeDraw($event)"
           (leafletDrawEditMove)="moveDraw($event)"

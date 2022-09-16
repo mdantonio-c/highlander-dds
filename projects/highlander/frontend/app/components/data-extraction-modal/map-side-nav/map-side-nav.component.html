@@ -17,10 +17,7 @@
           @openClose
         >
           <div class="content-item">
-            <label for="north"
-              >North
-              <!--<small>({{initialArea.north}})</small>--></label
-            >
+            <label for="north">North</label>
             <input
               type="number"
               class="form-control"
@@ -32,10 +29,7 @@
             />
           </div>
           <div class="content-item">
-            <label for="east"
-              >East
-              <!--<small>({{initialArea.east}})</small>--></label
-            >
+            <label for="east">East</label>
             <input
               type="number"
               class="form-control"
@@ -47,10 +41,7 @@
             />
           </div>
           <div class="content-item">
-            <label for="south"
-              >South
-              <!--<small>({{initialArea.south}})</small>--></label
-            >
+            <label for="south">South</label>
             <input
               type="number"
               class="form-control"
@@ -62,10 +53,7 @@
             />
           </div>
           <div class="content-item">
-            <label for="west"
-              >West
-              <!--<small>({{initialArea.west}})</small>--></label
-            >
+            <label for="west">West</label>
             <input
               type="number"
               class="form-control"
@@ -108,7 +96,11 @@
               type="number"
               class="form-control"
               id="lat"
+              step=".01"
+              [min]="initialArea.south"
+              [max]="initialArea.north"
               formControlName="lat"
+              [readonly]="!editable"
             />
           </div>
           <div class="content-item">
@@ -117,7 +109,11 @@
               type="number"
               class="form-control"
               id="lon"
+              step=".01"
+              [min]="initialArea.east"
+              [max]="initialArea.west"
               formControlName="lon"
+              [readonly]="!editable"
             />
           </div>
         </div>

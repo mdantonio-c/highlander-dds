@@ -96,6 +96,7 @@ export interface RequestArgs {
   variable?: string[];
   time?: TimeArg;
   area?: SpatialArea;
+  location?: SpatialPoint;
   format: string;
   [other: string]: any;
 }
@@ -137,8 +138,8 @@ export interface SpatialArea {
 }
 
 export interface SpatialPoint {
-  lat: number;
-  lon: number;
+  latitude: number;
+  longitude: number;
 }
 
 export interface LatLngRange {

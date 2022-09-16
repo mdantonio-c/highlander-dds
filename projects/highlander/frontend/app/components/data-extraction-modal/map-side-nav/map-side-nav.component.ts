@@ -73,6 +73,24 @@ export class MapSideNavComponent implements OnInit {
     return this._selectedArea;
   }
 
+  private _selectedLocation: SpatialPoint;
+
+  @Input() set selectedLocation(value: SpatialPoint) {
+    this._selectedLocation = value;
+    if (!this.spatialForm) return;
+    // update location lat/lon
+    this.spatialForm.patchValue(
+      {
+        lat: value.latitude,
+        lon: value.longitude,
+      },
+      {
+        onlySelf: true,
+        emitEvent: false,
+      }
+    );
+  }
+
   ngOnInit() {
     this.spatialForm = this.fb.group({
       north: [this.initialArea.north],
@@ -111,21 +129,21 @@ export class MapSideNavComponent implements OnInit {
           propagate: false,
         });
       } else if (this.spatialForm.get("coverageType").value === "location") {
-        console.log(this.initialArea);
         let newLocation: SpatialPoint = {
-          lat: this.spatialForm.get("lat").value,
-          lon: this.spatialForm.get("lon").value,
+          latitude: this.spatialForm.get("lat").value,
+          longitude: this.spatialForm.get("lon").value,
         };
-        if (!newLocation.lat || !newLocation.lon) {
+        if (!newLocation.latitude || !newLocation.longitude) {
           // set default in the middle
-          newLocation.lat =
+          newLocation.latitude =
             this.initialArea.north -
             (this.initialArea.north - this.initialArea.south) / 2;
-          newLocation.lon =
+          newLocation.longitude =
             this.initialArea.east -
             (this.initialArea.east - this.initialArea.west) / 2;
+          this.selectedLocation = { ...newLocation };
         }
-        console.log("Emit location change");
+        // console.log("Emit location change");
         this.onLocationChange.emit(newLocation);
       }
     });
