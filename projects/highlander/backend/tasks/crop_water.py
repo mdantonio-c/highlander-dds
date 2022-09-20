@@ -130,12 +130,14 @@ def retrieve_crop_water(self: Task[[bool], None], mirror: bool = False) -> None:
                         log.warning(f"Error with ftp: {err}")
                         continue
             else:
+                log.info(f"LAST RUN for reference date: {ref_time}")
                 relative_path = f"{area}/{last_tuesday.year}/monthlyForecast/{ref_time}"
                 try:
                     f.connection.cwd(f"{root_dir}/{relative_path}")
                 except error_perm as err:
                     log.error(f"Failure retrieving data from area <{area}>: {err}")
-                    continue
+                    #  STOP task if any exception is raised here
+                    raise err
 
                 filenames = f.connection.nlst()
                 saved = download_data(f, filenames, relative_path)
