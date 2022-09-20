@@ -24,6 +24,24 @@ class Initializer:
             minute="0",
         )
 
+        sub_seasonal_crontab_task_name = "sub-seasonal-data-sync"
+        task = celery_app.get_periodic_task(name=sub_seasonal_crontab_task_name)
+        if task:
+            log.info(f"Delete existing task <{sub_seasonal_crontab_task_name}>")
+            celery_app.delete_periodic_task(name=sub_seasonal_crontab_task_name)
+        # Executes every Tuesday and Friday morning at 5:00 a.m.
+        celery_app.create_crontab_task(
+            name=sub_seasonal_crontab_task_name,
+            task="clean_cache",
+            args=[
+                "sub-seasonal_sub-seasonal_BiasCorr",
+                "sub-seasonal_sub-seasonal_ecPoint_perc",
+            ],
+            day_of_week="2,5",
+            hour="5",
+            minute="0",
+        )
+
     # This method is called after normal initialization if TESTING mode is enabled
     def initialize_testing_environment(self) -> None:
         pass
