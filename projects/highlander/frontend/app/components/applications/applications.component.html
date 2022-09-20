@@ -28,6 +28,22 @@
 </div>
 <div
   class="category-box border-bottom d-flex p-2 justify-content-evenly flex-wrap"
+  *ngIf="climateApps && climateApps.length"
+>
+  <h2 class="category-title mt-3 w-100">Climate</h2>
+  <div
+    class="flex-child my-3 mx-3 {{ dataset.id }}"
+    *ngFor="let dataset of otherApps"
+  >
+    <hld-dataset-card
+      [dataset]="dataset"
+      [isLoggedIn]="user || false"
+    ></hld-dataset-card>
+  </div>
+</div>
+
+<div
+  class="category-box border-bottom d-flex p-2 justify-content-evenly flex-wrap"
   *ngIf="otherApps && otherApps.length"
 >
   <h2 class="category-title mt-3 w-100">Other</h2>
