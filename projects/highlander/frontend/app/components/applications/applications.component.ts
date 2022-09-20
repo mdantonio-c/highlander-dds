@@ -15,6 +15,7 @@ export class ApplicationsComponent implements OnInit {
   waterApps: DatasetInfo[] = [];
   paneveggioApps: DatasetInfo[] = [];
   otherApps: DatasetInfo[] = [];
+  climateApps: DatasetInfo[] = [];
   readonly backendURI = environment.backendURI;
 
   constructor() {}
@@ -28,6 +29,9 @@ export class ApplicationsComponent implements OnInit {
           break;
         case "paneveggio":
           this.paneveggioApps.push(ds);
+          break;
+        case "climate":
+          this.climateApps.push(ds);
           break;
         default:
           this.otherApps.push(ds);
