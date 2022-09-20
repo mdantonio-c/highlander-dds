@@ -39,6 +39,7 @@ export class ApplicationsComponent implements OnInit {
     });
     /*console.log("water", this.waterApps);
     console.log("paneveggio", this.paneveggioApps);
-    console.log("others", this.otherApps);*/
+    console.log("others", this.otherApps);
+    console.log("climate", this.climateApps);*/
   }
 }
