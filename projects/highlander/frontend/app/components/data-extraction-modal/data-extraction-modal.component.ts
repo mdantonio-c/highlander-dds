@@ -88,7 +88,11 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
         this.productId
       ),
     })
-      .pipe(catchError((error) => of(error)))
+      .pipe(
+        catchError((err) => {
+          return throwError(err);
+        })
+      )
       .subscribe(
         ({ storageUsage, datasetProduct }) => {
           this.usage = storageUsage;
