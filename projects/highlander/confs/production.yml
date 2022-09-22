@@ -8,6 +8,8 @@ services:
     volumes:
       - /data:/catalog/datasets
   geoserver:
+    environment:
+      GEOSERVER_CSRF_WHITELIST: ${PROJECT_DOMAIN}
     volumes:
       - /data/datasets:/datasets
   proxy:
