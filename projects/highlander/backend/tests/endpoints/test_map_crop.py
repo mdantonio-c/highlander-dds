@@ -9,7 +9,7 @@ __author__ = "Beatrice Chiavarini (b.chiavarini@cineca.it)"
 
 
 DATASET_ID = "soil-erosion"
-PRODUCT_ID = "soil-erosion"
+PRODUCT_ID = "rainfall-erosivity"
 PRODUCT_ID2 = "soil-loss"
 MODEL_ID = "R1"
 MODEL_ID2 = "SL1"
