@@ -117,7 +117,7 @@ export class HumanWellbeingComponent implements OnInit {
     let layers = null;
     let url = null;
     if (this.filter.timePeriod == "multi-year") {
-      layers = `highlander:${ind}_1989-2020_${metric}`;
+      layers = `highlander:${ind}_1989-2020_${metric}_VHR-REA_multiyearmean`;
       url = `${this.baseUrl}/geoserver/wms`;
     } else {
       // get the date
