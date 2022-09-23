@@ -11,7 +11,7 @@ services:
     environment:
       GEOSERVER_CSRF_WHITELIST: ${PROJECT_DOMAIN}
     volumes:
-      - /data/datasets:/datasets
+      - /data/datasets:/opt/geoserver/data_dir/datasets
   proxy:
     volumes:
       - ${PROJECT_DIR}/confs/geoserver.service:/etc/nginx/sites-enabled/geoserver.service
