@@ -115,16 +115,19 @@ export class HumanWellbeingComponent implements OnInit {
     const ind = this.filter.indicator;
     const metric = this.filter.daily_metric;
     let layers = null;
+    let url = null;
     if (this.filter.timePeriod == "multi-year") {
       layers = `highlander:${ind}_1989-2020_${metric}`;
+      url = `${this.baseUrl}/geoserver/wms`;
     } else {
       // get the date
       const year = moment(this.filter.day).format("YYYY");
       const date = moment(this.filter.day).format("YYYY-MM-DD");
-      layers = `highlander:${ind}_${year}_${metric}-grid_regular?time=${date}`;
+      layers = `highlander:${ind}_${year}_${metric}-grid_regular`;
+      url = `${this.baseUrl}/geoserver/wms?time=${date}`;
     }
 
-    overlays[`Historical`] = L.tileLayer.wms(`${this.baseUrl}/geoserver/wms`, {
+    overlays[`Historical`] = L.tileLayer.wms(url, {
       layers: layers,
       version: "1.1.0",
       format: "image/png",
