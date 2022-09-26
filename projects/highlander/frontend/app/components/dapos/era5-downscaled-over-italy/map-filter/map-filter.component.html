@@ -1,0 +1,34 @@
+<div id="parameters">
+  <div class="card bg-light">
+    <div class="card-body">
+      <form [formGroup]="filterForm">
+        <!-- INDICATOR -->
+        <div class="mb-3">
+          <label class="col-form-label"><strong>Indicator:</strong></label>
+          <select
+            id="indicatorGroup"
+            formControlName="indicator"
+            class="form-select"
+          >
+            <option *ngFor="let i of indicators" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+        </div>
+        <!-- ADMINISTRATIVE -->
+        <div class="mb-3">
+          <label class="col-form-label"><strong>Administrative:</strong></label>
+          <select
+            id="administrativeGroup"
+            formControlName="administrative"
+            class="form-select"
+          >
+            <option *ngFor="let i of administratives" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

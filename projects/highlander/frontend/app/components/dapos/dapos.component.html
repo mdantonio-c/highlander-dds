@@ -27,5 +27,10 @@
     </app-crop-water>
     <app-human-wellbeing *ngSwitchCase="'human-wellbeing'" [dataset]="dataset">
     </app-human-wellbeing>
+    <app-era5-downscaled-over-italy
+      *ngSwitchCase="'era5-downscaled-over-italy'"
+      [dataset]="dataset"
+    >
+    </app-era5-downscaled-over-italy>
   </ng-container>
 </ng-container>

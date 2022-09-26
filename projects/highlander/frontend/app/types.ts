@@ -152,6 +152,11 @@ export interface SoilErosionFilter {
   administrative: string;
 }
 
+export interface Era5Filter {
+  indicator: string;
+  administrative: string;
+}
+
 export interface SoilErosionMapCrop {
   product?: string;
   model?: string;

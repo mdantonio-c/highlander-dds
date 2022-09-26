@@ -24,10 +24,12 @@ import { DaposComponent } from "./components/dapos/dapos.component";
 import { SoilErosionComponent } from "./components/dapos/soil-erosion/soil-erosion.component";
 import { CropWaterComponent } from "./components/dapos/crop-water/crop-water.component";
 import { HumanWellbeingComponent } from "./components/dapos/human-wellbeing/human-wellbeing.component";
+import { Era5DownscaledOverItalyComponent } from "./components/dapos/era5-downscaled-over-italy/era5-downscaled-over-italy.component";
 import { MapFilterComponent as SoilErosionFilter } from "./components/dapos/soil-erosion/map-filter/map-filter.component";
 import { MapDetailComponent as SoilErosionDetail } from "./components/dapos/soil-erosion/map-detail/map-detail.component";
 import { MapFilterComponent as CropWaterFilter } from "./components/dapos/crop-water/map-filter/map-filter.component";
 import { MapFilterComponent as HumanWellbeingFilter } from "./components/dapos/human-wellbeing/map-filter/map-filter.component";
+import { MapFilterComponent as Era5Filter } from "./components/dapos/era5-downscaled-over-italy/map-filter/map-filter.component";
 import { ReplacePipe } from "./pipes/replace.pipe";
 import { AbsPipe } from "./pipes/abs.pipe";
 import { ClickStopPropagation } from "./directives/click-stop-propagation";
@@ -81,10 +83,12 @@ const routes: Routes = [
     CropWaterComponent,
     CropDetailsComponent,
     HumanWellbeingComponent,
+    Era5DownscaledOverItalyComponent,
     SoilErosionFilter,
     SoilErosionDetail,
     CropWaterFilter,
     HumanWellbeingFilter,
+    Era5Filter,
     ReplacePipe,
     AbsPipe,
     FirstWordPipe,
