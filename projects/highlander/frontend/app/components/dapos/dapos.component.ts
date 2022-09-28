@@ -41,6 +41,7 @@ export class DaposComponent {
             this.dataset = data;
           },
           (error) => {
+            this.router.navigate(["app/404"]);
             this.notify.showError(error);
           }
         )
