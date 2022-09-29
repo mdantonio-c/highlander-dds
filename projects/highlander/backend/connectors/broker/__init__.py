@@ -200,10 +200,13 @@ class BrokerExt(Connector):
             data["widgets"].append(w.to_dict())
 
             time = coords["time"]
-            start, stop = (
-                BrokerExt.unwrap(time[ext]).astype("M8[h]").astype("O")
-                for ext in ("min", "max")
+            start = BrokerExt.unwrap(sorted(time["min"])).astype("M8[h]").astype("O")
+            stop = (
+                BrokerExt.unwrap(sorted(time["max"], reverse=True))
+                .astype("M8[h]")
+                .astype("O")
             )
+
             time_units = {"y": "year", "m": "month", "d": "day", "h": "hour"}
             unit = time_units[BrokerExt.unwrap(time.get("dds_step_unit", "h")).lower()]
             time_step = int(BrokerExt.unwrap(time["dds_step"]))
