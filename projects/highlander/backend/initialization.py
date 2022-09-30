@@ -34,8 +34,10 @@ class Initializer:
             name=sub_seasonal_crontab_task_name,
             task="clean_cache",
             args=[
-                "sub-seasonal_sub-seasonal_BiasCorr",
-                "sub-seasonal_sub-seasonal_ecPoint_perc",
+                [
+                    "sub-seasonal_sub-seasonal_BiasCorr",
+                    "sub-seasonal_sub-seasonal_ecPoint_perc",
+                ]
             ],
             day_of_week="2,5",
             hour="5",
