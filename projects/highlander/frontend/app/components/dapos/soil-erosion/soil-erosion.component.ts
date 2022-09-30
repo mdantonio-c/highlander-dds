@@ -284,6 +284,7 @@ export class SoilErosionComponent implements OnInit {
     // get the indicator
     let indicator_code = this.filter.indicator;
     const indicator = INDICATORS.find((x) => x.code == indicator_code);
+    this.mapCropDetails.indicator = indicator.code;
     this.mapCropDetails.product = indicator.product;
     this.mapCropDetails.area_type = this.administrative;
     //force the ngonChanges of the child component

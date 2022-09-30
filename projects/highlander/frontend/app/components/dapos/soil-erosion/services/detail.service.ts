@@ -21,6 +21,7 @@ export class DetailService {
       },
     };
     let params = {
+      indicator: detailsFilter.indicator,
       model_id: detailsFilter.model,
       area_type: detailsFilter.area_type,
       type: detailType,

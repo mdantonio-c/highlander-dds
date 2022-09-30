@@ -1,3 +1,4 @@
+import datetime
 import os
 import warnings
 from pathlib import Path
@@ -19,13 +20,14 @@ from marshmallow import ValidationError, pre_load
 from matplotlib import cm
 from restapi import decorators
 from restapi.connectors import Connector
-from restapi.exceptions import NotFound, ServerError
+from restapi.exceptions import BadRequest, NotFound, ServerError
 from restapi.models import Schema, fields, validate
 from restapi.rest.definition import EndpointResource, Response
 from restapi.services.authentication import User
 from restapi.utilities.logs import log
 
 AREA_TYPES = ["regions", "provinces", "bbox", "polygon"]
+DAILY_METRICS = ["daymax", "daymin", "daymean"]
 TYPES = ["map", "plot"]
 PLOT_TYPES = ["boxplot", "distribution"]
 FORMATS = ["png", "json"]
@@ -39,10 +41,157 @@ cartopy.config["data_dir"] = os.getenv(
 )
 
 
-CROPS_OUTPUT_ROOT = "/catalog/crops/"
+CROPS_OUTPUT_ROOT = Path("/catalog/crops/")
 
 # variable used for the cases where the model name and the file name does not match
 MODELS_MAPPING = {"RF": "R"}
+
+# mandatory params for the different datasets and their different products
+MANDATORY_PARAM_MAP = {
+    "soil-erosion": {"all_products": ["model_id"]},
+    "human-wellbeing": {"all_products": ["daily_metric"], "daily": ["year", "date"]},
+}
+
+# output structure for the different datasets and their different products
+OUTPUT_STRUCTURE_MAP = {
+    "soil-erosion": {
+        "all_products": ["dataset_id", "product_id", "model_id", "area_type"]
+    },
+    "human-wellbeing": {
+        "daily": ["dataset_id", "product_id", "indicator", "year", "date", "area_type"],
+        "multi-year": ["dataset_id", "product_id", "indicator", "area_type"],
+    },
+}
+
+# url where to find source data files for the different datasets
+SOURCE_FILE_URL_MAP = {
+    "soil-erosion": {
+        "rainfall-erosivity": {
+            "url": f"{os.environ.get('CATALOG_DIR')}/datasets/soil-erosion/model_filename_1991_2020_regular.nc",
+            "params": ["model_filename"],
+        },
+        "soil-loss": {
+            "url": f"{os.environ.get('CATALOG_DIR')}/datasets/soil-erosion/SoilLoss/model_filename_1991_2020_VHR-REA.nc",
+            "params": ["model_filename"],
+        },
+    },
+    "human-wellbeing": {
+        "daily": {
+            "url": f"{os.environ.get('CATALOG_DIR')}/datasets/human-wellbeing/regular/indicator_year_daily_metric_VHR-REA_regular.nc",
+            "params": ["indicator", "year", "daily_metric"],
+        },
+        "multi-year": {
+            "url": f"{os.environ.get('CATALOG_DIR')}/datasets/human-wellbeing/multiyear/regular/indicator_1989-2020_daily_metric_VHR-REA_multiyearmean.nc",
+            "params": [
+                "indicator",
+                "daily_metric",
+            ],
+        },
+    },
+}
+
+# map for indicator and variables
+VARIABLES_MAP = {"RF": "rf", "SL": "sl", "WC": "wc", "H": "h", "DI": "di", "AT": "at"}
+
+# map of themes and level for cropped map
+MAP_STYLES = {
+    "r-factor": {
+        "colormap": "mpl.cm.viridis_r",
+        "levels": [0, 500, 1000, 1500, 2000, 2500, 3000, 4000, 6000, 8000, 10000],
+    },
+    "soil-loss": {
+        "colormap": "mpl.cm.Oranges",
+        "levels": [0, 1, 2.5, 5, 10, 50, 100, 500, 1000, 2000],
+    },
+    "apparent-temperature": {
+        "colormap": "mpl.cm.ncar_gist",
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
+    },
+    "discomfort-index": {
+        "colormap": "mpl.cm.ncar_gist",
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
+    },
+    "humidex": {
+        "colormap": "mpl.cm.ncar_gist",
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
+    },
+    "wind-chill": {
+        "colormap": "mpl.cm.ncar_gist",
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
+    },
+}
 
 
 def plotMapNetcdf(
@@ -87,14 +236,13 @@ def plotMapNetcdf(
         )
     try:
         levels: List[float] = []
-        if product == "r-factor":
-            cmap = mpl.cm.viridis_r
-            levels = [0, 500, 1000, 1500, 2000, 2500, 3000, 4000, 6000, 8000, 10000]
-            norm = mpl.colors.BoundaryNorm(levels, cmap.N)
-        elif product == "soil-loss":
-            cmap = mpl.cm.Oranges
-            levels = [0, 1, 2.5, 5, 10, 50, 100, 500, 1000, 2000]
-            norm = mpl.colors.BoundaryNorm(levels, cmap.N)
+        if product not in MAP_STYLES.keys():
+            raise ServerError(f"plotting style not defined for product {product}")
+
+        cmap = eval(MAP_STYLES[product]["colormap"])
+        levels = MAP_STYLES[product]["levels"]
+        norm = mpl.colors.BoundaryNorm(levels, cmap.N)
+
     except Exception as e:
         raise ServerError(f"Errors in passing data variable: {e}")
 
@@ -127,7 +275,12 @@ def plotBoxplot(field: Any, outputfile: Path) -> None:
     )  # len(field.lon)/100, len(field.lat)/100))
     sns.set_theme(style="ticks")
     sns.despine(fig4)
-    sns.boxplot(data=field, whis=[1, 99], showfliers=False, palette="Set3")
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message="iteritems is deprecated and will be removed in a future version. Use .items instead.",
+        )
+        sns.boxplot(data=field, whis=[1, 99], showfliers=False, palette="Set3")
 
     ax4.xaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
     mpl.rcParams["font.size"] = 14
@@ -175,7 +328,13 @@ def plotDistribution(field: Any, outputfile: Path) -> None:
     fig3.savefig(outputfile)
 
 
-def cropArea(netcdf_path: Path, area_name: str, area: Any, data_variable: str) -> Any:
+def cropArea(
+    netcdf_path: Path,
+    area_name: str,
+    area: Any,
+    data_variable: str,
+    year_day: Optional[int],
+) -> Any:
     # read the netcdf file
     data_to_crop = xr.open_dataset(netcdf_path)
 
@@ -186,17 +345,27 @@ def cropArea(netcdf_path: Path, area_name: str, area: Any, data_variable: str) -
     )
     mask = polygon_mask.mask(data_to_crop, lat_name="lat", lon_name="lon")
 
-    nc_cropped = data_to_crop[data_variable][0].where(mask == np.isnan(mask))
+    if year_day:
+        # crop only the data related to the requested date. N.B. the related layer is day-1 (the 1st january is layer 0)
+        nc_cropped = data_to_crop[data_variable][year_day - 1].where(
+            mask == np.isnan(mask)
+        )
+    else:
+        nc_cropped = data_to_crop[data_variable][0].where(mask == np.isnan(mask))
     nc_cropped = nc_cropped.dropna("lat", how="all")
     nc_cropped = nc_cropped.dropna("lon", how="all")
     return nc_cropped
 
 
 class SubsetDetails(Schema):
-    model_id = fields.Str(required=True)
+    model_id = fields.Str(required=False)
+    year = fields.Str(required=False)
+    date = fields.Str(required=False)
     area_id = fields.Str(required=False)
     area_type = fields.Str(required=True, validate=validate.OneOf(AREA_TYPES))
     area_coords = fields.List(fields.Float(), required=False)
+    indicator = fields.Str(required=True)
+    daily_metric = fields.Str(required=False, validate=validate.OneOf(DAILY_METRICS))
     type = fields.Str(required=True, validate=validate.OneOf(TYPES))
     plot_type = fields.Str(required=False, validate=validate.OneOf(PLOT_TYPES))
     plot_format = fields.Str(required=False, validate=validate.OneOf(FORMATS))
@@ -218,7 +387,7 @@ class SubsetDetails(Schema):
         elif area_type == "regions" or area_type == "provinces":
             if not area_id:
                 raise ValidationError(
-                    f"an areaa id has to be specified for {area_type} area type"
+                    f"an area id has to be specified for {area_type} area type"
                 )
 
         # check if plot type is needed. A plot type has to be specified only if the requested output is a png
@@ -239,6 +408,7 @@ class MapCrop(EndpointResource):
         summary="Get a subset of data",
         responses={
             200: "subset successfully retrieved",
+            400: "missing parameters to get the file to crop",
             404: "Area or model not found",
             500: "Errors in cropping or plotting the data",
         },
@@ -252,14 +422,60 @@ class MapCrop(EndpointResource):
         user: User,
         dataset_id: str,
         product_id: str,
-        model_id: str,
         area_type: str,
         type: str,
+        indicator: str,
+        model_id: Optional[str] = None,
+        year: Optional[str] = None,
+        date: Optional[str] = None,
+        daily_metric: Optional[str] = None,
         area_id: Optional[str] = None,
         area_coords: Optional[List[float]] = None,
         plot_type: Optional[str] = None,
         plot_format: str = "png",
     ) -> Any:
+
+        dds = broker.get_instance()
+        # check if the dataset exists
+        dataset_details = dds.get_dataset_details([dataset_id])
+        if not dataset_details["data"]:
+            raise NotFound(f"dataset {dataset_id} not found")
+
+        # check if product exists
+        dataset_products = dataset_details["data"][0]["products"]
+        product_details: Optional[Dict[str, Any]] = None
+        for p in dataset_products:
+            if p["id"] == product_id:
+                product_details = p
+                break
+            # case of humanwellbeing multi-year: product not in dds but its details are the same of the daily
+            if (
+                dataset_id == "human-wellbeing"
+                and product_id == "multi-year"
+                and p["id"] == "daily"
+            ):
+                product_details = p
+                break
+        if not product_details:
+            raise NotFound(f"product {product_id} for dataset {dataset_id} not found")
+
+        # check mandatory params according to dataset and product
+        endpoint_arguments = locals()
+        if dataset_id in MANDATORY_PARAM_MAP.keys():
+            for product, param_list in MANDATORY_PARAM_MAP[dataset_id].items():
+                if product == product_id or product == "all_products":
+                    for param in param_list:
+                        if not endpoint_arguments[param]:
+                            raise BadRequest(
+                                f"{param} parameter is needed for {product_id} product in {dataset_id}"
+                            )
+        else:
+            raise ServerError(f"{dataset_id} not found in Mandatory param map")
+
+        year_day: Optional[int] = None
+        if date and product == "daily":
+            year_day = int(datetime.datetime.strptime(date, "%Y-%m-%d").strftime("%j"))
+
         if area_type == "regions" or area_type == "provinces":
             # get the geojson file
             geojson_file = Path(GEOJSON_PATH, f"italy-{area_type}.json")
@@ -275,9 +491,26 @@ class MapCrop(EndpointResource):
                     area_index = "prov_name"
 
             # get the path of the crop
-            output_dir = Path(
-                CROPS_OUTPUT_ROOT, dataset_id, product_id, model_id, area_type
-            )
+            # get the output structure according to the dataset and the product
+            try:
+                if "all_products" in OUTPUT_STRUCTURE_MAP[dataset_id]:
+                    output_structure = [
+                        endpoint_arguments[i]
+                        for i in OUTPUT_STRUCTURE_MAP[dataset_id]["all_products"]
+                    ]
+                else:
+                    output_structure = [
+                        endpoint_arguments[i]
+                        for i in OUTPUT_STRUCTURE_MAP[dataset_id][product_id]
+                    ]
+            except KeyError:
+                raise ServerError(
+                    f"{dataset_id} or {product_id} keys not present in output structure map"
+                )
+
+            output_dir = CROPS_OUTPUT_ROOT.joinpath(*output_structure)
+            log.debug(f"Output dir: {output_dir}")
+
             if type == "plot":
                 if plot_format == "png":
                     output_filename = f"{area_name.replace(' ', '_').lower()}_{plot_type}.{plot_format}"
@@ -305,54 +538,45 @@ class MapCrop(EndpointResource):
                 raise NotFound(f"Area {area_id} not found in {area_type}")
 
             # get the map to crop
-            dds = broker.get_instance()
-            # check if the dataset exists
-            dataset_details = dds.get_dataset_details([dataset_id])
-            if not dataset_details["data"]:
-                raise NotFound(f"dataset {dataset_id} not found")
-
-            # check if product exists
-            dataset_products = dataset_details["data"][0]["products"]
-            product_details: Optional[Dict[str, Any]] = None
-            for p in dataset_products:
-                if p["id"] == product_id:
-                    product_details = p
-                    break
-            if not product_details:
-                raise NotFound(
-                    f"product {product_id} for dataset {dataset_id} not found"
-                )
-
-            product_urlpath = dds.broker.catalog[dataset_id][product_id].urlpath
-
-            product_dir = Path(product_urlpath).parents[0]
-            if not product_dir.is_dir():
-                raise NotFound(f"data for product {product_id} not found")
-
             # check if the model name and the filename correspond
-            model_filename: str = model_id
-            for m, v in MODELS_MAPPING.items():
-                if m in model_id:
-                    model_filename = model_id.replace(m, v)
+            if model_id:
+                model_filename: str = model_id
+                for m, v in MODELS_MAPPING.items():
+                    if m in model_id:
+                        model_filename = model_id.replace(m, v)
 
-            # get the file corresponding to the requested model
-            data_to_crop_filename = (
-                Path(product_urlpath)
-                .name.replace("*", model_filename, 1)
-                .replace("*", "regular")
-            )
-            data_to_crop_filepath = product_dir.joinpath(data_to_crop_filename)
-            if not data_to_crop_filepath.is_file():
-                log.debug(data_to_crop_filepath)
-                raise NotFound(
-                    f"Data not found for {model_id} model and product {product_id}"
+            # get the file urlpath
+            try:
+                data_to_crop_url = SOURCE_FILE_URL_MAP[dataset_id][product_id]["url"]
+            except KeyError:
+                raise ServerError(
+                    f"{dataset_id} or {product_id} keys not present in source file url map"
                 )
-            # get the data variable
-            nc_variable = product_details["variables"][0]["value"]
+            # substitute the parameters
+            endpoint_variables = locals()
+            for p in SOURCE_FILE_URL_MAP[dataset_id][product_id]["params"]:
+                data_to_crop_url = data_to_crop_url.replace(p, endpoint_variables[p])
+
+            data_to_crop_filepath = Path(data_to_crop_url)
+
+            if not data_to_crop_filepath.is_file():
+                raise NotFound(
+                    f"Requested data to crop not found: source file {data_to_crop_filepath} does not exists"
+                )
+            log.debug(f"source path of the data to crop: {data_to_crop_filepath}")
+
+            # get the data variable. The data variable is ALWAYS equal to the lowercase indicator
+            try:
+                nc_variable = VARIABLES_MAP[indicator]
+            except KeyError:
+                raise NotFound(
+                    f"indicator {indicator} for product {product_id} for dataset {dataset_id} not found"
+                )
+
             # crop the area
             try:
                 nc_cropped = cropArea(
-                    data_to_crop_filepath, area_name, area, nc_variable
+                    data_to_crop_filepath, area_name, area, nc_variable, year_day
                 )
             except Exception as exc:
                 raise ServerError(f"Errors in cropping the data: {exc}")

@@ -162,6 +162,7 @@ export interface SoilErosionMapCrop {
   model?: string;
   area_type?: string;
   area_id?: string;
+  indicator?: string;
 }
 
 export interface HumanWellbeingFilter {
