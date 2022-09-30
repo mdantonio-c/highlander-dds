@@ -67,21 +67,21 @@ OUTPUT_STRUCTURE_MAP = {
 SOURCE_FILE_URL_MAP = {
     "soil-erosion": {
         "rainfall-erosivity": {
-            "url": f"{os.environ.get('CATALOG_DIR')}/datasets/soil-erosion/model_filename_1991_2020_regular.nc",
+            "url": "soil-erosion/model_filename_1991_2020_regular.nc",
             "params": ["model_filename"],
         },
         "soil-loss": {
-            "url": f"{os.environ.get('CATALOG_DIR')}/datasets/soil-erosion/SoilLoss/model_filename_1991_2020_VHR-REA.nc",
+            "url": "soil-erosion/SoilLoss/model_filename_1991_2020_VHR-REA.nc",
             "params": ["model_filename"],
         },
     },
     "human-wellbeing": {
         "daily": {
-            "url": f"{os.environ.get('CATALOG_DIR')}/datasets/human-wellbeing/regular/indicator_year_daily_metric_VHR-REA_regular.nc",
+            "url": "human-wellbeing/regular/indicator_year_daily_metric_VHR-REA_regular.nc",
             "params": ["indicator", "year", "daily_metric"],
         },
         "multi-year": {
-            "url": f"{os.environ.get('CATALOG_DIR')}/datasets/human-wellbeing/multiyear/regular/indicator_1989-2020_daily_metric_VHR-REA_multiyearmean.nc",
+            "url": "human-wellbeing/multiyear/regular/indicator_1989-2020_daily_metric_VHR-REA_multiyearmean.nc",
             "params": [
                 "indicator",
                 "daily_metric",
@@ -337,8 +337,6 @@ def cropArea(
 ) -> Any:
     # read the netcdf file
     data_to_crop = xr.open_dataset(netcdf_path)
-    nc_cropped_units = data_to_crop.units
-    nc_cropped_long_name = data_to_crop.long_name
 
     # create the polygon mask
     polygon_mask = regionmask.Regions(
@@ -356,7 +354,8 @@ def cropArea(
         nc_cropped = data_to_crop[data_variable][0].where(mask == np.isnan(mask))
     nc_cropped = nc_cropped.dropna("lat", how="all")
     nc_cropped = nc_cropped.dropna("lon", how="all")
-    return nc_cropped,nc_cropped_units,nc_cropped_long_name
+    return nc_cropped
+
 
 class SubsetDetails(Schema):
     model_id = fields.Str(required=False)
@@ -547,8 +546,12 @@ class MapCrop(EndpointResource):
                         model_filename = model_id.replace(m, v)
 
             # get the file urlpath
+            product_urlpath = dds.broker.catalog[dataset_id][
+                product_details["id"]
+            ].urlpath
+            product_urlpath_root = product_urlpath.split(dataset_id)[0]
             try:
-                data_to_crop_url = SOURCE_FILE_URL_MAP[dataset_id][product_id]["url"]
+                data_to_crop_url = f"{product_urlpath_root}{SOURCE_FILE_URL_MAP[dataset_id][product_id]['url']}"
             except KeyError:
                 raise ServerError(
                     f"{dataset_id} or {product_id} keys not present in source file url map"
@@ -593,8 +596,8 @@ class MapCrop(EndpointResource):
                         nc_cropped.values,
                         nc_cropped.lat.values,
                         nc_cropped.lon.values,
-                        nc_cropped_units,
-                        nc_cropped_long_name,
+                        nc_cropped.units,
+                        nc_cropped.long_name,
                         filepath,
                     )
                 else:
