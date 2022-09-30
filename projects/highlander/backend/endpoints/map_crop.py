@@ -104,7 +104,7 @@ MAP_STYLES = {
         "levels": [0, 1, 2.5, 5, 10, 50, 100, 500, 1000, 2000],
     },
     "apparent-temperature": {
-        "colormap": "mpl.cm.ncar_gist",
+        "colormap": "mpl.cm.gist_ncar",
         "levels": [
             -30,
             -25,
@@ -126,7 +126,7 @@ MAP_STYLES = {
         ],
     },
     "discomfort-index": {
-        "colormap": "mpl.cm.ncar_gist",
+        "colormap": "mpl.cm.gist_ncar",
         "levels": [
             -30,
             -25,
@@ -148,7 +148,7 @@ MAP_STYLES = {
         ],
     },
     "humidex": {
-        "colormap": "mpl.cm.ncar_gist",
+        "colormap": "mpl.cm.gist_ncar",
         "levels": [
             -30,
             -25,
@@ -170,7 +170,7 @@ MAP_STYLES = {
         ],
     },
     "wind-chill": {
-        "colormap": "mpl.cm.ncar_gist",
+        "colormap": "mpl.cm.gist_ncar",
         "levels": [
             -30,
             -25,

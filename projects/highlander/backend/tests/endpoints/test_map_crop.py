@@ -9,7 +9,11 @@ __author__ = "Beatrice Chiavarini (b.chiavarini@cineca.it)"
 
 
 DATASET_ID = "soil-erosion"
+DATASET_ID2 = "human-wellbeing"
 PRODUCT_ID = "rainfall-erosivity"
+PRODUCT_ID_HW = "multi-year"
+INDICATOR_HW = "WC"
+DAILY_METRIC = "daymax"
 INDICATOR = "RF"
 PRODUCT_ID2 = "soil-loss"
 INDICATOR2 = "SL"
@@ -57,8 +61,8 @@ class TestApp(BaseTests):
 
         # test parameter needed by the single datasets
         soil_erosion_query_params = f"indicator={faker.pystr()}&model_id={MODEL_ID}&area_type=regions&area_id={faker.pystr()}&type=map"
-        human_wellbeing_daily_params = f"indicator={faker.pystr()}&daily_metric=daymax&year={faker.pystr()}&date={faker.pystr()}&area_type=regions&area_id={faker.pystr()}&type=map"
-        human_wellbeing_multiyear_params = f"indicator={faker.pystr()}&daily_metric=daymax&area_type=regions&area_id={faker.pystr()}&type=map"
+        human_wellbeing_daily_params = f"indicator={faker.pystr()}&daily_metric={DAILY_METRIC}&year={faker.pystr()}&date=2020-01-01&area_type=regions&area_id={faker.pystr()}&type=map"
+        human_wellbeing_multiyear_params = f"indicator={faker.pystr()}&daily_metric={DAILY_METRIC}&area_type=regions&area_id={faker.pystr()}&type=map"
 
         # check soil erosion without mandatory params for all products
         endpoint = f"{API_URI}/datasets/{DATASET_ID}/products/{PRODUCT_ID}/crop?{human_wellbeing_daily_params}"
@@ -70,15 +74,15 @@ class TestApp(BaseTests):
         assert r.status_code == 404
 
         # check human wellbeing without mandatory params for single product
-        endpoint = f"{API_URI}/datasets/human-wellbeing/products/daily/crop?{human_wellbeing_multiyear_params}"
+        endpoint = f"{API_URI}/datasets/{DATASET_ID2}/products/daily/crop?{human_wellbeing_multiyear_params}"
         r = client.get(endpoint, headers=self.get("auth_header"))
         assert r.status_code == 400
         # check human wellbeing with all its parameters and a region that does not exists
-        endpoint = f"{API_URI}/datasets/human-wellbeing/products/daily/crop?{human_wellbeing_daily_params}"
+        endpoint = f"{API_URI}/datasets/{DATASET_ID2}/products/daily/crop?{human_wellbeing_daily_params}"
         r = client.get(endpoint, headers=self.get("auth_header"))
         assert r.status_code == 404
         # check human wellbeing with all parameters common between the different products and a region that does not exists
-        endpoint = f"{API_URI}/datasets/human-wellbeing/products/multi-year/crop?{human_wellbeing_multiyear_params}"
+        endpoint = f"{API_URI}/datasets/{DATASET_ID2}/products/{PRODUCT_ID_HW}/crop?{human_wellbeing_multiyear_params}"
         r = client.get(endpoint, headers=self.get("auth_header"))
         assert r.status_code == 404
 
@@ -140,19 +144,17 @@ class TestApp(BaseTests):
         assert r.status_code == 200
         assert region_output_file.stat().st_mtime == file_creation_time
 
-        # crop a province
-        query_params = f"indicator={INDICATOR}&model_id={MODEL_ID}&area_type=provinces&area_id={PROVINCE_ID}&type=map"
-        endpoint = (
-            f"{API_URI}/datasets/{DATASET_ID}/products/{PRODUCT_ID}/crop?{query_params}"
-        )
+        # crop a province on human wellbeing dataset
+        query_params = f"indicator={INDICATOR_HW}&daily_metric={DAILY_METRIC}&area_type=provinces&area_id={PROVINCE_ID}&type=map"
+        endpoint = f"{API_URI}/datasets/{DATASET_ID2}/products/{PRODUCT_ID_HW}/crop?{query_params}"
         r = client.get(endpoint, headers=self.get("auth_header"))
         assert r.status_code == 200
         province_filename = f"{PROVINCE_ID.title().replace(' ', '_').lower()}_map.png"
         province_output_file = Path(
             CROPS_OUTPUT_ROOT,
-            DATASET_ID,
-            PRODUCT_ID,
-            MODEL_ID,
+            DATASET_ID2,
+            PRODUCT_ID_HW,
+            INDICATOR_HW,
             "provinces",
             province_filename,
         )
