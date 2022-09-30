@@ -256,7 +256,7 @@ def plotMapNetcdf(
         anchor=(0.5, 0.5),
         shrink=np.round(min(len(lon) / len(lat), len(lat) / len(lon)), 2),  # 0.8
     )
-    # cmesh = ax1.pcolormesh(lon, lat, field, cmap=cmap, alpha=1, norm=norm)
+    cmesh = ax1.pcolormesh(lon, lat, field, cmap=cmap, alpha=1, norm=norm)
     with warnings.catch_warnings():
         warnings.filterwarnings(
             "ignore",
@@ -337,6 +337,8 @@ def cropArea(
 ) -> Any:
     # read the netcdf file
     data_to_crop = xr.open_dataset(netcdf_path)
+    nc_cropped_units = data_to_crop.units
+    nc_cropped_long_name = data_to_crop.long_name
 
     # create the polygon mask
     polygon_mask = regionmask.Regions(
@@ -354,8 +356,7 @@ def cropArea(
         nc_cropped = data_to_crop[data_variable][0].where(mask == np.isnan(mask))
     nc_cropped = nc_cropped.dropna("lat", how="all")
     nc_cropped = nc_cropped.dropna("lon", how="all")
-    return nc_cropped
-
+    return nc_cropped,nc_cropped_units,nc_cropped_long_name
 
 class SubsetDetails(Schema):
     model_id = fields.Str(required=False)
@@ -592,8 +593,8 @@ class MapCrop(EndpointResource):
                         nc_cropped.values,
                         nc_cropped.lat.values,
                         nc_cropped.lon.values,
-                        nc_cropped.units,
-                        nc_cropped.long_name,
+                        nc_cropped_units,
+                        nc_cropped_long_name,
                         filepath,
                     )
                 else:
