@@ -1,0 +1,33 @@
+<div class="container-fluid details-container py-0">
+  <ngx-spinner
+    bdColor="rgba(255,255,255,0.8)"
+    color="#6c757d"
+    zIndex="1000"
+    [fullScreen]="false"
+    type="ball-scale-multiple"
+    size="medium"
+  >
+  </ngx-spinner>
+  <div class="no-results" *ngIf="!loading">
+    <h2>No Details Available</h2>
+    <p>Try to apply a different set of filters</p>
+  </div>
+  <div class="details-text-container" *ngIf="loading">
+    <h3>
+      {{ cropDetails.area_id | titlecase }}
+    </h3>
+    {{ productLabel | titlecase }} - {{ cropDetails.product }} - Historical
+    <span *ngIf="cropDetails.date">
+      <br />
+      Day: {{ dateLabel }}
+    </span>
+  </div>
+  <div class="details-image-container" *ngIf="loading">
+    <div class="image-detail">
+      <img alt="cropped map" *ngIf="mapImage" [src]="mapImage" />
+    </div>
+    <div class="image-detail">
+      <img alt="boxplot" *ngIf="plotImage" [src]="plotImage" />
+    </div>
+  </div>
+</div>

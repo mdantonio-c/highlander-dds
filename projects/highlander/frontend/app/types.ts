@@ -165,6 +165,16 @@ export interface SoilErosionMapCrop {
   indicator?: string;
 }
 
+export interface HumanWellbeingMapCrop {
+  product?: string;
+  area_type?: string;
+  area_id?: string;
+  indicator?: string;
+  daily_metric?: string;
+  year?: string;
+  date?: string;
+}
+
 export interface HumanWellbeingFilter {
   indicator: string;
   administrative: string;

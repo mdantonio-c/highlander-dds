@@ -1,9 +1,21 @@
-import { Component, OnInit, Input, HostListener } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Input,
+  HostListener,
+  ChangeDetectorRef,
+} from "@angular/core";
 import { User } from "@rapydo/types";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 import { SSRService } from "@rapydo/services/ssr";
-import { DatasetInfo, HumanWellbeingFilter } from "../../../types";
+import {
+  DatasetInfo,
+  HumanWellbeingFilter,
+  HumanWellbeingMapCrop,
+  ProvinceFeature,
+  RegionFeature,
+} from "../../../types";
 import { environment } from "@rapydo/../environments/environment";
 import * as L from "leaflet";
 import * as moment from "moment";
@@ -17,6 +29,26 @@ import { LEGEND_DATA, LegendConfig } from "../../../services/data";
 
 const MAX_ZOOM = 8;
 const MIN_ZOOM = 5;
+
+const HIGHLIGHT_STYLE = {
+  weight: 5,
+  color: "#666",
+  dashArray: "",
+  fillOpacity: 0.7,
+};
+const NORMAL_STYLE = {
+  weight: 2,
+  opacity: 0.9,
+  color: "gray",
+  fillOpacity: 0,
+};
+const SELECT_STYLE = {
+  weight: 5,
+  color: "#466c91",
+  dashArray: "",
+  fillOpacity: 0.7,
+  zIndex: 100,
+};
 
 @Component({
   selector: "app-human-wellbeing",
@@ -85,16 +117,25 @@ export class HumanWellbeingComponent implements OnInit {
     },
   };
 
+  private administrativeArea: L.LayerGroup = new L.LayerGroup();
   private filter: HumanWellbeingFilter;
 
+  administrative: string;
+  date: string = null;
+  year: string = null;
+  mapCropDetails: HumanWellbeingMapCrop;
   isPanelCollapsed: boolean = true;
+  selectedLayer;
 
   constructor(
     private dataService: DataService,
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
-    private ssr: SSRService
-  ) {}
+    private ssr: SSRService,
+    private cdr: ChangeDetectorRef
+  ) {
+    this.mapCropDetails = {};
+  }
 
   ngOnInit() {
     if (this.ssr.isBrowser) {
@@ -120,11 +161,8 @@ export class HumanWellbeingComponent implements OnInit {
       layers = `highlander:${ind}_1989-2020_${metric}_VHR-REA_multiyearmean`;
       url = `${this.baseUrl}/geoserver/wms`;
     } else {
-      // get the date
-      const year = moment(this.filter.day).format("YYYY");
-      const date = moment(this.filter.day).format("YYYY-MM-DD");
-      layers = `highlander:${ind}_${year}_${metric}-grid_regular`;
-      url = `${this.baseUrl}/geoserver/wms?time=${date}`;
+      layers = `highlander:${ind}_${this.year}_${metric}-grid_regular`;
+      url = `${this.baseUrl}/geoserver/wms?time=${this.date}`;
     }
 
     overlays[`Historical`] = L.tileLayer.wms(url, {
@@ -219,6 +257,14 @@ export class HumanWellbeingComponent implements OnInit {
     ) {
       // change the filter and the overlay
       this.filter = data;
+      // get the date
+      if (this.filter.day && this.filter.timePeriod == "daily") {
+        this.year = moment(this.filter.day).format("YYYY");
+        this.date = moment(this.filter.day).format("YYYY-MM-DD");
+      } else {
+        this.year = null;
+        this.date = null;
+      }
 
       let overlays = this.layersControl["baseLayers"];
       for (let name in overlays) {
@@ -228,7 +274,130 @@ export class HumanWellbeingComponent implements OnInit {
       }
       this.setOverlaysToMap();
     }
+    // ADMINISTRATIVE AREA
+    this.administrative = data.administrative;
+    // clear current administrative layer
+    if (this.map) {
+      this.administrativeArea.clearLayers();
+    }
+    if (data.administrative === "italy") {
+      if (this.map) {
+        this.map.setView(L.latLng([42.0, 13.0]), 6);
+      }
+      return;
+    }
+    this.dataService
+      .getAdministrativeAreas(data.administrative)
+      .subscribe((json) => {
+        const jsonLayer = L.geoJSON(json, {
+          style: NORMAL_STYLE,
+          onEachFeature: (feature, layer) =>
+            layer.on({
+              mouseover: (e) => this.highlightFeature(e),
+              mouseout: (e) => this.resetFeature(e),
+              click: (e) => this.loadDetails(e),
+            }),
+        });
+        this.administrativeArea.addLayer(jsonLayer);
+        this.administrativeArea.addTo(this.map);
+      });
+    //if the detail panel is opened, close it
+    this.closeDetails();
+
+    // update the map crop details model
+    // get the indicator
+    let indicator_code = this.filter.indicator;
+    const indicator = INDICATORS.find((x) => x.code == indicator_code);
+    this.mapCropDetails.indicator = indicator.code;
+    this.mapCropDetails.product = this.filter.timePeriod; //daily and multi-year are the two HW products
+    this.mapCropDetails.area_type = this.administrative;
+    this.mapCropDetails.daily_metric = this.filter.daily_metric;
+    this.mapCropDetails.year = this.year;
+    this.mapCropDetails.date = this.date;
+    //force the ngonChanges of the child component
+    this.mapCropDetails = Object.assign({}, this.mapCropDetails);
   }
+  checkSelectedFeature(layer) {
+    let layerName = null;
+    switch (this.administrative) {
+      case "regions":
+        layerName = layer.feature.properties.name;
+        break;
+      case "provinces":
+        layerName = layer.feature.properties.prov_name;
+        break;
+    }
+    if (this.mapCropDetails && layerName) {
+      if (this.mapCropDetails.area_id !== layerName) {
+        return false;
+      }
+    } else {
+      // no area has been selected
+      return false;
+    }
+    return true;
+  }
+
+  private highlightFeature(e) {
+    const layer = e.target;
+    const isSelected = this.checkSelectedFeature(layer);
+    if (!isSelected) {
+      layer.setStyle(HIGHLIGHT_STYLE);
+    }
+  }
+
+  private resetFeature(e) {
+    const layer = e.target;
+    const isSelected = this.checkSelectedFeature(layer);
+    if (!isSelected) {
+      layer.setStyle(NORMAL_STYLE);
+    }
+  }
+
+  private loadDetails(e) {
+    setTimeout(() => {
+      this.map.invalidateSize();
+    }, 0);
+    const layer = e.target;
+    if (this.selectedLayer) {
+      // set the normal style to the previously selected layer
+      this.selectedLayer.setStyle(NORMAL_STYLE);
+    }
+    const bounds = layer.getBounds();
+    const layerCenter = bounds.getCenter();
+
+    setTimeout(() => {
+      this.map.setView(layerCenter);
+    }, 1);
+
+    switch (this.administrative) {
+      case "regions":
+        this.mapCropDetails.area_id = (
+          layer.feature.properties as RegionFeature
+        ).name;
+        //console.log("region: "+this.mapCropDetails.area_id);
+        break;
+      case "provinces":
+        this.mapCropDetails.area_id = (
+          layer.feature.properties as ProvinceFeature
+        ).prov_name;
+        //console.log("province: "+this.mapCropDetails.area_id);
+        break;
+    }
+    //force the ngonChanges of the child component
+    this.mapCropDetails = Object.assign({}, this.mapCropDetails);
+    this.isPanelCollapsed = false;
+
+    // change the layer style
+    layer.setStyle(SELECT_STYLE);
+    // set the current selected layer
+    setTimeout(() => {
+      this.selectedLayer = layer;
+    }, 0);
+    this.cdr.detectChanges();
+  }
+
+  isCollapsed = true;
 
   closeDetails() {
     this.isPanelCollapsed = true;

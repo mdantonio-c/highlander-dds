@@ -71,7 +71,7 @@
           </div>
         </div>
         <!-- DAY SELECTION -->
-        <div class="mb-3" *ngIf="filterForm.value.timePeriod == 'day'">
+        <div class="mb-3" *ngIf="filterForm.value.timePeriod == 'daily'">
           <div class="input-group">
             <input
               class="form-control"
@@ -86,7 +86,7 @@
               [ngClass]="{
                 'is-invalid':
                   !this.filterForm.get('day').value &&
-                  this.filterForm.get('timePeriod').value === 'day'
+                  this.filterForm.get('timePeriod').value === 'daily'
               }"
             />
             <ng-template #footerTemplate>
@@ -110,7 +110,7 @@
             class="invalid-feedback"
             *ngIf="
               !this.filterForm.get('day').value &&
-              this.filterForm.get('timePeriod').value === 'day'
+              this.filterForm.get('timePeriod').value === 'daily'
             "
           >
             Please choose a date.

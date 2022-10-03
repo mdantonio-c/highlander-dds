@@ -37,8 +37,12 @@
         ></div>
       </div>
     </div>
-    <div class="col-auto">
-      <div #collapse="ngbCollapse" [ngbCollapse]="isPanelCollapsed">
+    <div class="col-auto details-card">
+      <div
+        #collapse="ngbCollapse"
+        [ngbCollapse]="isPanelCollapsed"
+        class="chart-container"
+      >
         <div class="card bg-light" style="min-width: 300px">
           <div class="px-2">
             <button
@@ -51,8 +55,11 @@
             </button>
           </div>
           <div class="card-body">
-            <!-- TODO show selected administrative area -->
-            <!-- TODO show box plot -->
+            <hw-map-detail
+              [cropDetails]="mapCropDetails"
+              [isPanelCollapsed]="isPanelCollapsed"
+            >
+            </hw-map-detail>
           </div>
         </div>
       </div>

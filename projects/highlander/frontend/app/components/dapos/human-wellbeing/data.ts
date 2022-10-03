@@ -34,5 +34,5 @@ export const DAILY_METRICS = [
 
 export const TIME_PERIODS = [
   { code: "multi-year", label: "Multi-year" },
-  { code: "day", label: "Day" },
+  { code: "daily", label: "Day" },
 ];

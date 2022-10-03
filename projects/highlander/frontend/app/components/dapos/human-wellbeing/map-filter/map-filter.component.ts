@@ -69,7 +69,7 @@ export class MapFilterComponent implements OnInit {
   private onChanges(): void {
     this.filterForm.valueChanges.subscribe((val) => {
       if (
-        this.filterForm.get("timePeriod").value === "day" &&
+        this.filterForm.get("timePeriod").value === "daily" &&
         !this.filterForm.get("day").value
       ) {
         return;
