@@ -3,16 +3,22 @@
     <div class="col-12">
       <hr class="mt-1 mb-3" />
     </div>
-    <div class="col-2 mb-2">
+    <div class="col-2 mb-2 filters">
       <human-wellbeing-filter
-        class="collapse"
+        [class.collapsed]="isCollapsed"
         id="filters"
         [ngbCollapse]="isFilterCollapsed"
         (onFilterChange)="applyFilter($event)"
       ></human-wellbeing-filter>
+      <label
+        class="toggle"
+        (click)="isCollapsed = !isCollapsed"
+        [class.collapsed]="isCollapsed"
+      ></label>
     </div>
     <div class="col px-3">
       <div id="map-wrapper" class="fill">
+        <!--
         <ngx-spinner
           type="ball-scale-multiple"
           bdColor="rgba(255,255,255,0.8)"
@@ -22,6 +28,7 @@
           size="medium"
         >
         </ngx-spinner>
+        -->
         <!--<div class="no-results" *ngIf="!loading">
           <h2>No Maps Available</h2>
           <p>Try to apply a different set of filters</p>
