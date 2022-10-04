@@ -1,4 +1,4 @@
-FROM rapydo/backend-legacy39:2.3
+FROM rapydo/backend-legacy39:2.4
 
 USER root
 

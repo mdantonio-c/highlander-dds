@@ -277,12 +277,12 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
     data.widgets_order.forEach((w) => {
       let comp = this.getWidget(w);
       if (comp.type === "StringList") {
-        formGroup.addControl(comp.name, new FormArray([]));
+        formGroup.addControl(comp.name as any, new FormArray([]));
       } else if (
         comp.type === "ExclusiveFrame" &&
         !["temporal_coverage", "spatial_coverage"].includes(comp.name)
       ) {
-        formGroup.addControl(comp.name, new FormArray([]));
+        formGroup.addControl(comp.name as any, new FormArray([]));
       }
     });
     return formGroup;
