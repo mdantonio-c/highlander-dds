@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from flask import send_from_directory
+from highlander.catalog import CatalogExt
 from highlander.connectors import broker
 from highlander.constants import CATALOG_DIR
 from highlander.exceptions import NotYetImplemented
@@ -39,6 +40,11 @@ class Datasets(EndpointResource):
             for x in details
             if application is None or x.get("application", False) == application
         ]
+        # additional external applications?
+        if application:
+            cat_ext = CatalogExt(path=f"{CATALOG_DIR}/catalog-ext.yaml")
+            out = cat_ext.get_datasets()
+            res.extend(out)
         return self.response(res)
 
 

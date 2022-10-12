@@ -1,7 +1,7 @@
 from typing import Any, Dict, Iterable, Mapping
 
 import numpy as np
-from marshmallow import pre_load
+from marshmallow import post_load, pre_load
 from restapi.models import ISO8601UTC, Schema, fields, validate
 from restapi.utilities.logs import log
 
@@ -57,6 +57,7 @@ class DatasetInfo(Schema):
         min_items=1,
         required=True,
     )
+    url = fields.Str()
 
 
 class NumpyDateTime(fields.Field):
