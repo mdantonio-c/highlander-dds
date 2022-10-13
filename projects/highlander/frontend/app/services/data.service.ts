@@ -1,11 +1,10 @@
 import { Injectable } from "@angular/core";
-import { Observable, of, iif, concat, merge, zip } from "rxjs";
-import { tap, share, mergeMap, map, concatMap, expand } from "rxjs/operators";
+import { Observable, of } from "rxjs";
+import { tap, share } from "rxjs/operators";
 import { ApiService } from "@rapydo/services/api";
 import { StorageUsage, DatasetInfo, ProductInfo, DateStruct } from "../types";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "@rapydo/../environments/environment";
-import { ADDITIONAL_APPLICATIONS } from "./data.mock";
 
 @Injectable({
   providedIn: "root",
@@ -27,14 +26,8 @@ export class DataService {
    * @param isApplication filter ONLY application datasets.
    */
   getDatasets(isApplication?: boolean): Observable<DatasetInfo[]> {
-    // const params = isApplication ? { application: true } : {};
-    //return this.api.get("/api/datasets", params);
-    return isApplication
-      ? zip(
-          this.api.get<DatasetInfo[]>("/api/datasets", { application: true }),
-          of(ADDITIONAL_APPLICATIONS)
-        ).pipe(map((x) => (x[0] as DatasetInfo[]).concat(x[1])))
-      : this.api.get<DatasetInfo[]>("/api/datasets");
+    const params = isApplication ? { application: true } : {};
+    return this.api.get("/api/datasets", params);
   }
 
   /**

@@ -2,9 +2,9 @@ import { DatasetInfo } from "../types";
 
 export const ADDITIONAL_APPLICATIONS: DatasetInfo[] = [
   {
-    id: "pasture",
+    id: "paneveggio-pasture",
     label: "Mountain pasture monitoring",
-    default: "pasture",
+    default: "paneveggio-pasture",
     description:
       "Mountain pasture monitoring using satellite data. The goal of this use case is using satellite remote sensing data to calculate Spectral Vegetation Indices changes across different years or during the same mountain pasture season, providing useful information for a more sustainable pasture management",
     attribution: "",
@@ -26,9 +26,9 @@ export const ADDITIONAL_APPLICATIONS: DatasetInfo[] = [
     url: "http://labora.dedagroup.it/dashboards/highlander/pascoli/index.html",
   },
   {
-    id: "forest",
+    id: "paneveggio-forest",
     label: "Forest monitoring",
-    default: "forest",
+    default: "paneveggio-forest",
     description:
       "This use case combines information from airborne remote sensing data (hyperspectral and lidar) and field data in order to produce tree species and aboveground biomass maps, estimated for each individual tree crown.",
     attribution: "",
@@ -50,9 +50,9 @@ export const ADDITIONAL_APPLICATIONS: DatasetInfo[] = [
     url: "http://labora.dedagroup.it/dashboards/highlander/foreste/index.html",
   },
   {
-    id: "vaia",
+    id: "paneveggio-vaia",
     label: "Vaia storm",
-    default: "vaia",
+    default: "paneveggio-vaia",
     description:
       "Vaia storm occurred in northeastern Italy at the end of October 2018 with wind gusts of 200 km/h. Forest windthrows maps have been produced using high spatial resolution multispectral satellite images with two-dimensional Change Vector Analysis (CVA).",
     attribution: "",

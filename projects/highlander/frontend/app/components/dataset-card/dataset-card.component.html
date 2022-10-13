@@ -1,6 +1,6 @@
 <div class="dataset-card">
   <img
-    src="/app/custom/assets/images/{{ dataset.image }}"
+    src="{{ backendURI + '/api/datasets/' + dataset.id + '/image' }}"
     alt="no img"
     class="me-3 ms-3 mb-2 hld-preview-thumbnail"
     *ngIf="dataset.image"
