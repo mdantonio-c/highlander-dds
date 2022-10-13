@@ -1,5 +1,5 @@
 import os.path
-from typing import List
+from typing import Any, List
 
 import yaml
 from highlander.models.schemas import DatasetInfo
@@ -54,3 +54,10 @@ class CatalogExt:
                 except Exception as exc:
                     log.error(exc)
         return res
+
+    def get_dataset_image_filename(self, dataset_id: str) -> Any:
+        datasets = self.get_datasets()
+        found = next(v for v in datasets if v["id"] == dataset_id)
+        if not found:
+            raise LookupError(f"Dataset <{dataset_id}> does not exist")
+        return found.get("image")

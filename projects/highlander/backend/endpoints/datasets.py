@@ -15,6 +15,7 @@ from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
 
 AVAILABLE_PERIODIC_PRODUCTS = ["crop-water:crop-water"]
+CATALOG_EXT_DIR = f"{CATALOG_DIR}/catalog-ext.yaml"
 
 
 class Datasets(EndpointResource):
@@ -42,7 +43,7 @@ class Datasets(EndpointResource):
         ]
         # additional external applications?
         if application:
-            cat_ext = CatalogExt(path=f"{CATALOG_DIR}/catalog-ext.yaml")
+            cat_ext = CatalogExt(path=CATALOG_EXT_DIR)
             out = cat_ext.get_datasets()
             res.extend(out)
         return self.response(res)
@@ -146,7 +147,12 @@ class DatasetImage(EndpointResource):
         log.debug("Get image for dataset <{}>", dataset_id)
         try:
             dds = broker.get_instance()
-            image_filename = dds.get_dataset_image_filename(dataset_id)
+            try:
+                image_filename = dds.get_dataset_image_filename(dataset_id)
+            except LookupError:
+                log.debug("Dataset <{}> NOT managed locally", dataset_id)
+                cat_ext = CatalogExt(path=CATALOG_EXT_DIR)
+                image_filename = cat_ext.get_dataset_image_filename(dataset_id)
             if not image_filename:
                 raise Warning(f"Image NOT configured for dataset <{dataset_id}>")
             image = CATALOG_DIR.joinpath("images", image_filename)
