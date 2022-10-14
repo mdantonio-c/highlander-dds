@@ -46,6 +46,10 @@ class Datasets(EndpointResource):
             cat_ext = CatalogExt(path=CATALOG_EXT_DIR)
             out = cat_ext.get_datasets()
             res.extend(out)
+        else:
+            # exclude unwanted datasets (no applied to applications)
+            res = [x for x in res if not x.get("exclude", False)]
+            pass
         return self.response(res)
 
 
