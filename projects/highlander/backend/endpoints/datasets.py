@@ -49,7 +49,6 @@ class Datasets(EndpointResource):
         else:
             # exclude unwanted datasets (no applied to applications)
             res = [x for x in res if not x.get("exclude", False)]
-            pass
         return self.response(res)
 
 
