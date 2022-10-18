@@ -14,7 +14,7 @@
       <div>
         <p class="text-justify mb-0 d-flex p-2">
           <img
-            src="/app/custom/assets/images/{{ dataset.image }}"
+            src="{{ backendURI + '/api/datasets/' + dataset.id + '/image' }}"
             alt="no img"
             class="mb-3 me-3 mt-3 dataset-image"
             *ngIf="dataset.image"

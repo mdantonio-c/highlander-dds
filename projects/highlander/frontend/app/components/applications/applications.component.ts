@@ -1,7 +1,6 @@
 import { Component, OnInit, Input } from "@angular/core";
 import { DatasetInfo } from "../../types";
 import { User } from "@rapydo/types";
-import { environment } from "@rapydo/../environments/environment";
 
 @Component({
   selector: "hld-applications",
@@ -12,34 +11,14 @@ export class ApplicationsComponent implements OnInit {
   @Input() datasets: DatasetInfo[];
   @Input() user: User;
 
-  waterApps: DatasetInfo[] = [];
-  paneveggioApps: DatasetInfo[] = [];
-  otherApps: DatasetInfo[] = [];
-  climateApps: DatasetInfo[] = [];
-  readonly backendURI = environment.backendURI;
-
-  constructor() {}
+  categories = new Map<string, DatasetInfo[]>();
 
   ngOnInit() {
     this.datasets.forEach((ds) => {
-      const category = ds.category?.toLowerCase() || null;
-      switch (category) {
-        case "water":
-          this.waterApps.push(ds);
-          break;
-        case "paneveggio":
-          this.paneveggioApps.push(ds);
-          break;
-        case "climate":
-          this.climateApps.push(ds);
-          break;
-        default:
-          this.otherApps.push(ds);
-      }
+      const cItem = ds.category?.toLowerCase() || "other";
+      this.categories.has(cItem)
+        ? this.categories.get(cItem).push(ds)
+        : this.categories.set(cItem, [ds]);
     });
-    /*console.log("water", this.waterApps);
-    console.log("paneveggio", this.paneveggioApps);
-    console.log("others", this.otherApps);
-    console.log("climate", this.climateApps);*/
   }
 }

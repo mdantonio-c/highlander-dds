@@ -5,7 +5,6 @@ import { NotificationService } from "@rapydo/services/notification";
 import { AuthService } from "@rapydo/services/auth";
 import { LocalStorageService } from "@rapydo/services/localstorage";
 import { DataService } from "../../services/data.service";
-import { Observable } from "rxjs";
 import { User } from "@rapydo/types";
 import { NgxSpinnerService } from "ngx-spinner";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
