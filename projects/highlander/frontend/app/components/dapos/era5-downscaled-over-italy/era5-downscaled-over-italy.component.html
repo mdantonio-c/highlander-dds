@@ -15,6 +15,7 @@
         (click)="isCollapsed = !isCollapsed"
         [class.collapsed]="isCollapsed"
       ></label>
+
     </div>
     <div class="col px-3">
       <div id="map-wrapper" class="fill">
@@ -44,12 +45,11 @@
             </button>
           </div>
           <div class="card-body">
-            <!--<hl-map-detail
+            <era5-map-detail
               [cropDetails]="mapCropDetails"
-              [modelId]="currentModel"
               [isPanelCollapsed]="isPanelCollapsed"
             >
-            </hl-map-detail>-->
+            </era5-map-detail>
           </div>
         </div>
       </div>

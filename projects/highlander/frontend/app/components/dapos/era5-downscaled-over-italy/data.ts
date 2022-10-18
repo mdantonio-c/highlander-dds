@@ -1,16 +1,47 @@
-import { IndicatorsCodeLabel } from "../../../types";
+import { CodeLabel } from "../../../types";
 
-export const INDICATORS: IndicatorsCodeLabel[] = [
+// export const INDICATORS: CodeLabel[] = [
+//   {
+//     code: "ANN",
+//     label: "Mean temperature 2m",
+//     // product: "mean-temperature",
+//   },
+//   {
+//     code: "DJF",
+//     label: "Mean winter temperature 2m",
+//     // product: "mean-temperature",
+//   },
+//   {
+//     code: "MAM",
+//     label: "Mean spring temperature 2m",
+//     // product: "mean-temperature",
+//   },
+//   {
+//     code: "JJA",
+//     label: "Mean summer temperature 2m",
+//     // product: "mean-temperature",
+//   },
+//   {
+//     code: "SON",
+//     label: "Mean autumn temperature 2m",
+//     // product: "mean-temperature",
+//   },
+// ];
+
+export const INDICATORS: CodeLabel[] = [
   {
-    code: "RF",
-    label: "R Factor",
-    product: "rainfall-erosivity",
+    code: "T_2M",
+    label: "Mean temperature 2m",
+    product: "mean-temperature-2m",
   },
-  {
-    code: "SL",
-    label: "Soil Loss",
-    product: "soil-loss",
-  },
+];
+
+export const TIME_PERIODS = [
+  { code: "ANN", label: "Yearly" },
+  { code: "DJF", label: "Winter" },
+  { code: "MAM", label: "Spring" },
+  { code: "JJA", label: "Summer" },
+  { code: "SON", label: "Autumn" },
 ];
 
 export const ADMINISTRATIVE_AREAS = [

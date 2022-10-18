@@ -50,6 +50,7 @@ MODELS_MAPPING = {"RF": "R"}
 MANDATORY_PARAM_MAP = {
     "soil-erosion": {"all_products": ["model_id"]},
     "human-wellbeing": {"all_products": ["daily_metric"], "daily": ["year", "date"]},
+    "era5-downscaled-over-italy": {"all_products": ["time_period"]},
 }
 
 # output structure for the different datasets and their different products
@@ -60,6 +61,9 @@ OUTPUT_STRUCTURE_MAP = {
     "human-wellbeing": {
         "daily": ["dataset_id", "product_id", "indicator", "year", "date", "area_type"],
         "multi-year": ["dataset_id", "product_id", "indicator", "area_type"],
+    },
+    "era5-downscaled-over-italy": {
+        "all_products": ["dataset_id","product_id","time_period","area_type"],
     },
 }
 
@@ -88,10 +92,16 @@ SOURCE_FILE_URL_MAP = {
             ],
         },
     },
+    "era5-downscaled-over-italy": {
+        "VHR-REA_IT_1989_2020": {
+            "url": "climate-stripes/T_2M_1989-2020_time_period.nc",
+            "params": ["time_period"],
+        },
+    },
 }
 
 # map for indicator and variables
-VARIABLES_MAP = {"RF": "rf", "SL": "sl", "WC": "wc", "H": "h", "DI": "di", "AT": "at"}
+VARIABLES_MAP = {"RF": "rf", "SL": "sl", "WC": "wc", "H": "h", "DI": "di", "AT": "at", "T_2M": "T_2M" }
 
 # map of themes and level for cropped map
 MAP_STYLES = {
@@ -104,92 +114,24 @@ MAP_STYLES = {
         "levels": [0, 1, 2.5, 5, 10, 50, 100, 500, 1000, 2000],
     },
     "apparent-temperature": {
-        "colormap": "mpl.cm.gist_ncar",
-        "levels": [
-            -30,
-            -25,
-            -20,
-            -15,
-            -10,
-            -5,
-            0,
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-        ],
+        "colormap": "mpl.cm.nipy_spectral",
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
     },
     "discomfort-index": {
-        "colormap": "mpl.cm.gist_ncar",
-        "levels": [
-            -30,
-            -25,
-            -20,
-            -15,
-            -10,
-            -5,
-            0,
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-        ],
+        "colormap": "mpl.cm.nipy_spectral",
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
     },
     "humidex": {
-        "colormap": "mpl.cm.gist_ncar",
-        "levels": [
-            -30,
-            -25,
-            -20,
-            -15,
-            -10,
-            -5,
-            0,
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-        ],
+        "colormap": "mpl.cm.nipy_spectral",
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
     },
     "wind-chill": {
-        "colormap": "mpl.cm.gist_ncar",
-        "levels": [
-            -30,
-            -25,
-            -20,
-            -15,
-            -10,
-            -5,
-            0,
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-        ],
+        "colormap": "mpl.cm.nipy_spectral",
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
+    },
+    "2m temperature": {
+        "colormap": "mpl.cm.nipy_spectral",
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
     },
 }
 
@@ -301,8 +243,11 @@ def plotDistribution(field: Any, outputfile: Path) -> None:
     fig3, (ax3) = plt.subplots(
         1, 1, figsize=(8, 3)
     )  # len(field.lon)/100, len(field.lat)/100))
+    log.debug("1")
     sns.set_theme(style="ticks")
     sns.despine(fig3)
+    log.debug("2")
+    log.debug(field.max())
     sns.histplot(
         field,
         ax=ax3,
@@ -310,8 +255,10 @@ def plotDistribution(field: Any, outputfile: Path) -> None:
         linewidth=0.5,
         log_scale=True,
     )
+    log.debug("3")
     ax3.xaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
     mpl.rcParams["font.size"] = 14
+    log.debug("4")
 
     # TODO label not hardcoded
     # ax3.set_xlabel('R-factor')  # ,fontsize=14)
@@ -321,6 +268,7 @@ def plotDistribution(field: Any, outputfile: Path) -> None:
     ax3.tick_params(axis="both", which="major")  # , labelsize=14)
     ax3.tick_params(axis="both", which="minor")  # , labelsize = 14)
     ax3.set_title(f'{field.columns[0][-4:].replace("/", "")} histogram')
+
     ax3.get_legend().remove()  # handles = legend.legendHandles
     # legend.remove()
     # ax3.legend(handles, ['dep-', 'ind-', 'ind+', 'dep+'], title='Stat.ind.')
@@ -366,6 +314,7 @@ class SubsetDetails(Schema):
     area_coords = fields.List(fields.Float(), required=False)
     indicator = fields.Str(required=True)
     daily_metric = fields.Str(required=False, validate=validate.OneOf(DAILY_METRICS))
+    time_period = fields.Str(required=False)
     type = fields.Str(required=True, validate=validate.OneOf(TYPES))
     plot_type = fields.Str(required=False, validate=validate.OneOf(PLOT_TYPES))
     plot_format = fields.Str(required=False, validate=validate.OneOf(FORMATS))
@@ -429,6 +378,7 @@ class MapCrop(EndpointResource):
         year: Optional[str] = None,
         date: Optional[str] = None,
         daily_metric: Optional[str] = None,
+        time_period: Optional[str] = None,
         area_id: Optional[str] = None,
         area_coords: Optional[List[float]] = None,
         plot_type: Optional[str] = None,
@@ -445,7 +395,9 @@ class MapCrop(EndpointResource):
         dataset_products = dataset_details["data"][0]["products"]
         product_details: Optional[Dict[str, Any]] = None
         for p in dataset_products:
-            if p["id"] == product_id:
+            # vhr-rea5/products/VHR-REA_IT_1989_2020
+            if product_id in p["id"]:
+            # if p["id"] == product_id:
                 product_details = p
                 break
             # case of humanwellbeing multi-year: product not in dds but its details are the same of the daily
@@ -550,6 +502,9 @@ class MapCrop(EndpointResource):
                 product_details["id"]
             ].urlpath
             product_urlpath_root = product_urlpath.split(dataset_id)[0]
+            if dataset_id == "era5-downscaled-over-italy":
+                product_urlpath_root = product_urlpath.split("vhr-rea")[0]
+            log.debug(product_urlpath_root)
             try:
                 data_to_crop_url = f"{product_urlpath_root}{SOURCE_FILE_URL_MAP[dataset_id][product_id]['url']}"
             except KeyError:
@@ -621,6 +576,7 @@ class MapCrop(EndpointResource):
                     if plot_type == "boxplot":
                         plotBoxplot(df_stas, filepath)
                     elif plot_type == "distribution":
+                        log.debug(filepath)
                         plotDistribution(df_stas, filepath)
 
             except Exception as exc:

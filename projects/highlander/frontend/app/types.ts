@@ -154,6 +154,7 @@ export interface SoilErosionFilter {
 
 export interface Era5Filter {
   indicator: string;
+  time_period: string;
   administrative: string;
 }
 
@@ -173,6 +174,16 @@ export interface HumanWellbeingMapCrop {
   daily_metric?: string;
   year?: string;
   date?: string;
+}
+
+export interface Era5MapCrop {
+  product?: string;
+  area_type?: string;
+  area_id?: string;
+  indicator?: string;
+  time_period?: string;
+  // year?: string;
+  // date?: string;
 }
 
 export interface HumanWellbeingFilter {

@@ -15,6 +15,19 @@
             </option>
           </select>
         </div>
+        <!-- SEASON -->
+        <div class="mb-3">
+          <label class="col-form-label"><strong>Time period:</strong></label>
+          <select
+            id="seasonGroup"
+            formControlName="time_period"
+            class="form-select"
+          >
+            <option *ngFor="let i of seasons" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+        </div>
         <!-- ADMINISTRATIVE -->
         <div class="mb-3">
           <label class="col-form-label"><strong>Administrative:</strong></label>

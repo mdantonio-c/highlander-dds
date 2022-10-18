@@ -1,19 +1,31 @@
 import {
   Component,
   OnInit,
+  Input,
   HostListener,
   ChangeDetectorRef,
-  Input,
 } from "@angular/core";
 import { User } from "@rapydo/types";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
-import { DatasetInfo, Era5Filter } from "../../../types";
-import { environment } from "@rapydo/../environments/environment";
-import { DataService } from "../../../services/data.service";
 import { SSRService } from "@rapydo/services/ssr";
-
+import {
+  DatasetInfo,
+  Era5Filter,
+  Era5MapCrop,
+  ProvinceFeature,
+  RegionFeature,
+} from "../../../types";
+import { environment } from "@rapydo/../environments/environment";
 import * as L from "leaflet";
+// import * as moment from "moment";
+// import "leaflet-timedimension/dist/leaflet.timedimension.src.js";
+import { DataService } from "../../../services/data.service";
+import { INDICATORS } from "../era5-downscaled-over-italy/data";
+import { LEGEND_DATA, LegendConfig } from "../../../services/data";
+/*declare module "leaflet" {
+  let timeDimension: any;
+}*/
 
 const MAX_ZOOM = 8;
 const MIN_ZOOM = 5;
@@ -53,10 +65,13 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
   private collapsed = false;
   map: L.Map;
   private legends: { [key: string]: L.Control } = {};
+  baseUrl: string = environment.production
+    ? `${environment.backendURI}`
+    : "https://dds.highlander.cineca.it";
 
-  isCollapsed = true;
-  isPanelCollapsed: boolean = true;
-  selectedLayer;
+  bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
+  readonly timeRanges = ["historical", "future"];
+  readonly LEGEND_POSITION = "bottomleft";
 
   LAYER_OSM = L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -69,6 +84,13 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
   );
 
   layers: L.Layer[] = [this.LAYER_OSM];
+  layersControl = {
+    baseLayers: {},
+    overlays: null,
+  };
+  layersControlOptions = {
+    collapsed: false,
+  };
   mLayers = L.layerGroup([]);
 
   options = {
@@ -97,7 +119,13 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
 
   private administrativeArea: L.LayerGroup = new L.LayerGroup();
   private filter: Era5Filter;
+
   administrative: string;
+  // date: string = null;
+  // year: string = null;
+  mapCropDetails: Era5MapCrop;
+  isPanelCollapsed: boolean = true;
+  selectedLayer;
 
   constructor(
     private dataService: DataService,
@@ -105,12 +133,15 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
     protected spinner: NgxSpinnerService,
     private ssr: SSRService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    this.mapCropDetails = {};
+  }
 
   ngOnInit() {
     if (this.ssr.isBrowser) {
       this.setCollapse(window.innerWidth);
     }
+    console.log("stampa qualcosa");
   }
 
   onMapReady(map: L.Map) {
@@ -119,19 +150,79 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
       map.invalidateSize();
     }, 200);
     this.initLegends(map);
-    // detect the change of model
-    const ref = this;
+    console.log("stampa qualcosa_2");
   }
 
-  private initLegends(map: L.Map) {}
+  private setOverlaysToMap() {
+    let overlays = {};
+    let ind = this.filter.indicator;
+    let season = this.filter.time_period;
+    console.log(this.filter);
 
-  toggleCollapse() {
-    this.isFilterCollapsed = !this.isFilterCollapsed;
+    // const metric = this.filter.daily_metric;
+    let layers = null;
+    let url = null;
+    layers = `highlander:${ind}_1989-2020_${season}`;
+    url = `${this.baseUrl}/geoserver/wms`;
+
+    overlays[`Historical`] = L.tileLayer.wms(url, {
+      layers: layers,
+      version: "1.1.0",
+      format: "image/png",
+      opacity: 0.7,
+      transparent: true,
+      attribution: "'&copy; CMCC",
+      maxZoom: MAX_ZOOM,
+      minZoom: MIN_ZOOM,
+    });
+    this.layersControl["baseLayers"] = overlays;
+    // for the moment only a single overlay is available
+    // overlays[`${ind}_1989-2020_${season}`].addTo(this.map);
+
+    overlays[`Historical`].addTo(this.map);
+  }
+
+  private initLegends(map: L.Map) {
+    INDICATORS.forEach((ind) => {
+      this.legends[ind.code] = this.createLegendControl(ind.code);
+      //console.log(`add legend <${ind.code}>`);
+    });
+  }
+
+  private createLegendControl(id: string): L.Control {
+    let config: LegendConfig = LEGEND_DATA.find((x) => x.id === id);
+    if (!config) {
+      console.error(`Legend data NOT found for ID<${id}>`);
+      this.notify.showError("Bad legend configuration");
+      return;
+    }
+    const legend = new L.Control({ position: this.LEGEND_POSITION });
+    legend.onAdd = () => {
+      let div = L.DomUtil.create("div", config.legend_type);
+      div.style.clear = "unset";
+      div.innerHTML += `<h6>${config.title}</h6>`;
+      for (let i = 0; i < config.labels.length; i++) {
+        div.innerHTML +=
+          '<i style="background:' +
+          config.colors[i] +
+          '"></i><span>' +
+          config.labels[i] +
+          "</span><br>";
+      }
+      return div;
+    };
+    return legend;
+  }
+
+  onMapZoomEnd($event) {
+    // console.log(`Map Zoom: ${this.map.getZoom()}`);
   }
 
   applyFilter(data: Era5Filter) {
     console.log("apply filter", data);
+
     if (!this.filter) {
+      console.log("siamo nell if");
       this.filter = data;
       this.setOverlaysToMap();
       // add a legend
@@ -140,6 +231,51 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
       }
     }
 
+    // INDICATORS and DAILY METRICS
+    if (
+      this.filter.indicator !== data.indicator
+      ||      this.filter.time_period !== data.time_period
+    ) {
+      console.log(`indicator changed to ${data.indicator}`);
+
+      // remove the previous legend
+      this.map.removeControl(this.legends[this.filter.indicator]);
+      // add the new legend
+      this.legends[data.indicator].addTo(this.map);
+      this.filter = data;
+
+      let overlays = this.layersControl["baseLayers"];
+      for (let name in overlays) {
+        if (this.map.hasLayer(overlays[name])) {
+          this.map.removeLayer(overlays[name]);
+        }
+      }
+      this.setOverlaysToMap();
+    }
+    // TIME PERIOD AND DAY
+    // if (
+    //   this.filter.timePeriod !== data.timePeriod ||
+    //   this.filter.day !== data.day
+    // ) {
+    //   // change the filter and the overlay
+    //   this.filter = data;
+    //   // get the date
+    //   if (this.filter.day && this.filter.timePeriod == "daily") {
+    //     this.year = moment(this.filter.day).format("YYYY");
+    //     this.date = moment(this.filter.day).format("YYYY-MM-DD");
+    //   } else {
+    //     this.year = null;
+    //     this.date = null;
+    //   }
+
+      // let overlays = this.layersControl["baseLayers"];
+      // for (let name in overlays) {
+      //   if (this.map.hasLayer(overlays[name])) {
+      //     this.map.removeLayer(overlays[name]);
+      //   }
+      // }
+    //   this.setOverlaysToMap();
+    // }
     // ADMINISTRATIVE AREA
     this.administrative = data.administrative;
     // clear current administrative layer
@@ -169,12 +305,44 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
       });
     //if the detail panel is opened, close it
     this.closeDetails();
+
+    // update the map crop details model
+    // get the indicator
+    let indicator_code = this.filter.indicator;
+    const indicator = INDICATORS.find((x) => x.code == indicator_code);
+    this.mapCropDetails.indicator = indicator.code;
+    // this.mapCropDetails.product = this.filter.timePeriod; //daily and multi-year are the two HW products
+    this.mapCropDetails.area_type = this.administrative;
+    this.mapCropDetails.time_period = this.filter.time_period;
+    // this.mapCropDetails.year = this.year;
+    // this.mapCropDetails.date = this.date;
+    //force the ngonChanges of the child component
+    this.mapCropDetails = Object.assign({}, this.mapCropDetails);
+  }
+  checkSelectedFeature(layer) {
+    let layerName = null;
+    switch (this.administrative) {
+      case "regions":
+        layerName = layer.feature.properties.name;
+        break;
+      case "provinces":
+        layerName = layer.feature.properties.prov_name;
+        break;
+    }
+    if (this.mapCropDetails && layerName) {
+      if (this.mapCropDetails.area_id !== layerName) {
+        return false;
+      }
+    } else {
+      // no area has been selected
+      return false;
+    }
+    return true;
   }
 
   private highlightFeature(e) {
     const layer = e.target;
     const isSelected = this.checkSelectedFeature(layer);
-    // @ts-ignore
     if (!isSelected) {
       layer.setStyle(HIGHLIGHT_STYLE);
     }
@@ -183,13 +351,9 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
   private resetFeature(e) {
     const layer = e.target;
     const isSelected = this.checkSelectedFeature(layer);
-    // @ts-ignore
     if (!isSelected) {
       layer.setStyle(NORMAL_STYLE);
     }
-  }
-  checkSelectedFeature(layer) {
-    // TODO
   }
 
   private loadDetails(e) {
@@ -210,34 +374,43 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
 
     switch (this.administrative) {
       case "regions":
-        /*this.mapCropDetails.area_id = (
+        this.mapCropDetails.area_id = (
           layer.feature.properties as RegionFeature
-        ).name;*/
+        ).name;
         //console.log("region: "+this.mapCropDetails.area_id);
         break;
       case "provinces":
-        /*this.mapCropDetails.area_id = (
+        this.mapCropDetails.area_id = (
           layer.feature.properties as ProvinceFeature
-        ).prov_name;*/
+        ).prov_name;
         //console.log("province: "+this.mapCropDetails.area_id);
         break;
     }
     //force the ngonChanges of the child component
-    // this.mapCropDetails = Object.assign({}, this.mapCropDetails);
+    this.mapCropDetails = Object.assign({}, this.mapCropDetails);
     this.isPanelCollapsed = false;
 
     // change the layer style
     layer.setStyle(SELECT_STYLE);
     // set the current selected layer
-    /*setTimeout(() => {
+    setTimeout(() => {
       this.selectedLayer = layer;
-    }, 0);*/
+    }, 0);
     this.cdr.detectChanges();
   }
 
-  private setOverlaysToMap() {
-    let overlays = {};
-    // TODO
+  isCollapsed = true;
+
+  closeDetails() {
+    this.isPanelCollapsed = true;
+    this.map.setView(L.latLng([42.0, 13.0]), 6);
+    setTimeout(() => {
+      this.map.invalidateSize();
+    }, 0);
+  }
+
+  toggleCollapse() {
+    this.isFilterCollapsed = !this.isFilterCollapsed;
   }
 
   private setCollapse(width: number) {
@@ -250,14 +423,6 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
       this.isFilterCollapsed = false;
       this.collapsed = false;
     }
-  }
-
-  closeDetails() {
-    this.isPanelCollapsed = true;
-    this.map.setView(L.latLng([42.0, 13.0]), 6);
-    setTimeout(() => {
-      this.map.invalidateSize();
-    }, 0);
   }
 
   @HostListener("window:resize", ["$event"])
