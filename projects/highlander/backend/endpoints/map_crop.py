@@ -67,7 +67,7 @@ OUTPUT_STRUCTURE_MAP = {
 SOURCE_FILE_URL_MAP = {
     "soil-erosion": {
         "rainfall-erosivity": {
-            "url": "soil-erosion/model_filename_1991_2020_regular.nc",
+            "url": "soil-erosion/Rfactor/model_filename_1991_2020_regular.nc",
             "params": ["model_filename"],
         },
         "soil-loss": {
@@ -125,7 +125,7 @@ MAP_STYLES = {
             50,
         ],
     },
-    "discomfort-index": {
+    "discomfort-index-Thom": {
         "colormap": "mpl.cm.gist_ncar",
         "levels": [
             -30,
