@@ -63,7 +63,7 @@ OUTPUT_STRUCTURE_MAP = {
         "multi-year": ["dataset_id", "product_id", "indicator", "area_type"],
     },
     "era5-downscaled-over-italy": {
-        "all_products": ["dataset_id","product_id","time_period","area_type"],
+        "all_products": ["dataset_id", "product_id", "time_period", "area_type"],
     },
 }
 
@@ -71,7 +71,7 @@ OUTPUT_STRUCTURE_MAP = {
 SOURCE_FILE_URL_MAP = {
     "soil-erosion": {
         "rainfall-erosivity": {
-            "url": "soil-erosion/model_filename_1991_2020_regular.nc",
+            "url": "soil-erosion/Rfactor/model_filename_1991_2020_regular.nc",
             "params": ["model_filename"],
         },
         "soil-loss": {
@@ -101,7 +101,15 @@ SOURCE_FILE_URL_MAP = {
 }
 
 # map for indicator and variables
-VARIABLES_MAP = {"RF": "rf", "SL": "sl", "WC": "wc", "H": "h", "DI": "di", "AT": "at", "T_2M": "T_2M" }
+VARIABLES_MAP = {
+    "RF": "rf",
+    "SL": "sl",
+    "WC": "wc",
+    "H": "h",
+    "DI": "di",
+    "AT": "at",
+    "T_2M": "T_2M",
+}
 
 # map of themes and level for cropped map
 MAP_STYLES = {
@@ -115,23 +123,113 @@ MAP_STYLES = {
     },
     "apparent-temperature": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
     },
-    "discomfort-index": {
+    "discomfort-index-Thom": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
     },
     "humidex": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
     },
     "wind-chill": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
     },
     "2m temperature": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
     },
 }
 
@@ -243,10 +341,8 @@ def plotDistribution(field: Any, outputfile: Path) -> None:
     fig3, (ax3) = plt.subplots(
         1, 1, figsize=(8, 3)
     )  # len(field.lon)/100, len(field.lat)/100))
-    log.debug("1")
     sns.set_theme(style="ticks")
     sns.despine(fig3)
-    log.debug("2")
     log.debug(field.max())
     sns.histplot(
         field,
@@ -255,10 +351,8 @@ def plotDistribution(field: Any, outputfile: Path) -> None:
         linewidth=0.5,
         log_scale=True,
     )
-    log.debug("3")
     ax3.xaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
     mpl.rcParams["font.size"] = 14
-    log.debug("4")
 
     # TODO label not hardcoded
     # ax3.set_xlabel('R-factor')  # ,fontsize=14)
@@ -268,7 +362,6 @@ def plotDistribution(field: Any, outputfile: Path) -> None:
     ax3.tick_params(axis="both", which="major")  # , labelsize=14)
     ax3.tick_params(axis="both", which="minor")  # , labelsize = 14)
     ax3.set_title(f'{field.columns[0][-4:].replace("/", "")} histogram')
-
     ax3.get_legend().remove()  # handles = legend.legendHandles
     # legend.remove()
     # ax3.legend(handles, ['dep-', 'ind-', 'ind+', 'dep+'], title='Stat.ind.')
@@ -395,9 +488,7 @@ class MapCrop(EndpointResource):
         dataset_products = dataset_details["data"][0]["products"]
         product_details: Optional[Dict[str, Any]] = None
         for p in dataset_products:
-            # vhr-rea5/products/VHR-REA_IT_1989_2020
             if product_id in p["id"]:
-            # if p["id"] == product_id:
                 product_details = p
                 break
             # case of humanwellbeing multi-year: product not in dds but its details are the same of the daily
@@ -576,7 +667,6 @@ class MapCrop(EndpointResource):
                     if plot_type == "boxplot":
                         plotBoxplot(df_stas, filepath)
                     elif plot_type == "distribution":
-                        log.debug(filepath)
                         plotDistribution(df_stas, filepath)
 
             except Exception as exc:
