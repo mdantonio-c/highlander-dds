@@ -1,10 +1,19 @@
 from pathlib import Path
 from typing import List, Optional, Any, Dict, Union
 
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+
+import numpy as np
+import math
+
 from flask import send_from_directory, send_file
 import geopandas as gpd
 import xarray as xr
 import regionmask
+
+from highlander.connectors import broker
+from restapi.connectors import Connector
 
 from restapi import decorators
 from restapi.exceptions import NotFound, ServerError
@@ -15,7 +24,7 @@ from marshmallow import ValidationError, pre_load
 
 STRIPES_OUTPUT_ROOT = Path("/catalog/climate_stripes/")
 
-STRIPES_INPUT_ROOT = Path("/catalog/datasets/datasets/climate_stripes/")
+#STRIPES_INPUT_ROOT = Path("/catalog/datasets/datasets/climate_stripes/")
 
 ADMINISTRATIVES = ["Italy", "regions", "provinces"]
 
@@ -43,11 +52,28 @@ def cropArea(
     mask = polygon_mask.mask(data_to_crop, lat_name="lat", lon_name="lon")
 
     # Apply mask.
-    nc_cropped = data_to_crop[data_variable][0].where(mask == np.isnan(mask))
-    nc_cropped = nc_cropped.dropna("lat", how="all")  # TODO Chiedere Michele
-    nc_cropped = nc_cropped.dropna("lon", how="all")  # TODO Chiedere Michele
+    nc_cropped = data_to_crop[data_variable][:].where(mask == np.isnan(mask))
+    nc_cropped = nc_cropped.dropna("lat", how="all")
+    nc_cropped = nc_cropped.dropna("lon", how="all")
 
     return nc_cropped
+
+
+def plotStripes(array, yearsList: list, region_id: str, fileOutput: str):
+    region_id = f"{region_id.replace('_', ' ').title()}"
+    fig, ax = plt.subplots(figsize=(20, 8))
+    fig.subplots_adjust(bottom=0.25, left=0.25)  # make room for labels
+    mpl.rcParams['font.size'] = 20
+    min_val = math.floor(array.min())  # np.round(array.min()*10)/10
+    max_val = math.ceil(array.max())  # np.round(array.max()*10)/10
+    stripes = plt.pcolormesh(array, vmin=min_val, vmax=max_val, cmap="bwr")
+    cbar = plt.colorbar(stripes, label='Air temperature [°C]')
+    ax.set_title(region_id, alpha=1)
+    ax.set_xticks(np.arange(array.shape[1]) + 0.5, minor=False)
+    ax.set_xticklabels(yearsList, rotation=90, size=15)
+    ax.axes.get_yaxis().set_visible(False)
+    plt.show()
+    fig.savefig(fileOutput, transparent=True, bbox_inches='tight', pad_inches=0)
 
 
 class StripesDetails(Schema):
@@ -117,23 +143,32 @@ class Stripes(EndpointResource):
         output_filename = f"{area_name.replace(' ', '_').lower()}_stripes.png"
         output_path = f"{time_period}/{administrative}"
         output_dir = Path(STRIPES_OUTPUT_ROOT, output_path)  # Needed to create the output folder if it does not exist.
-        filepath = Path(output_dir, output_filename)
+        output_filepath = Path(output_dir, output_filename)
 
         # Check if the stripes have already been created.
         # If they already exist.
-        if filepath.is_file() and filepath.stat().st_size >= 1:
-            return send_file(filepath)
+        if output_filepath.is_file() and output_filepath.stat().st_size >= 1:
+            # return send_file(output_filepath)
             # Testing output:
-            # res = "OK"
-            # return self.response(res)
+            res = f"OK / Stripes already created at {output_filepath}"
+            return self.response(res)
 
         # If they do not exist yet, then, create them.
         else:
+
+            # We define a STRIPES_INPUT_ROOT using the details of a dataset available in the dds.
+            dds = broker.get_instance()
+            try:
+                product_urlpath = dds.broker.catalog[dataset_id]["VHR-REA_IT_1989_2020_hourly"].urlpath
+                product_urlpath_root = product_urlpath.split('vhr-rea')[0]
+            except Exception as exc:
+                raise NotFound(f"Unable to get dataset url root: {exc}")
+
             # Check if input data exists.
             input_filename = f"T_2M_1989-2020_{time_period}_anomalies.nc"
-            data_filepath = Path(STRIPES_INPUT_ROOT, input_filename)
+            data_filepath = Path(product_urlpath_root, "climate_stripes", input_filename)
 
-            if filepath.is_file() is False:
+            if data_filepath.is_file() is False:
                 raise NotFound(f"Data file {input_filename} not found in {data_filepath}")
 
             # If necessary crop the area.
@@ -144,31 +179,29 @@ class Stripes(EndpointResource):
                     )
                 except Exception as exc:
                     raise ServerError(f"Errors in cropping the data: {exc}")
+                else:
+                    nc_data_to_plot_mean = nc_data_to_plot.mean(axis=(1, 2)).values.reshape((1, len(nc_data_to_plot.time)))
+                    nc_data_to_plot_years = [str(x.astype('datetime64[Y]')) for x in nc_data_to_plot.time.values]
             # Otherwise simply load data
             elif administrative == "Italy":
                 nc_data = xr.open_dataset(data_filepath)
-                nc_data_to_plot = nc_data[DATA_VARIABLE][0]
+                nc_data_to_plot = nc_data[DATA_VARIABLE][:]
+                nc_data_to_plot_mean = nc_data_to_plot.mean(axis=(1, 2)).values.reshape((1, len(nc_data_to_plot.time)))
+                nc_data_to_plot_years = [str(x.astype('datetime64[Y]')) for x in nc_data_to_plot.time.values]
 
             # Create the output directory if it does not exists.
             if not output_dir.is_dir():
                 output_dir.mkdir(parents=True, exist_ok=True)
 
-            #  TODO INTEGRATE Michele's code. Input data is nc_data_to_plot.
+            # Plot stripes.
+            try:
+                plotStripes(nc_data_to_plot_mean, nc_data_to_plot_years, area_name, output_filepath)
+            except Exception as exc:
+                raise ServerError(f"Errors in plotting the data: {exc}")
 
             # Send the output
-            return send_file(filepath)
+            # return send_file(output_filepath)
             # Testing output:
-            # res = "OK"
-            # return self.response(res)
+            res = f"OK / Stripes created at {output_filepath}"
+            return self.response(res)
 
-    # TODO
-    #  Costruire l'ouput filepath: PATH/time_period/administrative. [DONE]
-    #  Check se il file esiste. [DONE]
-    #  return file se esiste. [DONE]
-    #  se no vai a crearlo. [DONE]
-    #  Check input exists. [DONE]
-    #  Se non esiste return Not Found. [DONE]
-    #  Se esiste Get data file. [DONE]
-    #  Caso Italy: direttamente integrazione codice Michele.
-    #  Caso regiony: Crop area (edit cropArea function) [DONE]
-    #                e poi sull'output si applica il codice di Michele.
