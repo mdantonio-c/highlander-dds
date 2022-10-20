@@ -148,10 +148,10 @@ class Stripes(EndpointResource):
         # Check if the stripes have already been created.
         # If they already exist.
         if output_filepath.is_file() and output_filepath.stat().st_size >= 1:
-            # return send_file(output_filepath)
+            return send_file(output_filepath)
             # Testing output:
-            res = f"OK / Stripes already created at {output_filepath}"
-            return self.response(res)
+            # res = f"OK / Stripes already created at {output_filepath}"
+            # return self.response(res)
 
         # If they do not exist yet, then, create them.
         else:
@@ -200,8 +200,8 @@ class Stripes(EndpointResource):
                 raise ServerError(f"Errors in plotting the data: {exc}")
 
             # Send the output
-            # return send_file(output_filepath)
+            return send_file(output_filepath)
             # Testing output:
-            res = f"OK / Stripes created at {output_filepath}"
-            return self.response(res)
+            # res = f"OK / Stripes created at {output_filepath}"
+            # return self.response(res)
 
