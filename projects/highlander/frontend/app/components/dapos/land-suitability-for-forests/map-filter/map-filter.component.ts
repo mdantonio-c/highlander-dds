@@ -25,7 +25,7 @@ export class MapFilterComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.filterForm = this.fb.group({
-      indicator: ["default"],
+      indicator: ["FTY"],
       administrative: ["italy"],
       bioclimaticVariable: [""],
       forestSpecie: [""],

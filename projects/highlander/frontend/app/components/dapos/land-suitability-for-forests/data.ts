@@ -2,8 +2,8 @@ import { CodeLabel } from "../../../types";
 
 export const INDICATORS: CodeLabel[] = [
   {
-    code: "default",
-    label: "-",
+    code: "FTY",
+    label: "Forest types",
   },
   {
     code: "BIO",

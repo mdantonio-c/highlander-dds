@@ -149,12 +149,22 @@ export class SuitabilityForestComponent implements OnInit {
 
   private setOverlaysToMap() {
     let overlays = {};
-    const ind = this.filter.indicator;
-    // TODO change me
-    const metric = null;
-    let layers = `highlander:${ind}_1989-2020_${metric}_VHR-REA_multiyearmean`;
+    let layers = "";
+    switch (this.filter.indicator) {
+      case "FTY":
+        layers = `highlander:Forest_Type`;
+        break;
+      case "BIO":
+        const biovariable = this.filter.bioclimaticVariable;
+        layers = `highlander:${biovariable}`;
+        break;
+      case "FOREST":
+        const specie = this.filter.forestSpecie;
+        layers = `highlander:${specie}`;
+        break;
+    }
+
     let url = `${this.baseUrl}/geoserver/wms`;
-    // TODO case for default indicator
 
     overlays[`Historical`] = L.tileLayer.wms(url, {
       layers: layers,
@@ -172,7 +182,6 @@ export class SuitabilityForestComponent implements OnInit {
   }
 
   private initLegends(map: L.Map) {
-    // TODO change me
     INDICATORS.forEach((ind) => {
       this.legends[ind.code] = this.createLegendControl(ind.code);
       // console.log(`add legend <${ind.code}>`);
@@ -180,7 +189,6 @@ export class SuitabilityForestComponent implements OnInit {
   }
 
   private createLegendControl(id: string): L.Control {
-    // TODO change me
     let config: LegendConfig = LEGEND_DATA.find((x) => x.id === id);
     if (!config) {
       console.error(`Legend data NOT found for ID<${id}>`);
@@ -213,9 +221,7 @@ export class SuitabilityForestComponent implements OnInit {
     console.log("apply filter", data);
     if (!this.filter) {
       this.filter = data;
-      //TODO de-comment when setoverlay function will be ok
-      //this.setOverlaysToMap();
-      console.log("set overlays");
+      this.setOverlaysToMap();
       // add a legend
       if (this.legends[data.indicator]) {
         this.legends[data.indicator].addTo(this.map);
@@ -223,8 +229,12 @@ export class SuitabilityForestComponent implements OnInit {
     }
 
     // INDICATORS
-    if (this.filter.indicator !== data.indicator) {
-      // console.log(`indicator changed to ${data.indicator}`);
+    if (
+      this.filter.indicator !== data.indicator ||
+      this.filter.bioclimaticVariable !== data.bioclimaticVariable ||
+      this.filter.forestSpecie !== data.forestSpecie
+    ) {
+      //console.log(`indicator changed to ${data.indicator}`);
 
       // remove the previous legend
       this.map.removeControl(this.legends[this.filter.indicator]);
@@ -238,11 +248,8 @@ export class SuitabilityForestComponent implements OnInit {
           this.map.removeLayer(overlays[name]);
         }
       }
-      //TODO de-comment when setoverlay function will be ok
-      //this.setOverlaysToMap();
-      console.log("set overlays");
+      this.setOverlaysToMap();
     }
-    // TODO add case to manage biovariable and forestspecie changes
 
     // ADMINISTRATIVE AREA
     this.administrative = data.administrative;

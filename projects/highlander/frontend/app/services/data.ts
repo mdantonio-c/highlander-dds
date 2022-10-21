@@ -262,7 +262,6 @@ export const LEGEND_DATA: LegendConfig[] = [
       "#4d00a0",
       "#7a008b",
       "#000000",
-
     ],
     labels: [
       "50",
@@ -344,5 +343,29 @@ export const LEGEND_DATA: LegendConfig[] = [
       "-13",
       "-15",
     ],
+  },
+  {
+    // TODO set the legend
+    id: "FTY",
+    legend_type: "legend_box",
+    title: "<b>TODO</b></br>Forest type</br><small>n/a</small>",
+    colors: ["#ccbcbc"],
+    labels: ["n/a"],
+  },
+  {
+    // TODO set the legend
+    id: "BIO",
+    legend_type: "legend_box",
+    title: "<b>TODO</b></br>Bioclimatic variable</br><small>n/a</small>",
+    colors: ["#ccbcbc"],
+    labels: ["n/a"],
+  },
+  {
+    // TODO set the legend
+    id: "FOREST",
+    legend_type: "legend_box",
+    title: "<b>TODO</b></br>Forest species suitability</br><small>n/a</small>",
+    colors: ["#ccbcbc"],
+    labels: ["n/a"],
   },
 ];
