@@ -1,0 +1,89 @@
+<div id="parameters">
+  <div class="card bg-light">
+    <div class="card-body">
+      <form [formGroup]="filterForm">
+        <!-- INDICATOR -->
+        <div class="mb-3">
+          <label class="col-form-label"><strong>Indicator:</strong></label>
+          <select
+            id="indicatorGroup"
+            formControlName="indicator"
+            class="form-select"
+          >
+            <option *ngFor="let i of indicators" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+        </div>
+
+        <!-- BIOCLIMATIC VARIABLE -->
+        <div class="mb-3" *ngIf="filterForm.value.indicator == 'BIO'">
+          <label class="col-form-label"><strong>Variable:</strong></label>
+          <select
+            id="bioclimaticGroup"
+            formControlName="bioclimaticVariable"
+            class="form-select"
+            [ngClass]="{
+              'is-invalid':
+                !this.filterForm.get('bioclimaticVariable').value &&
+                this.filterForm.get('indicator').value === 'BIO'
+            }"
+          >
+            <option *ngFor="let i of biovariables" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+          <div
+            class="invalid-feedback"
+            *ngIf="
+              !this.filterForm.get('bioclimaticVariable').value &&
+              this.filterForm.get('indicator').value === 'BIO'
+            "
+          >
+            choose a bioclimatic variable
+          </div>
+        </div>
+        <!-- FOREST SPECIE -->
+        <div class="mb-3" *ngIf="filterForm.value.indicator == 'FOREST'">
+          <label class="col-form-label"><strong>Specie:</strong></label>
+          <select
+            id="specieGroup"
+            formControlName="forestSpecie"
+            class="form-select"
+            [ngClass]="{
+              'is-invalid':
+                !this.filterForm.get('forestSpecie').value &&
+                this.filterForm.get('indicator').value === 'FOREST'
+            }"
+          >
+            <option *ngFor="let i of forestSpecies" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+          <div
+            class="invalid-feedback"
+            *ngIf="
+              !this.filterForm.get('forestSpecie').value &&
+              this.filterForm.get('indicator').value === 'FOREST'
+            "
+          >
+            choose a forest specie
+          </div>
+        </div>
+        <!-- ADMINISTRATIVE -->
+        <div class="mb-3">
+          <label class="col-form-label"><strong>Administrative:</strong></label>
+          <select
+            id="administrativeGroup"
+            formControlName="administrative"
+            class="form-select"
+          >
+            <option *ngFor="let i of administratives" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

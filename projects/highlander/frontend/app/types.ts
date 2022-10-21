@@ -158,6 +158,13 @@ export interface Era5Filter {
   administrative: string;
 }
 
+export interface ForestSuitabilityFilter {
+  indicator: string;
+  administrative: string;
+  bioclimatic_variable?: string;
+  forest_specie?: string;
+}
+
 export interface SoilErosionMapCrop {
   product?: string;
   model?: string;
@@ -182,8 +189,14 @@ export interface Era5MapCrop {
   area_id?: string;
   indicator?: string;
   time_period?: string;
-  // year?: string;
-  // date?: string;
+}
+
+export interface ForestSuitabilityMapCrop {
+  // product?: string;
+  // model?: string;
+  area_type?: string;
+  area_id?: string;
+  indicator?: string;
 }
 
 export interface HumanWellbeingFilter {

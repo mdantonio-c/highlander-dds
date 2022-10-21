@@ -26,6 +26,7 @@ import { SoilErosionComponent } from "./components/dapos/soil-erosion/soil-erosi
 import { CropWaterComponent } from "./components/dapos/crop-water/crop-water.component";
 import { HumanWellbeingComponent } from "./components/dapos/human-wellbeing/human-wellbeing.component";
 import { Era5DownscaledOverItalyComponent } from "./components/dapos/era5-downscaled-over-italy/era5-downscaled-over-italy.component";
+import { SuitabilityForestComponent } from "./components/dapos/land-suitability-for-forests/suitability-forests.component";
 
 import { MapFilterComponent as SoilErosionFilter } from "./components/dapos/soil-erosion/map-filter/map-filter.component";
 import { MapDetailComponent as SoilErosionDetail } from "./components/dapos/soil-erosion/map-detail/map-detail.component";
@@ -34,6 +35,7 @@ import { MapFilterComponent as HumanWellbeingFilter } from "./components/dapos/h
 import { MapDetailComponent as HumanWellbeingDetail } from "./components/dapos/human-wellbeing/map-detail/map-detail.component";
 import { MapFilterComponent as Era5Filter } from "./components/dapos/era5-downscaled-over-italy/map-filter/map-filter.component";
 import { MapDetailComponent as Era5Detail } from "./components/dapos/era5-downscaled-over-italy/map-detail/map-detail.component";
+import { MapFilterComponent as SuitabilityForestFilter } from "./components/dapos/land-suitability-for-forests/map-filter/map-filter.component";
 
 import { ReplacePipe } from "./pipes/replace.pipe";
 import { AbsPipe } from "./pipes/abs.pipe";
@@ -88,6 +90,7 @@ const routes: Routes = [
     CropWaterComponent,
     CropDetailsComponent,
     HumanWellbeingComponent,
+    SuitabilityForestComponent,
     Era5DownscaledOverItalyComponent,
     SoilErosionFilter,
     SoilErosionDetail,
@@ -96,6 +99,7 @@ const routes: Routes = [
     HumanWellbeingDetail,
     Era5Filter,
     Era5Detail,
+    SuitabilityForestFilter,
     ReplacePipe,
     AbsPipe,
     FirstWordPipe,
