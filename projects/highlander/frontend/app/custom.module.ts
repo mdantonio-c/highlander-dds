@@ -36,6 +36,7 @@ import { MapDetailComponent as HumanWellbeingDetail } from "./components/dapos/h
 import { MapFilterComponent as Era5Filter } from "./components/dapos/era5-downscaled-over-italy/map-filter/map-filter.component";
 import { MapDetailComponent as Era5Detail } from "./components/dapos/era5-downscaled-over-italy/map-detail/map-detail.component";
 import { MapFilterComponent as SuitabilityForestFilter } from "./components/dapos/land-suitability-for-forests/map-filter/map-filter.component";
+import { MapDetailComponent as SuitabilityForestDetail } from "./components/dapos/land-suitability-for-forests/map-detail/map-detail.component";
 
 import { ReplacePipe } from "./pipes/replace.pipe";
 import { AbsPipe } from "./pipes/abs.pipe";
@@ -100,6 +101,7 @@ const routes: Routes = [
     Era5Filter,
     Era5Detail,
     SuitabilityForestFilter,
+    SuitabilityForestDetail,
     ReplacePipe,
     AbsPipe,
     FirstWordPipe,

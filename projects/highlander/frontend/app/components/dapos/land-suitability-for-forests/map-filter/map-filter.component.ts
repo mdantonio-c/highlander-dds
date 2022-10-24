@@ -44,28 +44,37 @@ export class MapFilterComponent implements OnInit {
 
   private onChanges(): void {
     this.filterForm.valueChanges.subscribe((val) => {
-      if (
-        this.filterForm.get("indicator").value === "BIO" &&
-        !this.filterForm.get("bioclimaticVariable").value
-      ) {
-        this.filterForm.patchValue(
+      switch (this.filterForm.get("indicator").value) {
+        case "BIO":
+          if (!this.filterForm.get("bioclimaticVariable").value) {
+            /*            this.filterForm.patchValue(
           {
             forestSpecie: null,
           },
           { emitEvent: false, onlySelf: true }
-        );
-        return;
-      } else if (
-        this.filterForm.get("indicator").value === "FOREST" &&
-        !this.filterForm.get("forestSpecie").value
-      ) {
-        this.filterForm.patchValue(
+        );*/
+            return;
+          }
+          break;
+        case "FOREST":
+          if (!this.filterForm.get("forestSpecie").value) {
+            /*        this.filterForm.patchValue(
           {
             bioclimaticVariable: null,
           },
           { emitEvent: false, onlySelf: true }
-        );
-        return;
+        );*/
+            return;
+          }
+          break;
+        case "FTY":
+          this.filterForm.patchValue(
+            {
+              administrative: "italy",
+            },
+            { emitEvent: false, onlySelf: true }
+          );
+          break;
       }
 
       this.onFilterChange.emit(val);

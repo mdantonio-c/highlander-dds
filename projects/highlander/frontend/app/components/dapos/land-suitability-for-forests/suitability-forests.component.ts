@@ -257,7 +257,8 @@ export class SuitabilityForestComponent implements OnInit {
     if (this.map) {
       this.administrativeArea.clearLayers();
     }
-    if (data.administrative === "italy") {
+    // check if the administrative is italy or if it's forest type indicator (where cropping feature is not supported)
+    if (data.administrative === "italy" || data.indicator == "FTY") {
       if (this.map) {
         this.map.setView(L.latLng([42.0, 13.0]), 6);
       }
@@ -285,10 +286,17 @@ export class SuitabilityForestComponent implements OnInit {
     // get the indicator
     let indicator_code = this.filter.indicator;
     const indicator = INDICATORS.find((x) => x.code == indicator_code);
-    this.mapCropDetails.indicator = indicator.code;
-    // TODO add parameters to mapcropdetails
-    //this.mapCropDetails.product = indicator.product;
-    //this.mapCropDetails.area_type = this.administrative;
+    this.mapCropDetails.product = indicator.product;
+    switch (indicator_code) {
+      case "BIO":
+        this.mapCropDetails.indicator = this.filter.bioclimaticVariable;
+        break;
+      case "FOREST":
+        this.mapCropDetails.indicator = this.filter.forestSpecie;
+        break;
+    }
+
+    this.mapCropDetails.area_type = this.administrative;
     //force the ngonChanges of the child component
     this.mapCropDetails = Object.assign({}, this.mapCropDetails);
   }

@@ -192,8 +192,7 @@ export interface Era5MapCrop {
 }
 
 export interface ForestSuitabilityMapCrop {
-  // product?: string;
-  // model?: string;
+  product?: string;
   area_type?: string;
   area_id?: string;
   indicator?: string;

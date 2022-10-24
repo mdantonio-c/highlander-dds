@@ -1,17 +1,20 @@
-import { CodeLabel } from "../../../types";
+import { CodeLabel, IndicatorsCodeLabel } from "../../../types";
 
-export const INDICATORS: CodeLabel[] = [
+export const INDICATORS: IndicatorsCodeLabel[] = [
   {
     code: "FTY",
     label: "Forest types",
+    product: "forest-type",
   },
   {
     code: "BIO",
     label: "Bioclimatic variable",
+    product: "bioclimatic-variables",
   },
   {
     code: "FOREST",
     label: "Forest species suitability",
+    product: "forest-species-suitability",
   },
 ];
 
