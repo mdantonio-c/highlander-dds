@@ -10,10 +10,7 @@ import { Era5MapCrop } from "../../../../types";
 export class DetailService {
   constructor(private api: ApiService, private http: HttpClient) {}
 
-  getDetail(
-    detailsFilter: Era5MapCrop,
-    detailType: string
-  ): Observable<Blob> {
+  getDetail(detailsFilter: Era5MapCrop, detailType: string): Observable<Blob> {
     const options = {
       conf: {
         responseType: "blob",
@@ -29,15 +26,18 @@ export class DetailService {
     console.log("print params");
     console.log(params);
 
-    // if (detailsFilter.year) {
-    //   params["year"] = detailsFilter.year;
-    // }
-    // if (detailsFilter.date) {
-    //   params["date"] = detailsFilter.date;
-    // }
-
-    if (detailType == "plot") {
-      params["plot_type"] = "distribution";
+    if (detailType == "stripes") {
+      let params = {
+        time_period: detailsFilter.time_period,
+        administrative: detailsFilter.area_type,
+        area_id: detailsFilter.area_id,
+      };
+      // call the stripes API
+      return this.api.get(
+        `/api/datasets/era5-downscaled-over-italy/stripes`,
+        params,
+        options
+      );
     }
     return this.api.get(
       `/api/datasets/era5-downscaled-over-italy/products/VHR-REA_IT_1989_2020/crop`,
@@ -48,7 +48,7 @@ export class DetailService {
 
   getAllDetails(detailsFilter: Era5MapCrop): Observable<any[]> {
     const observables = [];
-    const typeList = ["map", "plot"];
+    const typeList = ["map", "stripes"];
     for (let i = 0; i < typeList.length; i++) {
       observables.push(this.getDetail(detailsFilter, typeList[i]));
     }

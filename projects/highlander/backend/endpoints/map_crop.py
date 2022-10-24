@@ -98,7 +98,7 @@ SOURCE_FILE_URL_MAP = {
     },
     "era5-downscaled-over-italy": {
         "VHR-REA_IT_1989_2020": {
-            "url": "climate-stripes/T_2M_1989-2020_time_period.nc",
+            "url": "climate_stripes/T_2M_1989-2020_time_period_avg.nc",
             "params": ["time_period"],
         },
     },
