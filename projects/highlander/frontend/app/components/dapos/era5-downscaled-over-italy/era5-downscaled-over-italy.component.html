@@ -15,7 +15,6 @@
         (click)="isCollapsed = !isCollapsed"
         [class.collapsed]="isCollapsed"
       ></label>
-
     </div>
     <div class="col px-3">
       <div id="map-wrapper" class="fill">
@@ -50,6 +49,15 @@
               [isPanelCollapsed]="isPanelCollapsed"
             >
             </era5-map-detail>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-auto details-card" *ngIf="this.administrative === 'italy'">
+      <div class="chart-container">
+        <div class="card bg-light" style="min-width: 300px">
+          <div class="card-body">
+            <climate-stripes [timePeriod]="timePeriod"></climate-stripes>
           </div>
         </div>
       </div>

@@ -54,4 +54,22 @@ export class DetailService {
     }
     return forkJoin(observables);
   }
+
+  getStripes(timePeriod: string): Observable<any[]> {
+    const options = {
+      conf: {
+        responseType: "blob",
+      },
+    };
+    let params = {
+      administrative: "Italy",
+      time_period: timePeriod,
+    };
+    const obs = this.api.get(
+      `/api/datasets/era5-downscaled-over-italy/stripes`,
+      params,
+      options
+    );
+    return forkJoin(obs);
+  }
 }
