@@ -51,6 +51,7 @@ MANDATORY_PARAM_MAP = {
     "soil-erosion": {"all_products": ["model_id"]},
     "human-wellbeing": {"all_products": ["daily_metric"], "daily": ["year", "date"]},
     "era5-downscaled-over-italy": {"all_products": ["time_period"]},
+    "land-suitability-for-forests": {"all_products": ["indicator"]},
 }
 
 # output structure for the different datasets and their different products
@@ -64,6 +65,9 @@ OUTPUT_STRUCTURE_MAP = {
     },
     "era5-downscaled-over-italy": {
         "all_products": ["dataset_id", "product_id", "time_period", "area_type"],
+    },
+    "land-suitability-for-forests": {
+        "all_products": ["dataset_id", "product_id", "indicator", "area_type"],
     },
 }
 
@@ -94,21 +98,76 @@ SOURCE_FILE_URL_MAP = {
     },
     "era5-downscaled-over-italy": {
         "VHR-REA_IT_1989_2020": {
-            "url": "climate-stripes/T_2M_1989-2020_time_period.nc",
+            "url": "climate_stripes/T_2M_1989-2020_time_period_avg.nc",
             "params": ["time_period"],
+        },
+    },
+    "land-suitability-for-forests": {
+        "bioclimatic-variables": {
+            "url": "land-suitability-for-forests/BIO_HIST_FINALI/indicator_edited2.nc",
+            "params": ["indicator"],
+        },
+        "forest-species-suitability": {
+            "url": "land-suitability-for-forests/FOREST_HIST_SUITABILITY.nc",
         },
     },
 }
 
+# list of product that doesn't have the time dimension in theirs nc files
+PRODUCT_WOUT_TIME = ["bioclimatic-variables", "forest-species-suitability"]
+
 # map for indicator and variables
 VARIABLES_MAP = {
+    # soil erosion
     "RF": "rf",
     "SL": "sl",
+    # human wellbeing
     "WC": "wc",
     "H": "h",
     "DI": "di",
     "AT": "at",
+    # era5
     "T_2M": "T_2M",
+    # suitability for forest
+    "BIO1": "bio1",
+    "BIO2": "bio2",
+    "BIO3": "bio3",
+    "BIO4": "bio4",
+    "BIO5": "bio5",
+    "BIO6": "bio6",
+    "BIO7": "bio7",
+    "BIO8": "bio8",
+    "BIO9": "bio9",
+    "BIO10": "bio10",
+    "BIO11": "bio11",
+    "BIO12": "bio12",
+    "BIO13": "bio13",
+    "BIO14": "bio14",
+    "BIO15": "bio15",
+    "BIO16": "bio16",
+    "BIO17": "bio17",
+    "BIO18": "bio18",
+    "BIO19": "bio19",
+    "Abies_alba": "Abies_alba",
+    "Acer_campestre": "Acer_campestre",
+    "Carpinus_betulus": "Carpinus_betulus",
+    "Castanea_sativa": "Castanea_sativa",
+    "Corylus_sp": "Corylus_sp",
+    "Fagus_sylvatica": "Fagus_sylvatica",
+    "Fraxinus_ornus": "Fraxinus_ornus",
+    "Larix_decidua": "Larix_decidua",
+    "Ostrya_carpinifolia": "Ostrya_carpinifolia",
+    "Picea_abies": "Picea_abies",
+    "Pinus_cembra": "Pinus_cembra",
+    "Pinus_halepensis": "Pinus_halepensis",
+    "Pinus_pinaster": "Pinus_pinaster",
+    "Pinus_sylvestris": "Pinus_sylvestris",
+    "Quercus_cerris": "Quercus_cerris",
+    "Quercus_ilex": "Quercus_ilex",
+    "Quercus_petraea": "Quercus_petraea",
+    "Quercus_pubescens": "Quercus_pubescens",
+    "Quercus_robur": "Quercus_robur",
+    "Quercus_suber": "Quercus_suber",
 }
 
 # map of themes and level for cropped map
@@ -231,11 +290,27 @@ MAP_STYLES = {
             50,
         ],
     },
+    "bioclimatic-variables": {
+        # TODO
+        "colormap": "mpl.cm.nipy_spectral",
+        "levels": [-300, 2000],
+    },
+    "forest-species-suitability": {
+        # TODO
+        "colormap": "mpl.cm.nipy_spectral",
+        "levels": [-300, 2000],
+    },
 }
 
 
 def plotMapNetcdf(
-    field: Any, lat: Any, lon: Any, units: Any, product: str, outputfile: Path
+    field: Any,
+    lat: Any,
+    lon: Any,
+    units: Any,
+    product: str,
+    main_product: str,
+    outputfile: Path,
 ) -> None:
     """
     This function plot with the xarray tool the field of netcdf
@@ -276,11 +351,18 @@ def plotMapNetcdf(
         )
     try:
         levels: List[float] = []
+        legend_product = product
         if product not in MAP_STYLES.keys():
-            raise ServerError(f"plotting style not defined for product {product}")
+            # check if its legend is common with the one of the main product
+            if main_product not in MAP_STYLES.keys():
+                raise ServerError(
+                    f"plotting style not defined for product {product} (product id: {main_product})"
+                )
+            else:
+                legend_product = main_product
 
-        cmap = eval(MAP_STYLES[product]["colormap"])
-        levels = MAP_STYLES[product]["levels"]
+        cmap = eval(MAP_STYLES[legend_product]["colormap"])
+        levels = MAP_STYLES[legend_product]["levels"]
         norm = mpl.colors.BoundaryNorm(levels, cmap.N)
 
     except Exception as e:
@@ -374,6 +456,7 @@ def cropArea(
     area_name: str,
     area: Any,
     data_variable: str,
+    has_time: bool,
     year_day: Optional[int],
 ) -> Any:
     # read the netcdf file
@@ -391,8 +474,10 @@ def cropArea(
         nc_cropped = data_to_crop[data_variable][year_day - 1].where(
             mask == np.isnan(mask)
         )
-    else:
+    elif has_time:
         nc_cropped = data_to_crop[data_variable][0].where(mask == np.isnan(mask))
+    else:
+        nc_cropped = data_to_crop[data_variable].where(mask == np.isnan(mask))
     nc_cropped = nc_cropped.dropna("lat", how="all")
     nc_cropped = nc_cropped.dropna("lon", how="all")
     return nc_cropped
@@ -604,8 +689,11 @@ class MapCrop(EndpointResource):
                 )
             # substitute the parameters
             endpoint_variables = locals()
-            for p in SOURCE_FILE_URL_MAP[dataset_id][product_id]["params"]:
-                data_to_crop_url = data_to_crop_url.replace(p, endpoint_variables[p])
+            if "params" in SOURCE_FILE_URL_MAP[dataset_id][product_id]:
+                for p in SOURCE_FILE_URL_MAP[dataset_id][product_id]["params"]:
+                    data_to_crop_url = data_to_crop_url.replace(
+                        p, endpoint_variables[p]
+                    )
 
             data_to_crop_filepath = Path(data_to_crop_url)
 
@@ -625,8 +713,17 @@ class MapCrop(EndpointResource):
 
             # crop the area
             try:
+                has_time = True
+                if product_id in PRODUCT_WOUT_TIME:
+                    has_time = False
+
                 nc_cropped = cropArea(
-                    data_to_crop_filepath, area_name, area, nc_variable, year_day
+                    data_to_crop_filepath,
+                    area_name,
+                    area,
+                    nc_variable,
+                    has_time,
+                    year_day,
                 )
             except Exception as exc:
                 raise ServerError(f"Errors in cropping the data: {exc}")
@@ -644,6 +741,7 @@ class MapCrop(EndpointResource):
                         nc_cropped.lon.values,
                         nc_cropped.units,
                         nc_cropped.long_name,
+                        product_id,
                         filepath,
                     )
                 else:

@@ -124,6 +124,7 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
   // date: string = null;
   // year: string = null;
   mapCropDetails: Era5MapCrop;
+  timePeriod: string;
   isPanelCollapsed: boolean = true;
   selectedLayer;
 
@@ -141,7 +142,6 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
     if (this.ssr.isBrowser) {
       this.setCollapse(window.innerWidth);
     }
-    console.log("stampa qualcosa");
   }
 
   onMapReady(map: L.Map) {
@@ -150,7 +150,6 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
       map.invalidateSize();
     }, 200);
     this.initLegends(map);
-    console.log("stampa qualcosa_2");
   }
 
   private setOverlaysToMap() {
@@ -222,8 +221,8 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
     console.log("apply filter", data);
 
     if (!this.filter) {
-      console.log("siamo nell if");
       this.filter = data;
+      this.timePeriod = data.time_period;
       this.setOverlaysToMap();
       // add a legend
       if (this.legends[data.indicator]) {
@@ -231,10 +230,10 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
       }
     }
 
-    // INDICATORS and DAILY METRICS
+    // INDICATORS and TIMEPERIOD
     if (
-      this.filter.indicator !== data.indicator
-      ||      this.filter.time_period !== data.time_period
+      this.filter.indicator !== data.indicator ||
+      this.filter.time_period !== data.time_period
     ) {
       console.log(`indicator changed to ${data.indicator}`);
 
@@ -252,30 +251,7 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
       }
       this.setOverlaysToMap();
     }
-    // TIME PERIOD AND DAY
-    // if (
-    //   this.filter.timePeriod !== data.timePeriod ||
-    //   this.filter.day !== data.day
-    // ) {
-    //   // change the filter and the overlay
-    //   this.filter = data;
-    //   // get the date
-    //   if (this.filter.day && this.filter.timePeriod == "daily") {
-    //     this.year = moment(this.filter.day).format("YYYY");
-    //     this.date = moment(this.filter.day).format("YYYY-MM-DD");
-    //   } else {
-    //     this.year = null;
-    //     this.date = null;
-    //   }
 
-      // let overlays = this.layersControl["baseLayers"];
-      // for (let name in overlays) {
-      //   if (this.map.hasLayer(overlays[name])) {
-      //     this.map.removeLayer(overlays[name]);
-      //   }
-      // }
-    //   this.setOverlaysToMap();
-    // }
     // ADMINISTRATIVE AREA
     this.administrative = data.administrative;
     // clear current administrative layer
@@ -286,6 +262,9 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
       if (this.map) {
         this.map.setView(L.latLng([42.0, 13.0]), 6);
       }
+      this.closeDetails();
+      // change the time period to be used by the stripes component
+      this.timePeriod = data.time_period;
       return;
     }
     this.dataService

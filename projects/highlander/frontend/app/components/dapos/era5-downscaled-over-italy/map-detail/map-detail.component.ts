@@ -26,7 +26,7 @@ export class MapDetailComponent implements OnChanges {
   @Input() isPanelCollapsed;
 
   mapImage: any;
-  plotImage: any;
+  stripesImage: any;
   productLabel: string;
   dateLabel: string;
 
@@ -64,7 +64,7 @@ export class MapDetailComponent implements OnChanges {
             this.mapImage = this.sanitizer.bypassSecurityTrustUrl(
               URL.createObjectURL(blobs[0])
             );
-            this.plotImage = this.sanitizer.bypassSecurityTrustUrl(
+            this.stripesImage = this.sanitizer.bypassSecurityTrustUrl(
               URL.createObjectURL(blobs[1])
             );
           },

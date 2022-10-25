@@ -16,18 +16,15 @@
     <h3>
       {{ cropDetails.area_id | titlecase }}
     </h3>
-    {{ productLabel | titlecase }} - {{ cropDetails.product }} - Historical
-    <span *ngIf="cropDetails.date">
-      <br />
-      Day: {{ dateLabel }}
-    </span>
+    {{ productLabel | titlecase }} of the period 1989-2020
   </div>
   <div class="details-image-container" *ngIf="loading">
     <div class="image-detail">
       <img alt="cropped map" *ngIf="mapImage" [src]="mapImage" />
     </div>
+    Anomaly of temperature
     <div class="image-detail">
-      <img alt="boxplot" *ngIf="plotImage" [src]="plotImage" />
+      <img alt="boxplot" *ngIf="stripesImage" [src]="stripesImage" />
     </div>
   </div>
 </div>
