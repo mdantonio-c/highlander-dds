@@ -66,6 +66,7 @@ a {
   text-decoration: none;
   outline: none;
   border: 0;
+  color: #1a7dc1;
 }
 
 .btn:focus,
@@ -83,7 +84,7 @@ input[type="file"]:focus {
 
 .modal:not([class*="bg-"]) .modal-header,
 .card:not([class*="bg-"]) .card-header {
-  color: #0061f2;
+  color: #1a7dc1;
 }
 
 .modal .modal-header {
@@ -214,6 +215,11 @@ a.ng-star-inserted {
   text-transform: uppercase;
 }
 
+app-dataset .btn {
+  background-color: #1a7dc1;
+  border-color : #1a7dc1 !important;
+}
+
 /*buttons & checkbox/radio*/
 
 .leaflet-control-zoom-out,
@@ -251,28 +257,100 @@ input[type="checkbox"]:checked {
 /*custom dataset page*/
 .dataset-image {
   object-fit: cover;
-  width: 400px;
+  width: 320px;
   height: auto;
 }
 
+.table-product tbody, .table-product tbody tr, .table > :not(caption) > * > *{
+  border:none;
+  border-style: none;
+  border-bottom-width: 0px;
+}
+
+/*custom footer*/
+.footer {
+  padding-left: 1em;
+  padding-right: 0;
+}
 .footer-container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  .card-horizontal {
+
+    img {
+      max-width: 349px;
+    }
+  /*.card-horizontal {
     display: flex;
     flex: 1 1 auto;
     .card-title {
       font-size: 80%;
       font-weight: 400;
     }
+  }*/
+}
+.contact{
+  width: 30% !important;
+}
+@media screen and (max-width: 990px) {
+    /*change direction costum dataset page*/
+  
+
+  .description-box + hr {
+    display:none;
+    
+    & + div {
+      flex-direction: column;
+      width: 100% !important;
+
+      & > div {
+        width: 90% !important;
+
+        & div + div{
+          margin-bottom: 15px !important;
+        }
+      }
+    } 
+  }
+    .table-product {
+      th{
+        width: 70% !important;
+      }
+      + hr {
+      display:none !important;
+      }
+    }
+
+    .attribution {
+      max-width: 93%;
+    }
+  
+}
+@media screen and (max-width:650px){
+  .description-box {
+    flex-direction: column;
+    display:flex;
+      img {
+        width: 80%;
+        margin-right: auto !important;
+        margin-left: auto !important;
+      
+      }
+    hr {
+        display: none !important;
+      }
   }
 }
-
-/*media query footer*/
 @media screen and (max-width: 574px) {
+
+  
+  
   .footer {
     padding-left: 1rem !important;
     padding-right: 1rem !important;
+
+    .footer-container img {
+      max-width: 50%;
+    }
   }
 }

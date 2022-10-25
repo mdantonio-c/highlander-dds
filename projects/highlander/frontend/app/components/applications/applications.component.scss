@@ -14,13 +14,15 @@
     width: 45%;
   }
 }
-
-@media (max-width: 683px) {
+@media (max-width: 871px)  {
+  .category-box {
+    justify-content: center !important;
+  }
+}
+@media (max-width: 615px) {
   .flex-child {
     width: 90%;
   }
 
-  .category-box {
-    justify-content: center;
-  }
+  
 }

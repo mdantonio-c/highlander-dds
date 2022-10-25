@@ -1,10 +1,10 @@
 <hr class="m-0" />
 <div
-  class="category-box border-bottom d-flex p-2 justify-content-evenly flex-wrap"
+  class="category-box border-bottom d-flex p-2 justify-content-between flex-wrap"
   *ngFor="let category of categories | keyvalue"
 >
-  <h2 class="category-title mt-3 w-100">{{ category.key | titlecase }}</h2>
-  <div class="flex-child my-3 mx-3" *ngFor="let dataset of category.value">
+  <h2 class="category-title mt-3 mb-3 w-100">{{ category.key | titlecase }}</h2>
+  <div class="mb-3" *ngFor="let dataset of category.value">
     <hld-dataset-card
       [dataset]="dataset"
       [isLoggedIn]="user || false"

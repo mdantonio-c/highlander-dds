@@ -1,5 +1,69 @@
-<div class="dataset-card">
-  <img
+
+  <div class="dataset-card card h-100 mb-3" style="width: 18rem;">
+    <img  src="{{ backendURI + '/api/datasets/' + dataset.id + '/image' }}" 
+      class="card-img-top" 
+      alt="no img"
+      *ngIf="dataset.image"
+      />
+    <div class="card-body">
+      <h3 class="mt-2 card-title">
+        <ng-template #notLogged>
+          {{ dataset.label }}
+          </ng-template>
+        <ng-container *ngIf="isLoggedIn; else notLogged">
+          <a
+            *ngIf="dataset.url; else localUrl"
+            class="text-justify"
+            [href]="dataset.url"
+            target="_blank"
+            >{{ dataset.label }}
+            <i class="fas fa-up-right-from-square"></i>
+          </a>
+          <ng-template #localUrl>
+            <a
+              href
+              [routerLink]="['../applications/' + dataset.id]"
+              [state]="dataset"
+              >{{ dataset.label }}
+            </a>
+          </ng-template>
+        </ng-container>
+      </h3>
+      <div class="description">
+        <p
+        [id]="dataset.id"
+        [attr.aria-label]="dataset.id"
+        [innerHTML]="dataset.description"
+        ></p>  
+      </div>
+    </div>
+    <div class="btn-group" role="group">
+        <ng-container *ngIf="isLoggedIn">
+          <a
+            *ngIf="dataset.url; else localUrl"
+            class=" btn btn-outline-primary card-link"
+            [href]="dataset.url"
+            target="_blank"
+            >Application
+          </a>
+          <ng-template #localUrl>
+            <a
+              href
+              [routerLink]="['../applications/' + dataset.id]"
+              [state]="dataset"
+              class="btn btn-outline-primary card-link"
+              >Application
+            </a>
+            <a 
+              href 
+              [routerLink]="['../datasets/' + dataset.id]" 
+              class="card-link btn btn-outline-primary">Dataset info</a>
+          </ng-template>
+        </ng-container>
+        
+      </div>
+  </div>
+ <!--<img
     src="{{ backendURI + '/api/datasets/' + dataset.id + '/image' }}"
     alt="no img"
     class="me-3 ms-3 mb-2 hld-preview-thumbnail"
@@ -51,5 +115,4 @@
         Show full description
       </button>
     </p>
-  </div>
-</div>
+  </div>--> 
