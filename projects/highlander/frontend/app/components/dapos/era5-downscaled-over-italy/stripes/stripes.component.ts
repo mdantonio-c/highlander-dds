@@ -13,7 +13,7 @@ import { DetailService } from "../services/detail.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 import { environment } from "@rapydo/../environments/environment";
-import { ADMINISTRATIVE_AREAS, INDICATORS } from "../data";
+import { ADMINISTRATIVE_AREAS, INDICATORS, TIME_PERIODS } from "../data";
 import { DataService } from "../../../../services/data.service";
 
 @Component({
@@ -25,6 +25,7 @@ export class StripesComponent implements OnChanges {
   @Input() timePeriod;
 
   stripesImage: any;
+  dateLabel: string;
 
   loading = false;
   constructor(
@@ -37,7 +38,11 @@ export class StripesComponent implements OnChanges {
 
   ngOnChanges() {
     this.loading = true;
-    console.log("get stripes for:", this.timePeriod);
+    console.log("get stripes for :", this.timePeriod.time_period);
+
+    this.dateLabel = TIME_PERIODS.find(
+      (x) => x.code == this.timePeriod
+    ).label.substr(0,6);
 
     setTimeout(() => {
       this.spinner.show();

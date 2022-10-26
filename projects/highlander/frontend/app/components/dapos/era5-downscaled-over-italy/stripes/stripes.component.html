@@ -13,7 +13,7 @@
     <p>Try to apply a different set of filters</p>
   </div>
   <div class="details-text-container" *ngIf="loading">
-    <h3>Anomaly of temperature</h3>
+    <h3>Anomaly of {{ dateLabel | lowercase }} mean temperature</h3>
   </div>
   <div class="details-image-container" *ngIf="loading">
     <div class="image-detail">

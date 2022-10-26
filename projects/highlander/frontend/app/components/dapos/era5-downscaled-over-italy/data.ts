@@ -31,17 +31,17 @@ import { CodeLabel } from "../../../types";
 export const INDICATORS: CodeLabel[] = [
   {
     code: "T_2M",
-    label: "Mean temperature 2m",
+    label: "Mean temperature 2m (1989-2020)",
     product: "mean-temperature-2m",
   },
 ];
 
 export const TIME_PERIODS = [
-  { code: "ANN", label: "Yearly" },
-  { code: "DJF", label: "Winter" },
-  { code: "MAM", label: "Spring" },
-  { code: "JJA", label: "Summer" },
-  { code: "SON", label: "Autumn" },
+  { code: "ANN", label: "Annual" },
+  { code: "DJF", label: "Winter (December-January-February)" },
+  { code: "MAM", label: "Spring (March-April-May)" },
+  { code: "JJA", label: "Summer (June-July-August)" },
+  { code: "SON", label: "Autumn (September-October-November)" },
 ];
 
 export const ADMINISTRATIVE_AREAS = [
