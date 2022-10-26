@@ -348,9 +348,9 @@ export const LEGEND_DATA: LegendConfig[] = [
     // TODO set the legend
     id: "FTY",
     legend_type: "legend_box",
-    title: "<b>TODO</b></br>Forest type</br><small>n/a</small>",
-    colors: ["#ccbcbc"],
-    labels: ["n/a"],
+    title: "</br>Forest type</br>",
+    colors: ["#018571", "#a6611a"],
+    labels: ["Broadleaved","Coniferous"],
   },
   {
     // TODO set the legend
@@ -364,8 +364,31 @@ export const LEGEND_DATA: LegendConfig[] = [
     // TODO set the legend
     id: "FOREST",
     legend_type: "legend_box",
-    title: "<b>TODO</b></br>Forest species suitability</br><small>n/a</small>",
-    colors: ["#ccbcbc"],
-    labels: ["n/a"],
+    title: "Forest species suitability",
+    colors: [
+      "#00441b",
+      "#006d2c",
+      "#1d8641",
+      "#359f54",
+      "#54b567",
+      "#7bc87c",
+      "#9ed898",
+      "#bce4b5",
+      "#d5efcf",
+      "#eaf7e5",
+      "#f7fcf5",
+    ],
+    labels: [
+      "1.0",
+      "0.9",
+      "0.8",
+      "0.7",
+      "0.6",
+      "0.5",
+      "0.4",
+      "0.3",
+      "0.2",
+      "0.1",
+      "0.0",],
   },
 ];

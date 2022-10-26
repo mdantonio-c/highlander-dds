@@ -61,7 +61,7 @@ def plotStripes(array, yearsList: list, region_id: str, fileOutput: str):
     region_id = f"{region_id.replace('_', ' ').title()}"
     fig, ax = plt.subplots(figsize=(20, 8))
     fig.subplots_adjust(bottom=0.25, left=0.25)  # make room for labels
-    mpl.rcParams["font.size"] = 20
+    mpl.rcParams["font.size"] = 25
     min_val = math.floor(array.min())  # np.round(array.min()*10)/10
     max_val = math.ceil(array.max())  # np.round(array.max()*10)/10
     stripes = plt.pcolormesh(array, vmin=min_val, vmax=max_val, cmap="bwr")

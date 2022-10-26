@@ -13,7 +13,7 @@ import { DetailService } from "../services/detail.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 import { environment } from "@rapydo/../environments/environment";
-import { ADMINISTRATIVE_AREAS, INDICATORS } from "../data";
+import { ADMINISTRATIVE_AREAS, INDICATORS, TIME_PERIODS } from "../data";
 import { DataService } from "../../../../services/data.service";
 
 @Component({
@@ -47,6 +47,9 @@ export class MapDetailComponent implements OnChanges {
       this.productLabel = INDICATORS.find(
         (x) => x.code == this.cropDetails.indicator
       ).label;
+      this.dateLabel = TIME_PERIODS.find(
+        (x) => x.code == this.cropDetails.time_period
+      ).label.substr(0,6);
 
       // if (this.cropDetails.date) {
       //   this.dateLabel = moment(this.cropDetails.date).format("DD/MM/YYYY");

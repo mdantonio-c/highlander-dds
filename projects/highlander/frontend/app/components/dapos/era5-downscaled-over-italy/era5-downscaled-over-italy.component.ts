@@ -67,7 +67,7 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
   private legends: { [key: string]: L.Control } = {};
   baseUrl: string = environment.production
     ? `${environment.backendURI}`
-    : "https://dds.highlander.cineca.it";
+    : "http://localhost:8080";
 
   bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
   readonly timeRanges = ["historical", "future"];
@@ -161,7 +161,7 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
     // const metric = this.filter.daily_metric;
     let layers = null;
     let url = null;
-    layers = `highlander:${ind}_1989-2020_${season}`;
+    layers = `highlander:${ind}_1989-2020_${season}_avg`;
     url = `${this.baseUrl}/geoserver/wms`;
 
     overlays[`Historical`] = L.tileLayer.wms(url, {
