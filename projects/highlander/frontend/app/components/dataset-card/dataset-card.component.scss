@@ -1,38 +1,48 @@
 .dataset-card {
+  
   img {
-    width: 200px;
+    width: auto;
     height: 200px;
+    object-fit: cover;
   }
 
   h3 {
     font-size: 1rem;
     min-height: 40px;
+    text-transform: uppercase;
   }
-
-  p {
-    text-align: justify;
-    font-size: 14px;
+  .description {
+    max-height: 150px;
+    overflow: auto;
+      p {
+        text-align: justify;
+        font-size: 14px;
+        margin-right: 10px;
+      }
   }
-
-  a .fa-up-right-from-square {
+  a, a .fa-up-right-from-square {
     color: #1a7dc1;
-    margin-left: 5px;
     font-size: 1rem;
   }
 
-  .truncate {
-    --max-lines: 3;
-    position: relative;
-    max-height: calc(var(--lh) * var(--max-lines));
-    overflow: hidden;
-    hyphens: auto;
-    display: -webkit-box;
-    -webkit-line-clamp: var(--line-clamp, 3);
-    -webkit-box-orient: vertical;
-    word-break: var(--word-break, "none");
+  .btn, .btn-group {
+    border-color:  var(--bs-border-color-translucent);
+    color: #1a7dc1 ;
+    transition: 0.3s ease-in-out;
+    text-align: center !important;
+    text-transform: none !important;
+  
   }
 
-  button {
+  .btn:hover {
+    color: #fff;
     background-color: #1a7dc1;
+    border-color:#1a7dc1;
+  }
+}
+
+@media screen and (max-width:905px) {
+  .dataset-card{
+    width: 26rem !important;
   }
 }

@@ -10,6 +10,7 @@ import { SSRService } from "@rapydo/services/ssr";
 import { Router, NavigationEnd } from "@angular/router";
 import { filter } from "rxjs/operators";
 import { environment } from "@rapydo/../environments/environment";
+import { ColumnMode } from "@swimlane/ngx-datatable";
 
 @Component({
   selector: "app-datasets",
