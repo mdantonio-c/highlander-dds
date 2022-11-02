@@ -1,4 +1,5 @@
 import os.path
+import pathlib
 from typing import Any, List
 
 import yaml
@@ -13,6 +14,9 @@ class CatalogExt:
     """
 
     def __init__(self, path: str) -> None:
+        file = pathlib.Path(path)
+        if not file.exists():
+            raise ValueError(f"Invalid config file: <{path}>")
         self.path = path
 
     def get_datasets(self) -> List:

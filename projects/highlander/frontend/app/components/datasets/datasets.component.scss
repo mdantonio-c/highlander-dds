@@ -16,16 +16,23 @@
   }
 }
 
-.page-link.active, .active > .page-link {
-	z-index: 3;
-	color:  #fff !important;
-	background-color:  #1a7dc1 !important;
-	border-color:  #1a7dc1 imortant !important;
+.search-filter {
+  padding: 8px;
+  margin: 15px auto;
+}
+
+.page-link.active,
+.active > .page-link {
+  z-index: 3;
+  color: #fff !important;
+  background-color: #1a7dc1 !important;
+  border-color: #1a7dc1 !important;
 }
 .fa-gray {
   color: #bbb;
 }
-.fa-blue, .page-link {
+.fa-blue,
+.page-link {
   color: #1a7dc1;
 }
 .applications {

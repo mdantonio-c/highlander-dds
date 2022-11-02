@@ -43,9 +43,13 @@ class Datasets(EndpointResource):
         ]
         # additional external applications?
         if application:
-            cat_ext = CatalogExt(path=CATALOG_EXT_DIR)
-            out = cat_ext.get_datasets()
-            res.extend(out)
+            try:
+                cat_ext = CatalogExt(path=CATALOG_EXT_DIR)
+                out = cat_ext.get_datasets()
+                res.extend(out)
+            except ValueError:
+                # for missing or invalid cat_ext
+                pass
         else:
             # exclude unwanted datasets (no applied to applications)
             res = [x for x in res if not x.get("exclude", False)]
@@ -150,12 +154,17 @@ class DatasetImage(EndpointResource):
         log.debug("Get image for dataset <{}>", dataset_id)
         try:
             dds = broker.get_instance()
+            image_filename = None
             try:
                 image_filename = dds.get_dataset_image_filename(dataset_id)
             except LookupError:
                 log.debug("Dataset <{}> NOT managed locally", dataset_id)
-                cat_ext = CatalogExt(path=CATALOG_EXT_DIR)
-                image_filename = cat_ext.get_dataset_image_filename(dataset_id)
+                try:
+                    cat_ext = CatalogExt(path=CATALOG_EXT_DIR)
+                    image_filename = cat_ext.get_dataset_image_filename(dataset_id)
+                except ValueError:
+                    # for missing or invalid cat_ext
+                    pass
             if not image_filename:
                 raise Warning(f"Image NOT configured for dataset <{dataset_id}>")
             image = CATALOG_DIR.joinpath("images", image_filename)

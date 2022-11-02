@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from "@angular/core";
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from "@angular/core";
 import { AuthService } from "@rapydo/services/auth";
 import { LocalStorageService } from "@rapydo/services/localstorage";
 import { DataService } from "../../services/data.service";
@@ -11,6 +11,7 @@ import { Router, NavigationEnd } from "@angular/router";
 import { filter } from "rxjs/operators";
 import { environment } from "@rapydo/../environments/environment";
 import { ColumnMode } from "@swimlane/ngx-datatable";
+import { DatatableComponent } from "@swimlane/ngx-datatable";
 
 @Component({
   selector: "app-datasets",
@@ -24,13 +25,20 @@ export class DatasetsComponent implements OnInit {
   readonly backendURI = environment.backendURI;
   title: string;
 
+  @ViewChild("tableWrapper", { static: false }) tableWrapper;
+  @ViewChild(DatatableComponent, { static: false }) table: DatatableComponent;
+
+  rows = [];
+  temp = [];
+  ColumnMode = ColumnMode;
+
   constructor(
     private dataService: DataService,
     private authService: AuthService,
     private local_storage: LocalStorageService,
     private router: Router,
     private notify: NotificationService,
-    private ref: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService,
     public ssr: SSRService
   ) {
@@ -51,7 +59,7 @@ export class DatasetsComponent implements OnInit {
     this.local_storage.userChanged.subscribe((user) => {
       if (user === this.local_storage.LOGGED_OUT) {
         this.user = null;
-        this.ref.detectChanges();
+        this.cdr.detectChanges();
       } else if (user === this.local_storage.LOGGED_IN) {
         this.user = this.authService.getUser();
       }
@@ -67,6 +75,12 @@ export class DatasetsComponent implements OnInit {
       .getDatasets(this.isApplication)
       .subscribe(
         (data) => {
+          // cache our list
+          this.temp = [...data];
+
+          // push our initial complete list
+          this.rows = data;
+
           this.datasets = data;
         },
         (error) => {
@@ -76,5 +90,20 @@ export class DatasetsComponent implements OnInit {
       .add(() => {
         this.spinner.hide();
       });
+  }
+
+  updateFilter(event) {
+    const val = event.target.value.toLowerCase();
+
+    // filter our data
+    const temp = this.temp.filter(function (d) {
+      return d.label.toLowerCase().indexOf(val) !== -1 || !val;
+    });
+
+    // update the rows
+    this.rows = temp;
+
+    // Whenever the filter changes, always go back to the first page
+    this.table.offset = 0;
   }
 }
