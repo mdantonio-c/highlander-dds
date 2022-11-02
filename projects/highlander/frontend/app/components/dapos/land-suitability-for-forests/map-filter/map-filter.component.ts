@@ -4,7 +4,8 @@ import { AuthService } from "@rapydo/services/auth";
 import {
   ADMINISTRATIVE_AREAS,
   INDICATORS,
-  BIOVARIABLES,
+  BIOTEMPERATURES,
+  BIOPRECIPITATIONS,
   SPECIES,
 } from "../data";
 
@@ -20,14 +21,16 @@ export class MapFilterComponent implements OnInit {
 
   readonly indicators = INDICATORS;
   readonly administratives = ADMINISTRATIVE_AREAS;
-  readonly biovariables = BIOVARIABLES;
   readonly forestSpecies = SPECIES;
+  readonly bioclimaticTemperatures = BIOTEMPERATURES;
+  readonly bioclimaticPrecipitations = BIOPRECIPITATIONS;
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.filterForm = this.fb.group({
       indicator: ["FTY"],
       administrative: ["italy"],
-      bioclimaticVariable: [""],
+      bioclimaticTemperature: [""],
+      bioclimaticPrecipitation: [""],
       forestSpecie: [""],
     });
   }
@@ -45,17 +48,30 @@ export class MapFilterComponent implements OnInit {
   private onChanges(): void {
     this.filterForm.valueChanges.subscribe((val) => {
       switch (this.filterForm.get("indicator").value) {
-        case "BIO":
-          if (!this.filterForm.get("bioclimaticVariable").value) {
-            /*            this.filterForm.patchValue(
+        case "BIOTEMP":
+          if (!this.filterForm.get("bioclimaticTemperature").value) {
+            this.filterForm.patchValue(
           {
             forestSpecie: null,
+            bioclimaticPrecipitation: null,
+            // bioclimaticVariable: null,
           },
           { emitEvent: false, onlySelf: true }
-        );*/
+        );
             return;
           }
           break;
+        case "BIOPRP":
+          if (!this.filterForm.get("bioclimaticPrecipitation").value) {
+              /*            this.filterForm.patchValue(
+            {
+              forestSpecie: null,
+            },
+            { emitEvent: false, onlySelf: true }
+          );*/
+              return;
+            }
+            break;
         case "FOREST":
           if (!this.filterForm.get("forestSpecie").value) {
             /*        this.filterForm.patchValue(

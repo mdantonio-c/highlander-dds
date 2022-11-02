@@ -161,7 +161,8 @@ export interface Era5Filter {
 export interface ForestSuitabilityFilter {
   indicator: string;
   administrative: string;
-  bioclimaticVariable?: string;
+  bioclimaticTemperature?: string;
+  bioclimaticPrecipitation?: string;
   forestSpecie?: string;
 }
 

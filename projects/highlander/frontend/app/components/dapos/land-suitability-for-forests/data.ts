@@ -7,18 +7,24 @@ export const INDICATORS: IndicatorsCodeLabel[] = [
     product: "forest-type",
   },
   {
-    code: "BIO",
-    label: "Bioclimatic variable",
-    product: "bioclimatic-variables",
-  },
-  {
     code: "FOREST",
     label: "Forest species suitability",
     product: "forest-species-suitability",
   },
+  {
+    code: "BIOTEMP",
+    label: "Bioclimatic indictor (temperature)",
+    product: "bioclimatic-temperatures",
+  },
+  {
+    code: "BIOPRP",
+    label: "Bioclimatic indicator (precipitation)",
+    product: "bioclimatic-precipitations",
+  },
+
 ];
 
-export const BIOVARIABLES: CodeLabel[] = [
+export const BIOTEMPERATURES: CodeLabel[] = [
   {
     code: "BIO1",
     label: "Annual Mean Temperature",
@@ -33,7 +39,7 @@ export const BIOVARIABLES: CodeLabel[] = [
   },
   {
     code: "BIO4",
-    label: "Temperature Seasonality (standard deviation ×100)",
+    label: "Temperature Seasonality (standard deviation)", // ×100
   },
   {
     code: "BIO5",
@@ -63,6 +69,9 @@ export const BIOVARIABLES: CodeLabel[] = [
     code: "BIO11",
     label: "Mean Temperature of Coldest Quarter",
   },
+];
+
+export const BIOPRECIPITATIONS: CodeLabel[] = [
   {
     code: "BIO12",
     label: "Annual Precipitation",
@@ -143,7 +152,7 @@ export const SPECIES: CodeLabel[] = [
     label: "Swiss stone pine",
   },
   {
-    code: " Pinus_halepensis",
+    code: "Pinus_halepensis",
     label: "Aleppo pine",
   },
   {

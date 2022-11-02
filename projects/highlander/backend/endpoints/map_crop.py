@@ -103,7 +103,11 @@ SOURCE_FILE_URL_MAP = {
         },
     },
     "land-suitability-for-forests": {
-        "bioclimatic-variables": {
+        "bioclimatic-precipitations": {
+            "url": "land-suitability-for-forests/BIO_HIST_FINALI/indicator_edited2.nc",
+            "params": ["indicator"],
+        },
+        "bioclimatic-temperatures": {
             "url": "land-suitability-for-forests/BIO_HIST_FINALI/indicator_edited2.nc",
             "params": ["indicator"],
         },
@@ -114,7 +118,7 @@ SOURCE_FILE_URL_MAP = {
 }
 
 # list of product that doesn't have the time dimension in theirs nc files
-PRODUCT_WOUT_TIME = ["bioclimatic-variables", "forest-species-suitability"]
+PRODUCT_WOUT_TIME = ["bioclimatic-precipitations", "bioclimatic-temperatures", "forest-species-suitability"]
 
 # map for indicator and variables
 VARIABLES_MAP = {
@@ -182,115 +186,30 @@ MAP_STYLES = {
     },
     "apparent-temperature": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [
-            -30,
-            -25,
-            -20,
-            -15,
-            -10,
-            -5,
-            0,
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-        ],
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
     },
     "discomfort-index-Thom": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [
-            -30,
-            -25,
-            -20,
-            -15,
-            -10,
-            -5,
-            0,
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-        ],
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
     },
     "humidex": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [
-            -30,
-            -25,
-            -20,
-            -15,
-            -10,
-            -5,
-            0,
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-        ],
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
     },
     "wind-chill": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [
-            -30,
-            -25,
-            -20,
-            -15,
-            -10,
-            -5,
-            0,
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-        ],
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
     },
     "2m temperature": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [
-            -30,
-            -25,
-            -20,
-            -15,
-            -10,
-            -5,
-            0,
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-        ],
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
     },
-    "bioclimatic-variables": {
+    "bioclimatic-precipitations": {
+        # TODO
+        "colormap": "mpl.cm.nipy_spectral",
+        "levels": [-300, 2000],
+    },
+    "bioclimatic-temeratures": {
         # TODO
         "colormap": "mpl.cm.nipy_spectral",
         "levels": [-300, 2000],

@@ -348,17 +348,25 @@ export const LEGEND_DATA: LegendConfig[] = [
     // TODO set the legend
     id: "FTY",
     legend_type: "legend_box",
-    title: "</br>Forest type</br>",
+    title: "Forest type",
     colors: ["#018571", "#a6611a"],
     labels: ["Broadleaved","Coniferous"],
   },
   {
     // TODO set the legend
-    id: "BIO",
+    id: "BIOTEMP",
     legend_type: "legend_box",
-    title: "<b>TODO</b></br>Bioclimatic variable</br><small>n/a</small>",
-    colors: ["#ccbcbc"],
-    labels: ["n/a"],
+    title: "Temperature</br><small>°C</small>",
+    colors: ["#7a0403","#bd2002","#ea4c0c","#fe9028","#f2c93a","#c3f234","#7eff55","#2af0a1","#1fc9de","#4390fe","#4454c4","#30123b",],
+    labels: ["40","35","30","25","20","15","10","5","0","-5","-10","-15",],
+  },
+  {
+    // TODO set the legend
+    id: "BIOPRP",
+    legend_type: "legend_box",
+    title: "Precipitation </br><small>[mm]</small>",
+    colors: ["#08306b","#084e98","#1967ad","#2e7ebc","#4695c8","#63a9d3","#85bcdc","#a6cee4","#c2daee","#d5e5f4","#e6f0fa","#f7fbff",],
+    labels: ["3500","3000","2500","2000","1500","1000","750","500","250","100","75","50",],
   },
   {
     // TODO set the legend

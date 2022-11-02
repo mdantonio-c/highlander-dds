@@ -11,7 +11,7 @@ import { DomSanitizer } from "@angular/platform-browser";
 import { DetailService } from "../services/detail.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
-import { BIOVARIABLES, INDICATORS, SPECIES } from "../data";
+import { BIOTEMPERATURES, BIOPRECIPITATIONS, INDICATORS, SPECIES } from "../data";
 
 @Component({
   selector: "forest-suitability-detail",
@@ -46,11 +46,16 @@ export class MapDetailComponent implements OnChanges {
       );
       this.productLabel = product.label;
       switch (product.code) {
-        case "BIO":
-          this.indicatorLabel = BIOVARIABLES.find(
+        case "BIOTEMP":
+          this.indicatorLabel = BIOTEMPERATURES.find(
             (x) => x.code == this.cropDetails.indicator
           ).label;
           break;
+        case "BIOPRP":
+            this.indicatorLabel = BIOPRECIPITATIONS.find(
+              (x) => x.code == this.cropDetails.indicator
+            ).label;
+            break;
         case "FOREST":
           this.indicatorLabel = SPECIES.find(
             (x) => x.code == this.cropDetails.indicator

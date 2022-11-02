@@ -17,32 +17,62 @@
         </div>
 
         <!-- BIOCLIMATIC VARIABLE -->
-        <div class="mb-3" *ngIf="filterForm.value.indicator == 'BIO'">
+        <div class="mb-3" *ngIf="filterForm.value.indicator == 'BIOTEMP'">
           <label class="col-form-label"><strong>Variable:</strong></label>
           <select
             id="bioclimaticGroup"
-            formControlName="bioclimaticVariable"
+            formControlName="bioclimaticTemperature"
             class="form-select"
             [ngClass]="{
               'is-invalid':
-                !this.filterForm.get('bioclimaticVariable').value &&
-                this.filterForm.get('indicator').value === 'BIO'
+                !this.filterForm.get('bioclimaticTemperature').value &&
+                this.filterForm.get('indicator').value === 'BIOTEMP'
             }"
           >
-            <option *ngFor="let i of biovariables" [value]="i.code">
+            <option *ngFor="let i of bioclimaticTemperatures" [value]="i.code">
               {{ i.label }}
             </option>
           </select>
           <div
             class="invalid-feedback"
             *ngIf="
-              !this.filterForm.get('bioclimaticVariable').value &&
-              this.filterForm.get('indicator').value === 'BIO'
+              !this.filterForm.get('bioclimaticTemperature').value &&
+              this.filterForm.get('indicator').value === 'BIOTEMP'
             "
           >
             choose a bioclimatic variable
           </div>
         </div>
+
+        <!-- BIOCLIMATIC VARIABLE -->
+        <div class="mb-3" *ngIf="filterForm.value.indicator == 'BIOPRP'">
+          <label class="col-form-label"><strong>Variable:</strong></label>
+          <select
+            id="bioclimaticGroup"
+            formControlName="bioclimaticPrecipitation"
+            class="form-select"
+            [ngClass]="{
+              'is-invalid':
+                !this.filterForm.get('bioclimaticPrecipitation').value &&
+                this.filterForm.get('indicator').value === 'BIOPRP'
+            }"
+          >
+            <option *ngFor="let i of bioclimaticPrecipitations" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+          <div
+            class="invalid-feedback"
+            *ngIf="
+              !this.filterForm.get('bioclimaticPrecipitation').value &&
+              this.filterForm.get('indicator').value === 'BIOPRP'
+            "
+          >
+            choose a bioclimatic variable
+          </div>
+        </div>
+
+
         <!-- FOREST SPECIE -->
         <div class="mb-3" *ngIf="filterForm.value.indicator == 'FOREST'">
           <label class="col-form-label"><strong>Specie:</strong></label>
