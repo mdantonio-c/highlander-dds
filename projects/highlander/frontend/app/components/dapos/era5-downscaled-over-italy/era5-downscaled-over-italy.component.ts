@@ -67,7 +67,7 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
   private legends: { [key: string]: L.Control } = {};
   baseUrl: string = environment.production
     ? `${environment.backendURI}`
-    : "http://localhost:8080";
+    : "https://dds.highlander.cineca.it";
 
   bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
   readonly timeRanges = ["historical", "future"];
