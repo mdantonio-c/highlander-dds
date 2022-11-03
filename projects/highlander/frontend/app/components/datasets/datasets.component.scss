@@ -13,12 +13,22 @@
     -webkit-line-clamp: 10; /* number of lines to show */
     line-clamp: 10;
     -webkit-box-orient: vertical;
+
+    
   }
 }
 
+.gx-0 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+    > h2 {
+      width: auto;
+    }
+}
 .search-filter {
-  padding: 8px;
-  margin: 15px auto;
+  margin: 10px auto;
 }
 
 .page-link.active,
@@ -38,3 +48,4 @@
 .applications {
   max-width: 1500px;
 }
+

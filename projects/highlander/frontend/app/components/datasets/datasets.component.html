@@ -37,6 +37,7 @@
         ></hld-applications>
       </ng-container>
       <!-- view datasets -->
+      
       <ng-template #datasetsView>
         <div
           class="table-responsive mb-2"
@@ -44,23 +45,25 @@
           #tableWrapper
         >
           <div class="row gx-0">
+            <h2>{{ title }}</h2>
             <div class="col-12 col-md-6 col-lg-4">
               <input
                 type="text"
-                class="search-filter w-100"
+                class="search-filter w-100 form-control"
                 placeholder="Type to filter the dataset name..."
                 (keyup)="updateFilter($event)"
               />
             </div>
           </div>
           <ngx-datatable
-            class="bootstrap"
+            class="bootstrap table"
             [rows]="rows"
             [columnMode]="ColumnMode.force"
             [footerHeight]="50"
             [headerHeight]="0"
             rowHeight="auto"
-            [limit]="10"
+            [limit]="4"
+            
           >
             <ngx-datatable-column name="Label">
               <ng-template
