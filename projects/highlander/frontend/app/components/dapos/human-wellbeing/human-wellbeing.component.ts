@@ -65,9 +65,7 @@ export class HumanWellbeingComponent implements OnInit {
   private collapsed = false;
   map: L.Map;
   private legends: { [key: string]: L.Control } = {};
-  baseUrl: string = environment.production
-    ? `${environment.backendURI}`
-    : "https://dds.highlander.cineca.it";
+  mapsUrl: string;
 
   bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
   readonly timeRanges = ["historical", "future"];
@@ -135,6 +133,7 @@ export class HumanWellbeingComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {
     this.mapCropDetails = {};
+    this.mapsUrl = dataService.getMapsUrl();
   }
 
   ngOnInit() {
@@ -159,10 +158,10 @@ export class HumanWellbeingComponent implements OnInit {
     let url = null;
     if (this.filter.timePeriod == "multi-year") {
       layers = `highlander:${ind}_1989-2020_${metric}_VHR-REA_multiyearmean`;
-      url = `${this.baseUrl}/geoserver/wms`;
+      url = `${this.mapsUrl}/wms`;
     } else {
       layers = `highlander:${ind}_${this.year}_${metric}-grid_regular`;
-      url = `${this.baseUrl}/geoserver/wms?time=${this.date}`;
+      url = `${this.mapsUrl}/wms?time=${this.date}`;
     }
 
     overlays[`Historical`] = L.tileLayer.wms(url, {

@@ -4,6 +4,9 @@
 @import "leaflet.markercluster/dist/MarkerCluster.Default";
 @import "leaflet-timedimension/dist/leaflet.timedimension.control";
 
+html.h-100 {
+  min-width: 454px;
+}
 /* Typography */
 body {
   font-family: "Open Sans", sans-serif !important;
@@ -134,15 +137,32 @@ input[type="radio"] {
   .datatable-body {
     .datatable-row-detail {
       background: #d1d4d7;
-      padding: 10px;
+      padding: 8px;
       margin: 2px 0px;
     }
     .datatable-scroll {
       width: 100% !important;
+      display: block;
     }
   }
 }
+.table-responsive .table .datatable-body{
+  height: 66vh !important;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 
+.search-result-details {
+  width:88.667% !important;
+  h3 {
+    font-size: 1.3rem !important; 
+  }
+
+  p {
+    font-size: 12px !important;
+    margin-bottom: 0 !important;
+  }
+}
 /* style my-requests sidebar */
 .sidenav {
   .nav-pills {
