@@ -20,7 +20,12 @@ import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
 import { SSRService } from "@rapydo/services/ssr";
 import { LegendConfig, LEGEND_DATA } from "../../../services/data";
-import { INDICATORS, BIOTEMPERATURES, BIOPRECIPITATIONS, SPECIES } from "./data";
+import {
+  INDICATORS,
+  BIOTEMPERATURES,
+  BIOPRECIPITATIONS,
+  SPECIES,
+} from "./data";
 
 import * as L from "leaflet";
 
@@ -62,9 +67,7 @@ export class SuitabilityForestComponent implements OnInit {
   private collapsed = false;
   map: L.Map;
   private legends: { [key: string]: L.Control } = {};
-  baseUrl: string = environment.production
-    ? `${environment.backendURI}`
-    : "https://dds.highlander.cineca.it";
+  mapsUrl: string;
 
   bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
   readonly timeRanges = ["historical", "future"];
@@ -131,6 +134,8 @@ export class SuitabilityForestComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {
     this.mapCropDetails = {};
+    this.mapsUrl = dataService.getMapsUrl();
+    //console.log(`Map url: ${this.mapsUrl}`)
   }
 
   ngOnInit() {
@@ -168,7 +173,7 @@ export class SuitabilityForestComponent implements OnInit {
         break;
     }
 
-    let url = `${this.baseUrl}/geoserver/wms`;
+    let url = `${this.mapsUrl}/wms`;
 
     overlays[`Historical`] = L.tileLayer.wms(url, {
       layers: layers,

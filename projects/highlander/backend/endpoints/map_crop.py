@@ -40,6 +40,13 @@ cartopy.config["data_dir"] = os.getenv(
     "CARTOPY_DATA_DIR", cartopy.config.get("data_dir")
 )
 
+PRODUCT_EXCEPTION = {
+    "human-wellbeing": {"multi-year": "daily"},
+    "land-suitability-for-forests": {
+        "bioclimatic-precipitations": "bioclimatic-variables",
+        "bioclimatic-temperatures": "bioclimatic-variables",
+    },
+}
 
 CROPS_OUTPUT_ROOT = Path("/catalog/crops/")
 
@@ -118,7 +125,11 @@ SOURCE_FILE_URL_MAP = {
 }
 
 # list of product that doesn't have the time dimension in theirs nc files
-PRODUCT_WOUT_TIME = ["bioclimatic-precipitations", "bioclimatic-temperatures", "forest-species-suitability"]
+PRODUCT_WOUT_TIME = [
+    "bioclimatic-precipitations",
+    "bioclimatic-temperatures",
+    "forest-species-suitability",
+]
 
 # map for indicator and variables
 VARIABLES_MAP = {
@@ -186,30 +197,120 @@ MAP_STYLES = {
     },
     "apparent-temperature": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
     },
     "discomfort-index-Thom": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
     },
     "humidex": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
     },
     "wind-chill": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
     },
     "2m temperature": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50],
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
     },
     "bioclimatic-precipitations": {
         # TODO
         "colormap": "mpl.cm.nipy_spectral",
         "levels": [-300, 2000],
     },
-    "bioclimatic-temeratures": {
+    "bioclimatic-temperatures": {
         # TODO
         "colormap": "mpl.cm.nipy_spectral",
         "levels": [-300, 2000],
@@ -495,14 +596,22 @@ class MapCrop(EndpointResource):
             if product_id in p["id"]:
                 product_details = p
                 break
-            # case of humanwellbeing multi-year: product not in dds but its details are the same of the daily
+            # check if there are exception for the product
             if (
-                dataset_id == "human-wellbeing"
-                and product_id == "multi-year"
-                and p["id"] == "daily"
+                dataset_id in PRODUCT_EXCEPTION.keys()
+                and product_id in PRODUCT_EXCEPTION[dataset_id].keys()
+                and p["id"] == PRODUCT_EXCEPTION[dataset_id][product_id]
             ):
                 product_details = p
                 break
+            # # case of humanwellbeing multi-year: product not in dds but its details are the same of the daily
+            # if (
+            #     dataset_id == "human-wellbeing"
+            #     and product_id == "multi-year"
+            #     and p["id"] == "daily"
+            # ):
+            #     product_details = p
+            #     break
         if not product_details:
             raise NotFound(f"product {product_id} for dataset {dataset_id} not found")
 
