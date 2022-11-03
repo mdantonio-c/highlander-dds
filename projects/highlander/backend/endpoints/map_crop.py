@@ -197,128 +197,38 @@ MAP_STYLES = {
     },
     "apparent-temperature": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [
-            -30,
-            -25,
-            -20,
-            -15,
-            -10,
-            -5,
-            0,
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-        ],
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50,],
     },
     "discomfort-index-Thom": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [
-            -30,
-            -25,
-            -20,
-            -15,
-            -10,
-            -5,
-            0,
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-        ],
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50,],
     },
     "humidex": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [
-            -30,
-            -25,
-            -20,
-            -15,
-            -10,
-            -5,
-            0,
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-        ],
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50,],
     },
     "wind-chill": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [
-            -30,
-            -25,
-            -20,
-            -15,
-            -10,
-            -5,
-            0,
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-        ],
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50,],
     },
     "2m temperature": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [
-            -30,
-            -25,
-            -20,
-            -15,
-            -10,
-            -5,
-            0,
-            5,
-            10,
-            15,
-            20,
-            25,
-            30,
-            35,
-            40,
-            45,
-            50,
-        ],
+        "levels": [-15,-10,-5,0,5,10,15,20,25,30,35,],
     },
     "bioclimatic-precipitations": {
         # TODO
-        "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-300, 2000],
+        "colormap": "mpl.cm.Blues",
+        "levels": [50, 75, 100, 250, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500],
     },
     "bioclimatic-temperatures": {
         # TODO
-        "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-300, 2000],
+        "colormap": "mpl.cm.turbo",
+        "levels": [-15,-10,-5,0,5,10,15,20,25,30,35,40,],
     },
     "forest-species-suitability": {
         # TODO
-        "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-300, 2000],
+        "colormap": "mpl.cm.Greens",
+        "levels": [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
     },
 }
 
@@ -451,7 +361,7 @@ def plotDistribution(field: Any, outputfile: Path) -> None:
         ax=ax3,
         edgecolor=".3",
         linewidth=0.5,
-        log_scale=True,
+        #log_scale=True,
     )
     ax3.xaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
     mpl.rcParams["font.size"] = 14
@@ -738,7 +648,6 @@ class MapCrop(EndpointResource):
                 raise NotFound(
                     f"indicator {indicator} for product {product_id} for dataset {dataset_id} not found"
                 )
-
             # crop the area
             try:
                 has_time = True
@@ -755,11 +664,9 @@ class MapCrop(EndpointResource):
                 )
             except Exception as exc:
                 raise ServerError(f"Errors in cropping the data: {exc}")
-
             # create the output directory if it does not exists
             if not output_dir.is_dir():
                 output_dir.mkdir(parents=True, exist_ok=True)
-
             try:
                 if type == "map":
                     # plot the cropped map
@@ -780,11 +687,12 @@ class MapCrop(EndpointResource):
                             df_stas,
                             pd.DataFrame(
                                 np.array(nc_cropped.values).ravel(),
-                                columns=[str(data_to_crop_filepath)[:-21]],
+                                columns=[str(product_id)], #data_to_crop_filepath)[:-21]],
                             ),
                         ],
                         axis=1,
                     )
+
                     if plot_format == "json":
                         df_stas.to_json(path_or_buf=filepath)
                         return send_file(filepath, mimetype=mimetype)
@@ -794,6 +702,7 @@ class MapCrop(EndpointResource):
                         plotBoxplot(df_stas, filepath)
                     elif plot_type == "distribution":
                         plotDistribution(df_stas, filepath)
+
 
             except Exception as exc:
                 raise ServerError(f"Errors in plotting the data: {exc}")
