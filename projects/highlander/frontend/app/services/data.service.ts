@@ -21,6 +21,10 @@ export class DataService {
     }
   }
 
+  getMapsUrl() {
+    return this._maps_url;
+  }
+
   /**
    * Get all the available datasets.
    * @param isApplication filter ONLY application datasets.
