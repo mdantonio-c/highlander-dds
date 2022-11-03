@@ -227,8 +227,8 @@ MAP_STYLES = {
     },
     "forest-species-suitability": {
         # TODO
-        "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-300, 2000],
+        "colormap": "mpl.cm.Greens",
+        "levels": [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
     },
 }
 
@@ -356,9 +356,6 @@ def plotDistribution(field: Any, outputfile: Path) -> None:
     sns.set_theme(style="ticks")
     sns.despine(fig3)
     log.debug(field.max())
-    log.debug("inside 1")
-    log.debug(field.mean())
-    #sns.displot(field)
     sns.histplot(
         field,
         ax=ax3,
@@ -366,27 +363,22 @@ def plotDistribution(field: Any, outputfile: Path) -> None:
         linewidth=0.5,
         #log_scale=True,
     )
-    log.debug("inside 2")
     ax3.xaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
     mpl.rcParams["font.size"] = 14
 
     # TODO label not hardcoded
     # ax3.set_xlabel('R-factor')  # ,fontsize=14)
     # TODO this label to have not to be hardcoded or it's the same for all the boxplots?
-    log.debug("inside 3")
     ax3.set_xlabel(f'{field.columns[0][-4:].replace("/", "")}')
     ax3.set_ylabel("Count")  # ,fontsize=14)
     ax3.tick_params(axis="both", which="major")  # , labelsize=14)
     ax3.tick_params(axis="both", which="minor")  # , labelsize = 14)
-    log.debug("inside 4")
     ax3.set_title(f'{field.columns[0][-4:].replace("/", "")} histogram')
-    ax3.get_legend()#.remove()  # handles = legend.legendHandles
-    log.debug("inside 5")
+    ax3.get_legend().remove()  # handles = legend.legendHandles
     # legend.remove()
     # ax3.legend(handles, ['dep-', 'ind-', 'ind+', 'dep+'], title='Stat.ind.')
 
     fig3.savefig(outputfile)
-    log.debug("inside 6")
 
 
 def cropArea(
@@ -656,8 +648,6 @@ class MapCrop(EndpointResource):
                 raise NotFound(
                     f"indicator {indicator} for product {product_id} for dataset {dataset_id} not found"
                 )
-            log.debug("1")
-
             # crop the area
             try:
                 has_time = True
@@ -674,11 +664,9 @@ class MapCrop(EndpointResource):
                 )
             except Exception as exc:
                 raise ServerError(f"Errors in cropping the data: {exc}")
-            log.debug("2")
             # create the output directory if it does not exists
             if not output_dir.is_dir():
                 output_dir.mkdir(parents=True, exist_ok=True)
-            log.debug("3")
             try:
                 if type == "map":
                     # plot the cropped map
@@ -692,7 +680,6 @@ class MapCrop(EndpointResource):
                         filepath,
                     )
                 else:
-                    log.debug("4")
                     # plot the boxplot
                     df_stas = pd.DataFrame([])
                     df_stas = pd.concat(
@@ -705,11 +692,7 @@ class MapCrop(EndpointResource):
                         ],
                         axis=1,
                     )
-                    log.debug(product_id)
-                    log.debug(nc_cropped.long_name)
-                    log.debug('ci arrivo qui?')
-                    log.debug(isinstance(df_stas, pd.DataFrame))
-                    log.debug(len(df_stas))
+
                     if plot_format == "json":
                         df_stas.to_json(path_or_buf=filepath)
                         return send_file(filepath, mimetype=mimetype)
@@ -718,7 +701,6 @@ class MapCrop(EndpointResource):
                     if plot_type == "boxplot":
                         plotBoxplot(df_stas, filepath)
                     elif plot_type == "distribution":
-                        log.debug(filepath)
                         plotDistribution(df_stas, filepath)
 
 
