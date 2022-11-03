@@ -24,13 +24,16 @@
     color: #1a7dc1;
     font-size: 1rem;
   }
-
+  .btn-group {
+    margin-top: -25px;
+  }
   .btn, .btn-group {
     border-color:  var(--bs-border-color-translucent);
     color: #1a7dc1 ;
     transition: 0.3s ease-in-out;
     text-align: center !important;
     text-transform: none !important;
+    
   
   }
 
