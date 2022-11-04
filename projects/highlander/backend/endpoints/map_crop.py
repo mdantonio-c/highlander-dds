@@ -643,15 +643,8 @@ class MapCrop(EndpointResource):
             # get the geojson file
             geojson_file = Path(GEOJSON_PATH, f"italy-{area_type}.json")
             areas = gpd.read_file(geojson_file)
-            # get the names that cope with the different geojson structures
-            # TODO params and names in the two geojson files can be modified in order to correspond?
-            if area_id:
-                if area_type == "regions":
-                    area_name = area_id.lower()
-                    area_index = "name"
-                else:
-                    area_name = area_id.title()
-                    area_index = "prov_name"
+
+            area_name = area_id.lower()
 
             # get the path of the crop
             # get the output structure according to the dataset and the product
@@ -696,9 +689,9 @@ class MapCrop(EndpointResource):
                 return send_file(filepath, mimetype=mimetype)
 
             # get the area
-            area = areas[areas[area_index] == area_name]
+            area = areas[areas["name"] == area_name]
             if area.empty:
-                raise NotFound(f"Area {area_id} not found in {area_type}")
+                raise NotFound(f"Area {area_name} not found in {area_type}")
 
             # get the map to crop
             # check if the model name and the filename correspond

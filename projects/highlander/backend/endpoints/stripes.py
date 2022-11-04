@@ -123,19 +123,12 @@ class Stripes(EndpointResource):
             # get the geojson file
             geojson_file = Path(GEOJSON_PATH, f"italy-{administrative}.json")
             areas = gpd.read_file(geojson_file)
-            # get the names that cope with the different geojson structures
-            if area_id:
-                if administrative == "regions":
-                    area_name = area_id.lower()
-                    area_index = "name"
-                else:
-                    area_name = area_id.title()
-                    area_index = "prov_name"
+            area_name = area_id.lower()
 
             # Get the area. Check if it exists and if it does not,then  raise an error.
-            area = areas[areas[area_index] == area_name]
+            area = areas[areas["name"] == area_name]
             if area.empty:
-                raise NotFound(f"Area {area_id} not found in {administrative}")
+                raise NotFound(f"Area {area_name} not found in {administrative}")
 
         elif administrative == "Italy":
             # I define an area_name also for italy case to be able to create a single output file definition.
