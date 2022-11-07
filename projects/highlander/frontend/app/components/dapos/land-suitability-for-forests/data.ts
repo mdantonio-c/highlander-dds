@@ -13,7 +13,7 @@ export const INDICATORS: IndicatorsCodeLabel[] = [
   },
   {
     code: "BIOTEMP",
-    label: "Bioclimatic indictor (temperature)",
+    label: "Bioclimatic indicator (temperature)",
     product: "bioclimatic-temperatures",
   },
   {

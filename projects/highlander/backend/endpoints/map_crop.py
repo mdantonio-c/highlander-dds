@@ -197,19 +197,19 @@ MAP_STYLES = {
     },
     "apparent-temperature": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50,],
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,],#50,],
     },
     "discomfort-index-Thom": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50,],
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,],#50,],
     },
     "humidex": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50,],
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,],#50,],
     },
     "wind-chill": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,50,],
+        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,],#50,],
     },
     "2m temperature": {
         "colormap": "mpl.cm.nipy_spectral",
@@ -346,34 +346,35 @@ def plotBoxplot(field: Any, outputfile: Path) -> None:
     fig4.savefig(outputfile)
 
 
-def plotDistribution(field: Any, outputfile: Path) -> None:
+def plotDistribution(field: Any, outputfile: Path, name: Any) -> None:
     """
     This function plot with the xarray tool the field of netcdf
     """
     fig3, (ax3) = plt.subplots(
         1, 1, figsize=(8, 3)
     )  # len(field.lon)/100, len(field.lat)/100))
-    sns.set_theme(style="ticks")
-    sns.despine(fig3)
-    log.debug(field.max())
-    sns.histplot(
-        field,
-        ax=ax3,
-        edgecolor=".3",
-        linewidth=0.5,
+    #sns.set_theme(style="ticks")
+    #sns.despine(fig3)
+    #log.debug(field.max())
+    #sns.histplot(
+    #    field,
+    #    ax=ax3,
+    #    edgecolor=".3",
+    #    linewidth=0.5,
         #log_scale=True,
-    )
+    #)
+    field.plot.hist(grid=True, bins=20, rwidth=0.9, ax=ax3, color='#607c8e')
     ax3.xaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
     mpl.rcParams["font.size"] = 14
 
     # TODO label not hardcoded
     # ax3.set_xlabel('R-factor')  # ,fontsize=14)
     # TODO this label to have not to be hardcoded or it's the same for all the boxplots?
-    ax3.set_xlabel(f'{field.columns[0][-4:].replace("/", "")}')
+    ax3.set_xlabel(f'{name}')
     ax3.set_ylabel("Count")  # ,fontsize=14)
     ax3.tick_params(axis="both", which="major")  # , labelsize=14)
     ax3.tick_params(axis="both", which="minor")  # , labelsize = 14)
-    ax3.set_title(f'{field.columns[0][-4:].replace("/", "")} histogram')
+    ax3.set_title(f'{field.columns[0].replace(".nc", "")} histogram')
     ax3.get_legend().remove()  # handles = legend.legendHandles
     # legend.remove()
     # ax3.legend(handles, ['dep-', 'ind-', 'ind+', 'dep+'], title='Stat.ind.')
@@ -615,6 +616,7 @@ class MapCrop(EndpointResource):
             product_urlpath = dds.broker.catalog[dataset_id][
                 product_details["id"]
             ].urlpath
+            log.debug(product_urlpath)
             product_urlpath_root = product_urlpath.split(dataset_id)[0]
             if dataset_id == "era5-downscaled-over-italy":
                 product_urlpath_root = product_urlpath.split("vhr-rea")[0]
@@ -692,6 +694,8 @@ class MapCrop(EndpointResource):
                         ],
                         axis=1,
                     )
+                    log.debug('Colums')
+                    log.debug(df_stas.columns[0][-4:])
 
                     if plot_format == "json":
                         df_stas.to_json(path_or_buf=filepath)
@@ -701,7 +705,7 @@ class MapCrop(EndpointResource):
                     if plot_type == "boxplot":
                         plotBoxplot(df_stas, filepath)
                     elif plot_type == "distribution":
-                        plotDistribution(df_stas, filepath)
+                        plotDistribution(df_stas, filepath, nc_cropped.long_name)
 
 
             except Exception as exc:
