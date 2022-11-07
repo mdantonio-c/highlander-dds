@@ -472,7 +472,7 @@
       "type": "Feature",
       "properties": {
         "id": 2,
-        "name": "vallei-d-aosta",
+        "name": "valle d'aosta",
         "length": 311165.134877,
         "area": 3259040961.300000190734863
       },
@@ -1132,7 +1132,7 @@
       "type": "Feature",
       "properties": {
         "id": 4,
-        "name": "trentino-alto-adige-sudtirol",
+        "name": "trentino alto adige-sudtirol",
         "length": 800534.132495,
         "area": 13608018378.5
       },

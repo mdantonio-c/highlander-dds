@@ -82,7 +82,7 @@ OUTPUT_STRUCTURE_MAP = {
 SOURCE_FILE_URL_MAP = {
     "soil-erosion": {
         "rainfall-erosivity": {
-            "url": "soil-erosion/Rfactor/model_filename_1991_2020_regular.nc",
+            "url": "soil-erosion/Rfactor/model_filename_1991_2020_VHR-REA_regular.nc",
             "params": ["model_filename"],
         },
         "soil-loss": {
@@ -197,6 +197,7 @@ MAP_STYLES = {
     },
     "apparent-temperature": {
         "colormap": "mpl.cm.nipy_spectral",
+<<<<<<< HEAD
         "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,],#50,],
     },
     "discomfort-index-Thom": {
@@ -210,10 +211,109 @@ MAP_STYLES = {
     "wind-chill": {
         "colormap": "mpl.cm.nipy_spectral",
         "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,],#50,],
+=======
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
+    },
+    "discomfort-index-Thom": {
+        "colormap": "mpl.cm.nipy_spectral",
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
+    },
+    "humidex": {
+        "colormap": "mpl.cm.nipy_spectral",
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
+    },
+    "wind-chill": {
+        "colormap": "mpl.cm.nipy_spectral",
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+            50,
+        ],
+>>>>>>> 3899b85052805683cf3596d7acc052ed94c9eadf
     },
     "2m temperature": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-15,-10,-5,0,5,10,15,20,25,30,35,],
+        "levels": [
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+        ],
     },
     "bioclimatic-precipitations": {
         # TODO
@@ -223,7 +323,20 @@ MAP_STYLES = {
     "bioclimatic-temperatures": {
         # TODO
         "colormap": "mpl.cm.turbo",
-        "levels": [-15,-10,-5,0,5,10,15,20,25,30,35,40,],
+        "levels": [
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+        ],
     },
     "forest-species-suitability": {
         # TODO
@@ -353,6 +466,7 @@ def plotDistribution(field: Any, outputfile: Path, name: Any) -> None:
     fig3, (ax3) = plt.subplots(
         1, 1, figsize=(8, 3)
     )  # len(field.lon)/100, len(field.lat)/100))
+<<<<<<< HEAD
     #sns.set_theme(style="ticks")
     #sns.despine(fig3)
     #log.debug(field.max())
@@ -364,6 +478,18 @@ def plotDistribution(field: Any, outputfile: Path, name: Any) -> None:
         #log_scale=True,
     #)
     field.plot.hist(grid=True, bins=20, rwidth=0.9, ax=ax3, color='#607c8e')
+=======
+    sns.set_theme(style="ticks")
+    sns.despine(fig3)
+    log.debug(field.max())
+    sns.histplot(
+        field,
+        ax=ax3,
+        edgecolor=".3",
+        linewidth=0.5,
+        # log_scale=True,
+    )
+>>>>>>> 3899b85052805683cf3596d7acc052ed94c9eadf
     ax3.xaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
     mpl.rcParams["font.size"] = 14
 
@@ -547,15 +673,8 @@ class MapCrop(EndpointResource):
             # get the geojson file
             geojson_file = Path(GEOJSON_PATH, f"italy-{area_type}.json")
             areas = gpd.read_file(geojson_file)
-            # get the names that cope with the different geojson structures
-            # TODO params and names in the two geojson files can be modified in order to correspond?
-            if area_id:
-                if area_type == "regions":
-                    area_name = area_id.lower()
-                    area_index = "name"
-                else:
-                    area_name = area_id.title()
-                    area_index = "prov_name"
+
+            area_name = area_id.lower()
 
             # get the path of the crop
             # get the output structure according to the dataset and the product
@@ -600,9 +719,9 @@ class MapCrop(EndpointResource):
                 return send_file(filepath, mimetype=mimetype)
 
             # get the area
-            area = areas[areas[area_index] == area_name]
+            area = areas[areas["name"] == area_name]
             if area.empty:
-                raise NotFound(f"Area {area_id} not found in {area_type}")
+                raise NotFound(f"Area {area_name} not found in {area_type}")
 
             # get the map to crop
             # check if the model name and the filename correspond
@@ -689,7 +808,9 @@ class MapCrop(EndpointResource):
                             df_stas,
                             pd.DataFrame(
                                 np.array(nc_cropped.values).ravel(),
-                                columns=[str(product_id)], #data_to_crop_filepath)[:-21]],
+                                columns=[
+                                    str(product_id)
+                                ],  # data_to_crop_filepath)[:-21]],
                             ),
                         ],
                         axis=1,
@@ -706,7 +827,6 @@ class MapCrop(EndpointResource):
                         plotBoxplot(df_stas, filepath)
                     elif plot_type == "distribution":
                         plotDistribution(df_stas, filepath, nc_cropped.long_name)
-
 
             except Exception as exc:
                 raise ServerError(f"Errors in plotting the data: {exc}")

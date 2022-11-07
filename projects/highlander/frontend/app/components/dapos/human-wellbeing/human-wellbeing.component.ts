@@ -317,15 +317,8 @@ export class HumanWellbeingComponent implements OnInit {
     this.mapCropDetails = Object.assign({}, this.mapCropDetails);
   }
   checkSelectedFeature(layer) {
-    let layerName = null;
-    switch (this.administrative) {
-      case "regions":
-        layerName = layer.feature.properties.name;
-        break;
-      case "provinces":
-        layerName = layer.feature.properties.prov_name;
-        break;
-    }
+    let layerName = layer.feature.properties.name;
+
     if (this.mapCropDetails && layerName) {
       if (this.mapCropDetails.area_id !== layerName) {
         return false;
@@ -379,7 +372,7 @@ export class HumanWellbeingComponent implements OnInit {
       case "provinces":
         this.mapCropDetails.area_id = (
           layer.feature.properties as ProvinceFeature
-        ).prov_name;
+        ).name;
         //console.log("province: "+this.mapCropDetails.area_id);
         break;
     }
