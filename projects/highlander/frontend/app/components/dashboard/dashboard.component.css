@@ -1,14 +1,15 @@
 .page-with-sidebar {
-  padding-left: 140px;
+  padding-left: 20px;
+  width:100% !important;
+
 }
 
 .sidenav {
   width: 120px;
-  position: fixed;
   z-index: 1;
   left: 10px;
-  overflow-x: hidden;
   padding: 8px 0;
+  align-self: flex-start
 }
 
 .main {

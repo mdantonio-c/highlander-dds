@@ -1,3 +1,7 @@
 dd ul {
   margin-bottom: 0 !important;
 }
+
+.tab-content {
+  width: 100% !important;
+}
