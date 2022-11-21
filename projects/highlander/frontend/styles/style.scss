@@ -4,6 +4,14 @@
 @import "leaflet.markercluster/dist/MarkerCluster.Default";
 @import "leaflet-timedimension/dist/leaflet.timedimension.control";
 
+/*
+ngx-spinner
+ONLY default "ball-scale-multiple" is available
+to add a different spinner import its style sheet
+e.g.
+@import "ngx-spinner/animations/ball-climbing-dot.css";
+*/
+
 html.h-100 {
   min-width: 454px;
 }
@@ -146,17 +154,17 @@ input[type="radio"] {
     }
   }
 }
-.table-responsive .table .datatable-body{
+.table-responsive .table .datatable-body {
   height: 66vh !important;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
 .search-result-details {
-  width:89% !important;
+  width: 89% !important;
   margin-right: auto;
   h3 {
-    font-size: 1.3rem !important; 
+    font-size: 1.3rem !important;
   }
 
   p {
@@ -239,7 +247,7 @@ a.ng-star-inserted {
 
 app-dataset .btn {
   background-color: #1a7dc1;
-  border-color : #1a7dc1 !important;
+  border-color: #1a7dc1 !important;
 }
 
 /*buttons & checkbox/radio*/
@@ -287,12 +295,14 @@ input[type="checkbox"]:checked {
   width: 100% !important;
 }
 
-.contact{
+.contact {
   width: 30% !important;
 }
 
-.table-product tbody, .table-product tbody tr, .table > :not(caption) > * > *{
-  border:none;
+.table-product tbody,
+.table-product tbody tr,
+.table > :not(caption) > * > * {
+  border: none;
   border-style: none;
   border-bottom-width: 0px;
 }
@@ -308,11 +318,10 @@ input[type="checkbox"]:checked {
   display: flex;
   align-items: center;
   justify-content: space-between;
-    
-  
-    img {
-      max-width: 349px;
-    }
+
+  img {
+    max-width: 349px;
+  }
   /*.card-horizontal {
     display: flex;
     flex: 1 1 auto;
@@ -323,14 +332,12 @@ input[type="checkbox"]:checked {
   }*/
 }
 
-
 @media screen and (max-width: 990px) {
-    /*change direction costum dataset page*/
-  
+  /*change direction costum dataset page*/
 
   .description-box + hr {
-    display:none;
-    
+    display: none;
+
     & + div {
       flex-direction: column;
       width: 100% !important;
@@ -338,57 +345,53 @@ input[type="checkbox"]:checked {
       & > div {
         width: 90% !important;
 
-        & div + div{
+        & div + div {
           margin-bottom: 15px !important;
         }
       }
-    } 
+    }
   }
-    .table-product {
-      th{
-        width: 70% !important;
-      }
-      + hr {
-      display:none !important;
-      }
+  .table-product {
+    th {
+      width: 70% !important;
     }
+    + hr {
+      display: none !important;
+    }
+  }
 
-    .attribution {
-      max-width: 93%;
-    }
-  
+  .attribution {
+    max-width: 93%;
+  }
 }
-@media screen and (max-width:650px){
+@media screen and (max-width: 650px) {
   .description-box {
     flex-direction: column;
-    display:flex;
-      img {
-        width: 80%;
-        margin-right: auto !important;
-        margin-left: auto !important;
-      
-      }
+    display: flex;
+    img {
+      width: 80%;
+      margin-right: auto !important;
+      margin-left: auto !important;
+    }
     hr {
-        display: none !important;
-      }
+      display: none !important;
+    }
   }
 }
 @media screen and (max-width: 574px) {
-
   .search-result-details {
     width: 94% !important;
-    margin-left:auto;
+    margin-left: auto;
     h3 {
-      font-size: 1rem !important; 
+      font-size: 1rem !important;
     }
   }
-  
+
   .footer {
     padding-left: 0.6rem !important;
     padding-right: 0.6rem !important;
 
-    .footer-container 
-    {
+    .footer-container {
       small {
         font-size: 0.6rem;
       }

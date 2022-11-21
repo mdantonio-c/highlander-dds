@@ -1,6 +1,5 @@
 <div class="container">
   <ngx-spinner
-    type="ball-scale-multiple"
     bdColor="rgba(255,255,255,0.8)"
     color="#6c757d"
     zIndex="1000"
@@ -13,16 +12,14 @@
     <div class="w-100">
       <div class="description-box my-4">
         <img
-            src="{{ backendURI + '/api/datasets/' + dataset.id + '/image' }}"
-            alt="no img"
-            class="m-3 dataset-image img-fluid float-start"
-            *ngIf="dataset.image"
-          />
-        <p class="text-justify m-2 p-2"
-        [innerHTML]="dataset.description">
-      </p>  
+          src="{{ backendURI + '/api/datasets/' + dataset.id + '/image' }}"
+          alt="no img"
+          class="m-3 dataset-image img-fluid float-start"
+          *ngIf="dataset.image"
+        />
+        <p class="text-justify m-2 p-2" [innerHTML]="dataset.description"></p>
       </div>
-      <hr/>
+      <hr />
       <div class="d-flex">
         <hr />
         <div class="w-75 m-3">
@@ -59,20 +56,22 @@
             </ng-container>
           </div>
           <ng-template #singleProduct>
-              <span>{{ dataset.products[0].description }}</span>
-            </ng-template>
-            <span *ngIf="!dataset.products"> No Products </span>
-          <table class="table table-sm table-hover table-condensed table-product m-2">
+            <span>{{ dataset.products[0].description }}</span>
+          </ng-template>
+          <span *ngIf="!dataset.products"> No Products </span>
+          <table
+            class="table table-sm table-hover table-condensed table-product m-2"
+          >
             <tbody>
               <tr *ngFor="let v of selectedProduct.variables">
                 <th>{{ v.label }}</th>
                 <td class="text-end">{{ v?.units }}</td>
               </tr>
-            </tbody>  
+            </tbody>
           </table>
         </div>
-        <hr>
-        <div class=" w-25 mx-3 my-3 contact">
+        <hr />
+        <div class="w-25 mx-3 my-3 contact">
           <h3>Contact</h3>
           <address class="mb-0">
             <strong>{{ dataset.contact.name }}</strong>
@@ -142,10 +141,10 @@
         </div>
       </div>
     </div>
-    <hr>
+    <hr />
     <div class="mx-3 attribution">
-      <h3 >Attribution</h3>
+      <h3>Attribution</h3>
       <p [innerHTML]="dataset.attribution" class="text-justify"></p>
-  </div>
+    </div>
   </div>
 </div>

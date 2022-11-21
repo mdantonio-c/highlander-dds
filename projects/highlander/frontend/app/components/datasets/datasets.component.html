@@ -9,7 +9,6 @@
 </div>
 <div class="container applications" *ngIf="ssr.isBrowser">
   <ngx-spinner
-    type="ball-scale-multiple"
     bdColor="rgba(255,255,255,0.8)"
     color="#6c757d"
     zIndex="1000"
@@ -37,7 +36,7 @@
         ></hld-applications>
       </ng-container>
       <!-- view datasets -->
-      
+
       <ng-template #datasetsView>
         <div
           class="table-responsive mb-2"
@@ -63,7 +62,6 @@
             [headerHeight]="0"
             rowHeight="auto"
             [limit]="4"
-            
           >
             <ngx-datatable-column name="Label">
               <ng-template
