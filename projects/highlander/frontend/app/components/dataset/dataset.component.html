@@ -12,7 +12,9 @@
     <div class="w-100">
       <div class="description-box my-4">
         <img
-          src="{{ backendURI + '/api/datasets/' + dataset.id + '/image' }}"
+          src="{{
+            backendURI + '/api/datasets/' + dataset.id + '/content?type=image'
+          }}"
           alt="no img"
           class="m-3 dataset-image img-fluid float-start"
           *ngIf="dataset.image"
