@@ -140,38 +140,44 @@ class DatasetProductReady(EndpointResource):
         return self.response(data)
 
 
-class DatasetImage(EndpointResource):
+class DatasetContent(EndpointResource):
     @decorators.endpoint(
-        path="/datasets/<dataset_id>/image",
-        summary="Get dataset image",
-        description="Return the dataset thumbnail image",
+        path="/datasets/<dataset_id>/content",
+        summary="Get dataset related content",
+        description="Return the dataset related content: eg. thumbnail image",
         responses={
-            200: "Dataset image successfully retrieved",
-            404: "Dataset Image not found",
+            200: "Dataset related content successfully retrieved",
+            404: "Dataset related content not found",
         },
     )
-    def get(self, dataset_id: str) -> Response:
-        log.debug("Get image for dataset <{}>", dataset_id)
+    @decorators.use_kwargs({"type": fields.Str(required=True)}, location="query")
+    def get(self, dataset_id: str, type: str) -> Response:
+        log.debug("Get {} for dataset <{}>", type, dataset_id)
         try:
             dds = broker.get_instance()
-            image_filename = None
+            content_filename = None
             try:
-                image_filename = dds.get_dataset_image_filename(dataset_id)
+                content_filename = dds.get_dataset_content_filename(dataset_id, type)
             except LookupError:
                 log.debug("Dataset <{}> NOT managed locally", dataset_id)
                 try:
                     cat_ext = CatalogExt(path=CATALOG_EXT_DIR)
-                    image_filename = cat_ext.get_dataset_image_filename(dataset_id)
+                    content_filename = cat_ext.get_dataset_content_filename(
+                        dataset_id, type
+                    )
                 except ValueError:
                     # for missing or invalid cat_ext
                     pass
-            if not image_filename:
-                raise Warning(f"Image NOT configured for dataset <{dataset_id}>")
-            image = CATALOG_DIR.joinpath("images", image_filename)
-            if not image.exists():
-                raise LookupError(
-                    f"Image file <{image_filename}> NOT found for dataset <{dataset_id}>"
+            if not content_filename:
+                raise Warning(
+                    f"Content <{type}> NOT configured for dataset <{dataset_id}>"
                 )
-            return send_from_directory(image.parent, image.name)
+            # expected content in folder with the same type name
+            content = CATALOG_DIR.joinpath(f"{type}s", content_filename)
+            if not content.exists():
+                raise LookupError(
+                    f"Content file <{content_filename}> NOT found for dataset <{dataset_id}>"
+                )
+            return send_from_directory(content.parent, content.name)
         except (LookupError, Warning) as e:
             raise NotFound(str(e), is_warning=isinstance(e, Warning))

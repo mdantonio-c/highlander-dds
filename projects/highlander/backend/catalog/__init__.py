@@ -59,9 +59,9 @@ class CatalogExt:
                     log.error(exc)
         return res
 
-    def get_dataset_image_filename(self, dataset_id: str) -> Any:
+    def get_dataset_content_filename(self, dataset_id: str, content_type: str) -> Any:
         datasets = self.get_datasets()
         found = next(v for v in datasets if v["id"] == dataset_id)
         if not found:
             raise LookupError(f"Dataset <{dataset_id}> does not exist")
-        return found.get("image")
+        return found.get(content_type)

@@ -426,11 +426,11 @@ class BrokerExt(Connector):
 
         return data
 
-    def get_dataset_image_filename(self, dataset_id: str) -> Any:
+    def get_dataset_content_filename(self, dataset_id: str, content_type: str) -> Any:
         datasets = self.get_datasets([dataset_id])
         if dataset_id not in datasets:
             raise LookupError(f"Dataset <{dataset_id}> does not exist")
-        return datasets[dataset_id]["dataset_info"].get("image")
+        return datasets[dataset_id]["dataset_info"].get(content_type)
 
     @staticmethod
     def unwrap(obj: Any) -> Any:
