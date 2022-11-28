@@ -38,11 +38,7 @@
       <!-- view datasets -->
 
       <ng-template #datasetsView>
-        <div
-          class="table-responsive mb-2"
-          *ngIf="datasets?.length"
-          #tableWrapper
-        >
+        <div *ngIf="datasets?.length" #tableWrapper>
           <div class="d-sm-flex align-items-center justify-content-between">
             <h2>{{ title }}</h2>
             <div class="col-sm-8 col-md-6 col-lg-4">
