@@ -7,7 +7,7 @@
     </div>
   </div>
 </div>
-<div class="container applications" *ngIf="ssr.isBrowser">
+<div class="container-fluid py-0" *ngIf="ssr.isBrowser">
   <ngx-spinner
     bdColor="rgba(255,255,255,0.8)"
     color="#6c757d"
@@ -43,9 +43,9 @@
           *ngIf="datasets?.length"
           #tableWrapper
         >
-          <div class="row gx-0">
+          <div class="d-sm-flex align-items-center justify-content-between">
             <h2>{{ title }}</h2>
-            <div class="col-12 col-md-6 col-lg-4">
+            <div class="col-sm-8 col-md-6 col-lg-4">
               <input
                 type="text"
                 class="search-filter w-100 form-control"
