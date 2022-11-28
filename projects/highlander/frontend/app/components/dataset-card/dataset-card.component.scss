@@ -8,17 +8,20 @@
 
   h3 {
     font-size: 1rem;
-    min-height: 40px;
     text-transform: uppercase;
   }
   .description {
     max-height: 150px;
     overflow: auto;
+    margin-top: 8px;
       p {
         text-align: justify;
         font-size: 14px;
         margin-right: 10px;
       }
+  }
+  .infographics {
+    font-size:15px;
   }
   a, a .fa-up-right-from-square {
     color: #1a7dc1;

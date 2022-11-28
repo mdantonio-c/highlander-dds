@@ -15,7 +15,7 @@ export class ApplicationsComponent implements OnInit {
 
   ngOnInit() {
     this.datasets.forEach((ds) => {
-      const cItem = ds.category?.toLowerCase() || "other";
+      const cItem = ds.category?.toLowerCase() || "various";
       this.categories.has(cItem)
         ? this.categories.get(cItem).push(ds)
         : this.categories.set(cItem, [ds]);
