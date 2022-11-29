@@ -9,7 +9,6 @@ import { environment } from "@rapydo/../environments/environment";
 })
 export class DatasetCardComponent {
   @Input() dataset: DatasetInfo;
-  @Input() isLoggedIn: boolean = false;
   readonly backendURI = environment.backendURI;
 
   isCollapsed = true;
