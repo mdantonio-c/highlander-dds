@@ -45,6 +45,7 @@ class DatasetInfo(Schema):
     attribution = fields.Str()
     contact = fields.Nested(ContactInfo)
     image = fields.Str()
+    infographic = fields.Str()
     doi = fields.Str()
     update_frequency = fields.Str()
     license = fields.Nested(License)

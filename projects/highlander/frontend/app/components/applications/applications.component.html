@@ -5,9 +5,6 @@
 >
   <h2 class="category-title mt-3 mb-3 w-100">{{ category.key | titlecase }}</h2>
   <div class="mb-3" *ngFor="let dataset of category.value">
-    <hld-dataset-card
-      [dataset]="dataset"
-      [isLoggedIn]="user || false"
-    ></hld-dataset-card>
+    <hld-dataset-card [dataset]="dataset"></hld-dataset-card>
   </div>
 </div>

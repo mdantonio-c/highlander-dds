@@ -1,76 +1,14 @@
-
-  <div class="dataset-card card h-100 mb-3" style="width: 18rem;">
-    <img  src="{{ backendURI + '/api/datasets/' + dataset.id + '/image' }}" 
-      class="card-img-top" 
-      alt="no img"
-      *ngIf="dataset.image"
-      />
-    <div class="card-body">
-      <h3 class="mt-2 card-title">
-        <ng-template #notLogged>
-          {{ dataset.label }}
-          </ng-template>
-        <ng-container *ngIf="isLoggedIn; else notLogged">
-          <a
-            *ngIf="dataset.url; else localUrl"
-            class="text-justify"
-            [href]="dataset.url"
-            target="_blank"
-            >{{ dataset.label }}
-            <i class="fas fa-up-right-from-square"></i>
-          </a>
-          <ng-template #localUrl>
-            <a
-              href
-              [routerLink]="['../applications/' + dataset.id]"
-              [state]="dataset"
-              >{{ dataset.label }}
-            </a>
-          </ng-template>
-        </ng-container>
-      </h3>
-      <div class="description">
-        <p
-        [id]="dataset.id"
-        [attr.aria-label]="dataset.id"
-        [innerHTML]="dataset.description"
-        ></p>  
-      </div>
-    </div>
-    <div class="btn-group" role="group">
-        <ng-container *ngIf="isLoggedIn">
-          <a
-            *ngIf="dataset.url; else localUrl"
-            class=" btn btn-outline-primary card-link"
-            [href]="dataset.url"
-            target="_blank"
-            >Application
-          </a>
-          <ng-template #localUrl>
-            <a
-              href
-              [routerLink]="['../applications/' + dataset.id]"
-              [state]="dataset"
-              class="btn btn-outline-primary card-link"
-              >Application
-            </a>
-            <a 
-              href 
-              [routerLink]="['../datasets/' + dataset.id]" 
-              class="card-link btn btn-outline-primary">Dataset info</a>
-          </ng-template>
-        </ng-container>
-        
-      </div>
-  </div>
- <!--<img
-    src="{{ backendURI + '/api/datasets/' + dataset.id + '/image' }}"
+<div class="dataset-card card h-100 mb-3 rounded-0" style="width: 18rem">
+  <img
+    src="{{
+      backendURI + '/api/datasets/' + dataset.id + '/content?type=image'
+    }}"
+    class="border-bottom p-1"
     alt="no img"
-    class="me-3 ms-3 mb-2 hld-preview-thumbnail"
     *ngIf="dataset.image"
   />
-  <h3 class="mt-2 text-center text-uppercase">
-    <ng-container *ngIf="isLoggedIn; else notLogged">
+  <div class="card-body">
+    <h3 class="mt-2 card-title">
       <a
         *ngIf="dataset.url; else localUrl"
         class="text-justify"
@@ -87,32 +25,48 @@
           >{{ dataset.label }}
         </a>
       </ng-template>
-    </ng-container>
-
-    <ng-template #notLogged>
-      {{ dataset.label }}
-    </ng-template>
-  </h3>
-  <div>
-    <p
-      #collapse="ngbCollapse"
-      [(ngbCollapse)]="isTruncate"
-      [class.truncate]="isTruncate"
-      [id]="dataset.id"
-      [attr.aria-label]="dataset.id"
-      [innerHTML]="dataset.description"
-    ></p>
-    <p class="text-center">
-      <button
-        type="button"
-        role="toggle"
-        class="btn btn-primary btn-sm"
-        (click)="isTruncate = !isTruncate"
-        [attr.aria-expanded]="!isCollapsed"
-        [attr.aria-controls]="dataset.id"
-        [attr.data-target]="dataset.id"
+    </h3>
+    <a
+      class="text-justify infographics"
+      href="{{
+        backendURI + '/api/datasets/' + dataset.id + '/content?type=infographic'
+      }}"
+      target="_blank"
+      >Show the infographic</a
+    ><br />
+    <div class="description">
+      <p
+        [id]="dataset.id"
+        [attr.aria-label]="dataset.id"
+        [innerHTML]="dataset.description"
+      ></p>
+    </div>
+  </div>
+  <div class="btn-group m-1" role="group">
+    <ng-container *ngIf="dataset.url; else buttons">
+      <a
+        class="btn btn-outline-primary card-link rounded-0"
+        [href]="dataset.url"
+        target="_blank"
+        role="button"
       >
-        Show full description
-      </button>
-    </p>
-  </div>--> 
+        Application
+      </a>
+    </ng-container>
+    <ng-template #buttons>
+      <a
+        href
+        [routerLink]="['../applications/' + dataset.id]"
+        [state]="dataset"
+        class="btn btn-outline-primary card-link rounded-0"
+        >Application
+      </a>
+      <a
+        href
+        [routerLink]="['../datasets/' + dataset.id]"
+        class="btn btn-outline-primary card-link rounded-0"
+        >Dataset info</a
+      >
+    </ng-template>
+  </div>
+</div>

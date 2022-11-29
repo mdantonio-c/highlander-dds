@@ -1,5 +1,4 @@
 .dataset-card {
-  
   img {
     width: auto;
     height: 200px;
@@ -8,44 +7,47 @@
 
   h3 {
     font-size: 1rem;
-    min-height: 40px;
     text-transform: uppercase;
   }
   .description {
     max-height: 150px;
     overflow: auto;
-      p {
-        text-align: justify;
-        font-size: 14px;
-        margin-right: 10px;
-      }
+    margin-top: 8px;
+    p {
+      text-align: justify;
+      font-size: 14px;
+      margin-right: 10px;
+    }
   }
-  a, a .fa-up-right-from-square {
+  .infographics {
+    font-size: 15px;
+  }
+  a,
+  a .fa-up-right-from-square {
     color: #1a7dc1;
     font-size: 1rem;
   }
   .btn-group {
     margin-top: -25px;
   }
-  .btn, .btn-group {
-    border-color:  var(--bs-border-color-translucent);
-    color: #1a7dc1 ;
+  .btn,
+  .btn-group {
+    border-color: var(--bs-border-color-translucent);
+    color: #1a7dc1;
     transition: 0.3s ease-in-out;
     text-align: center !important;
     text-transform: none !important;
-    
-  
   }
 
   .btn:hover {
     color: #fff;
     background-color: #1a7dc1;
-    border-color:#1a7dc1;
+    border-color: #1a7dc1;
   }
 }
 
-@media screen and (max-width:905px) {
-  .dataset-card{
+@media screen and (max-width: 905px) {
+  .dataset-card {
     width: 26rem !important;
   }
 }

@@ -45,5 +45,5 @@ class TestApp(BaseTests):
         assert isinstance(datasets, list)
         # iterates over each dataset
         for ds in datasets:
-            client.get(f"{API_URI}/datasets/{ds['id']}/image")
+            client.get(f"{API_URI}/datasets/{ds['id']}/content?type=image")
             assert r.status_code in [200, 404]

@@ -54,14 +54,10 @@ const routes: Routes = [
   { path: "app/datasets", component: DatasetsComponent },
   { path: "app/applications", component: DatasetsComponent },
   { path: "app/datasets/:ds_name", component: DatasetComponent },
+  { path: "app/applications/:ds_name", component: DaposComponent },
   {
     path: "app/requests",
     component: DashboardComponent,
-    canActivate: [AuthGuard],
-  },
-  {
-    path: "app/applications/:ds_name",
-    component: DaposComponent,
     canActivate: [AuthGuard],
   },
   { path: "app", redirectTo: "/app/datasets", pathMatch: "full" },
