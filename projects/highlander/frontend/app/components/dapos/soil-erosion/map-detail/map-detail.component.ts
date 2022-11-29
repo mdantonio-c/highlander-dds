@@ -1,19 +1,9 @@
-import {
-  Component,
-  Input,
-  OnChanges,
-  ChangeDetectorRef,
-  SimpleChanges,
-  Output,
-  EventEmitter,
-} from "@angular/core";
+import { Component, Input, OnChanges, ChangeDetectorRef } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { DetailService } from "../services/detail.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
-import { environment } from "@rapydo/../environments/environment";
-import { ADMINISTRATIVE_AREAS, INDICATORS, SOIL_EROSION_WMS } from "../data";
-import { DataService } from "../../../../services/data.service";
+import { INDICATORS } from "../data";
 
 @Component({
   selector: "hl-map-detail",
@@ -57,7 +47,6 @@ export class MapDetailComponent implements OnChanges {
         .getAllDetails(this.cropDetails)
         .subscribe(
           (blobs) => {
-            console.log("get all blobs");
             this.mapImage = this.sanitizer.bypassSecurityTrustUrl(
               URL.createObjectURL(blobs[0])
             );

@@ -1,9 +1,8 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Observable, forkJoin, of } from "rxjs";
+import { Observable, forkJoin } from "rxjs";
 import { ApiService } from "@rapydo/services/api";
 import { SoilErosionMapCrop } from "../../../../types";
-import { INDICATORS } from "../data";
 
 @Injectable({
   providedIn: "root",
