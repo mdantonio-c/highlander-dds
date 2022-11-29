@@ -166,6 +166,10 @@ export interface ForestSuitabilityFilter {
   forestSpecie?: string;
 }
 
+export interface SuitabilityVegetationFilter {
+  indicator: string;
+}
+
 export interface SoilErosionMapCrop {
   product?: string;
   model?: string;

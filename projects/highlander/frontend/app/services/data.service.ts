@@ -98,6 +98,10 @@ export class DataService {
     return this.http.get(`/app/custom/assets/geojson/italy-${area}.json`);
   }
 
+  getPiemonteArea(): Observable<any> {
+    return this.http.get(`/app/custom/assets/geojson/Piemonte-region.json`);
+  }
+
   /**
    * Get crop-water zipped shapefile data.
    * @param datastore

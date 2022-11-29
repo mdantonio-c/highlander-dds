@@ -37,5 +37,10 @@
       [dataset]="dataset"
     >
     </app-suitability-forests>
+    <app-suitability-vegetation
+      *ngSwitchCase="'changes-land-suitability-vegetation'"
+      [dataset]="dataset"
+    >
+    </app-suitability-vegetation>
   </ng-container>
 </ng-container>
