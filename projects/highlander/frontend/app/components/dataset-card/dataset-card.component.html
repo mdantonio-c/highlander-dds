@@ -33,7 +33,9 @@
     </h3>
     <a
       class="text-justify infographics"
-      href="/app/custom/assets/infographics/{{ dataset.id }}.pdf"
+      href="{{
+        backendURI + '/api/datasets/' + dataset.id + '/content?type=infographic'
+      }}"
       target="_blank"
       >Show the infographic</a
     ><br />
