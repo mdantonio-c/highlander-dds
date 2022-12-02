@@ -40,6 +40,7 @@ export interface DatasetInfo {
   application?: boolean;
   category?: string;
   url?: string;
+  use_case?: string;
 }
 
 export interface DatasetVariables {

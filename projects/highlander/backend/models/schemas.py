@@ -52,6 +52,7 @@ class DatasetInfo(Schema):
     publication_date = fields.DateTime(allow_none=True, format=ISO8601UTC)
     application = fields.Boolean(dump_default=False)
     category = fields.Str()
+    use_case = fields.Str()
     related_data = fields.List(fields.Nested(RelatedData))
     products = fields.List(
         fields.Nested(ProductReference),
