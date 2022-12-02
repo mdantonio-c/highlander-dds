@@ -9,12 +9,16 @@ import { Observable } from "rxjs";
 import { User } from "@rapydo/types";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
-import { DatasetInfo, SuitabilityVegetationFilter } from "../../../types";
+import {
+  DatasetInfo,
+  SuitabilityVegetationFilter,
+  SuitabilityVegetationFeatureInfo,
+} from "../../../types";
 import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
 import { SSRService } from "@rapydo/services/ssr";
 import { LegendConfig, LEGEND_DATA } from "../../../services/data";
-import { INDICATORS, BOUNDING_BOX } from "./data";
+import { INDICATORS, BOUNDING_BOX, TIMERANGES } from "./data";
 
 import * as L from "leaflet";
 
@@ -47,8 +51,14 @@ export class SuitabilityVegetationComponent implements OnInit {
 
   bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
   piemonteBounds = BOUNDING_BOX;
-  readonly TIMERANGES = ["1991-2020", "2021-2050"];
   readonly LEGEND_POSITION = "bottomleft";
+
+  pointValues: number[];
+  pointMarker: L.Marker = null;
+  isPointSelected: boolean = false;
+  indicator: string = null;
+  selectedPointLat: number;
+  selectedPointLon: number;
 
   LAYER_OSM = L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -126,6 +136,16 @@ export class SuitabilityVegetationComponent implements OnInit {
     this.dataService.getPiemonteArea().subscribe((json) => {
       const jsonLayer = L.geoJSON(json, {
         style: JSON_STYLE,
+        onEachFeature: (feature, layer) =>
+          layer.on({
+            click: (e) => {
+              // remove the previous marker
+              if (this.pointMarker) {
+                this.map.removeLayer(this.pointMarker);
+              }
+              this.getPointData(e);
+            },
+          }),
       });
       const bounds = jsonLayer.getBounds();
       const layerCenter = bounds.getCenter();
@@ -140,7 +160,7 @@ export class SuitabilityVegetationComponent implements OnInit {
 
     let url = `${this.mapsUrl}/wms`;
 
-    this.TIMERANGES.forEach((m) => {
+    TIMERANGES.forEach((m) => {
       overlays[m] = L.tileLayer.wms(url, {
         layers: `highlander:${ind}_${m}`,
         version: "1.1.0",
@@ -154,9 +174,10 @@ export class SuitabilityVegetationComponent implements OnInit {
     });
     //console.log(overlays)
     this.layersControl["baseLayers"] = overlays;
-    overlays[this.TIMERANGES[0]].addTo(this.map);
+    overlays[TIMERANGES[0]].addTo(this.map);
 
     this.map.setView(this.piemonteBounds.center, this.piemonteBounds.zoom);
+    //this.map.on('click', this.getPointData.bind(this));
   }
 
   private initLegends(map: L.Map) {
@@ -199,6 +220,7 @@ export class SuitabilityVegetationComponent implements OnInit {
     console.log("apply filter", data);
     if (!this.filter) {
       this.filter = data;
+      this.indicator = data.indicator;
       this.setOverlaysToMap();
       // add a legend
       if (this.legends[data.indicator]) {
@@ -215,6 +237,7 @@ export class SuitabilityVegetationComponent implements OnInit {
       // add the new legend
       this.legends[data.indicator].addTo(this.map);
       this.filter = data;
+      this.indicator = data.indicator;
 
       let overlays = this.layersControl["baseLayers"];
       for (let name in overlays) {
@@ -223,10 +246,67 @@ export class SuitabilityVegetationComponent implements OnInit {
         }
       }
       this.setOverlaysToMap();
+      // if there is a selected point, delete it
+      this.closeGraph();
     }
 
     //if the detail panel is opened, close it
     //this.closeDetails();
+  }
+
+  getPointData(e) {
+    // add a marker on the map
+    let markerIcon = L.divIcon({
+      html: '<i class="fa fa-map-marker-alt fa-3x"></i>',
+      iconSize: [20, 20],
+      iconAnchor: [12, 40],
+      className: "mstDivIcon",
+    });
+    const pointDataMarker = new L.Marker([e.latlng.lat, e.latlng.lng], {
+      icon: markerIcon,
+    });
+    pointDataMarker.addTo(this.map);
+    this.pointMarker = pointDataMarker;
+    this.isPointSelected = true;
+    this.selectedPointLon = e.latlng.lng;
+    this.selectedPointLat = e.latlng.lat;
+
+    let x = this.map.layerPointToContainerPoint(e.layerPoint).x;
+    let y = this.map.layerPointToContainerPoint(e.layerPoint).y;
+    let bbox = this.map.getBounds().toBBoxString();
+    let width = this.map.getSize().x;
+    let height = this.map.getSize().y;
+    let queryLayers = `highlander:${this.filter.indicator}_${TIMERANGES[0]}_WCS,highlander:${this.filter.indicator}_${TIMERANGES[1]}_WCS`;
+    this.dataService
+      .getFeatureInfo(bbox, width, height, x, y, queryLayers)
+      .subscribe(
+        (response) => {
+          let pointFeatureInfos: SuitabilityVegetationFeatureInfo[];
+          pointFeatureInfos = response.features;
+          this.pointValues = [];
+          for (const m of pointFeatureInfos) {
+            this.filter.indicator === "CompI"
+              ? this.pointValues.push(m.properties.CompI_index)
+              : this.pointValues.push(m.properties.Index_of_Aflatoxin);
+          }
+          //console.log(this.pointValues)
+          this.cdr.detectChanges();
+        },
+        (error) => {
+          this.notify.showError(error);
+        }
+      );
+  }
+
+  closeGraph() {
+    //remove marker
+    this.map.removeLayer(this.pointMarker);
+    //remove point data
+    this.pointValues = [];
+    // close graph
+    this.isPointSelected = false;
+    //trigger change detection
+    this.cdr.detectChanges();
   }
 
   isCollapsed = true;

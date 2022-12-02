@@ -102,6 +102,31 @@ export class DataService {
     return this.http.get(`/app/custom/assets/geojson/Piemonte-region.json`);
   }
 
+  getFeatureInfo(bbox, width, height, x, y, queryLayers): Observable<any> {
+    let params = {
+      service: "WMS",
+      version: "1.1.1",
+      request: "GetFeatureInfo",
+      query_layers: queryLayers,
+      styles: ``,
+      layers: queryLayers,
+      info_format: "application/json",
+      feature_count: "2",
+      x: Math.round(x),
+      y: Math.round(y),
+      srs: "EPSG:4326",
+      width: width,
+      height: height,
+      bbox: bbox,
+    };
+
+    return this.http.get(`${this._maps_url}/highlander/wms`, {
+      params: params,
+    });
+
+    //return this.http.get(`${this._maps_url}/highlander/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&QUERY_LAYERS=${queryLayers}&STYLES=&LAYERS=${queryLayers}&INFO_FORMAT=application/json&FEATURE_COUNT=50&X=${x}&Y=${y}&SRS=EPSG:4326&WIDTH=${width}&HEIGHT=${height}&BBOX=${bbox}`)
+  }
+
   /**
    * Get crop-water zipped shapefile data.
    * @param datastore

@@ -6,6 +6,8 @@ export interface BoundingArea {
   zoom: number;
 }
 
+export const TIMERANGES = ["1991-2020", "2021-2050"];
+
 export const INDICATORS: CodeLabel[] = [
   {
     code: "CompI",

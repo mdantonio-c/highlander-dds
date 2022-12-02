@@ -15,6 +15,34 @@
         (click)="isCollapsed = !isCollapsed"
         [class.collapsed]="isCollapsed"
       ></label>
+
+      <div class="card bg-light mt-3" *ngIf="isPointSelected">
+        <!--<div class="card bg-light" *ngIf="isPointSelected">-->
+        <div class="card-body">
+          <button
+            type="button"
+            class="btn btn-sm float-end"
+            (click)="closeGraph()"
+            [attr.aria-expanded]="!isPanelCollapsed"
+          >
+            <b style="font-size: x-large">&times;</b>
+          </button>
+          <h3>
+            Selected point :
+            <span class="text"
+              >lat {{ selectedPointLat.toFixed(2) }}, lon
+              {{ selectedPointLon.toFixed(2) }}</span
+            >
+          </h3>
+        </div>
+        <div class="card-body">
+          <suitability-vegetation-chart
+            [pointValues]="pointValues"
+            [isPointSelected]="isPointSelected"
+            [indicator]="indicator"
+          ></suitability-vegetation-chart>
+        </div>
+      </div>
     </div>
     <div class="col px-3">
       <div id="map-wrapper" class="fill">

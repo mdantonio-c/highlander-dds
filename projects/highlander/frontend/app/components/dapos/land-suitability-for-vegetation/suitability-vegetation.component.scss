@@ -35,6 +35,13 @@
 .show {
   top: 0 !important;
 }
+.mstDivIcon {
+  text-align: center;
+  /* Horizontally center the text (icon) */
+  line-height: 20px;
+  /* Vertically center the text (icon) */
+  color: #1a7dc1;
+}
 
 .collapse:not(.show) + .toggle {
   display: block;
@@ -62,6 +69,10 @@
   .details-text-container {
     margin-top: -30px !important;
   }
+}
+.text {
+  color: black;
+  font-size: large;
 }
 
 .toggle {

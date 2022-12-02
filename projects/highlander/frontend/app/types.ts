@@ -171,6 +171,23 @@ export interface SuitabilityVegetationFilter {
   indicator: string;
 }
 
+export interface SuitabilityVegetationFeatureInfo {
+  type: string;
+  id: string;
+  geometry?: string;
+  properties: SuitabilityVegetationFeatureInfoProperty;
+}
+
+export interface SuitabilityVegetationFeatureInfoProperty {
+  CompI_index?: number;
+  Index_of_Aflatoxin?: number;
+}
+
+export interface SuitabilityVegetationChartData {
+  name: string;
+  value: number;
+}
+
 export interface SoilErosionMapCrop {
   product?: string;
   model?: string;

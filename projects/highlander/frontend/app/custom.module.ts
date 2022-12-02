@@ -28,6 +28,7 @@ import { HumanWellbeingComponent } from "./components/dapos/human-wellbeing/huma
 import { Era5DownscaledOverItalyComponent } from "./components/dapos/era5-downscaled-over-italy/era5-downscaled-over-italy.component";
 import { SuitabilityForestComponent } from "./components/dapos/land-suitability-for-forests/suitability-forests.component";
 import { SuitabilityVegetationComponent } from "./components/dapos/land-suitability-for-vegetation/suitability-vegetation.component";
+import { SuitabilityVegetationChart } from "./components/dapos/land-suitability-for-vegetation/suitability-vegetation-chart/suitability-vegetation-chart.component";
 
 import { MapFilterComponent as SoilErosionFilter } from "./components/dapos/soil-erosion/map-filter/map-filter.component";
 import { MapDetailComponent as SoilErosionDetail } from "./components/dapos/soil-erosion/map-detail/map-detail.component";
@@ -93,6 +94,7 @@ const routes: Routes = [
     HumanWellbeingComponent,
     SuitabilityForestComponent,
     SuitabilityVegetationComponent,
+    SuitabilityVegetationChart,
     Era5DownscaledOverItalyComponent,
     SoilErosionFilter,
     SoilErosionDetail,

@@ -1,0 +1,35 @@
+<ngx-spinner
+  [name]="'chart-spinner'"
+  bdColor="rgba(255,255,255,0.8)"
+  color="#6c757d"
+  zIndex="1000"
+  [fullScreen]="false"
+  size="medium"
+>
+</ngx-spinner>
+<div #containerRef *ngIf="pointValues; else noData">
+  <ngx-charts-bar-vertical
+    [view]="[containerRef.offsetWidth, 400]"
+    [animations]="true"
+    [scheme]="colorScheme"
+    [results]="chartData"
+    [xAxis]="true"
+    [yAxis]="true"
+    [legend]="false"
+    [showXAxisLabel]="false"
+    [showYAxisLabel]="true"
+    [showGridLines]="true"
+    [roundEdges]="true"
+    [yAxisLabel]="indicator"
+  >
+  </ngx-charts-bar-vertical>
+</div>
+<ng-template #noData>
+  <div class="row mt-4">
+    <div class="col">
+      <div class="no-results">
+        <h2>No Data</h2>
+      </div>
+    </div>
+  </div>
+</ng-template>
