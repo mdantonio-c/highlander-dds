@@ -65,7 +65,7 @@ def plotStripes(array, yearsList: list, region_id: str, fileOutput: str):
     min_val = math.floor(array.min())  # np.round(array.min()*10)/10
     max_val = math.ceil(array.max())  # np.round(array.max()*10)/10
     stripes = plt.pcolormesh(array, vmin=min_val, vmax=max_val, cmap="bwr")
-    cbar = plt.colorbar(stripes, label="Air temperature [°C]")
+    plt.colorbar(stripes, label="Air temperature [°C]")
     ax.set_title(region_id, alpha=1)
     ax.set_xticks(np.arange(array.shape[1]) + 0.5, minor=False)
     ax.set_xticklabels(yearsList, rotation=90, size=15)
@@ -108,7 +108,6 @@ class Stripes(EndpointResource):
         },
     )
     @decorators.use_kwargs(StripesDetails, location="query")
-    @decorators.auth.require()
     def get(
         self,
         user: User,

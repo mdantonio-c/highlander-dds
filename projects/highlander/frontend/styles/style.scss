@@ -71,6 +71,11 @@ h2 {
   padding: 1.6rem 1.5%;
 }
 
+.no-results-plain {
+  padding: 1.6rem 1.5%;
+  margin-left: 5.5%;
+}
+
 .btn-link:hover,
 .btn-link:focus,
 a {
@@ -139,12 +144,12 @@ input[type="radio"] {
   opacity: 0;
 }*/
 
- /*sign in eye icon fix*/
- #formly_2_password_password_1 + .toggle,  
-  #formly_4_password_password_1 + .toggle{
+/*sign in eye icon fix*/
+#formly_2_password_password_1 + .toggle,
+#formly_4_password_password_1 + .toggle {
   /* float: right; */
-  margin-right: 0; 
-   margin-top: 0; 
+  margin-right: 0;
+  margin-top: 0;
   position: absolute;
   z-index: 999999;
   color: gray;
