@@ -91,7 +91,7 @@ SOURCE_FILE_URL_MAP = {
     },
     "human-wellbeing": {
         "daily": {
-            "url": "human-wellbeing/regular/indicator_year_daily_metric_VHR-REA_regular.nc",
+            "url": "human-wellbeing/reanalysis/regular/indicator_year_daily_metric_VHR-REA_regular.nc",
             "params": ["indicator", "year", "daily_metric"],
         },
         "multi-year": {
