@@ -54,10 +54,10 @@ export class CropWaterComponent {
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
       attribution:
-        '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Open Street Map</a> ',
+        '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Open Street Map</a>',
       maxZoom: MAX_ZOOM,
       minZoom: MIN_ZOOM,
-    }
+    },
   );
   options = {
     layers: [this.LAYER_OSM],
@@ -74,7 +74,7 @@ export class CropWaterComponent {
     private dataService: DataService,
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
   ) {}
 
   onMapReady(map: L.Map) {
@@ -186,6 +186,9 @@ export class CropWaterComponent {
 
       // add the new legend
       this.legends[data.layer].addTo(this.map);
+
+      // add attribution
+      this.map.attributionControl.addAttribution("&copy; Highlander");
     }
   }
 
@@ -243,14 +246,14 @@ export class CropWaterComponent {
           new File([blob], `${datastore}.zip`, {
             lastModified: new Date().getTime(),
             type: blob.type,
-          })
+          }),
         );
       },
       (error) => {
         console.log("error", error);
         this.notify.showError("Error to load data layer.");
         this.spinner.hide();
-      }
+      },
     );
   }
 
@@ -273,7 +276,7 @@ export class CropWaterComponent {
 
   periodToString(p: DateStruct): string {
     return `${p.year}-${String(p.month).padStart(2, "0")}-${String(
-      p.day
+      p.day,
     ).padStart(2, "0")}`;
   }
 
@@ -320,7 +323,7 @@ export class CropWaterComponent {
 
   private static getIndicatorValue(
     props: CropInfo,
-    filter: CropWaterFilter
+    filter: CropWaterFilter,
   ): number {
     let indicator = filter.layer;
     // fix indicator id to match value from shapefile
@@ -337,7 +340,7 @@ export class CropWaterComponent {
 
   private renderOnMap() {
     const legend: LegendConfig = LEGEND_DATA.find(
-      (x) => x.id === this.filter.layer
+      (x) => x.id === this.filter.layer,
     );
     const comp: CropWaterComponent = this;
     const jsonLayer = L.geoJSON(this.geojson, {

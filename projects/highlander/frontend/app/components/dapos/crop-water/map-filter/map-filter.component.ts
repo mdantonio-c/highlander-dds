@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { AuthService } from "@rapydo/services/auth";
-import { ADMINISTRATIVE_AREAS, LAYERS } from "../data";
+import { ADMINISTRATIVE_AREAS, LAYERS, PERCENTILES } from "../data";
 import { CodeLabel, CropWaterFilter } from "../../../../types";
 
 @Component({
@@ -17,7 +17,7 @@ export class MapFilterComponent implements OnInit {
 
   readonly crops = [];
   readonly areas = ADMINISTRATIVE_AREAS;
-  readonly percentiles = [5, 25, 50, 75, 95];
+  readonly percentiles = PERCENTILES;
   readonly layers: CodeLabel[] = LAYERS;
 
   constructor(private fb: FormBuilder, private authService: AuthService) {

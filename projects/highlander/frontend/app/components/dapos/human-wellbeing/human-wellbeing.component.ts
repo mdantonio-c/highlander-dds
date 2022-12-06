@@ -23,9 +23,6 @@ import "leaflet-timedimension/dist/leaflet.timedimension.src.js";
 import { DataService } from "../../../services/data.service";
 import { INDICATORS } from "../human-wellbeing/data";
 import { LEGEND_DATA, LegendConfig } from "../../../services/data";
-/*declare module "leaflet" {
-  let timeDimension: any;
-}*/
 
 const MAX_ZOOM = 8;
 const MIN_ZOOM = 5;
@@ -75,10 +72,10 @@ export class HumanWellbeingComponent implements OnInit {
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
       attribution:
-        '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Open Street Map</a> ',
+        '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Open Street Map</a>',
       maxZoom: MAX_ZOOM,
       minZoom: MIN_ZOOM,
-    }
+    },
   );
 
   layers: L.Layer[] = [this.LAYER_OSM];
@@ -130,7 +127,7 @@ export class HumanWellbeingComponent implements OnInit {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private ssr: SSRService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     this.mapCropDetails = {};
     this.mapsUrl = dataService.getMapsUrl();
@@ -170,7 +167,7 @@ export class HumanWellbeingComponent implements OnInit {
       format: "image/png",
       opacity: 0.7,
       transparent: true,
-      attribution: "'&copy; CMCC",
+      attribution: "&copy; Highlander",
       maxZoom: MAX_ZOOM,
       minZoom: MIN_ZOOM,
     });

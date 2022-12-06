@@ -28,6 +28,8 @@ export const ADMINISTRATIVE_AREAS: Area[] = [
   },
 ];
 
+export const PERCENTILES: number[] = [5, 25, 50, 75, 95];
+
 export const LAYERS: CodeLabel[] = [
   {
     code: "irri",

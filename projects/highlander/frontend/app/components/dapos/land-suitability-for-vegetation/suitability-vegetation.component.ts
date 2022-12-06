@@ -5,7 +5,6 @@ import {
   ChangeDetectorRef,
   Input,
 } from "@angular/core";
-import { Observable } from "rxjs";
 import { User } from "@rapydo/types";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
@@ -64,10 +63,10 @@ export class SuitabilityVegetationComponent implements OnInit {
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
       attribution:
-        '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Open Street Map</a> ',
+        '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Open Street Map</a>',
       maxZoom: MAX_ZOOM,
       minZoom: MIN_ZOOM,
-    }
+    },
   );
 
   layers: L.Layer[] = [this.LAYER_OSM];
@@ -114,7 +113,7 @@ export class SuitabilityVegetationComponent implements OnInit {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private ssr: SSRService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     this.mapsUrl = dataService.getMapsUrl();
     //console.log(`Map url: ${this.mapsUrl}`)
@@ -167,7 +166,7 @@ export class SuitabilityVegetationComponent implements OnInit {
         format: "image/png",
         opacity: 0.7,
         transparent: true,
-        attribution: "'&copy; CMCC",
+        attribution: "&copy; Highlander",
         maxZoom: MAX_ZOOM,
         minZoom: MIN_ZOOM,
       });
@@ -294,7 +293,7 @@ export class SuitabilityVegetationComponent implements OnInit {
         },
         (error) => {
           this.notify.showError(error);
-        }
+        },
       );
   }
 
