@@ -92,7 +92,7 @@ SOURCE_FILE_URL_MAP = {
     },
     "human-wellbeing": {
         "daily": {
-            "url": "human-wellbeing/regular/indicator_year_daily_metric_VHR-REA_regular.nc",
+            "url": "human-wellbeing/reanalysis/regular/indicator_year_daily_metric_VHR-REA_regular.nc",
             "params": ["indicator", "year", "daily_metric"],
         },
         "multi-year": {
@@ -197,23 +197,103 @@ MAP_STYLES = {
     },
     "apparent-temperature": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,],#50,],
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+        ],  # 50,],
     },
     "discomfort-index-Thom": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,],#50,],
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+        ],  # 50,],
     },
     "humidex": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,],#50,],
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+        ],  # 50,],
     },
     "wind-chill": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-30,-25,-20,-15,-10,-5,0,5,10,15,20,25,30,35,40,45,],#50,],
+        "levels": [
+            -30,
+            -25,
+            -20,
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+            45,
+        ],  # 50,],
     },
     "2m temperature": {
         "colormap": "mpl.cm.nipy_spectral",
-        "levels": [-15,-10,-5,0,5,10,15,20,25,30,35,],
+        "levels": [
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+        ],
     },
     "bioclimatic-precipitations": {
         # TODO
@@ -223,7 +303,20 @@ MAP_STYLES = {
     "bioclimatic-temperatures": {
         # TODO
         "colormap": "mpl.cm.turbo",
-        "levels": [-15,-10,-5,0,5,10,15,20,25,30,35,40,],
+        "levels": [
+            -15,
+            -10,
+            -5,
+            0,
+            5,
+            10,
+            15,
+            20,
+            25,
+            30,
+            35,
+            40,
+        ],
     },
     "forest-species-suitability": {
         # TODO
@@ -353,24 +446,24 @@ def plotDistribution(field: Any, outputfile: Path, name: Any) -> None:
     fig3, (ax3) = plt.subplots(
         1, 1, figsize=(8, 3)
     )  # len(field.lon)/100, len(field.lat)/100))
-    #sns.set_theme(style="ticks")
-    #sns.despine(fig3)
-    #log.debug(field.max())
-    #sns.histplot(
+    # sns.set_theme(style="ticks")
+    # sns.despine(fig3)
+    # log.debug(field.max())
+    # sns.histplot(
     #    field,
     #    ax=ax3,
     #    edgecolor=".3",
     #    linewidth=0.5,
-        #log_scale=True,
-    #)
-    field.plot.hist(grid=True, bins=20, rwidth=0.9, ax=ax3, color='#607c8e')
+    # log_scale=True,
+    # )
+    field.plot.hist(grid=True, bins=20, rwidth=0.9, ax=ax3, color="#607c8e")
     ax3.xaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
     mpl.rcParams["font.size"] = 14
 
     # TODO label not hardcoded
     # ax3.set_xlabel('R-factor')  # ,fontsize=14)
     # TODO this label to have not to be hardcoded or it's the same for all the boxplots?
-    ax3.set_xlabel(f'{name}')
+    ax3.set_xlabel(f"{name}")
     ax3.set_ylabel("Count")  # ,fontsize=14)
     ax3.tick_params(axis="both", which="major")  # , labelsize=14)
     ax3.tick_params(axis="both", which="minor")  # , labelsize = 14)
@@ -689,7 +782,7 @@ class MapCrop(EndpointResource):
                         ],
                         axis=1,
                     )
-                    log.debug('Colums')
+                    log.debug("Colums")
                     log.debug(df_stas.columns[0][-4:])
 
                     if plot_format == "json":
