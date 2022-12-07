@@ -18,6 +18,21 @@ html.h-100 {
 /* Typography */
 body {
   font-family: "Open Sans", sans-serif !important;
+  scrollbar-width: thin;
+  scrollbar-color: #1a7dc1 rgba(56, 56, 56, 0.473);
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+ &::-webkit-scrollbar-track {
+    border-radius: 20px;
+    background-color: rgba(56, 56, 56, 0.473);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(56, 56, 56, 0.507);
+    border-radius: 20px;
+  }
 }
 
 h2,
@@ -59,6 +74,11 @@ h2 {
   &.active {
     color: #1e9a2f !important;
     border-bottom: solid 2px #1e9a2f;
+  }
+  &.btn:hover{
+    color: #fff !important;
+    background-color: #1a7dc1 !important;
+    border-color: #1a7dc1 !important;
   }
 }
 .no-results {
@@ -324,7 +344,16 @@ input[type="checkbox"]:checked {
   border-style: none;
   border-bottom-width: 0px;
 }
-
+/*custom breadcrumb for use case tag*/
+.breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: #e9ecef;
+  
+    .breadcrumb-item a {
+      color: #1a7dc1;
+    }
+  }
 /*custom footer*/
 .footer {
   padding-left: 1em;
@@ -349,6 +378,7 @@ input[type="checkbox"]:checked {
     }
   }*/
 }
+
 
 @media screen and (max-width: 990px) {
   /*change direction costum dataset page*/

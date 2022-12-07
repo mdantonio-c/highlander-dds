@@ -8,6 +8,14 @@
     *ngIf="dataset.image"
   />
   <div class="card-body">
+    <ol class="breadcrumb mb-0 px-1 py-1 rounded">
+      <li class="breadcrumb-item">
+        Use Case
+      </li>
+      <li class="breadcrumb-item active">
+        <span>{{ dataset.use_case}}</span>
+      </li>
+    </ol>
     <h3 class="mt-2 card-title">
       <a
         *ngIf="dataset.url; else localUrl"
