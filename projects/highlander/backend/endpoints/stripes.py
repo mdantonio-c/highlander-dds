@@ -110,7 +110,6 @@ class Stripes(EndpointResource):
     @decorators.use_kwargs(StripesDetails, location="query")
     def get(
         self,
-        user: User,
         dataset_id: str,
         time_period: str,
         administrative: str,
