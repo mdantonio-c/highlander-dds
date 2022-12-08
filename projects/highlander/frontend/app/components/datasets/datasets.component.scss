@@ -16,6 +16,19 @@
   }
 }
 
+.breadcrumb {
+  background-color: #1a7dc1;
+  color: #e9ecef;
+  .breadcrumb-item a {
+    color: #e9ecef;
+  }
+  .breadcrumb-item + .breadcrumb-item::before{
+    color: #e9ecef;
+
+  }
+  
+}
+
 .search-filter {
   margin: 10px auto;
 }

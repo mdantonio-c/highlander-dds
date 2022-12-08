@@ -13,6 +13,21 @@
     max-height: 150px;
     overflow: auto;
     margin-top: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: #1a7dc1 rgba(56, 56, 56, 0.473);
+
+    &::-webkit-scrollbar {
+    width: 4px;
+    }
+    &::-webkit-scrollbar-track {
+    border-radius: 20px;
+    background-color: rgba(56, 56, 56, 0.473);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(56, 56, 56, 0.507);
+      border-radius: 20px;
+    }
     p {
       text-align: justify;
       font-size: 14px;
@@ -44,6 +59,11 @@
     background-color: #1a7dc1;
     border-color: #1a7dc1;
   }
+
+  .breadcrumb {
+    font-size: 13px;
+  }
+  
 }
 
 @media screen and (max-width: 905px) {

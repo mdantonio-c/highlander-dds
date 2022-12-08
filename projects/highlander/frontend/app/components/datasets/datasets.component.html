@@ -78,6 +78,16 @@
                         value
                       }}</a>
                     </h3>
+                    <ng-container *ngFor="let dataset of datasets">
+                      <ol *ngIf="dataset.use_case" class="breadcrumb mb-0 px-1 py-1 mb-2 rounded">
+                        <li class="breadcrumb-item">
+                          Use Case
+                        </li>
+                        <li class="breadcrumb-item active">
+                          <span>{{ dataset.use_case }}</span>
+                        </li>
+                      </ol>
+                    </ng-container>
                     <ng-container *ngIf="row.description">
                       <p>
                         <span
