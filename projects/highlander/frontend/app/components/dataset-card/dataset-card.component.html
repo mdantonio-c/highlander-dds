@@ -8,11 +8,8 @@
     *ngIf="dataset.image"
   />
   <div class="card-body">
-    <ol class="breadcrumb mb-0 px-1 py-1 rounded">
-      <li class="breadcrumb-item">
-        Use Case
-      </li>
-      <li class="breadcrumb-item active">
+    <ol class="breadcrumb ">
+      <li *ngIf="dataset.use_case"  class="breadcrumb-item active mb-0 px-1 py-1 rounded">
         <span>{{ dataset.use_case}}</span>
       </li>
     </ol>

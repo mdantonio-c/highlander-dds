@@ -5,12 +5,11 @@
         <div class="row gx-4 align-items-center justify-content-between">
           <div class="col-auto">
             <h2>{{ dataset.label }}</h2>
-            <ol class="breadcrumb mb-0 px-3 py-2 rounded">
+            <ol class="breadcrumb mb-0 px-1 py-2 rounded">
               <li class="breadcrumb-item">
-                Use Case
-              </li>
-              <li class="breadcrumb-item active">
-                <span>{{ dataset.use_case}}</span>
+                <a routerLink="/app/applications" routerLinkActive="active"
+                  >{{ dataset.use_case}}</a
+                >
               </li>
             </ol>
           </div>

@@ -24,7 +24,6 @@ export class DatasetsComponent implements OnInit {
   isApplication: boolean;
   readonly backendURI = environment.backendURI;
   title: string;
-
   @ViewChild("tableWrapper", { static: false }) tableWrapper;
   @ViewChild(DatatableComponent, { static: false }) table: DatatableComponent;
 

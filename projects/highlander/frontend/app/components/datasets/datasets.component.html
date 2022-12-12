@@ -38,7 +38,7 @@
       <!-- view datasets -->
 
       <ng-template #datasetsView>
-        <div *ngIf="datasets?.length" #tableWrapper>
+        <div *ngIf="datasets?.length" #tableWrapper >
           <div class="d-sm-flex align-items-center justify-content-between">
             <h2 class="ps-2">{{ title }}</h2>
             <div class="col-sm-8 col-md-6 col-lg-4 ps-2">
@@ -58,12 +58,14 @@
             [headerHeight]="0"
             rowHeight="auto"
             [limit]="4"
+            
           >
             <ngx-datatable-column name="Label">
               <ng-template
                 let-value="value"
                 let-row="row"
                 ngx-datatable-cell-template
+                [dataset]="dataset"
               >
                 <div class="row">
                   <div class="d-none d-sm-block col-sm-1 text-center">
@@ -79,11 +81,8 @@
                       }}</a>
                     </h3>
                     <ng-container *ngFor="let dataset of datasets">
-                      <ol *ngIf="dataset.use_case" class="breadcrumb mb-0 px-1 py-1 mb-2 rounded">
-                        <li class="breadcrumb-item">
-                          Use Case
-                        </li>
-                        <li class="breadcrumb-item active">
+                      <ol *ngIf="dataset.use_case" class="breadcrumb ">
+                        <li class="breadcrumb-item active mb-0 px-1 py-1 mb-2 rounded">
                           <span>{{ dataset.use_case }}</span>
                         </li>
                       </ol>
