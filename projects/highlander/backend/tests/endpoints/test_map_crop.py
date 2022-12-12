@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Optional
 
 from faker import Faker
-from highlander.endpoints.map_crop import CROPS_OUTPUT_ROOT
+from highlander.endpoints.utils import MapCropConfig
 from restapi.tests import API_URI, BaseTests, FlaskClient
 
 __author__ = "Beatrice Chiavarini (b.chiavarini@cineca.it)"
@@ -128,7 +128,7 @@ class TestApp(BaseTests):
         assert r.status_code == 200
         region_filename = f"{REGION_ID.lower().replace(' ', '_').lower()}_map.png"
         region_output_file = Path(
-            CROPS_OUTPUT_ROOT,
+            MapCropConfig.CROPS_OUTPUT_ROOT,
             DATASET_ID,
             PRODUCT_ID,
             MODEL_ID,
@@ -151,7 +151,7 @@ class TestApp(BaseTests):
         assert r.status_code == 200
         province_filename = f"{PROVINCE_ID.title().replace(' ', '_').lower()}_map.png"
         province_output_file = Path(
-            CROPS_OUTPUT_ROOT,
+            MapCropConfig.CROPS_OUTPUT_ROOT,
             DATASET_ID2,
             PRODUCT_ID_HW,
             INDICATOR_HW,
@@ -185,7 +185,7 @@ class TestApp(BaseTests):
 
         region_json_filename = f"{REGION_ID.lower().replace(' ', '_').lower()}.json"
         region_json_output_file = Path(
-            CROPS_OUTPUT_ROOT,
+            MapCropConfig.CROPS_OUTPUT_ROOT,
             DATASET_ID,
             PRODUCT_ID,
             MODEL_ID,
@@ -204,7 +204,7 @@ class TestApp(BaseTests):
         r = client.get(endpoint, headers=self.get("auth_header"))
         assert r.status_code == 200
         output_dir = Path(
-            CROPS_OUTPUT_ROOT, DATASET_ID, PRODUCT_ID, MODEL_ID, "regions"
+            MapCropConfig.CROPS_OUTPUT_ROOT, DATASET_ID, PRODUCT_ID, MODEL_ID, "regions"
         )
         assert len([f for f in output_dir.iterdir()]) == 1
 
@@ -219,7 +219,7 @@ class TestApp(BaseTests):
 
         region_filename = f"{REGION_ID.lower().replace(' ', '_').lower()}_boxplot.png"
         region_output_file = Path(
-            CROPS_OUTPUT_ROOT,
+            MapCropConfig.CROPS_OUTPUT_ROOT,
             DATASET_ID,
             PRODUCT_ID2,
             MODEL_ID2,
@@ -247,7 +247,7 @@ class TestApp(BaseTests):
             f"{PROVINCE_ID.title().replace(' ', '_').lower()}_distribution.png"
         )
         province_output_file = Path(
-            CROPS_OUTPUT_ROOT,
+            MapCropConfig.CROPS_OUTPUT_ROOT,
             DATASET_ID,
             PRODUCT_ID,
             MODEL_ID,

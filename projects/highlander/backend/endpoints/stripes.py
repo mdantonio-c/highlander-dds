@@ -1,15 +1,10 @@
-import math
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-import geopandas as gpd
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import numpy as np
-import regionmask
 import xarray as xr
 from flask import send_file, send_from_directory
 from highlander.connectors import broker
+from highlander.endpoints.utils import PlotUtils
 from marshmallow import ValidationError, pre_load
 from restapi import decorators
 from restapi.connectors import Connector
@@ -27,51 +22,8 @@ ADMINISTRATIVES = ["Italy", "regions", "provinces"]
 
 TIME_PERIODS = ["ANN", "DJF", "JJA", "MAM", "SON"]
 
-GEOJSON_PATH = "/catalog/assets"
 
 DATA_VARIABLE = "T_2M"
-
-
-def cropArea(
-    netcdf_path: Path,
-    area_name: str,
-    area: Any,
-    data_variable: str = DATA_VARIABLE,
-) -> Any:
-    # Function to crop the data to be plotted.
-    # Read the netcdf file.
-    data_to_crop = xr.open_dataset(netcdf_path)
-
-    # Create the polygon mask.
-    polygon_mask = regionmask.Regions(
-        name=area_name,
-        outlines=list(area.geometry.values[i] for i in range(0, area.shape[0])),
-    )
-    mask = polygon_mask.mask(data_to_crop, lat_name="lat", lon_name="lon")
-
-    # Apply mask.
-    nc_cropped = data_to_crop[data_variable][:].where(mask == np.isnan(mask))
-    nc_cropped = nc_cropped.dropna("lat", how="all")
-    nc_cropped = nc_cropped.dropna("lon", how="all")
-
-    return nc_cropped
-
-
-def plotStripes(array, yearsList: list, region_id: str, fileOutput: str):
-    region_id = f"{region_id.replace('_', ' ').title()}"
-    fig, ax = plt.subplots(figsize=(20, 8))
-    fig.subplots_adjust(bottom=0.25, left=0.25)  # make room for labels
-    mpl.rcParams["font.size"] = 25
-    min_val = math.floor(array.min())  # np.round(array.min()*10)/10
-    max_val = math.ceil(array.max())  # np.round(array.max()*10)/10
-    stripes = plt.pcolormesh(array, vmin=min_val, vmax=max_val, cmap="bwr")
-    plt.colorbar(stripes, label="Air temperature [°C]")
-    ax.set_title(region_id, alpha=1)
-    ax.set_xticks(np.arange(array.shape[1]) + 0.5, minor=False)
-    ax.set_xticklabels(yearsList, rotation=90, size=15)
-    ax.axes.get_yaxis().set_visible(False)
-    plt.show()
-    fig.savefig(fileOutput, transparent=True, bbox_inches="tight", pad_inches=0)
 
 
 class StripesDetails(Schema):
@@ -118,13 +70,8 @@ class Stripes(EndpointResource):
 
         # Normalise area_id names to standard format that cope with the different geojson structures.
         if administrative == "regions" or administrative == "provinces":
-            # get the geojson file
-            geojson_file = Path(GEOJSON_PATH, f"italy-{administrative}.json")
-            areas = gpd.read_file(geojson_file)
-            area_name = area_id.lower()
+            area_name, area = PlotUtils.getArea(area_id, administrative)
 
-            # Get the area. Check if it exists and if it does not,then  raise an error.
-            area = areas[areas["name"] == area_name]
             if area.empty:
                 raise NotFound(f"Area {area_name} not found in {administrative}")
 
@@ -175,7 +122,9 @@ class Stripes(EndpointResource):
             # If necessary crop the area.
             if administrative == "regions" or administrative == "provinces":
                 try:
-                    nc_data_to_plot = cropArea(data_filepath, area_name, area)
+                    nc_data_to_plot = PlotUtils.cropArea(
+                        data_filepath, area_name, area, DATA_VARIABLE
+                    )
                 except Exception as exc:
                     raise ServerError(f"Errors in cropping the data: {exc}")
                 else:
@@ -203,7 +152,7 @@ class Stripes(EndpointResource):
 
             # Plot stripes.
             try:
-                plotStripes(
+                PlotUtils.plotStripes(
                     nc_data_to_plot_mean,
                     nc_data_to_plot_years,
                     area_name,
