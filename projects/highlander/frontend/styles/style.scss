@@ -345,18 +345,17 @@ input[type="checkbox"]:checked {
   border-bottom-width: 0px;
 }
 /*custom breadcrumb for use case tag*/
+.box {
+  width: fit-content;
+}
 .breadcrumb {
     display: flex;
     flex-wrap: wrap;
 
     .breadcrumb-item {
       background-color: #e9ecef;
-   }
-    
-  
-    .breadcrumb-item a {
       color: #1a7dc1;
-    }
+   }
   }
 /*custom footer*/
 .footer {

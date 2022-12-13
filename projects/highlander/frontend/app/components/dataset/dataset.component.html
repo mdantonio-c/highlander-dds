@@ -5,11 +5,11 @@
     zIndex="1000"
     size="medium"
   ></ngx-spinner>
-  <div class="row" *ngIf="dataset">
-    <div class="col-auto">
+  <div class="row"  *ngIf="dataset">
+    <div class="col-auto box">
       <h2>{{ dataset.label }}</h2>
       <ol class="breadcrumb ">
-        <li *ngIf="dataset.use_case"  class="breadcrumb-item active mb-0 px-1 py-1 rounded">
+        <li *ngIf="dataset.use_case"  class="breadcrumb-item w-100 px-1 py-1 rounded">
           <span>{{ dataset.use_case}}</span>
         </li>
       </ol>
