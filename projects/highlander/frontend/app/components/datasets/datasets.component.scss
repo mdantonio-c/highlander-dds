@@ -15,10 +15,13 @@
     -webkit-box-orient: vertical;
   }
 }
-
+.box {
+  width: fit-content;
+}
 .breadcrumb-item {
-  background-color: #1a7dc1;
-  color: #e9ecef;
+  background-color: #c7c7c766;
+  font-weight: 500;
+  color: #1a7dc1;
   .breadcrumb-item a {
     color: #e9ecef;
   }

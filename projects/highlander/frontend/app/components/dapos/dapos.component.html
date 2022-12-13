@@ -5,7 +5,7 @@
         <div class="row gx-4 align-items-center justify-content-between">
           <div class="col-auto">
             <h2>{{ dataset.label }}</h2>
-            <ol class="breadcrumb mb-0 px-1 py-2 rounded">
+            <ol *ngIf="dataset.use_case" class="breadcrumb mb-0 px-1 py-2 rounded">
               <li class="breadcrumb-item">
                 <a routerLink="/app/applications" routerLinkActive="active"
                   >{{ dataset.use_case}}</a

@@ -62,7 +62,13 @@
 
   .breadcrumb {
     font-size: 13px;
+    color: #1a7dc1;
+
+    .breadcrumb-item {
+      width: 100%;
+    }
   }
+  
   
 }
 

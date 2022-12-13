@@ -6,8 +6,13 @@
     size="medium"
   ></ngx-spinner>
   <div class="row" *ngIf="dataset">
-    <div class="col-12">
+    <div class="col-auto">
       <h2>{{ dataset.label }}</h2>
+      <ol class="breadcrumb ">
+        <li *ngIf="dataset.use_case"  class="breadcrumb-item active mb-0 px-1 py-1 rounded">
+          <span>{{ dataset.use_case}}</span>
+        </li>
+      </ol>
     </div>
     <div class="w-100">
       <div class="description-box my-4">
