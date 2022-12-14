@@ -24,7 +24,7 @@ body {
   &::-webkit-scrollbar {
     width: 4px;
   }
- &::-webkit-scrollbar-track {
+  &::-webkit-scrollbar-track {
     border-radius: 20px;
     background-color: rgba(56, 56, 56, 0.473);
   }
@@ -75,7 +75,7 @@ h2 {
     color: #1e9a2f !important;
     border-bottom: solid 2px #1e9a2f;
   }
-  &.btn:hover{
+  &.btn:hover {
     color: #fff !important;
     background-color: #1a7dc1 !important;
     border-color: #1a7dc1 !important;
@@ -349,14 +349,14 @@ input[type="checkbox"]:checked {
   width: fit-content;
 }
 .breadcrumb {
-    display: flex;
-    flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
 
-    .breadcrumb-item {
-      background-color: #e9ecef;
-      color: #1a7dc1;
-   }
+  .breadcrumb-item {
+    background-color: #e9ecef;
+    color: #1a7dc1;
   }
+}
 /*custom footer*/
 .footer {
   padding-left: 1em;
@@ -381,7 +381,6 @@ input[type="checkbox"]:checked {
     }
   }*/
 }
-
 
 @media screen and (max-width: 990px) {
   /*change direction costum dataset page*/
@@ -452,4 +451,35 @@ input[type="checkbox"]:checked {
       }
     }
   }
+}
+
+/* Custom size Bootstrap form-switch */
+.form-switch.form-switch-md {
+  padding-left: 4.5em;
+  height: 2.5em;
+}
+
+.form-switch.form-switch-md .form-check-input {
+  margin-left: -4.5em;
+  height: 2em;
+  width: 4em;
+}
+
+.form-switch.form-switch-md .form-check-label {
+  padding-top: 0.5em;
+}
+
+.form-switch.form-switch-lg {
+  padding-left: 8.5em;
+  height: 4.5em;
+}
+
+.form-switch.form-switch-lg .form-check-input {
+  margin-left: -8.5em;
+  height: 4em;
+  width: 8em;
+}
+
+.form-switch.form-switch-lg .form-check-label {
+  padding-top: 1.5em;
 }

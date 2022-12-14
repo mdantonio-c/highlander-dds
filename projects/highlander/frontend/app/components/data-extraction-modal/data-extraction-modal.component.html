@@ -17,15 +17,18 @@
 >
 <p class="mb-0">
   <ngb-alert
-    class="mb-0 fade animate-show animate-hide"
-    [dismissible]="false"
-    *ngIf="productInfo"
+    #estimateAlert
+    *ngIf="!estimateAlertAlertClosed"
+    class="mb-0"
+    [animation]="true"
+    [dismissible]="!autoSizeEstimation"
     [type]="remaining >= 0 ? 'success' : 'warning'"
+    (closed)="estimateAlertAlertClosed = true"
   >
     <strong>Size Estimate</strong>:
     <span *ngIf="!isLoading(); else loadingSpinner">
       <ng-container *ngIf="estimatedSize; else notAvailable">{{
-        estimatedSize | bytes: 2
+        estimatedSize | bytes : 2
       }}</ng-container>
     </span>
     <ng-template #loadingSpinner>
@@ -43,7 +46,7 @@
       ngbTooltip="Remaining size after extraction"
       container="body"
       *ngIf="!isLoading() && estimatedSize"
-      ><i *ngIf="remaining < 0">-</i>{{ remaining | abs | bytes: 2 }}</span
+      ><i *ngIf="remaining < 0">-</i>{{ remaining | abs | bytes : 2 }}</span
     >
   </ngb-alert>
 </p>
@@ -145,12 +148,25 @@
     </div>
   </div>
 </div>
-<div class="modal-footer" *ngIf="productInfo">
+<div class="modal-footer justify-content-between" *ngIf="productInfo">
+  <div class="form-check form-switch form-switch-md">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      role="switch"
+      id="autoEsti"
+      [checked]="autoSizeEstimation"
+      (change)="toggleAutoSizeEstimation()"
+    />
+    <label class="form-check-label" for="autoEsti">
+      Automatic size estimation
+    </label>
+  </div>
   <button
     type="submit"
     class="btn btn-primary btn-lg"
     form="ngForm"
-    [disabled]="!estimatedSize || remaining < 0"
+    [disabled]="autoSizeEstimation && (!estimatedSize || remaining < 0)"
   >
     Job Submit »
   </button>

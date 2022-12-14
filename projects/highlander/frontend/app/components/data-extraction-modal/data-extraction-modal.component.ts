@@ -5,8 +5,9 @@ import {
   Output,
   EventEmitter,
   OnDestroy,
+  ViewChild,
 } from "@angular/core";
-import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
+import { NgbActiveModal, NgbAlert } from "@ng-bootstrap/ng-bootstrap";
 import { DataService } from "../../services/data.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
@@ -32,7 +33,7 @@ import {
   forkJoin,
   throwError,
   of,
-  empty,
+  NEVER,
   ReplaySubject,
 } from "rxjs";
 import {
@@ -58,6 +59,8 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
   active = 1;
   estimatedSize$: Observable<number>;
   estimatedSize: number;
+  autoSizeEstimation: boolean = true;
+  closed = false;
   usage: StorageUsage;
   // the initial whole area
   initialArea: SpatialArea = {
@@ -70,12 +73,15 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
   private loading: boolean;
   private destroy$: ReplaySubject<boolean> = new ReplaySubject(1);
 
+  @ViewChild("estimateAlert", { static: false }) estimateAlert: NgbAlert;
+  estimateAlertAlertClosed = false;
+
   constructor(
     public activeModal: NgbActiveModal,
     private dataService: DataService,
     private fb: FormBuilder,
     private notify: NotificationService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
   ) {}
 
   ngOnInit() {
@@ -85,13 +91,13 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
       storageUsage: this.dataService.getStorageUsage(),
       datasetProduct: this.dataService.getDatasetProduct(
         this.dataset.id,
-        this.productId
+        this.productId,
       ),
     })
       .pipe(
         catchError((err) => {
           return throwError(err);
-        })
+        }),
       )
       .subscribe(
         ({ storageUsage, datasetProduct }) => {
@@ -117,47 +123,52 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
           this.notify.showError(error);
           this.spinner.hide("extSpinner");
           this.loading = false;
-        }
+        },
       );
   }
 
+  /**
+   * Estimate size on filter change
+   * @private
+   */
   private onFilterChange() {
-    this.filterForm.valueChanges
-      .pipe(
-        takeUntil(this.destroy$),
-        startWith(this.filterForm.value),
-        tap(() => {
-          this.spinner.show("extSpinner");
-          this.loading = true;
-        }),
-        switchMap(() => {
-          return this.dataService
-            .getSizeEstimate(this.dataset.id, this.buildRequest())
-            .pipe(
-              // put catch error into inner observable in order
-              // to keep outer observable live
-              catchError((err) => {
-                console.error(err);
-                return of(null);
-              })
-            );
-        }),
-        tap((size) => {
-          if (size) {
-            this.remaining = this.usage.quota - this.usage.used - size;
-          } else {
-            this.notify.showWarning("Unable to calculate the size estimate.");
-            // TODO at this point the FormControl that caused the error should be unchecked
-          }
-          this.spinner.hide("extSpinner");
-          this.loading = false;
-        })
-      )
-      .subscribe((val) => {
-        if (val) {
-          this.estimatedSize = val;
+    let estimate$ = this.filterForm.valueChanges.pipe(
+      takeUntil(this.destroy$),
+      startWith(this.filterForm.value),
+      switchMap((val) => (this.autoSizeEstimation ? of(val) : NEVER)),
+      tap(() => {
+        this.spinner.show("extSpinner");
+        this.loading = true;
+      }),
+      switchMap(() => {
+        return this.dataService
+          .getSizeEstimate(this.dataset.id, this.buildRequest())
+          .pipe(
+            // put catch error into inner observable in order
+            // to keep outer observable live
+            catchError((err) => {
+              console.error(err);
+              return of(null);
+            }),
+          );
+      }),
+      tap((size) => {
+        if (size) {
+          this.remaining = this.usage.quota - this.usage.used - size;
+        } else {
+          this.notify.showWarning("Unable to calculate the size estimate.");
+          // TODO at this point the FormControl that caused the error should be unchecked
         }
-      });
+        this.spinner.hide("extSpinner");
+        this.loading = false;
+      }),
+    );
+
+    estimate$.subscribe((val) => {
+      if (val) {
+        this.estimatedSize = val;
+      }
+    });
   }
 
   getWidget(widgetName: string): Widget {
@@ -189,8 +200,23 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
   }
 
   submit() {
-    this.passEntry.emit(this.buildRequest());
-    this.activeModal.close();
+    if (!this.autoSizeEstimation) {
+      // need calculate estimated size before submit
+      this.dataService
+        .getSizeEstimate(this.dataset.id, this.buildRequest())
+        .subscribe((size) => {
+          this.remaining = this.usage.quota - this.usage.used - size;
+          // show estimate alert
+          this.estimateAlertAlertClosed = false;
+          if (this.remaining >= 0) {
+            this.passEntry.emit(this.buildRequest());
+            this.activeModal.close();
+          }
+        });
+    } else {
+      this.passEntry.emit(this.buildRequest());
+      this.activeModal.close();
+    }
   }
 
   private buildRequest() {
@@ -317,6 +343,21 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
       }
       return a1.localeCompare(b1);
     });
+  }
+
+  toggleAutoSizeEstimation() {
+    // console.log(`Auto size estimation ${this.autoSizeEstimation ? 'enabled' : 'disabled'}`);
+    this.autoSizeEstimation = !this.autoSizeEstimation;
+    if (this.autoSizeEstimation) {
+      this.estimateAlertAlertClosed = false;
+      // launch size estimation on re-activation
+      this.filterForm.updateValueAndValidity({
+        onlySelf: false,
+        emitEvent: true,
+      });
+    } else {
+      this.estimateAlert.close();
+    }
   }
 
   ngOnDestroy() {
