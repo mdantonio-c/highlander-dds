@@ -5,6 +5,10 @@
     object-fit: cover;
   }
 
+  .card-body {
+    padding: 5px;
+  }
+
   h3 {
     font-size: 1rem;
     text-transform: uppercase;
@@ -60,9 +64,24 @@
     border-color: #1a7dc1;
   }
 
+  .card-img-overlay {
+   width: auto;
+    height: 200px;
+    padding:0 2px 10px 2px;
+
+    .breadcrumb {
+        width: 28px;
+        margin-right: -2px;
+
+        a {
+          margin:auto;
+        } 
+    }
+  }
   .breadcrumb {
     font-size: 13px;
     color: #1a7dc1;
+    background-color: #E9ECEF;
 
     .breadcrumb-item {
       width: 100%;

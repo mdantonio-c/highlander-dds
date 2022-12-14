@@ -1,14 +1,25 @@
-<div class="dataset-card card h-100 mb-3 rounded-0" style="width: 18rem">
+<div class="dataset-card card h-100 mb-3 rounded-0" style="width: 20rem">
   <img
     src="{{
       backendURI + '/api/datasets/' + dataset.id + '/content?type=image'
     }}"
-    class="border-bottom p-1"
+    class="border-bottom"
     alt="no img"
     *ngIf="dataset.image"
   />
+  <div class="card-img-overlay d-flex justify-content-end align-items-end">
+    <div class="breadcrumb breadcrumb-item px-1 py-1 mb-0 rounded-start" placement="start" ngbTooltip="Show the infographic">
+      <a
+      class="text-justify infographics"
+      href="{{
+        backendURI + '/api/datasets/' + dataset.id + '/content?type=infographic'
+      }}"
+      target="_blank"
+      ><i class="fa-solid fa-info"></i></a>
+  </div>
+  </div>
   <div class="card-body">
-    <ol class="breadcrumb ">
+    <ol class="breadcrumb rounded">
       <li *ngIf="dataset.use_case"  class="breadcrumb-item px-1 py-1 rounded">
         <span>{{ dataset.use_case}}</span>
       </li>
@@ -31,14 +42,6 @@
         </a>
       </ng-template>
     </h3>
-    <a
-      class="text-justify infographics"
-      href="{{
-        backendURI + '/api/datasets/' + dataset.id + '/content?type=infographic'
-      }}"
-      target="_blank"
-      >Show the infographic</a
-    ><br />
     <div class="description">
       <p
         [id]="dataset.id"
