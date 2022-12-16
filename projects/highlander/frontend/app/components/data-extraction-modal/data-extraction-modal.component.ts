@@ -13,7 +13,6 @@ import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 import {
   DatasetInfo,
-  DatasetVariables,
   ProductInfo,
   StorageUsage,
   Widget,
@@ -29,10 +28,11 @@ import {
   Validators,
 } from "@angular/forms";
 import {
-  Observable,
   forkJoin,
   throwError,
   of,
+  iif,
+  pipe,
   NEVER,
   ReplaySubject,
 } from "rxjs";
@@ -42,6 +42,7 @@ import {
   tap,
   takeUntil,
   catchError,
+  delay,
 } from "rxjs/operators";
 
 @Component({
@@ -56,11 +57,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
   productName: string;
   filterForm: FormGroup;
   productInfo: ProductInfo;
-  active = 1;
-  estimatedSize$: Observable<number>;
   estimatedSize: number;
-  autoSizeEstimation: boolean = true;
-  closed = false;
   usage: StorageUsage;
   // the initial whole area
   initialArea: SpatialArea = {
@@ -75,6 +72,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
 
   @ViewChild("estimateAlert", { static: false }) estimateAlert: NgbAlert;
   estimateAlertAlertClosed = false;
+  autoSizeEstimation = true;
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -96,6 +94,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
     })
       .pipe(
         catchError((err) => {
+          this.activeModal.close();
           return throwError(err);
         }),
       )
@@ -127,15 +126,8 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
       );
   }
 
-  /**
-   * Estimate size on filter change
-   * @private
-   */
-  private onFilterChange() {
-    let estimate$ = this.filterForm.valueChanges.pipe(
-      takeUntil(this.destroy$),
-      startWith(this.filterForm.value),
-      switchMap((val) => (this.autoSizeEstimation ? of(val) : NEVER)),
+  private estimateSize = () =>
+    pipe(
       tap(() => {
         this.spinner.show("extSpinner");
         this.loading = true;
@@ -155,20 +147,33 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
       tap((size) => {
         if (size) {
           this.remaining = this.usage.quota - this.usage.used - size;
+          this.estimatedSize = size;
         } else {
           this.notify.showWarning("Unable to calculate the size estimate.");
-          // TODO at this point the FormControl that caused the error should be unchecked
+          // at this point the FormControl that caused the error should be unchecked?
         }
         this.spinner.hide("extSpinner");
         this.loading = false;
       }),
     );
 
-    estimate$.subscribe((val) => {
-      if (val) {
-        this.estimatedSize = val;
-      }
-    });
+  /**
+   * Subscribe on filter change
+   * @private
+   */
+  private onFilterChange() {
+    this.filterForm.valueChanges
+      .pipe(
+        takeUntil(this.destroy$),
+        startWith(this.filterForm.value),
+        switchMap((val) => (this.autoSizeEstimation ? of(val) : NEVER)),
+        this.estimateSize(),
+      )
+      .subscribe((val) => {
+        if (val) {
+          this.estimatedSize = val;
+        }
+      });
   }
 
   getWidget(widgetName: string): Widget {
@@ -200,23 +205,23 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
   }
 
   submit() {
-    if (!this.autoSizeEstimation) {
-      // need calculate estimated size before submit
-      this.dataService
-        .getSizeEstimate(this.dataset.id, this.buildRequest())
-        .subscribe((size) => {
-          this.remaining = this.usage.quota - this.usage.used - size;
-          // show estimate alert
-          this.estimateAlertAlertClosed = false;
-          if (this.remaining >= 0) {
-            this.passEntry.emit(this.buildRequest());
-            this.activeModal.close();
-          }
-        });
-    } else {
-      this.passEntry.emit(this.buildRequest());
-      this.activeModal.close();
-    }
+    iif(
+      () => this.autoSizeEstimation,
+      of(this.estimatedSize),
+      of(true).pipe(
+        this.estimateSize(),
+        // show up estimate
+        tap((val) => (this.estimateAlertAlertClosed = false)),
+      ),
+    ).subscribe((val) => {
+      if (this.remaining && this.remaining >= 0) {
+        this.passEntry.emit(this.buildRequest());
+        this.activeModal.close();
+      } else if (!this.autoSizeEstimation) {
+        // close alert after 5 secs
+        setTimeout(() => this.estimateAlert.close(), 5000);
+      }
+    });
   }
 
   private buildRequest() {
