@@ -35,10 +35,10 @@
           [user]="user"
         ></hld-applications>
       </ng-container>
-      <!-- view datasets -->
 
+      <!-- view datasets -->
       <ng-template #datasetsView>
-        <div *ngIf="datasets?.length" #tableWrapper >
+        <div *ngIf="datasets?.length" #tableWrapper>
           <div class="d-sm-flex align-items-center justify-content-between">
             <h2 class="ps-2">{{ title }}</h2>
             <div class="col-sm-8 col-md-6 col-lg-4 ps-2">
@@ -58,14 +58,12 @@
             [headerHeight]="0"
             rowHeight="auto"
             [limit]="4"
-            
           >
             <ngx-datatable-column name="Label">
               <ng-template
                 let-value="value"
                 let-row="row"
                 ngx-datatable-cell-template
-                [dataset]="dataset"
               >
                 <div class="row">
                   <div class="d-none d-sm-block col-sm-1 text-center">
@@ -75,15 +73,22 @@
                     ></span>
                   </div>
                   <div class="search-result-details col-xs-11 col-12 col-sm-11">
-                    <div class="row gx-4 align-items-center justify-content-between box">
+                    <div
+                      class="row gx-4 align-items-center justify-content-between box"
+                    >
                       <div clas="col-auto">
                         <h3>
                           <a href [routerLink]="[row.id]" [state]="row">{{
                             value
                           }}</a>
                         </h3>
-                        <span *ngIf="row.use_case" class="breadcrumb breadcrumb-item  px-1 py-1 mb-2 rounded">{{ row.use_case }}</span>
-                      </div> 
+                        <span
+                          *ngIf="row.use_case"
+                          class="breadcrumb breadcrumb-item px-1 py-1 mb-2 rounded"
+                        >
+                          {{ row.use_case }}
+                        </span>
+                      </div>
                     </div>
                     <ng-container *ngIf="row.description">
                       <p>
