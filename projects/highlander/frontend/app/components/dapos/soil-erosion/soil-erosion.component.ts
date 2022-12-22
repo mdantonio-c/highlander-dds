@@ -20,7 +20,7 @@ import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
 import { SSRService } from "@rapydo/services/ssr";
 import { LegendConfig, LEGEND_DATA } from "../../../services/data";
-import { SOIL_EROSION_WMS, INDICATORS } from "./data";
+import { SOIL_EROSION_WMS, INDICATORS, PERIODS } from "./data";
 
 import * as L from "leaflet";
 import "leaflet-timedimension/dist/leaflet.timedimension.src.js";
@@ -79,7 +79,7 @@ export class SoilErosionComponent implements OnInit {
         '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Open Street Map</a>',
       maxZoom: MAX_ZOOM,
       minZoom: MIN_ZOOM,
-    },
+    }
   );
 
   layers: L.Layer[] = [this.LAYER_OSM];
@@ -130,7 +130,7 @@ export class SoilErosionComponent implements OnInit {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private ssr: SSRService,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef
   ) {
     this.mapCropDetails = {};
     this.mapsUrl = dataService.getMapsUrl();
@@ -154,17 +154,18 @@ export class SoilErosionComponent implements OnInit {
       "baselayerchange",
       (e: L.LayerEvent, comp: SoilErosionComponent = ref) => {
         comp.getTheSelectedModel(e.layer["_leaflet_id"]);
-      },
+      }
     );
   }
 
   private setOverlaysToMap() {
     let overlays = {};
     const ind = this.filter.indicator;
+    const period = this.filter.period;
     const product = SOIL_EROSION_WMS[ind].product;
     SOIL_EROSION_WMS[ind].models.forEach((m) => {
       overlays[`${ind}${m}`] = L.tileLayer.wms(`${this.mapsUrl}/wms`, {
-        layers: `highlander:${product}_${m}`,
+        layers: `highlander:${product}${m}_${period}`,
         version: "1.1.0",
         format: "image/png",
         opacity: 0.7,
@@ -182,8 +183,12 @@ export class SoilErosionComponent implements OnInit {
 
   private initLegends(map: L.Map) {
     INDICATORS.forEach((ind) => {
-      this.legends[ind.code] = this.createLegendControl(ind.code);
-      // console.log(`add legend <${ind.code}>`);
+      PERIODS.forEach((per) => {
+        this.legends[`${ind.code}_${per.code}`] = this.createLegendControl(
+          `${ind.code}_${per.code}`
+        );
+        //console.log(`add legend <${ind.code}_${per.code}>`);
+      });
     });
   }
 
@@ -222,8 +227,8 @@ export class SoilErosionComponent implements OnInit {
       this.filter = data;
       this.setOverlaysToMap();
       // add a legend
-      if (this.legends[data.indicator]) {
-        this.legends[data.indicator].addTo(this.map);
+      if (this.legends[`${data.indicator}_${data.period}`]) {
+        this.legends[`${data.indicator}_${data.period}`].addTo(this.map);
       }
     }
 
@@ -232,9 +237,32 @@ export class SoilErosionComponent implements OnInit {
       // console.log(`indicator changed to ${data.indicator}`);
 
       // remove the previous legend
-      this.map.removeControl(this.legends[this.filter.indicator]);
+      this.map.removeControl(
+        this.legends[`${this.filter.indicator}_${this.filter.period}`]
+      );
       // add the new legend
-      this.legends[data.indicator].addTo(this.map);
+      this.legends[`${data.indicator}_${data.period}`].addTo(this.map);
+      this.filter = data;
+
+      let overlays = this.layersControl["baseLayers"];
+      for (let name in overlays) {
+        if (this.map.hasLayer(overlays[name])) {
+          this.map.removeLayer(overlays[name]);
+        }
+      }
+      this.setOverlaysToMap();
+    }
+
+    // PERIOD
+    if (this.filter.period !== data.period) {
+      // console.log(`indicator changed to ${data.indicator}`);
+
+      // remove the previous legend
+      this.map.removeControl(
+        this.legends[`${this.filter.indicator}_${this.filter.period}`]
+      );
+      // add the new legend
+      this.legends[`${data.indicator}_${data.period}`].addTo(this.map);
       this.filter = data;
 
       let overlays = this.layersControl["baseLayers"];
@@ -281,6 +309,7 @@ export class SoilErosionComponent implements OnInit {
     let indicator_code = this.filter.indicator;
     const indicator = INDICATORS.find((x) => x.code == indicator_code);
     this.mapCropDetails.indicator = indicator.code;
+    this.mapCropDetails.period = this.filter.period;
     this.mapCropDetails.product = indicator.product;
     this.mapCropDetails.area_type = this.administrative;
     //force the ngonChanges of the child component
@@ -318,7 +347,7 @@ export class SoilErosionComponent implements OnInit {
 
   getTheSelectedModel(leaflet_id) {
     for (const [key, value] of Object.entries(
-      this.layersControl["baseLayers"],
+      this.layersControl["baseLayers"]
     )) {
       if (value["_leaflet_id"] == leaflet_id) {
         this.currentModel = key;

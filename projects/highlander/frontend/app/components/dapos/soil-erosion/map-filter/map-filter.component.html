@@ -15,9 +15,20 @@
             </option>
           </select>
         </div>
+        <!-- PERIOD -->
+        <div class="mb-3">
+          <label class="col-form-label"><strong>Period:</strong></label>
+          <select id="periodGroup" formControlName="period" class="form-select">
+            <option *ngFor="let i of periods" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+        </div>
         <!-- ADMINISTRATIVE -->
         <div class="mb-3">
-          <label class="col-form-label"><strong>Administrative:</strong></label>
+          <label class="col-form-label"
+            ><strong>Territorial Units:</strong></label
+          >
           <select
             id="administrativeGroup"
             formControlName="administrative"

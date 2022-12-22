@@ -29,6 +29,10 @@ cartopy.config["data_dir"] = os.getenv(
 class MapCropConfig:
     PRODUCT_EXCEPTION = {
         "human-wellbeing": {"multi-year": "daily"},
+        "soil-erosion": {
+            "rainfall-erosivity-anomalies": "rainfall-erosivity-proj",
+            "soil-loss-anomalies": "soil-loss-proj",
+        },
         "land-suitability-for-forests": {
             "bioclimatic-precipitations": "bioclimatic-variables",
             "bioclimatic-temperatures": "bioclimatic-variables",
@@ -84,6 +88,14 @@ class MapCropConfig:
             },
             "soil-loss": {
                 "url": "soil-erosion/SoilLoss/model_filename_1991_2020_VHR-REA.nc",
+                "params": ["model_filename"],
+            },
+            "rainfall-erosivity-anomalies": {
+                "url": "soil-erosion/Rfactor-anomalies/model_filename_2021_2050_ass_1991_2020_VHR-PRO_regular.nc",
+                "params": ["model_filename"],
+            },
+            "soil-loss-anomalies": {
+                "url": "soil-erosion/SoilLoss-anomalies/model_filename_2021_2050_ass_1991_2020_VHR-PRO.nc",
                 "params": ["model_filename"],
             },
         },
@@ -191,6 +203,58 @@ class MapCropConfig:
         "soil-loss": {
             "colormap": "mpl.cm.Oranges",
             "levels": [0, 1, 2.5, 5, 10, 50, 100, 500, 1000, 2000],
+        },
+        "r-factor-anomalies": {
+            "colormap": "mpl.cm.viridis_r",
+            "levels": [
+                -300,
+                -250,
+                -200,
+                -150,
+                -100,
+                -50,
+                0,
+                50,
+                100,
+                150,
+                200,
+                250,
+                300,
+                350,
+                400,
+                450,
+                500,
+                550,
+                600,
+                650,
+                700,
+            ],
+        },
+        "soil-loss-anomalies": {
+            "colormap": "mpl.cm.viridis_r",
+            "levels": [
+                -300,
+                -250,
+                -200,
+                -150,
+                -100,
+                -50,
+                0,
+                50,
+                100,
+                150,
+                200,
+                250,
+                300,
+                350,
+                400,
+                450,
+                500,
+                550,
+                600,
+                650,
+                700,
+            ],
         },
         "apparent-temperature": {
             "colormap": "mpl.cm.nipy_spectral",
@@ -383,14 +447,21 @@ class PlotUtils:
         has_time: bool = False,
     ) -> Any:
         # read the netcdf file
-        data_to_crop = xr.open_dataset(netcdf_path)
+        data_to_crop = xr.open_dataset(netcdf_path, decode_times=False)
+        # data_to_crop = xr.open_dataset(netcdf_path)
 
         # create the polygon mask
         polygon_mask = regionmask.Regions(
             name=area_name,
             outlines=list(area.geometry.values[i] for i in range(0, area.shape[0])),
         )
-        mask = polygon_mask.mask(data_to_crop, lat_name="lat", lon_name="lon")
+        try:
+            mask = polygon_mask.mask(data_to_crop, lat_name="lat", lon_name="lon")
+        except KeyError:
+            # rfactor projections have different names for lat lon
+            mask = polygon_mask.mask(
+                data_to_crop, lat_name="latitude", lon_name="longitude"
+            )
 
         if year_day:
             # crop only the data related to the requested date. N.B. the related layer is day-1 (the 1st january is layer 0)
@@ -454,15 +525,16 @@ class PlotUtils:
             )
         try:
             levels: List[float] = []
-            legend_product = product
-            if product not in MapCropConfig.MAP_STYLES.keys():
+            legend_product = main_product
+            legend_product = main_product
+            if main_product not in MapCropConfig.MAP_STYLES.keys():
                 # check if its legend is common with the one of the main product
-                if main_product not in MapCropConfig.MAP_STYLES.keys():
+                if product not in MapCropConfig.MAP_STYLES.keys():
                     raise ServerError(
-                        f"plotting style not defined for product {product} (product id: {main_product})"
+                        f"plotting style not defined for product {main_product} (product long name: {product})"
                     )
                 else:
-                    legend_product = main_product
+                    legend_product = product
 
             cmap = eval(MapCropConfig.MAP_STYLES[legend_product]["colormap"])
             levels = MapCropConfig.MAP_STYLES[legend_product]["levels"]

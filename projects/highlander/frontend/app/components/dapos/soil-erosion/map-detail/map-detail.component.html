@@ -15,7 +15,7 @@
     <h3>
       {{ cropDetails.area_id | titlecase }}
     </h3>
-    {{ productLabel }} - {{ cropDetails.model }} - Historical
+    {{ productLabel }} - {{ cropDetails.model }} - {{ cropDetails.period }}
   </div>
   <div class="details-image-container" *ngIf="loading">
     <div class="image-detail">

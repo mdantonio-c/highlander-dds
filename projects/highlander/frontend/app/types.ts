@@ -151,6 +151,7 @@ export interface LatLngRange {
 export interface SoilErosionFilter {
   indicator: string;
   administrative: string;
+  period: string;
 }
 
 export interface Era5Filter {
@@ -190,6 +191,7 @@ export interface SuitabilityVegetationChartData {
 
 export interface SoilErosionMapCrop {
   product?: string;
+  period?: string;
   model?: string;
   area_type?: string;
   area_id?: string;

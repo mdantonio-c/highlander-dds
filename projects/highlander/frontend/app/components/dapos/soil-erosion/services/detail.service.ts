@@ -29,8 +29,14 @@ export class DetailService {
     if (detailType == "plot") {
       params["plot_type"] = "distribution";
     }
+    let product = "";
+    if (detailsFilter.period === "1991_2020") {
+      product = detailsFilter.product;
+    } else {
+      product = `${detailsFilter.product}-anomalies`;
+    }
     return this.api.get(
-      `/api/datasets/soil-erosion/products/${detailsFilter.product}/crop`,
+      `/api/datasets/soil-erosion/products/${product}/crop`,
       params,
       options
     );

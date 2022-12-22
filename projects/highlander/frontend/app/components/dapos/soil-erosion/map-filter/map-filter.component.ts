@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { AuthService } from "@rapydo/services/auth";
-import { ADMINISTRATIVE_AREAS, INDICATORS } from "../data";
+import { ADMINISTRATIVE_AREAS, INDICATORS, PERIODS } from "../data";
 
 @Component({
   selector: "hl-map-filter",
@@ -15,6 +15,7 @@ export class MapFilterComponent implements OnInit {
 
   readonly indicators = INDICATORS;
   readonly administratives = ADMINISTRATIVE_AREAS;
+  readonly periods = PERIODS;
   readonly physicals = [];
   readonly userSelectedItems = [];
 
@@ -22,6 +23,7 @@ export class MapFilterComponent implements OnInit {
     this.filterForm = this.fb.group({
       indicator: ["RF"],
       administrative: ["italy"],
+      period: ["1991_2020"],
       physical: [""],
       userSelected: [""],
     });
