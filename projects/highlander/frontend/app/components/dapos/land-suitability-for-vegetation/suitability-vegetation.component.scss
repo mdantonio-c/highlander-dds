@@ -16,6 +16,32 @@
 /*  padding: 0;*/
 /*}*/
 
+.details-card{
+	position: absolute;
+	left: 1%;
+	top: 38%;
+	width: 29.6%;
+
+
+
+  .card-body {
+    padding: 0.8rem !important;
+
+    h3 {
+      font-size:18px !important;
+      line-height: normal;
+    }
+    button {
+      padding: 0;
+      margin-top: -12px;
+    }
+
+    text {
+      margin-bottom:6px !important;
+    }
+  }
+}
+
 .leaflet-box {
   background: rgba(255, 255, 255, 0.8);
   font-size: 12px;
@@ -28,8 +54,7 @@
 }
 
 .filters {
-  max-width: 12.7%;
-  min-width: 30%;
+  min-width: 30% !important;
 }
 
 .show {
@@ -49,7 +74,7 @@
 
 .collapse:not(.collapsed):not(.chart-container) {
   display: block;
-  position: absolute;
+
   top: 44px;
   transition: 0.6s;
   width: 100%;
@@ -86,12 +111,15 @@
   transition: 0.6s;
   margin-top: -5px;
   display: none;
+  position: absolute;
+  top:0;
 
   &.collapsed {
     margin-left: 8px;
     background-image: url("/app/custom/assets/images/menu_burger.svg");
     left: 0;
     display: none;
+    top:10%;
   }
 }
 
@@ -108,7 +136,13 @@
       position: initial;
     }
   }
-  @media (max-width: 850px) {
+}
+  @media (max-width: 988px) {
+    .col-2.filters {
+      max-width: 90% !important;
+      width: 100% !important;
+    }
+    
     .filters {
       display: block;
       max-width: 50%;
@@ -116,8 +150,15 @@
       margin-left: 15px;
       margin-top: 14px;
       position: absolute;
+      z-index:99999;
+    
     }
-
+    .details-card {
+      position: initial;
+    }
+    .ngx-charts {
+      float: none !important;
+    }
     .collapse {
       z-index: 99999;
     }
@@ -131,8 +172,7 @@
     }
 
     .collapse:not(.collapsed, .chart-container) {
-      width: 64%;
-      margin-top: -8px;
+      width: 100%;
+      margin-top: 35px;
     }
   }
-}

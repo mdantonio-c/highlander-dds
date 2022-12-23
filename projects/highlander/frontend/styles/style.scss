@@ -344,6 +344,28 @@ input[type="checkbox"]:checked {
   border-style: none;
   border-bottom-width: 0px;
 }
+
+.leaflet-top .leaflet-control-zoom a {
+	line-height: normal!important;
+	 & span {
+	 line-height: normal!important;
+	 text-indent: 0px !important;
+	 }
+
+   .leaflet-control-zoom-in, .leaflet-control-zoom-out {
+    text-indent: 0px !important;
+   }
+}
+/*custom icon*/
+.fa-map-marker-alt {
+  color: #1a7dc1 !important;
+  fill: #1a7dc1 !important;
+
+  &::before   {
+    color: #1a7dc1 !important;
+    fill: #1a7dc1 !important;
+  }
+}
 /*custom breadcrumb for use case tag*/
 .box {
   width: fit-content;

@@ -15,35 +15,7 @@
         (click)="isCollapsed = !isCollapsed"
         [class.collapsed]="isCollapsed"
       ></label>
-
-      <div class="card bg-light mt-3" *ngIf="isPointSelected">
-        <!--<div class="card bg-light" *ngIf="isPointSelected">-->
-        <div class="card-body">
-          <button
-            type="button"
-            class="btn btn-sm float-end"
-            (click)="closeGraph()"
-            [attr.aria-expanded]="!isPanelCollapsed"
-          >
-            <b style="font-size: x-large">&times;</b>
-          </button>
-          <h3>
-            Selected point :
-            <span class="text"
-              >lat {{ selectedPointLat.toFixed(2) }}, lon
-              {{ selectedPointLon.toFixed(2) }}</span
-            >
-          </h3>
-        </div>
-        <div class="card-body">
-          <suitability-vegetation-chart
-            [pointValues]="pointValues"
-            [isPointSelected]="isPointSelected"
-            [indicator]="indicator"
-          ></suitability-vegetation-chart>
-        </div>
-      </div>
-    </div>
+    </div>  
     <div class="col px-3">
       <div id="map-wrapper" class="fill">
         <!--
@@ -74,23 +46,30 @@
       </div>
     </div>
     <div class="col-auto details-card">
-      <div
-        #collapse="ngbCollapse"
-        [ngbCollapse]="isPanelCollapsed"
-        class="chart-container"
-      >
-        <div class="card bg-light" style="min-width: 300px">
-          <div class="px-2">
-            <button
-              type="button"
-              class="btn btn-sm float-end"
-              (click)="closeDetails()"
-              [attr.aria-expanded]="!isPanelCollapsed"
+      <div class="card mb-2 bg-light" *ngIf="isPointSelected">
+        <!--<div class="card bg-light" *ngIf="isPointSelected">-->
+        <div class="card-body d-flex justify-content-between align-items-start">
+         <h3>
+            Selected point :
+            <span class="text"
+              >lat {{ selectedPointLat.toFixed(2) }}, lon
+              {{ selectedPointLon.toFixed(2) }}</span
             >
-              <b style="font-size: x-large">&times;</b>
-            </button>
-          </div>
-          <div class="card-body">grafico</div>
+          </h3> 
+          <button
+            type="button"
+            class="btn btn-sm float-end"
+            (click)="closeGraph()"
+            [attr.aria-expanded]="!isPanelCollapsed"
+            style="font-size: x-large">&times;
+          </button>
+        </div>
+        <div class="card-body ">
+          <suitability-vegetation-chart
+            [pointValues]="pointValues"
+            [isPointSelected]="isPointSelected"
+            [indicator]="indicator"
+          ></suitability-vegetation-chart>
         </div>
       </div>
     </div>
