@@ -270,6 +270,10 @@ export interface RegionFeature {
   area: number;
 }
 
+export interface BasinFeature {
+  name: string;
+}
+
 export interface DateStruct {
   /**
    * The year, for example 2016

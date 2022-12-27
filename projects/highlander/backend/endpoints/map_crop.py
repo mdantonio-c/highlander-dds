@@ -16,7 +16,7 @@ from restapi.models import Schema, fields, validate
 from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
 
-AREA_TYPES = ["regions", "provinces", "bbox", "polygon"]
+AREA_TYPES = ["regions", "provinces", "basins", "bbox", "polygon"]
 DAILY_METRICS = ["daymax", "daymin", "daymean"]
 TYPES = ["map", "plot"]
 PLOT_TYPES = ["boxplot", "distribution"]
@@ -52,7 +52,7 @@ class SubsetDetails(Schema):
                     f"coordinates have to be specified for {area_type} area type"
                 )
         # check if area_id is needed
-        elif area_type == "regions" or area_type == "provinces":
+        else:
             if not area_id:
                 raise ValidationError(
                     f"an area id has to be specified for {area_type} area type"
@@ -151,7 +151,7 @@ class MapCrop(EndpointResource):
         if date and product == "daily":
             year_day = int(datetime.datetime.strptime(date, "%Y-%m-%d").strftime("%j"))
 
-        if area_type == "regions" or area_type == "provinces":
+        if area_type != "bbox" or area_type != "polygon":
             # get the area
             area_name, area = PlotUtils.getArea(area_id, area_type)
             if area.empty:
