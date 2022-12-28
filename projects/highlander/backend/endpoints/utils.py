@@ -34,8 +34,10 @@ class MapCropConfig:
             "soil-loss-anomalies": "soil-loss-proj",
         },
         "land-suitability-for-forests": {
-            "bioclimatic-precipitations": "bioclimatic-variables",
-            "bioclimatic-temperatures": "bioclimatic-variables",
+            "bioclimatic-precipitations-hist": "bioclimatic-variables-hist",
+            "bioclimatic-precipitations-proj": "bioclimatic-variables-proj",
+            "bioclimatic-temperatures-hist": "bioclimatic-variables-hist",
+            "bioclimatic-temperatures-proj": "bioclimatic-variables-proj",
         },
     }
 
@@ -119,25 +121,39 @@ class MapCropConfig:
             },
         },
         "land-suitability-for-forests": {
-            "bioclimatic-precipitations": {
+            "bioclimatic-precipitations-hist": {
                 "url": "land-suitability-for-forests/BIO_HIST_FINALI/indicator_edited2.nc",
                 "params": ["indicator"],
             },
-            "bioclimatic-temperatures": {
+            "bioclimatic-precipitations-proj": {
+                "url": "land-suitability-for-forests/BIO_PROJ/indicator_21_50.nc",
+                "params": ["indicator"],
+            },
+            "bioclimatic-temperatures-hist": {
                 "url": "land-suitability-for-forests/BIO_HIST_FINALI/indicator_edited2.nc",
                 "params": ["indicator"],
             },
-            "forest-species-suitability": {
-                "url": "land-suitability-for-forests/FOREST_HIST_SUITABILITY.nc",
+            "bioclimatic-temperatures-proj": {
+                "url": "land-suitability-for-forests/BIO_PROJ/indicator_21_50.nc",
+                "params": ["indicator"],
+            },
+            "forest-species-suitability-hist": {
+                "url": "land-suitability-for-forests/SUIT_HIST/FOREST_HIST_SUITABILITY.nc",
+            },
+            "forest-species-suitability-proj": {
+                "url": "land-suitability-for-forests/SUIT_PROJ/FOREST_FUTU_SUITABILITY.nc",
             },
         },
     }
 
     # list of product that doesn't have the time dimension in theirs nc files
     PRODUCT_WOUT_TIME = [
-        "bioclimatic-precipitations",
-        "bioclimatic-temperatures",
-        "forest-species-suitability",
+        "bioclimatic-precipitations-hist",
+        "bioclimatic-precipitations-proj",
+        "bioclimatic-temperatures-hist",
+        "bioclimatic-temperatures-proj",
+        "forest-species-suitability-hist",
+        "forest-species-suitability-proj",
     ]
 
     # map for indicator and variables
@@ -356,12 +372,17 @@ class MapCropConfig:
                 35,
             ],
         },
-        "bioclimatic-precipitations": {
+        "bioclimatic-precipitations-hist": {
             # TODO
             "colormap": "mpl.cm.Blues",
             "levels": [50, 75, 100, 250, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500],
         },
-        "bioclimatic-temperatures": {
+        "bioclimatic-precipitations-proj": {
+            # TODO
+            "colormap": "mpl.cm.Blues",
+            "levels": [50, 75, 100, 250, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500],
+        },
+        "bioclimatic-temperatures-hist": {
             # TODO
             "colormap": "mpl.cm.turbo",
             "levels": [
@@ -379,7 +400,30 @@ class MapCropConfig:
                 40,
             ],
         },
-        "forest-species-suitability": {
+        "bioclimatic-temperatures-proj": {
+            # TODO
+            "colormap": "mpl.cm.turbo",
+            "levels": [
+                -15,
+                -10,
+                -5,
+                0,
+                5,
+                10,
+                15,
+                20,
+                25,
+                30,
+                35,
+                40,
+            ],
+        },
+        "forest-species-suitability-hist": {
+            # TODO
+            "colormap": "mpl.cm.Greens",
+            "levels": [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        },
+        "forest-species-suitability-proj": {
             # TODO
             "colormap": "mpl.cm.Greens",
             "levels": [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],

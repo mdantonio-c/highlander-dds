@@ -228,6 +228,11 @@ class MapCrop(EndpointResource):
                 f"indicator {indicator} for product {product_id} for dataset {dataset_id} not found"
             )
 
+        # names for variables in forest species projections are different. This is an exception for this case
+        # TODO try to get a correct file in order to delete this exception
+        if product_id == "forest-species-suitability-proj":
+            nc_variable = f"{nc_variable.split('_')[0].title()}{nc_variable.split('_')[1].title()}"
+
         # crop the area
         try:
             has_time = True

@@ -57,7 +57,10 @@
                 this.filterForm.get('indicator').value === 'BIOPRP'
             }"
           >
-            <option *ngFor="let i of bioclimaticPrecipitations" [value]="i.code">
+            <option
+              *ngFor="let i of bioclimaticPrecipitations"
+              [value]="i.code"
+            >
               {{ i.label }}
             </option>
           </select>
@@ -71,7 +74,6 @@
             choose a bioclimatic variable
           </div>
         </div>
-
 
         <!-- FOREST SPECIE -->
         <div class="mb-3" *ngIf="filterForm.value.indicator == 'FOREST'">
@@ -99,6 +101,15 @@
           >
             choose a forest specie
           </div>
+        </div>
+        <!-- PERIOD -->
+        <div class="mb-3" *ngIf="filterForm.value.indicator != 'FTY'">
+          <label class="col-form-label"><strong>Period:</strong></label>
+          <select id="periodGroup" formControlName="period" class="form-select">
+            <option *ngFor="let i of periods" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
         </div>
         <!-- ADMINISTRATIVE -->
         <div class="mb-3" *ngIf="filterForm.value.indicator != 'FTY'">

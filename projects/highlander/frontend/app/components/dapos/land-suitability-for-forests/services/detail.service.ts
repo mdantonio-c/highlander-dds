@@ -29,8 +29,14 @@ export class DetailService {
     if (detailType == "plot") {
       params["plot_type"] = "distribution";
     }
+    let product = "";
+    if (detailsFilter.period === "1991_2020") {
+      product = `${detailsFilter.product}-hist`;
+    } else {
+      product = `${detailsFilter.product}-proj`;
+    }
     return this.api.get(
-      `/api/datasets/land-suitability-for-forests/products/${detailsFilter.product}/crop`,
+      `/api/datasets/land-suitability-for-forests/products/${product}/crop`,
       params,
       options
     );

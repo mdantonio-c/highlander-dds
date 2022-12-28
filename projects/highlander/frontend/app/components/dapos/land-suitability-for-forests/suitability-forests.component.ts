@@ -69,7 +69,6 @@ export class SuitabilityForestComponent implements OnInit {
   mapsUrl: string;
 
   bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
-  readonly timeRanges = ["historical", "future"];
   readonly LEGEND_POSITION = "bottomleft";
 
   LAYER_OSM = L.tileLayer(
@@ -79,16 +78,13 @@ export class SuitabilityForestComponent implements OnInit {
         '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Open Street Map</a>',
       maxZoom: MAX_ZOOM,
       minZoom: MIN_ZOOM,
-    },
+    }
   );
 
   layers: L.Layer[] = [this.LAYER_OSM];
   layersControl = {
     baseLayers: {},
     overlays: null,
-  };
-  layersControlOptions = {
-    collapsed: false,
   };
   mLayers = L.layerGroup([]);
 
@@ -130,7 +126,7 @@ export class SuitabilityForestComponent implements OnInit {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private ssr: SSRService,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef
   ) {
     this.mapCropDetails = {};
     this.mapsUrl = dataService.getMapsUrl();
@@ -154,27 +150,28 @@ export class SuitabilityForestComponent implements OnInit {
   private setOverlaysToMap() {
     let overlays = {};
     let layers = "";
+    const period = this.filter.period;
     switch (this.filter.indicator) {
       case "FTY":
         layers = `highlander:Forest_Type`;
         break;
       case "BIOTEMP":
         const biotemperature = this.filter.bioclimaticTemperature;
-        layers = `highlander:${biotemperature}`;
+        layers = `highlander:${biotemperature}_${period}`;
         break;
       case "BIOPRP":
         const bioprecipitation = this.filter.bioclimaticPrecipitation;
-        layers = `highlander:${bioprecipitation}`;
+        layers = `highlander:${bioprecipitation}_${period}`;
         break;
       case "FOREST":
         const specie = this.filter.forestSpecie;
-        layers = `highlander:${specie}`;
+        layers = `highlander:${specie}_${period}`;
         break;
     }
 
     let url = `${this.mapsUrl}/wms`;
 
-    overlays[`Historical`] = L.tileLayer.wms(url, {
+    overlays[layers] = L.tileLayer.wms(url, {
       layers: layers,
       version: "1.1.0",
       format: "image/png",
@@ -185,8 +182,7 @@ export class SuitabilityForestComponent implements OnInit {
       minZoom: MIN_ZOOM,
     });
     this.layersControl["baseLayers"] = overlays;
-    // for the moment only a single overlay is available
-    overlays[`Historical`].addTo(this.map);
+    overlays[layers].addTo(this.map);
   }
 
   private initLegends(map: L.Map) {
@@ -197,6 +193,7 @@ export class SuitabilityForestComponent implements OnInit {
   }
 
   private createLegendControl(id: string): L.Control {
+    // the legend is the same for both the periods (historical and projections)
     let config: LegendConfig = LEGEND_DATA.find((x) => x.id === id);
     if (!config) {
       console.error(`Legend data NOT found for ID<${id}>`);
@@ -239,6 +236,7 @@ export class SuitabilityForestComponent implements OnInit {
     // INDICATORS
     if (
       this.filter.indicator !== data.indicator ||
+      this.filter.period !== data.period ||
       this.filter.bioclimaticTemperature !== data.bioclimaticTemperature ||
       this.filter.bioclimaticPrecipitation !== data.bioclimaticPrecipitation ||
       this.filter.forestSpecie !== data.forestSpecie
@@ -251,12 +249,14 @@ export class SuitabilityForestComponent implements OnInit {
       this.legends[data.indicator].addTo(this.map);
       this.filter = data;
 
+      // remove the previous layers
       let overlays = this.layersControl["baseLayers"];
       for (let name in overlays) {
         if (this.map.hasLayer(overlays[name])) {
           this.map.removeLayer(overlays[name]);
         }
       }
+
       this.setOverlaysToMap();
     }
 
@@ -308,6 +308,7 @@ export class SuitabilityForestComponent implements OnInit {
         break;
     }
 
+    this.mapCropDetails.period = this.filter.period;
     this.mapCropDetails.area_type = this.administrative;
     //force the ngonChanges of the child component
     this.mapCropDetails = Object.assign({}, this.mapCropDetails);

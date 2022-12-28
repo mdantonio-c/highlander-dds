@@ -7,6 +7,7 @@ import {
   BIOTEMPERATURES,
   BIOPRECIPITATIONS,
   SPECIES,
+  PERIODS,
 } from "../data";
 
 @Component({
@@ -24,6 +25,7 @@ export class MapFilterComponent implements OnInit {
   readonly forestSpecies = SPECIES;
   readonly bioclimaticTemperatures = BIOTEMPERATURES;
   readonly bioclimaticPrecipitations = BIOPRECIPITATIONS;
+  readonly periods = PERIODS;
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.filterForm = this.fb.group({
@@ -32,6 +34,7 @@ export class MapFilterComponent implements OnInit {
       bioclimaticTemperature: [""],
       bioclimaticPrecipitation: [""],
       forestSpecie: [""],
+      period: ["1991_2020"],
     });
   }
 
@@ -51,27 +54,27 @@ export class MapFilterComponent implements OnInit {
         case "BIOTEMP":
           if (!this.filterForm.get("bioclimaticTemperature").value) {
             this.filterForm.patchValue(
-          {
-            forestSpecie: null,
-            bioclimaticPrecipitation: null,
-            // bioclimaticVariable: null,
-          },
-          { emitEvent: false, onlySelf: true }
-        );
+              {
+                forestSpecie: null,
+                bioclimaticPrecipitation: null,
+                // bioclimaticVariable: null,
+              },
+              { emitEvent: false, onlySelf: true }
+            );
             return;
           }
           break;
         case "BIOPRP":
           if (!this.filterForm.get("bioclimaticPrecipitation").value) {
-              /*            this.filterForm.patchValue(
+            /*            this.filterForm.patchValue(
             {
               forestSpecie: null,
             },
             { emitEvent: false, onlySelf: true }
           );*/
-              return;
-            }
-            break;
+            return;
+          }
+          break;
         case "FOREST":
           if (!this.filterForm.get("forestSpecie").value) {
             /*        this.filterForm.patchValue(

@@ -163,6 +163,7 @@ export interface Era5Filter {
 export interface ForestSuitabilityFilter {
   indicator: string;
   administrative: string;
+  period: string;
   bioclimaticTemperature?: string;
   bioclimaticPrecipitation?: string;
   forestSpecie?: string;
@@ -218,6 +219,7 @@ export interface Era5MapCrop {
 
 export interface ForestSuitabilityMapCrop {
   product?: string;
+  period?: string;
   area_type?: string;
   area_id?: string;
   indicator?: string;

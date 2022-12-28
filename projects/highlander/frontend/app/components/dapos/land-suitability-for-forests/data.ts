@@ -21,7 +21,6 @@ export const INDICATORS: IndicatorsCodeLabel[] = [
     label: "Bioclimatic indicator (precipitation)",
     product: "bioclimatic-precipitations",
   },
-
 ];
 
 export const BIOTEMPERATURES: CodeLabel[] = [
@@ -193,4 +192,9 @@ export const ADMINISTRATIVE_AREAS = [
   { code: "italy", label: "Italy" },
   { code: "regions", label: "Regions" },
   { code: "provinces", label: "Provinces" },
+];
+
+export const PERIODS = [
+  { code: "1991_2020", label: "1991-2020" },
+  { code: "2021_2050", label: "2021-2050" },
 ];
