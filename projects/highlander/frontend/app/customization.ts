@@ -43,13 +43,13 @@ export class ProjectOptions extends BaseProjectOptions {
   }
 
   admin_menu_entries(user: User): AdminMenu[] {
-    // return [
-    //   {
-    //     enabled: user.isAdmin,
-    //     label: "MyLabel",
-    //     router_link: "/app/admin/myroute",
-    //   },
-    // ];
+    return [
+      {
+        enabled: user.isAdmin,
+        label: "Schedules",
+        router_link: "/app/admin/schedules",
+      },
+    ];
 
     return [];
   }

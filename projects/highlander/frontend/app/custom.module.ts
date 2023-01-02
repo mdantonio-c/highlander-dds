@@ -21,6 +21,7 @@ import { RequestsComponent } from "./components/requests/requests.component";
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { StorageUsageComponent } from "./components/dashboard/storage-usage/storage-usage.component";
 import { DaposComponent } from "./components/dapos/dapos.component";
+import { SchedulesComponent } from "./components/admin/schedules/schedules.component";
 
 import { SoilErosionComponent } from "./components/dapos/soil-erosion/soil-erosion.component";
 import { CropWaterComponent } from "./components/dapos/crop-water/crop-water.component";
@@ -61,6 +62,13 @@ const routes: Routes = [
     component: DashboardComponent,
     canActivate: [AuthGuard],
   },
+  {
+    path: "app/admin/schedules",
+    component: SchedulesComponent,
+    canActivate: [AuthGuard],
+    runGuardsAndResolvers: "always",
+    data: { roles: ["admin_root"] },
+  },
   { path: "app", redirectTo: "/app/datasets", pathMatch: "full" },
   { path: "", redirectTo: "/app/datasets", pathMatch: "full" },
 ];
@@ -88,6 +96,7 @@ const routes: Routes = [
     DashboardComponent,
     StorageUsageComponent,
     DaposComponent,
+    SchedulesComponent,
     SoilErosionComponent,
     CropWaterComponent,
     CropDetailsComponent,

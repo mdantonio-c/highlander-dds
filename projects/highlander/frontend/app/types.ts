@@ -290,3 +290,18 @@ export interface DateStruct {
    */
   day: number;
 }
+
+export interface Schedules extends Array<Schedule> {}
+
+export interface Schedule {
+  id: number;
+  name: string;
+  is_enabled: boolean;
+  created_at: string;
+  /** @nullable */
+  crontab: string;
+  /** @nullable */
+  task_name: string;
+  /** @nullable */
+  task_args: any;
+}
