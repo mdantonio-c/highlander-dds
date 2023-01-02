@@ -1,10 +1,10 @@
 from typing import Any, Dict, List
 
+from cron_converter import Cron
 from highlander.models.schemas import Schedule, ScheduleInput
-from highlander.models.sqlalchemy import SystemSchedule
 from restapi import decorators
-from restapi.connectors import Connector, sqlalchemy
-from restapi.exceptions import NotFound, ServerError, Unauthorized
+from restapi.connectors import celery, sqlalchemy
+from restapi.exceptions import BadRequest, Conflict, NotFound, ServerError
 from restapi.rest.definition import EndpointResource, Response
 from restapi.services.authentication import Role, User
 from restapi.utilities.logs import log
@@ -50,23 +50,52 @@ class AdminSchedules(EndpointResource):
         summary="Create a new system schedule",
         responses={
             201: "The id of the new system schedule is returned",
+            400: "Bad request",
             409: "This schedule already exists",
         },
     )
     def post(self, user: User, **kwargs: Any) -> Response:
         log.debug("Create a new schedule")
         db = sqlalchemy.get_instance()
+        celery_app = celery.get_instance()
 
-        # check if the schedule already exists
-        # res = db.SystemSchedule.query.get(int(request_id))
-        # if res:
-        #     raise Conflict(f"This schedule already exists: {email}")
         try:
+            # try to create a celery-beat task
+            schedule_name = kwargs["name"]
+            task_name = kwargs["task_name"]
+            task_args = kwargs.get("task_args")
+            task_crontab = kwargs["crontab"]
+
+            # check if the schedule already exists
+            task = celery_app.get_periodic_task(name=schedule_name)
+            if task:
+                # DO NOT register a schedule task with same name
+                raise LookupError(f"This schedule already exists: {schedule_name}")
+
+            # check for valid crontab
+            cron_instance = Cron()
+            # the follow will raise ValueError for improper crontab expression
+            cron_instance.from_string(task_crontab)
+
+            cron_list = cron_instance.to_list()
+            cron_minute = ",".join([str(e) for e in cron_list[0]])
+            cron_hour = ",".join([str(e) for e in cron_list[1]])
+            cron_day_of_week = ",".join([str(e) for e in cron_list[4]])
+
+            celery_app.create_crontab_task(
+                name=schedule_name,
+                task=task_name,
+                args=task_args,
+                day_of_week=cron_day_of_week,
+                hour=cron_hour,
+                minute=cron_minute,
+            )
+
             # save a schedule record in db
             schedule = db.SystemSchedule(
-                name=kwargs["name"],
-                crontab=kwargs["crontab"],
-                task_name=kwargs["task_name"],
+                name=schedule_name,
+                crontab=task_crontab,
+                task_name=task_name,
             )
             if task_args := kwargs.get("task_args"):
                 schedule.task_args = task_args
@@ -74,6 +103,13 @@ class AdminSchedules(EndpointResource):
             db.session.add(schedule)
             db.session.commit()
             log.info("Schedule <ID:{}> successfully saved", schedule.id)
+
+        except LookupError as exc:
+            db.session.rollback()
+            raise Conflict(str(exc))
+        except ValueError as exc:
+            db.session.rollback()
+            raise BadRequest(str(exc))
         except Exception as exc:
             log.exception(exc)
             db.session.rollback()
@@ -101,6 +137,12 @@ class AdminSchedules(EndpointResource):
         schedule = db.SystemSchedule.query.get(int(schedule_id))
         if not schedule:
             raise NotFound(f"The schedule <{schedule_id}> does NOT exist")
+
+        # check if the schedule already exists
+        celery_app = celery.get_instance()
+        task = celery_app.get_periodic_task(name=schedule.name)
+        if task:
+            celery_app.delete_periodic_task(name=schedule.name)
 
         # delete db entry
         db.session.delete(schedule)
