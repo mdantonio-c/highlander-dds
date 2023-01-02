@@ -4,6 +4,7 @@ import numpy as np
 from marshmallow import post_load, pre_load
 from restapi.models import ISO8601UTC, Schema, fields, validate
 from restapi.utilities.logs import log
+from webargs import fields as mfields
 
 
 class ValueLabelPair(Schema):
@@ -227,11 +228,12 @@ class Schedule(Schema):
     is_enabled = fields.Boolean(dump_default=False)
     crontab = fields.Str(required=True)
     task_name = fields.Str(required=True)
-    task_args = fields.Str()
+    task_args = fields.List(mfields.Raw)
 
 
 class ScheduleInput(Schema):
     name = fields.Str(required=True)
     crontab = fields.Str(required=True)
     task_name = fields.Str(required=True)
-    # task_args = fields.List(Any) FIXME
+    # FIXME need generic rapydo Raw field to be mapped as textarea UI component
+    task_args = fields.List(mfields.Raw)

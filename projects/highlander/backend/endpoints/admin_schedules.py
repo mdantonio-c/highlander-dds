@@ -68,6 +68,9 @@ class AdminSchedules(EndpointResource):
                 crontab=kwargs["crontab"],
                 task_name=kwargs["task_name"],
             )
+            if task_args := kwargs.get("task_args"):
+                schedule.task_args = task_args
+
             db.session.add(schedule)
             db.session.commit()
             log.info("Schedule <ID:{}> successfully saved", schedule.id)
