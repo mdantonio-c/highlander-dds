@@ -218,3 +218,20 @@ class DataExtraction(Schema):
             else:
                 rest[k] = v
         return {"extra": extra or None, **rest}
+
+
+class Schedule(Schema):
+    id = fields.Integer(required=True)
+    name = fields.Str(required=True)
+    created_at = fields.DateTime(allow_none=True, format=ISO8601UTC)
+    is_enabled = fields.Boolean(dump_default=False)
+    crontab = fields.Str(required=True)
+    task_name = fields.Str(required=True)
+    task_args = fields.Str()
+
+
+class ScheduleInput(Schema):
+    name = fields.Str(required=True)
+    crontab = fields.Str(required=True)
+    task_name = fields.Str(required=True)
+    # task_args = fields.List(Any) FIXME
