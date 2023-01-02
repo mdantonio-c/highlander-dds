@@ -493,19 +493,19 @@ class PlotUtils:
         # read the netcdf file
         data_to_crop = xr.open_dataset(netcdf_path, decode_times=False)
         # data_to_crop = xr.open_dataset(netcdf_path)
+        # rfactor projections have different names for lat lon --> rename the variables
+        if "latitude" in data_to_crop.coords:
+            data_to_crop = data_to_crop.rename({"latitude": "lat"})
+        if "longitude" in data_to_crop.coords:
+            data_to_crop = data_to_crop.rename({"longitude": "lon"})
 
         # create the polygon mask
         polygon_mask = regionmask.Regions(
             name=area_name,
             outlines=list(area.geometry.values[i] for i in range(0, area.shape[0])),
         )
-        try:
-            mask = polygon_mask.mask(data_to_crop, lat_name="lat", lon_name="lon")
-        except KeyError:
-            # rfactor projections have different names for lat lon
-            mask = polygon_mask.mask(
-                data_to_crop, lat_name="latitude", lon_name="longitude"
-            )
+
+        mask = polygon_mask.mask(data_to_crop, lat_name="lat", lon_name="lon")
 
         if year_day:
             # crop only the data related to the requested date. N.B. the related layer is day-1 (the 1st january is layer 0)
@@ -516,8 +516,10 @@ class PlotUtils:
             nc_cropped = data_to_crop[data_variable][0].where(mask == np.isnan(mask))
         else:
             nc_cropped = data_to_crop[data_variable].where(mask == np.isnan(mask))
+
         nc_cropped = nc_cropped.dropna("lat", how="all")
         nc_cropped = nc_cropped.dropna("lon", how="all")
+
         return nc_cropped
 
     @staticmethod
