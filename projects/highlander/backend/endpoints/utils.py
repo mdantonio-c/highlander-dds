@@ -220,8 +220,8 @@ class MapCropConfig:
             "colormap": "mpl.cm.Oranges",
             "levels": [0, 1, 2.5, 5, 10, 50, 100, 500, 1000, 2000],
         },
-        "r-factor-anomalies": {
-            "colormap": "mpl.cm.viridis_r",
+        "rainfall-erosivity-anomalies": {
+            "colormap": "mpl.cm.viridis",
             "levels": [
                 -300,
                 -250,
@@ -247,7 +247,7 @@ class MapCropConfig:
             ],
         },
         "soil-loss-anomalies": {
-            "colormap": "mpl.cm.viridis_r",
+            "colormap": "mpl.cm.viridis",
             "levels": [
                 -300,
                 -250,
@@ -573,6 +573,7 @@ class PlotUtils:
             levels: List[float] = []
             legend_product = main_product
             legend_product = main_product
+            # log.debug(f"main product: {main_product}, product: {product}")
             if main_product not in MapCropConfig.MAP_STYLES.keys():
                 # check if its legend is common with the one of the main product
                 if product not in MapCropConfig.MAP_STYLES.keys():
@@ -639,12 +640,12 @@ class PlotUtils:
         fig4.savefig(outputfile)
 
     @staticmethod
-    def plotDistribution(field: Any, outputfile: Path, name: Any) -> None:
+    def plotDistribution(field: Any, outputfile: Path, name: str, units: str) -> None:
         """
         This function plot with the xarray tool the field of netcdf
         """
         fig3, (ax3) = plt.subplots(
-            1, 1, figsize=(8, 3)
+            1, 1, figsize=(8, 5)
         )  # len(field.lon)/100, len(field.lat)/100))
         # sns.set_theme(style="ticks")
         # sns.despine(fig3)
@@ -663,11 +664,11 @@ class PlotUtils:
         # TODO label not hardcoded
         # ax3.set_xlabel('R-factor')  # ,fontsize=14)
         # TODO this label to have not to be hardcoded or it's the same for all the boxplots?
-        ax3.set_xlabel(f"{name}")
+        ax3.set_xlabel(f"{name} ({units})", fontsize=16)
         ax3.set_ylabel("Count")  # ,fontsize=14)
         ax3.tick_params(axis="both", which="major")  # , labelsize=14)
         ax3.tick_params(axis="both", which="minor")  # , labelsize = 14)
-        ax3.set_title(f'{field.columns[0].replace(".nc", "")} histogram')
+        ax3.set_title(f'{field.columns[0].replace(".nc", "")} histogram (20 classes)')
         ax3.get_legend().remove()  # handles = legend.legendHandles
         # legend.remove()
         # ax3.legend(handles, ['dep-', 'ind-', 'ind+', 'dep+'], title='Stat.ind.')
