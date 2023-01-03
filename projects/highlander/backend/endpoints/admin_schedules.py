@@ -5,9 +5,33 @@ from highlander.models.schemas import Schedule, ScheduleInput
 from restapi import decorators
 from restapi.connectors import celery, sqlalchemy
 from restapi.exceptions import BadRequest, Conflict, NotFound, ServerError
+from restapi.models import fields
 from restapi.rest.definition import EndpointResource, Response
 from restapi.services.authentication import Role, User
 from restapi.utilities.logs import log
+
+
+def expand_crontab(crontab):
+    """
+    Parses a crontab from string and returns minute, hour and 'day of the week' parts in a tuple.
+
+    Parameters:
+    crontab (string): a crontab (e.g. '0 5 * * 2,5')
+
+    Returns:
+    tuple: (minute, hour, day_of_week)
+
+    :raises ValueError: for improper crontab expression
+    """
+    cron_instance = Cron()
+    cron_instance.from_string(crontab)
+
+    cron_list = cron_instance.to_list()
+    cron_minute = ",".join([str(e) for e in cron_list[0]])
+    cron_hour = ",".join([str(e) for e in cron_list[1]])
+    cron_day_of_week = ",".join([str(e) for e in cron_list[4]])
+
+    return cron_minute, cron_hour, cron_day_of_week
 
 
 class AdminSchedules(EndpointResource):
@@ -72,23 +96,16 @@ class AdminSchedules(EndpointResource):
                 # DO NOT register a schedule task with same name
                 raise LookupError(f"This schedule already exists: {schedule_name}")
 
-            # check for valid crontab
-            cron_instance = Cron()
-            # the follow will raise ValueError for improper crontab expression
-            cron_instance.from_string(task_crontab)
-
-            cron_list = cron_instance.to_list()
-            cron_minute = ",".join([str(e) for e in cron_list[0]])
-            cron_hour = ",".join([str(e) for e in cron_list[1]])
-            cron_day_of_week = ",".join([str(e) for e in cron_list[4]])
+            # check for valid crontab: raise ValueError for improper crontab expression
+            cron_list = expand_crontab(task_crontab)
 
             celery_app.create_crontab_task(
                 name=schedule_name,
                 task=task_name,
                 args=task_args,
-                day_of_week=cron_day_of_week,
-                hour=cron_hour,
-                minute=cron_minute,
+                day_of_week=cron_list[2],
+                hour=cron_list[1],
+                minute=cron_list[0],
             )
 
             # save a schedule record in db
@@ -97,7 +114,7 @@ class AdminSchedules(EndpointResource):
                 crontab=task_crontab,
                 task_name=task_name,
             )
-            if task_args := kwargs.get("task_args"):
+            if task_args:
                 schedule.task_args = task_args
 
             db.session.add(schedule)
@@ -119,6 +136,7 @@ class AdminSchedules(EndpointResource):
         return self.response(schedule.id, code=201)
 
     @decorators.auth.require_any(Role.ADMIN, Role.STAFF)
+    @decorators.database_transaction
     @decorators.endpoint(
         path="/admin/schedules/<schedule_id>",
         summary="Delete a schedule",
@@ -128,7 +146,6 @@ class AdminSchedules(EndpointResource):
             403: "You are not authorized to perform actions on this schedule",
         },
     )
-    @decorators.database_transaction
     def delete(self, schedule_id: str, user: User) -> Response:
         log.debug("delete schedule {}", schedule_id)
 
@@ -150,3 +167,63 @@ class AdminSchedules(EndpointResource):
 
         self.log_event(self.events.delete, schedule)
         return self.empty_response()
+
+    @decorators.auth.require_any(Role.ADMIN, Role.STAFF)
+    @decorators.database_transaction
+    @decorators.use_kwargs(
+        {
+            "is_enabled": fields.Bool(
+                required=True,
+                metadata={"description": "Enable or disable the schedule"},
+            )
+        }
+    )
+    @decorators.endpoint(
+        path="/admin/schedules/<schedule_id>",
+        summary="Enable or disable a schedule",
+        responses={
+            200: "Schedule is successfully disable/enable",
+            404: "Schedule not found",
+            409: "Schedule is already enabled/disabled",
+        },
+    )
+    def patch(self, schedule_id: str, is_enabled: bool, user: User) -> Response:
+        action = "Enable" if is_enabled else "Disable"
+        log.debug("{} schedule <{}>", action, schedule_id)
+
+        db = sqlalchemy.get_instance()
+        schedule = db.Schedule.query.get(schedule_id)
+        log.debug("Schedule DB entry - {}", schedule)
+
+        if schedule is None:
+            raise NotFound(f"Schedule <{schedule_id}> NOT found")
+
+        # retrieving celery task
+        celery_app = celery.get_instance()
+        task = celery_app.get_periodic_task(name=schedule_id)
+        log.debug("Scheduled task - {}", task)
+
+        if is_enabled == schedule.is_enabled:
+            # WARN: asking to enable/disable a schedule in that same state
+            # should we ensure a celery scheduled task is actually in that state (?)
+            raise Conflict(f"Schedule {schedule_id} was already {action}d!")
+        else:
+            # change state
+            schedule.is_enabled = is_enabled
+            if is_enabled:
+                # enable task
+                cron_list = expand_crontab(schedule.crontab)
+                celery_app.create_crontab_task(
+                    name=schedule.name,
+                    task=schedule.task_name,
+                    args=schedule.task_args,
+                    day_of_week=cron_list[2],
+                    hour=cron_list[1],
+                    minute=cron_list[0],
+                )
+            else:
+                # disable task
+                celery_app.delete_periodic_task(name=schedule.name)
+            db.session.commit()
+
+        return self.response({"id": schedule_id, "enabled": is_enabled})

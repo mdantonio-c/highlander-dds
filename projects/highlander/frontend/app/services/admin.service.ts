@@ -1,8 +1,7 @@
 import { Injectable } from "@angular/core";
-import { Observable, of } from "rxjs";
-import { delay } from "rxjs/operators";
+import { Observable } from "rxjs";
 import { ApiService } from "@rapydo/services/api";
-import { Schedule } from "@app/types";
+import { Schedule, OnOffSchedule } from "@app/types";
 
 @Injectable({
   providedIn: "root",
@@ -27,9 +26,16 @@ export class AdminService {
    * @param id schedule ID
    * @param state the new state
    */
-  changeScheduleState(id: number, state: boolean): Observable<boolean> {
-    console.log(`Changing state for schedule <${id}> in '${state}'`);
-    // TODO
-    return of(state).pipe(delay(1000));
+  toggleScheduleActiveState(
+    scheduleId,
+    toState: boolean,
+  ): Observable<OnOffSchedule> {
+    console.debug(
+      `Changing state for schedule <${scheduleId}> in '${toState}'`,
+    );
+    const data = {
+      is_enabled: toState,
+    };
+    return this.api.patch(`/api/admin/schedules/${scheduleId}`, data);
   }
 }

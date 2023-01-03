@@ -305,3 +305,10 @@ export interface Schedule {
   /** @nullable */
   task_args: any;
 }
+
+export interface OnOffSchedule {
+  /** Current status of the schedule */
+  enabled: boolean;
+  /** Schedule ID */
+  id: number;
+}

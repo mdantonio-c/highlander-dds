@@ -79,3 +79,5 @@ RUN pip3 install --upgrade --no-cache-dir regionmask \
     && pip3 install --upgrade --no-cache-dir seaborn \
     && pip3 install --upgrade --no-cache-dir matplotlib \
     && pip3 install --upgrade numpy==1.22.4
+
+RUN pip3 install cron_converter

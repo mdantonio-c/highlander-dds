@@ -69,12 +69,13 @@ export class SchedulesComponent extends BasePaginationComponent<Schedules> {
           this.spinner.show();
           const newState = !schedule.is_enabled;
           this.adminService
-            .changeScheduleState(schedule.id, newState)
+            .toggleScheduleActiveState(schedule.id, newState)
             .subscribe(
               (res) => {
-                this.notify.showSuccess(`Schedule state is now '${res}'`);
-                //this.list();
-                schedule.is_enabled = res;
+                this.notify.showSuccess(
+                  `Schedule enabled state is now: '${res.enabled}'`,
+                );
+                schedule.is_enabled = res.enabled;
                 this.data = [...this.data];
               },
               (error) => {
