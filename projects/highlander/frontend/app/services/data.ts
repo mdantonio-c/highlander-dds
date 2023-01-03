@@ -90,7 +90,8 @@ export const LEGEND_DATA: LegendConfig[] = [
   {
     id: "RF_2021_2050_anomalies",
     legend_type: "legend_box",
-    title: "Rainfall erosivity</br><small>[MJ mm ha-1 h-1 yr-1]</small>",
+    title:
+      "Rainfall erosivity anomalies</br><small>[MJ mm ha-1 h-1 yr-1]</small>",
     colors: [
       "#30123b",
       "#3e3790",
@@ -183,7 +184,7 @@ export const LEGEND_DATA: LegendConfig[] = [
   {
     id: "SL_2021_2050",
     legend_type: "legend_box",
-    title: "Soil loss</br><small>[t ha-1 yr-1]</small>",
+    title: "Soil loss </br><small>[t ha-1 yr-1]</small>",
     colors: [
       "#993404",
       "#b64708",
@@ -201,7 +202,7 @@ export const LEGEND_DATA: LegendConfig[] = [
   {
     id: "SL_2021_2050_anomalies",
     legend_type: "legend_box",
-    title: "Soil loss</br><small>[t ha-1 yr-1]</small>",
+    title: "Soil loss anomalies </br><small>[t ha-1 yr-1]</small>",
     colors: [
       "#30123b",
       "#3e3790",
