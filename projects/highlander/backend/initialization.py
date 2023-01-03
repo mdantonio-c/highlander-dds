@@ -1,4 +1,5 @@
-from restapi.connectors import celery
+from cron_converter import Cron
+from restapi.connectors import celery, sqlalchemy
 from restapi.utilities.logs import log
 
 
@@ -9,41 +10,38 @@ class Initializer:
     """
 
     def __init__(self) -> None:
+        log.info("App initialization...")
         celery_app = celery.get_instance()
-        crop_water_crontab_task_name = "crop-water-data-sync"
-        task = celery_app.get_periodic_task(name=crop_water_crontab_task_name)
-        if task:
-            log.info(f"Delete existing task <{crop_water_crontab_task_name}>")
-            celery_app.delete_periodic_task(name=crop_water_crontab_task_name)
-        # Executes every Wednesday morning at 6:00 a.m.
-        celery_app.create_crontab_task(
-            name=crop_water_crontab_task_name,
-            task="retrieve_crop_water",
-            day_of_week="3",
-            hour="6",
-            minute="0",
-        )
 
-        sub_seasonal_crontab_task_name = "sub-seasonal-data-sync"
-        task = celery_app.get_periodic_task(name=sub_seasonal_crontab_task_name)
-        if task:
-            log.info(f"Delete existing task <{sub_seasonal_crontab_task_name}>")
-            celery_app.delete_periodic_task(name=sub_seasonal_crontab_task_name)
-        # Executes every Tuesday and Friday morning at 5:00 a.m.
-        celery_app.create_crontab_task(
-            name=sub_seasonal_crontab_task_name,
-            task="clean_cache",
-            args=[
-                [
-                    "sub-seasonal_sub-seasonal_BiasCorr",
-                    "sub-seasonal_sub-seasonal_ecPoint_perc",
-                ]
-            ],
-            day_of_week="2,5",
-            hour="5",
-            minute="0",
-        )
+        # lookup for system schedules from the database and activate them in Celery accordingly
+        db = sqlalchemy.get_instance()
+        sys_schedules = db.SystemSchedule.query.all()
+        log.info(f"Number of DB schedules: {len(sys_schedules)}")
+        for s in sys_schedules:
+            log.info(s)
+            task = celery_app.get_periodic_task(name=s.name)
+            if s.is_enabled and task is None:
+                # CREATE a Celery scheduled task
+                cron_instance = Cron()
+                cron_instance.from_string(s.crontab)
 
-    # This method is called after normal initialization if TESTING mode is enabled
+                cron_list = cron_instance.to_list()
+                cron_minute = ",".join([str(e) for e in cron_list[0]])
+                cron_hour = ",".join([str(e) for e in cron_list[1]])
+                cron_day_of_week = ",".join([str(e) for e in cron_list[4]])
+
+                celery_app.create_crontab_task(
+                    name=s.name,
+                    task=s.task_name,
+                    args=s.task_args,
+                    day_of_week=cron_day_of_week,
+                    hour=cron_hour,
+                    minute=cron_minute,
+                )
+            if not s.is_enabled and task:
+                # DELETE existing Celery scheduled task
+                celery_app.delete_periodic_task(name=s.name)
+
     def initialize_testing_environment(self) -> None:
+        """This method is called after normal initialization if TESTING mode is enabled."""
         pass
