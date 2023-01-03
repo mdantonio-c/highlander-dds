@@ -661,10 +661,10 @@ class PlotUtils:
         ax3.xaxis.set_major_formatter(mpl.ticker.ScalarFormatter())
         mpl.rcParams["font.size"] = 14
 
-        # TODO label not hardcoded
-        # ax3.set_xlabel('R-factor')  # ,fontsize=14)
-        # TODO this label to have not to be hardcoded or it's the same for all the boxplots?
-        ax3.set_xlabel(f"{name} ({units})", fontsize=16)
+        if units:
+            ax3.set_xlabel(f"{name} ({units})", fontsize=16)
+        else:
+            ax3.set_xlabel(f"{name}", fontsize=16)
         ax3.set_ylabel("Count")  # ,fontsize=14)
         ax3.tick_params(axis="both", which="major")  # , labelsize=14)
         ax3.tick_params(axis="both", which="minor")  # , labelsize = 14)
