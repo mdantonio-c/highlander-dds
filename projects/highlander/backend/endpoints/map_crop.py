@@ -276,8 +276,8 @@ class MapCrop(EndpointResource):
                     ],
                     axis=1,
                 )
-                log.debug("Colums")
-                log.debug(df_stas.columns[0][-4:])
+                # log.debug("Colums")
+                # log.debug(df_stas.columns[0][-4:])
 
                 if plot_format == "json":
                     df_stas.to_json(path_or_buf=filepath)
@@ -287,7 +287,9 @@ class MapCrop(EndpointResource):
                 if plot_type == "boxplot":
                     PlotUtils.plotBoxplot(df_stas, filepath)
                 elif plot_type == "distribution":
-                    PlotUtils.plotDistribution(df_stas, filepath, nc_cropped.long_name)
+                    PlotUtils.plotDistribution(
+                        df_stas, filepath, nc_cropped.long_name, nc_cropped.units
+                    )
 
         except Exception as exc:
             raise ServerError(f"Errors in plotting the data: {exc}")
