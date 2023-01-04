@@ -274,7 +274,7 @@ export class SuitabilityForestComponent implements OnInit {
       return;
     }
     this.dataService
-      .getAdministrativeAreas(data.administrative)
+      .getGeojsonLayer(`italy-${data.administrative}`)
       .subscribe((json) => {
         const jsonLayer = L.geoJSON(json, {
           style: NORMAL_STYLE,
