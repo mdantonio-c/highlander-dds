@@ -3,6 +3,7 @@ DDS Broker connector
 """
 import warnings
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional
 
 import numpy as np
@@ -51,10 +52,30 @@ class BrokerExt(Connector):
     def is_connected(self) -> bool:
         return not self.disconnected
 
+    def get_uncached_datasets(self) -> Optional[List[str]]:
+        dataset_names = list(self.broker.list_datasets().keys())
+        dataset_wout_cache: List[str] = []
+        for dn in dataset_names:
+            # check if all the products in the dataset have a cache
+            for product in self.broker.open_catalog(self.broker.catalog[dn].path):
+                product_key = self.broker.generate_product_key(
+                    dataset_name=dn, product_type=product
+                )
+                if (
+                    product_key not in self.broker.cache_files
+                    or not Path(self.broker.cache_files[product_key]).exists()
+                ):
+                    dataset_wout_cache.append(dn)
+                    break
+        return dataset_wout_cache
+
     def get_datasets(self, filter_dataset_ids: List[str] = []) -> Dict[str, Any]:
         dataset_names = list(self.broker.list_datasets().keys())
         if filter_dataset_ids:
             dataset_names = [x for x in dataset_names if x in filter_dataset_ids]
+        # discard the datasets without a cache
+        dataset_wout_cache = self.get_uncached_datasets()
+        dataset_names = [x for x in dataset_names if x not in dataset_wout_cache]
         res: Dict[str, Any] = {}
         for dn in dataset_names:
             try:
