@@ -2,8 +2,13 @@ from pathlib import Path
 from typing import Optional
 
 from faker import Faker
+from highlander.connectors import broker
 from highlander.endpoints.utils import MapCropConfig
+from restapi.server import create_app
+from restapi.services.cache import Cache
 from restapi.tests import API_URI, BaseTests, FlaskClient
+from restapi.utilities.logs import log
+from restapi.utilities.meta import Meta
 
 __author__ = "Beatrice Chiavarini (b.chiavarini@cineca.it)"
 
@@ -30,6 +35,18 @@ class TestApp(BaseTests):
         # do login
         headers, _ = self.do_login(client, None, None)
         self.save("auth_header", headers)
+
+        # check if the datasets have a cache
+        datasets_for_tests = [DATASET_ID, DATASET_ID2]
+        dds = broker.get_instance()
+        not_cached_datasets = dds.get_uncached_datasets()
+        if DATASET_ID in not_cached_datasets or DATASET_ID2 in not_cached_datasets:
+            for d in datasets_for_tests:
+                dds.broker.get_details(d)
+            # invalidate the endpoint cache
+            create_app(name="Cache clearing")
+            Datasets = Meta.get_class("endpoints.datasets", "Datasets")
+            Cache.invalidate(Datasets.get)
 
         # request a bounding box without the coordinates
         query_params = (
