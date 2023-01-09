@@ -94,12 +94,9 @@ export class DataService {
    * Get administrative areas.
    * @param area
    */
-  getAdministrativeAreas(area = "regions"): Observable<any> {
-    return this.http.get(`/app/custom/assets/geojson/italy-${area}.json`);
-  }
 
-  getPiemonteArea(): Observable<any> {
-    return this.http.get(`/app/custom/assets/geojson/Piemonte-region.json`);
+  getGeojsonLayer(filename: string): Observable<any> {
+    return this.api.get(`/api/geojson/${filename}`);
   }
 
   getFeatureInfo(bbox, width, height, x, y, queryLayers): Observable<any> {

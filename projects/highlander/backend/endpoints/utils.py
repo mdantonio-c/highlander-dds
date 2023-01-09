@@ -18,8 +18,6 @@ from matplotlib import cm
 from restapi.exceptions import ServerError
 from restapi.utilities.logs import log
 
-GEOJSON_PATH = "/catalog/assets"
-
 # set the cartopy data_dir
 cartopy.config["data_dir"] = os.getenv(
     "CARTOPY_DATA_DIR", cartopy.config.get("data_dir")
@@ -27,6 +25,8 @@ cartopy.config["data_dir"] = os.getenv(
 
 
 class MapCropConfig:
+    GEOJSON_PATH = "/catalog/assets"
+
     PRODUCT_EXCEPTION = {
         "human-wellbeing": {"multi-year": "daily"},
         "soil-erosion": {
@@ -472,7 +472,7 @@ class PlotUtils:
     @staticmethod
     def getArea(area_id: str, administrative: str):
         # get the geojson file
-        geojson_file = Path(GEOJSON_PATH, f"italy-{administrative}.json")
+        geojson_file = Path(MapCropConfig.GEOJSON_PATH, f"italy-{administrative}.json")
         areas = gpd.read_file(geojson_file)
         area_name = area_id.lower()
 

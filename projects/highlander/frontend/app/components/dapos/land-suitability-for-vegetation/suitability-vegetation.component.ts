@@ -66,7 +66,7 @@ export class SuitabilityVegetationComponent implements OnInit {
         '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Open Street Map</a>',
       maxZoom: MAX_ZOOM,
       minZoom: MIN_ZOOM,
-    },
+    }
   );
 
   layers: L.Layer[] = [this.LAYER_OSM];
@@ -113,7 +113,7 @@ export class SuitabilityVegetationComponent implements OnInit {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private ssr: SSRService,
-    private cdr: ChangeDetectorRef,
+    private cdr: ChangeDetectorRef
   ) {
     this.mapsUrl = dataService.getMapsUrl();
     //console.log(`Map url: ${this.mapsUrl}`)
@@ -132,7 +132,7 @@ export class SuitabilityVegetationComponent implements OnInit {
     }, 200);
     this.initLegends(map);
     // add Piemonte layer
-    this.dataService.getPiemonteArea().subscribe((json) => {
+    this.dataService.getGeojsonLayer("Piemonte-region").subscribe((json) => {
       const jsonLayer = L.geoJSON(json, {
         style: JSON_STYLE,
         onEachFeature: (feature, layer) =>
@@ -293,7 +293,7 @@ export class SuitabilityVegetationComponent implements OnInit {
         },
         (error) => {
           this.notify.showError(error);
-        },
+        }
       );
   }
 
