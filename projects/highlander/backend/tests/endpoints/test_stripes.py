@@ -46,7 +46,7 @@ class TestApp(BaseTests):
         assert r.status_code == 400
 
         # request without mandatory variable "area_id" when administrative is "region" or "province".
-        query_params = "time_period=ANN&administrative=regions"
+        query_params = "?time_period=ANN&administrative=regions"
         endpoint = f"{API_URI}/datasets/{DATASET_ID}/stripes{query_params}"
         r = client.get(endpoint, headers=self.get("auth_header"))
         assert r.status_code == 400
