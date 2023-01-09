@@ -5,11 +5,14 @@
         <div class="row gx-4 align-items-center justify-content-between box">
           <div class="col-auto">
             <h2>{{ dataset.label }}</h2>
-            <ol *ngIf="dataset.use_case" class="breadcrumb mb-0 px-1 py-2 rounded">
+            <ol
+              *ngIf="dataset.use_case"
+              class="breadcrumb mb-0 px-1 py-2 rounded"
+            >
               <li class="breadcrumb-item">
-                <a routerLink="/app/applications" routerLinkActive="active"
-                  >{{ dataset.use_case}}</a
-                >
+                <a routerLink="/app/applications" routerLinkActive="active">{{
+                  dataset.use_case
+                }}</a>
               </li>
             </ol>
           </div>
@@ -21,6 +24,8 @@
     <app-soil-erosion *ngSwitchCase="'soil-erosion'" [dataset]="dataset">
     </app-soil-erosion>
     <app-crop-water *ngSwitchCase="'crop-water'" [dataset]="dataset">
+    </app-crop-water>
+    <app-crop-water *ngSwitchCase="'irri-proj'" [dataset]="dataset">
     </app-crop-water>
     <app-human-wellbeing *ngSwitchCase="'human-wellbeing'" [dataset]="dataset">
     </app-human-wellbeing>

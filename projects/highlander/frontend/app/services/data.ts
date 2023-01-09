@@ -2,9 +2,19 @@ export interface LegendConfig {
   id: string;
   title: string;
   legend_type: string;
-  colors: string[];
-  labels: string[];
+  // composite mutex with items
+  colors?: string[];
+  labels?: string[];
   ids?: number[];
+  // prefer items to composite colors/labels/ids
+  items?: LegendItem[];
+  applyTo?: string[];
+}
+
+export interface LegendItem {
+  id?: number;
+  label: string;
+  color: string;
 }
 
 export const LEGEND_DATA: LegendConfig[] = [

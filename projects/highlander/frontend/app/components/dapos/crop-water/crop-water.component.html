@@ -8,6 +8,7 @@
         class="collapse"
         id="filters"
         [ngbCollapse]="isFilterCollapsed"
+        [dataset]="dataset.id"
         (onFilterChange)="applyFilter($event)"
       ></crop-water-filter>
     </div>
@@ -37,7 +38,10 @@
           </div>
           -->
           <!-- Period -->
-          <div class="leaflet-top leaflet-right mb-4 mt-2 me-1">
+          <div
+            class="leaflet-top leaflet-right mb-4 mt-2 me-1"
+            *ngIf="dataset.id === 'crop-water'"
+          >
             <div class="leaflet-box leaflet-control" event-stop-propagation>
               <div class="mb-3" *ngIf="filter?.period">
                 <label for="selectPeriod" class="mb-0 fw-bold">Period:</label>
@@ -49,8 +53,8 @@
                   [compareWith]="isSamePeriod"
                 >
                   <option *ngFor="let run of availableRuns" [ngValue]="run">
-                    {{ run.year }}-{{ run.month | number: "2.0" }}-{{
-                      run.day | number: "2.0"
+                    {{ run.year }}-{{ run.month | number : "2.0" }}-{{
+                      run.day | number : "2.0"
                     }}
                   </option>
                 </select>
@@ -72,6 +76,15 @@
               >
             </div>
           </div>-->
+
+          <!-- Refresh -->
+          <div class="leaflet-bottom leaflet-left">
+            <div class="leaflet-control" event-stop-propagation>
+              <button class="btn btn-light" (click)="loadGeoData(true)">
+                <i class="fa-solid fa-arrows-rotate"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

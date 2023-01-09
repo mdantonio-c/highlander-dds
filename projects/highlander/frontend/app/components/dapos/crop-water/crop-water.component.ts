@@ -84,9 +84,9 @@ export class CropWaterComponent {
 
     this.initLegends(map);
     // add a legend
-    if (this.legends[this.filter.layer]) {
+    /*if (this.legends[this.filter.layer]) {
       this.legends[this.filter.layer].addTo(map);
-    }
+    }*/
   }
 
   onMapZoomEnd($event) {
@@ -99,14 +99,16 @@ export class CropWaterComponent {
   }
 
   private initLegends(map: L.Map) {
-    LAYERS.forEach((l) => {
+    LAYERS[this.dataset.id].forEach((l) => {
       this.legends[l.code] = this.createLegendControl(l.code);
       console.log(`add legend <${l.code}>`);
     });
   }
 
   private createLegendControl(id: string): L.Control {
-    let config: LegendConfig = LEGEND_DATA.find((x) => x.id === id);
+    let config: LegendConfig = LEGEND_DATA[this.dataset.id].find(
+      (x) => x.id === id,
+    );
     if (!config) {
       console.error(`Legend data NOT found for ID<${id}>`);
       this.notify.showError("Bad legend configuration");
@@ -123,48 +125,53 @@ export class CropWaterComponent {
       }
 
       div.innerHTML += `<h6>${config.title}</h6>`;
-      for (let i = 0; i < config.labels.length; i++) {
+      config.items.forEach((i) => {
         div.innerHTML +=
-          '<i style="background:' +
-          config.colors[i] +
+          '<div id="' +
+          `${id}_${i.id}` +
+          '"><i style="background:' +
+          i.color +
           '"></i><span>' +
-          config.labels[i] +
-          "</span><br>";
-      }
+          i.label +
+          "</span></div>";
+      });
       return div;
     };
     return legend;
   }
 
   async applyFilter(data: CropWaterFilter) {
-    this.spinner.show();
-
     const previousLayer = this.filter?.layer || null;
     const previousPeriod = this.filter?.period || null;
     const previousArea = this.filter?.area || null;
     this.filter = data;
 
-    // need to wait for the available runs to load
-    await this.dataService
-      .getRunPeriods("crop-water", "crop-water")
-      .toPromise()
-      .then((periods) => {
-        this.availableRuns = periods;
-      });
+    this.spinner.show();
+    if (this.dataset.id === "crop-water") {
+      // need to wait for the available runs to load
+      await this.dataService
+        .getRunPeriods("crop-water", "crop-water")
+        .toPromise()
+        .then((periods) => {
+          this.availableRuns = periods;
+        });
+
+      if (!this.selectedPeriod) {
+        // default to the last run
+        data.period = this.availableRuns[0];
+        this.selectedPeriod = data.period;
+      } else {
+        data.period = this.selectedPeriod;
+      }
+    }
 
     // force await 100ms in order to show spinner
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    if (!this.selectedPeriod) {
-      // default to the last run
-      data.period = this.availableRuns[0];
-      this.selectedPeriod = data.period;
-    } else {
-      data.period = this.selectedPeriod;
-    }
-
     console.log("apply filter", this.filter);
-    const selectedArea = ADMINISTRATIVE_AREAS.find((x) => x.code === data.area);
+    const selectedArea = ADMINISTRATIVE_AREAS[this.dataset.id].find(
+      (x) => x.code === data.area,
+    );
     this.zoom = selectedArea.zLevel ? selectedArea.zLevel : this.zoom;
     this.center = selectedArea.coords;
 
@@ -180,7 +187,9 @@ export class CropWaterComponent {
       // update ONLY on area and period
       const update =
         previousArea !== this.filter.area ||
-        previousPeriod !== this.filter.period;
+        previousPeriod !== this.filter.period ||
+        (previousLayer !== this.filter.layer &&
+          this.dataset.id === "irri-proj");
       // load layer on the map
       this.loadGeoData(update);
 
@@ -196,7 +205,7 @@ export class CropWaterComponent {
    * Load geo data on the map
    */
   loadGeoData(update: boolean = true) {
-    // console.log(`loading geo data [update: ${update}]`);
+    console.log(`loading geo data [update: ${update}]`);
     if (!this.map) {
       console.warn("Cannot load geo data. Map not available");
       return;
@@ -217,24 +226,12 @@ export class CropWaterComponent {
 
     console.log(`loading geo data... area <${this.filter.area}>`);
     // datastore in form of: {area}_monthlyForecast_{YYYY-MM-DD}
-    const datastore = `${
-      this.filter.area
-    }_monthlyForecast_${this.periodToString(this.filter.period)}`;
-
-    // get geojson
-    /*this.dataService.getGeoJson(datastore).subscribe(
-      (geojson) => {
-        console.log(geojson);
-        this.geojson = geojson;
-        this.renderOnMap();
-        //L.geoJSON(geojson).addTo(this.map);
-      },
-      (error) => {
-        console.log("error", error);
-        this.notify.showError("Error to load data layer.");
-        this.spinner.hide();
-      }
-    );*/
+    const datastore =
+      this.dataset.id === "crop-water"
+        ? `${this.filter.area}_monthlyForecast_${this.periodToString(
+            this.filter.period,
+          )}`
+        : `${this.filter.area}_${this.filter.layer}`;
 
     // get zipped shapefile
     this.dataService.getZippedShapefile(datastore).subscribe(
@@ -259,7 +256,7 @@ export class CropWaterComponent {
 
   printLayerDescription(): string {
     const code = this.filter.layer;
-    const found = LAYERS.find((x) => x.code === code);
+    const found = LAYERS[this.dataset.id].find((x) => x.code === code);
     return found.label || code;
   }
 
@@ -302,47 +299,67 @@ export class CropWaterComponent {
   private getColorIndex(num: number, legend: LegendConfig): string {
     let layer = this.filter.layer;
     if (layer !== "crop") {
-      for (const [idx, val] of legend.labels.entries()) {
+      for (const i of legend.items) {
+        const min_max: number[] = i.label
+          .split("-", 2)
+          .map((num) => parseInt(num, 10));
+        if (num >= min_max[0] && num <= min_max[1]) {
+          return i.color;
+        }
+      }
+      /*for (const [idx, val] of legend.labels.entries()) {
         const min_max: number[] = val
           .split("-", 2)
           .map((num) => parseInt(num, 10));
         if (num >= min_max[0] && num <= min_max[1]) {
           return legend.colors[idx];
         }
-      }
-      throw `No color index found: number ${num} - layer<${layer}>`;
+      }*/
     } else {
-      const idx = legend.ids.indexOf(num);
-      if (idx !== -1) {
-        return legend.colors[idx];
+      const found = legend.items.find((x) => x.id === num);
+      if (found) {
+        return found.color;
       }
     }
     // shouldn't be reached
-    throw `No color index found: layer<${layer}>`;
+    throw `No color index found: number ${num} - layer<${layer}>`;
   }
 
   private static getIndicatorValue(
-    props: CropInfo,
+    model: CropInfo,
     filter: CropWaterFilter,
   ): number {
-    let indicator = filter.layer;
+    let prop = filter.layer;
+    if (prop.indexOf("_") > -1) {
+      // indicator: before_
+      prop = prop.substring(0, prop.indexOf("_"));
+    }
     // fix indicator id to match value from shapefile
-    if (indicator === "prp") {
-      indicator = "prec";
+    if (prop === "prp") {
+      prop = "prec";
+    }
+    if (prop === "crop") {
+      prop = "ID_CROP";
     }
     const percentile: string = filter.percentile
       ? String(filter.percentile).padStart(2, "0")
       : "";
-    return indicator !== "crop"
-      ? props[`${indicator}_${percentile}`]
-      : props[`${indicator}`];
+    const key = prop === "ID_CROP" ? `${prop}` : `${prop}_${percentile}`;
+    /*console.log(`key: ${key}`);
+    console.log(`val: ${model[key]}`);*/
+    return parseInt(model[key], 10);
   }
 
   private renderOnMap() {
-    const legend: LegendConfig = LEGEND_DATA.find(
-      (x) => x.id === this.filter.layer,
+    console.log("render on the map");
+    const legend: LegendConfig = LEGEND_DATA[this.dataset.id].find(
+      (x) =>
+        x.id === this.filter.layer &&
+        (!("applyTo" in x) || x.applyTo.includes(this.filter.area)),
     );
     const comp: CropWaterComponent = this;
+    console.log(this.geojson);
+    let crops = new Set();
     const jsonLayer = L.geoJSON(this.geojson, {
       style: (feature) => {
         let style = NORMAL_STYLE;
@@ -351,6 +368,7 @@ export class CropWaterComponent {
         if (isNaN(num)) {
           return NULL_STYLE;
         }
+        crops.add(num);
         style.fillColor = comp.getColorIndex(num, legend);
         return style;
       },
@@ -367,6 +385,7 @@ export class CropWaterComponent {
         }
       },
     });
+    console.log("all crop ids: ", ...crops);
     this.geoData.addLayer(jsonLayer);
     this.geoData.addTo(this.map);
     this.spinner.hide();
@@ -392,6 +411,7 @@ export class CropWaterComponent {
     });
     modalRef.componentInstance.crop = feature.properties as CropInfo;
     modalRef.componentInstance.filter = this.filter;
+    modalRef.componentInstance.dataset = this.dataset.id;
     // need to trigger resize event
     window.dispatchEvent(new Event("resize"));
   }

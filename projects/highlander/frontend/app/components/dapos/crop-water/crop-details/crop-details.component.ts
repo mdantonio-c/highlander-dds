@@ -13,6 +13,7 @@ import { LegendConfig } from "../../../../services/data";
   styleUrls: ["./crop-details.component.scss"],
 })
 export class CropDetailsComponent implements OnInit {
+  @Input() dataset: string;
   @Input() crop: CropInfo;
   @Input() filter: CropWaterFilter;
 
@@ -35,7 +36,7 @@ export class CropDetailsComponent implements OnInit {
     private obsService: DataService,
     public activeModal: NgbActiveModal,
     private notify: NotificationService,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
   ) {}
 
   ngOnInit() {
@@ -48,10 +49,15 @@ export class CropDetailsComponent implements OnInit {
   };
 
   getCropType(): string {
-    let legend: LegendConfig = LEGEND_DATA.find((x) => x.id === "crop");
-    const idx = legend.ids.indexOf(this.crop.ID_CROP);
-    if (idx !== -1) {
-      return legend.labels[idx];
+    // console.log(this.crop);
+    let legend: LegendConfig = LEGEND_DATA[this.dataset].find(
+      (x) => x.id === "crop",
+    );
+    let item = legend.items.find(
+      (i) => i.id === parseInt(this.crop.ID_CROP, 10),
+    );
+    if (item) {
+      return item.label;
     }
     return "n/a";
   }
@@ -63,7 +69,7 @@ export class CropDetailsComponent implements OnInit {
     let multi = [];
 
     let irri: any[] = Object.entries(this.crop).filter(([key]) =>
-      key.startsWith("irri_")
+      key.startsWith("irri_"),
     );
     irri.forEach((val) => {
       let a = {
@@ -75,7 +81,7 @@ export class CropDetailsComponent implements OnInit {
     });
 
     let prec = Object.entries(this.crop).filter(([key]) =>
-      key.startsWith("prec_")
+      key.startsWith("prec_"),
     );
     prec.forEach((val) => {
       let name = val[0].split("_", 2)[1];
