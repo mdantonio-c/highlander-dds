@@ -47,6 +47,7 @@ import { ReplacePipe } from "./pipes/replace.pipe";
 import { AbsPipe } from "./pipes/abs.pipe";
 import { ClickStopPropagation } from "./directives/click-stop-propagation";
 import { EventStopPropagation } from "./directives/event-stop-propagation";
+import { HolderjsDirective } from "./directives/holderjs";
 import { FirstWordPipe } from "./pipes/first-word.pipe";
 import { CropDetailsComponent } from "./components/dapos/crop-water/crop-details/crop-details.component";
 import { UppercaseFilterPipe } from "./pipes/uppercase-filter.pipe";
@@ -122,6 +123,7 @@ const routes: Routes = [
     UppercaseFilterPipe,
     ClickStopPropagation,
     EventStopPropagation,
+    HolderjsDirective,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [],

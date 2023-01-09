@@ -1,5 +1,11 @@
 <div class="dataset-card card h-100 mb-3 rounded-0" style="width: 20rem">
   <img
+    holderjs
+    [attr.data-src]="'holder.js/100px200?text=NO IMAGE&?auto=yes'"
+    *ngIf="!dataset.image"
+    alt="no image"
+  />
+  <img
     src="{{
       backendURI + '/api/datasets/' + dataset.id + '/content?type=image'
     }}"
@@ -8,20 +14,28 @@
     *ngIf="dataset.image"
   />
   <div class="card-img-overlay d-flex justify-content-end align-items-end">
-    <div class="breadcrumb breadcrumb-item px-1 py-1 mb-0 rounded-start" placement="start" ngbTooltip="Show the infographic">
+    <div
+      class="breadcrumb breadcrumb-item px-1 py-1 mb-0 rounded-start"
+      placement="start"
+      ngbTooltip="Show the infographic"
+    >
       <a
-      class="text-justify infographics"
-      href="{{
-        backendURI + '/api/datasets/' + dataset.id + '/content?type=infographic'
-      }}"
-      target="_blank"
-      ><i class="fa-solid fa-info"></i></a>
-  </div>
+        class="text-justify infographics"
+        href="{{
+          backendURI +
+            '/api/datasets/' +
+            dataset.id +
+            '/content?type=infographic'
+        }}"
+        target="_blank"
+        ><i class="fa-solid fa-info"></i
+      ></a>
+    </div>
   </div>
   <div class="card-body">
     <ol class="breadcrumb rounded">
-      <li *ngIf="dataset.use_case"  class="breadcrumb-item px-1 py-1 rounded">
-        <span>{{ dataset.use_case}}</span>
+      <li *ngIf="dataset.use_case" class="breadcrumb-item px-1 py-1 rounded">
+        <span>{{ dataset.use_case }}</span>
       </li>
     </ol>
     <h3 class="mt-2 card-title">

@@ -11,7 +11,10 @@
                 "output": "app/custom/assets/images"
               }
             ],
-            "scripts": ["node_modules/iso8601-js-period/iso8601.js"]
+            "scripts": [
+              "node_modules/iso8601-js-period/iso8601.js",
+              "node_modules/holderjs/holder.js"
+            ]
           }
         }
       }
