@@ -1,17 +1,23 @@
-from restapi import decorators
 from typing import List, Optional
-from restapi.connectors import celery
+
 from highlander.connectors import broker
+from restapi import decorators
+from restapi.connectors import celery
+from restapi.exceptions import NotFound, ServiceUnavailable
 from restapi.models import fields
 from restapi.rest.definition import EndpointResource, Response
 from restapi.services.authentication import Role, User
-from restapi.exceptions import ServiceUnavailable,NotFound
 from restapi.utilities.logs import log
+
 
 class CacheCreation(EndpointResource):
     @decorators.auth.require_any(Role.ADMIN, Role.STAFF)
     @decorators.use_kwargs(
-        {"datasets": fields.List(fields.String, required=False), "clean": fields.Bool(required=False)})
+        {
+            "datasets": fields.List(fields.String, required=False),
+            "clean": fields.Bool(required=False),
+        }
+    )
     @decorators.endpoint(
         path="/admin/cache",
         summary="Create or clean the dds cache",
@@ -19,10 +25,12 @@ class CacheCreation(EndpointResource):
             200: "nothing to be done: all the datasets has a cache",
             202: "The task of cache creation/cleaning is succesfully send",
             404: "dataset not found",
-            503: "unable to submit the request"
+            503: "unable to submit the request",
         },
     )
-    def post(self, user: User, datasets: Optional[List[str]] = [], clean: bool = False) -> Response:
+    def post(
+        self, user: User, datasets: Optional[List[str]] = [], clean: bool = False
+    ) -> Response:
         dds = broker.get_instance()
         # check if the datasets exists
         existing_datasets = list(dds.broker.list_datasets())
@@ -45,17 +53,22 @@ class CacheCreation(EndpointResource):
                 datasets_wout_cache = dds.get_uncached_datasets()
                 # if not clean option and all the dataset has a cache warn that nothing has to be done
                 if not datasets_wout_cache:
-                    return self.response("Nothing to be done: all the datasets has a cache")
+                    return self.response(
+                        "Nothing to be done: all the datasets has a cache"
+                    )
                 # create
-                task = c.celery_app.send_task("create_cache",args=(
-                    [datasets_wout_cache]
-                    ),
-                    countdown=1,)
+                task = c.celery_app.send_task(
+                    "create_cache",
+                    args=([datasets_wout_cache]),
+                    countdown=1,
+                )
             else:
                 # clean the cache
-                task = c.celery_app.send_task("clean_cache", args=(
-                    [product_keys]
-                ),countdown=1, )
+                task = c.celery_app.send_task(
+                    "clean_cache",
+                    args=([product_keys]),
+                    countdown=1,
+                )
         except Exception:
             raise ServiceUnavailable(
                 "Unable to submit the request",
