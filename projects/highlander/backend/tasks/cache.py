@@ -55,3 +55,42 @@ def clean_cache(self: Task[[List[str]], None], apply_to: List[str] = []) -> None
         dds.broker.get_details(ds)
 
     log.info("Cache updated successfully")
+
+
+@CeleryExt.task(idempotent=True)
+def create_cache(self: Task[[List[str]], None], datasets: List[str]) -> None:
+    """
+    Procedure for automatic cache creation.
+
+    @param self: reference to this task
+    @param apply_to: Mandatory list of dataset names for which to create the cache
+    """
+    log.info("create cache for datasets: {}", datasets)
+    dds = broker.get_instance()
+    existing_datasets = list(dds.broker.list_datasets())
+    for ds in datasets:
+        # check if the dataset exists
+        if ds not in existing_datasets:
+            log.warning(f"Dataset <{ds}> NOT FOUND")
+            continue
+        # check if it has already a cache
+        already_cached = True
+        for product in dds.broker.open_catalog(dds.broker.catalog[ds].path):
+            product_key = dds.broker.generate_product_key(
+                dataset_name=ds, product_type=product
+            )
+            if (
+                product_key not in dds.broker.cache_files
+                or not Path(dds.broker.cache_files[product_key]).exists()
+            ):
+                already_cached = False
+        if already_cached:
+            log.warning(
+                f"Skipping {ds}: already has a cache. To recreate the cache use the option 'clean'"
+            )
+            continue
+
+        # This does the trick! It could take a while for large datasets
+        dds.broker.get_details(ds)
+
+        log.info(f"DDS cache for {ds} created successfully")
