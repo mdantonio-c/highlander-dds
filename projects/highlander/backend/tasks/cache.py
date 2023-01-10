@@ -1,6 +1,7 @@
 from pathlib import Path
-from typing import List, Set
+from typing import List, Optional, Set
 
+from celery import states
 from highlander.connectors import broker
 from highlander.constants import CACHE_DIR
 from restapi.connectors.celery import CeleryExt, Task
@@ -68,6 +69,8 @@ def create_cache(self: Task[[List[str]], None], datasets: List[str]) -> None:
     log.info("create cache for datasets: {}", datasets)
     dds = broker.get_instance()
     existing_datasets = list(dds.broker.list_datasets())
+    cache_failures = 0
+    dataset_failed: Optional[List[str]] = []
     for ds in datasets:
         # check if the dataset exists
         if ds not in existing_datasets:
@@ -90,7 +93,19 @@ def create_cache(self: Task[[List[str]], None], datasets: List[str]) -> None:
             )
             continue
 
-        # This does the trick! It could take a while for large datasets
-        dds.broker.get_details(ds)
-
+        try:
+            log.info(f"Start creating cache for {ds}")
+            # This does the trick! It could take a while for large datasets
+            dds.broker.get_details(ds)
+        except Exception as exc:
+            cache_failures += 1
+            dataset_failed.append(ds)
+            log.error(f"Failure in creating cache for {ds}: {exc}")
+            continue
         log.info(f"DDS cache for {ds} created successfully")
+    log.info(f"cache created with {cache_failures} errors")
+    if cache_failures > 0:
+        self.update_state(
+            state=states.FAILURE,
+            meta=f"fail to create cache for the following datasets: {dataset_failed}",
+        )

@@ -11,7 +11,7 @@ from restapi.utilities.logs import log
 
 
 class CacheCreation(EndpointResource):
-    @decorators.auth.require_any(Role.ADMIN, Role.STAFF)
+    @decorators.auth.require_any(Role.ADMIN)
     @decorators.use_kwargs(
         {
             "datasets": fields.List(fields.String, required=False),
@@ -54,7 +54,7 @@ class CacheCreation(EndpointResource):
                 # if not clean option and all the dataset has a cache warn that nothing has to be done
                 if not datasets_wout_cache:
                     return self.response(
-                        "Nothing to be done: all the datasets has a cache"
+                        "Nothing to be done: all the datasets have a cache"
                     )
                 # create
                 task = c.celery_app.send_task(
