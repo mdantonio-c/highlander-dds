@@ -106,6 +106,7 @@ def create_cache(self: Task[[List[str]], None], datasets: List[str]) -> None:
     log.info(f"cache created with {cache_failures} errors")
     if cache_failures > 0:
         self.update_state(
+            task_id=self.request.id,
             state=states.FAILURE,
             meta=f"fail to create cache for the following datasets: {dataset_failed}",
         )
