@@ -16,3 +16,7 @@ class EmptyOutputFile(Exception):
 class NotYetImplemented(RestApiException):
     def __init__(self, exception: ExceptionType, is_warning: bool = False):
         super().__init__(exception, status_code=501, is_warning=is_warning)
+
+
+class CacheException(Exception):
+    """Exception in trying to create a dds cache"""
