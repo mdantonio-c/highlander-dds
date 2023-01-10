@@ -67,7 +67,7 @@ def clean_cache(self: Task[[List[str]], None], apply_to: List[str] = []) -> None
         log.info(f"DDS cache for {ds} created successfully")
     log.info(f"cache updated with {cache_failures} errors")
     if cache_failures > 0:
-        self.update_state(task_id=self.request.id, state=states.FAILURE)
+        # self.update_state(task_id=self.request.id, state=states.FAILURE)
         raise CacheException(dataset_failed)
 
 
@@ -118,5 +118,5 @@ def create_cache(self: Task[[List[str]], None], datasets: List[str]) -> None:
         log.info(f"DDS cache for {ds} created successfully")
     log.info(f"cache created with {cache_failures} errors")
     if cache_failures > 0:
-        self.update_state(task_id=self.request.id, state=states.FAILURE)
+        # self.update_state(task_id=self.request.id, state=states.FAILURE)
         raise CacheException(dataset_failed)
