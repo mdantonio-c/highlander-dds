@@ -9,9 +9,22 @@
   color: #1a7dc1;
 }
 
+.category-box:last-of-type {
+  justify-content: flex-start !important;
+  border-bottom: none !important;
+  gap: 9.5%;
+
+}
+
+
 @media (max-width: 1121px) {
   .flex-child {
     width: 45%;
+  }
+
+  .category-box:last-of-type {
+    justify-content: space-between !important;
+    gap: initial;
   }
 }
 @media (max-width: 871px)  {
