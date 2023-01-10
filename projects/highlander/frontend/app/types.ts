@@ -41,6 +41,7 @@ export interface DatasetInfo {
   category?: string;
   url?: string;
   use_case?: string;
+  exclude?: boolean;
 }
 
 export interface DatasetVariables {

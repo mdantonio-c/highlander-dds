@@ -5,12 +5,15 @@
     zIndex="1000"
     size="medium"
   ></ngx-spinner>
-  <div class="row"  *ngIf="dataset">
+  <div class="row" *ngIf="dataset">
     <div class="col-auto box">
       <h2>{{ dataset.label }}</h2>
-      <ol class="breadcrumb ">
-        <li *ngIf="dataset.use_case"  class="breadcrumb-item w-100 px-1 py-1 rounded">
-          <span>{{ dataset.use_case}}</span>
+      <ol class="breadcrumb">
+        <li
+          *ngIf="dataset.use_case"
+          class="breadcrumb-item w-100 px-1 py-1 rounded"
+        >
+          <span>{{ dataset.use_case }}</span>
         </li>
       </ol>
     </div>
@@ -36,7 +39,7 @@
               <button
                 type="button"
                 class="btn btn-primary"
-                *ngIf="user"
+                *ngIf="user && !dataset.exclude"
                 (click)="openDataExtractionModal()"
               >
                 Get Data »
