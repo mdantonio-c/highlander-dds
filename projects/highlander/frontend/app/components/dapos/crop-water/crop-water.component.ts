@@ -8,7 +8,13 @@ import * as L from "leaflet";
 import * as shp from "shpjs";
 import * as _ from "lodash";
 import { DataService } from "../../../services/data.service";
-import { ADMINISTRATIVE_AREAS, CropInfo, LAYERS, LEGEND_DATA } from "./data";
+import {
+  ADMINISTRATIVE_AREAS,
+  CropInfo,
+  decodeCrops,
+  LAYERS,
+  LEGEND_DATA,
+} from "./data";
 import { LegendConfig } from "../../../services/data";
 import { CropDetailsComponent } from "./crop-details/crop-details.component";
 
@@ -307,14 +313,6 @@ export class CropWaterComponent {
           return i.color;
         }
       }
-      /*for (const [idx, val] of legend.labels.entries()) {
-        const min_max: number[] = val
-          .split("-", 2)
-          .map((num) => parseInt(num, 10));
-        if (num >= min_max[0] && num <= min_max[1]) {
-          return legend.colors[idx];
-        }
-      }*/
     } else {
       const found = legend.items.find((x) => x.id === num);
       if (found) {
@@ -345,9 +343,13 @@ export class CropWaterComponent {
       ? String(filter.percentile).padStart(2, "0")
       : "";
     const key = prop === "ID_CROP" ? `${prop}` : `${prop}_${percentile}`;
-    /*console.log(`key: ${key}`);
-    console.log(`val: ${model[key]}`);*/
-    return parseInt(model[key], 10);
+    // console.log(`key: ${key}`);
+    // console.log(`val: ${model[key]}`);
+    let res = parseInt(model[key], 10);
+    if (isNaN(res) && prop === "ID_CROP") {
+      res = decodeCrops(model[key]);
+    }
+    return res;
   }
 
   private renderOnMap() {
@@ -358,7 +360,7 @@ export class CropWaterComponent {
         (!("applyTo" in x) || x.applyTo.includes(this.filter.area)),
     );
     const comp: CropWaterComponent = this;
-    console.log(this.geojson);
+    // console.log(this.geojson);
     let crops = new Set();
     const jsonLayer = L.geoJSON(this.geojson, {
       style: (feature) => {

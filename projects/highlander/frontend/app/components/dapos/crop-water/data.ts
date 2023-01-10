@@ -41,12 +41,12 @@ export const ADMINISTRATIVE_AREAS: { [key: string]: Area[] } = {
       coords: L.latLng([44.347911, 11.897944]),
       zLevel: 11,
     },
-    /*{
-      code: "TRE",
-      label: "Piana Rotaliana (Trento)",
-      coords: L.latLng([46.228798, 11.132473]),
-      zLevel: 11,
-    },*/
+    {
+      code: "Trento",
+      label: "Trento",
+      coords: L.latLng([46.18538, 11.11938]),
+      zLevel: 14,
+    },
   ],
 };
 
@@ -195,6 +195,29 @@ const CROP_PALETTE_B: LegendItem[] = [
   },
 ];
 
+const CROP_PALETTE_C: LegendItem[] = [
+  {
+    id: 3,
+    label: "Meadow alfalfa and all season crop",
+    color: "rgba(0,255,0,100)",
+  },
+  {
+    id: 23,
+    label: "Apple",
+    color: "rgba(205,133,0,100)",
+  },
+  {
+    id: 18,
+    label: "Corn",
+    color: "rgba(254,255,0,100)",
+  },
+  {
+    id: 12,
+    label: "Vineyard",
+    color: "rgb(138,46,91)",
+  },
+];
+
 const IRRI_PALETTE: LegendItem[] = [
   { label: "0-5", color: "#ffffff" },
   { label: "5-15", color: "#1dac48" },
@@ -270,6 +293,13 @@ export const LEGEND_DATA: { [key: string]: LegendConfig[] } = {
       applyTo: ["Puglia"],
     },
     {
+      id: "crop",
+      legend_type: "legend_box",
+      title: "Crop",
+      items: CROP_PALETTE_C,
+      applyTo: ["Trento"],
+    },
+    {
       id: "irri_1991_2020",
       legend_type: "legend_box",
       title: "Annual irrigation 1991-2020</br><small>[mm]</small>",
@@ -310,4 +340,15 @@ export interface CropInfo {
   prec_50: number;
   prec_75: number;
   prec_95: number;
+}
+
+const crops = new Map([
+  ["ALFALFA", 3],
+  ["APPLE", 23],
+  ["CORN", 18],
+  ["GRAPEVINE", 12],
+]);
+
+export function decodeCrops(id: string): number {
+  return crops.get(id) || Number.NaN;
 }
