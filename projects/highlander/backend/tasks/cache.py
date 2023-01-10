@@ -1,9 +1,10 @@
 from pathlib import Path
-from typing import List, Optional, Set
+from typing import Dict, List, Optional, Set
 
 from celery import states
 from highlander.connectors import broker
 from highlander.constants import CACHE_DIR
+from highlander.exceptions import CacheException
 from restapi.connectors.celery import CeleryExt, Task
 from restapi.utilities.logs import log
 
@@ -47,15 +48,27 @@ def clean_cache(self: Task[[List[str]], None], apply_to: List[str] = []) -> None
     dds = broker.get_instance()
     log.debug("Update cache for dataset(s): {}", to_be_updated)
     existing_datasets = list(dds.broker.list_datasets())
+    cache_failures = 0
+    dataset_failed: Optional[Dict[str, str]] = {}
     for ds in to_be_updated:
         # check for a valid dataset
         if ds not in existing_datasets:
             log.warning(f"Dataset <{ds}> NOT FOUND")
             continue
         # This does the trick! It could take a while for large datasets
-        dds.broker.get_details(ds)
-
-    log.info("Cache updated successfully")
+        log.info(f"Updating cache for {ds}")
+        try:
+            dds.broker.get_details(ds)
+        except Exception as exc:
+            cache_failures += 1
+            dataset_failed[ds] = exc
+            log.error(f"Failure in creating cache for {ds}: {exc}")
+            continue
+        log.info(f"DDS cache for {ds} created successfully")
+    log.info(f"cache updated with {cache_failures} errors")
+    if cache_failures > 0:
+        self.update_state(task_id=self.request.id, state=states.FAILURE)
+        raise CacheException(dataset_failed)
 
 
 @CeleryExt.task(idempotent=True)
@@ -70,7 +83,7 @@ def create_cache(self: Task[[List[str]], None], datasets: List[str]) -> None:
     dds = broker.get_instance()
     existing_datasets = list(dds.broker.list_datasets())
     cache_failures = 0
-    dataset_failed: Optional[List[str]] = []
+    dataset_failed: Optional[Dict[str, str]] = {}
     for ds in datasets:
         # check if the dataset exists
         if ds not in existing_datasets:
@@ -99,14 +112,11 @@ def create_cache(self: Task[[List[str]], None], datasets: List[str]) -> None:
             dds.broker.get_details(ds)
         except Exception as exc:
             cache_failures += 1
-            dataset_failed.append(ds)
+            dataset_failed[ds] = exc
             log.error(f"Failure in creating cache for {ds}: {exc}")
             continue
         log.info(f"DDS cache for {ds} created successfully")
     log.info(f"cache created with {cache_failures} errors")
     if cache_failures > 0:
-        self.update_state(
-            task_id=self.request.id,
-            state=states.FAILURE,
-            meta=f"fail to create cache for the following datasets: {dataset_failed}",
-        )
+        self.update_state(task_id=self.request.id, state=states.FAILURE)
+        raise CacheException(dataset_failed)
