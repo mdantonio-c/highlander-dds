@@ -16,6 +16,7 @@ class CacheCreation(EndpointResource):
         {
             "datasets": fields.List(fields.String, required=False),
             "clean": fields.Bool(required=False),
+            "exclude": fields.List(fields.String, required=False),
         }
     )
     @decorators.endpoint(
@@ -29,7 +30,11 @@ class CacheCreation(EndpointResource):
         },
     )
     def post(
-        self, user: User, datasets: Optional[List[str]] = [], clean: bool = False
+        self,
+        user: User,
+        datasets: Optional[List[str]] = [],
+        exclude: Optional[List[str]] = [],
+        clean: bool = False,
     ) -> Response:
         dds = broker.get_instance()
         # check if the datasets exists
@@ -51,11 +56,27 @@ class CacheCreation(EndpointResource):
             if not clean:
                 # get the datasets without a cache
                 datasets_wout_cache = dds.get_uncached_datasets()
+                # check if there are requested datasets
+                if datasets:
+                    datasets_wout_cache = [
+                        x for x in datasets_wout_cache if x in datasets
+                    ]
+                    if not datasets_wout_cache:
+                        return self.response(
+                            "Nothing to be done: the requested datasets have a cache"
+                        )
+                # check if there are datasets to exclude
+                if exclude:
+                    datasets_wout_cache = [
+                        x for x in datasets_wout_cache if x not in exclude
+                    ]
+
                 # if not clean option and all the dataset has a cache warn that nothing has to be done
                 if not datasets_wout_cache:
                     return self.response(
                         "Nothing to be done: all the datasets have a cache"
                     )
+
                 # create
                 task = c.celery_app.send_task(
                     "create_cache",
