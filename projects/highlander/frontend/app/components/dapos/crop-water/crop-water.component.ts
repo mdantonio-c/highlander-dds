@@ -190,10 +190,11 @@ export class CropWaterComponent {
         this.map.removeControl(this.legends[previousLayer]);
       }
 
-      // update ONLY on area and period
+      // FIXME update ONLY on area and period
       const update =
         previousArea !== this.filter.area ||
-        previousPeriod !== this.filter.period ||
+        (previousPeriod !== this.filter.period &&
+          this.dataset.id === "crop-water") ||
         (previousLayer !== this.filter.layer &&
           this.dataset.id === "irri-proj");
       // load layer on the map
