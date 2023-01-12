@@ -21,7 +21,7 @@
               *ngFor="let item of crop | uppercaseFilter | keyvalue"
             >
               <h6 class="my-0 fw-bold">
-                {{ item.key | titlecase | replace: "_":" " }}
+                {{ item.key | titlecase | replace : "_" : " " }}
               </h6>
               <small>{{ item.value }}</small>
             </li>
@@ -32,7 +32,7 @@
     <div class="col-lg-9">
       <div class="card text-center">
         <div class="card-body">
-          <div #containerRef>
+          <div #containerRef *ngIf="multi && multi.length > 0; else noResults">
             <ngx-charts-bar-vertical-2d
               [view]="[containerRef.offsetWidth, 400]"
               [scheme]="colorScheme"
@@ -49,6 +49,12 @@
             >
             </ngx-charts-bar-vertical-2d>
           </div>
+          <ng-template #noResults>
+            <div class="no-results-plain">
+              <h2>No Data Available</h2>
+              <p>Try to apply a different layer</p>
+            </div>
+          </ng-template>
         </div>
       </div>
     </div>
