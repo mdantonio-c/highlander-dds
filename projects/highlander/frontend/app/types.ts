@@ -30,7 +30,10 @@ export interface DatasetInfo {
   contact: ContactInfo;
   label: string;
   doi: string;
-  image: string;
+  /** @nullable */
+  image?: string;
+  /** @nullable */
+  infographic?: string;
   license: LicenseInfo;
   publication_date: string;
   /** @nullable */
