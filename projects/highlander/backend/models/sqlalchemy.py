@@ -38,7 +38,7 @@ class OutputFile(db.Model):  # type: ignore
     __tablename__ = "output_file"
 
     id = db.Column(db.Integer, primary_key=True)
-    filename = db.Column(db.String(64), index=True, nullable=False)
+    filename = db.Column(db.Text, index=True, nullable=False)
     timestamp = db.Column(db.String(64))
     size = db.Column(db.BigInteger)
     request_id = db.Column(db.Integer, db.ForeignKey("request.id"))
