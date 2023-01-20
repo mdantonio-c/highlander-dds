@@ -1,7 +1,7 @@
 """empty message
 
 Revision ID: 6041a4915c53
-Revises: 5597f4b675f4
+Revises: 923318953402
 Create Date: 2023-01-19 09:19:11.395199
 
 """
@@ -10,7 +10,7 @@ from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = "6041a4915c53"
-down_revision = "5597f4b675f4"
+down_revision = "923318953402"
 branch_labels = None
 depends_on = None
 
@@ -20,7 +20,7 @@ def upgrade():
     with op.batch_alter_table("output_file", schema=None) as batch_op:
         batch_op.alter_column(
             "filename",
-            existing_type=sa.VARCHAR(length=128),
+            existing_type=sa.VARCHAR(length=64),
             type_=sa.Text(),
             existing_nullable=False,
         )
@@ -34,7 +34,7 @@ def downgrade():
         batch_op.alter_column(
             "filename",
             existing_type=sa.Text(),
-            type_=sa.VARCHAR(length=128),
+            type_=sa.VARCHAR(length=64),
             existing_nullable=False,
         )
 
