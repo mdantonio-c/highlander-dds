@@ -102,7 +102,7 @@ class Stripes(EndpointResource):
             dds = broker.get_instance()
             try:
                 product_urlpath = dds.broker.catalog[dataset_id][
-                    "VHR-REA_IT_1989_2020_hourly"
+                    "VHR-REA_IT_1981_2020_hourly"
                 ].urlpath
                 product_urlpath_root = product_urlpath.split("vhr-rea")[0]
             except Exception as exc:
