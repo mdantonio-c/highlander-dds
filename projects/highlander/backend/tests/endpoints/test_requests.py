@@ -9,7 +9,7 @@ from restapi.tests import API_URI, BaseTests, FlaskClient
 
 __author__ = "Giuseppe Trotta (g.trotta@cineca.it)"
 DATASET_NAME = "era5-downscaled-over-italy"
-PRODUCT_NAME = "VHR-REA_IT_1989_2020_hourly"
+PRODUCT_NAME = "VHR-REA_IT_1981_2020_hourly"
 PRODUCT_FORMAT = "netcdf"
 
 
