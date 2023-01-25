@@ -1,6 +1,8 @@
 """
 DDS Broker connector
 """
+import os
+import pickle
 import warnings
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -52,7 +54,21 @@ class BrokerExt(Connector):
     def is_connected(self) -> bool:
         return not self.disconnected
 
+    def reading_cache_config(self) -> Optional[List[str]]:
+        if not os.path.exists(self.broker.cache_config_file):
+            return {}
+        try:
+            with open(self.broker.cache_config_file, "rb") as f:
+                return pickle.load(f)
+        except Exception as e:
+            log.error("Error in cache loading!")
+            raise e
+
     def get_uncached_datasets(self) -> Optional[List[str]]:
+
+        # update the dds cache_files
+        self.broker.cache_files = self.reading_cache_config()
+
         dataset_names = list(self.broker.list_datasets().keys())
         dataset_wout_cache: List[str] = []
         for dn in dataset_names:

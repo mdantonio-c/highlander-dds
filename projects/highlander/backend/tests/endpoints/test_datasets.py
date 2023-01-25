@@ -1,3 +1,4 @@
+import time
 from pathlib import Path
 from typing import Any, List
 
@@ -15,6 +16,13 @@ PRODUCT_VHR = "VHR-REA_IT_1989_2020_hourly"
 
 
 class TestApp(BaseTests):
+    def invalidate_dataset_cache(self):
+        # invalidate the endpoint cache
+        create_app(name="Cache clearing")
+        Datasets = Meta.get_class("endpoints.datasets", "Datasets")
+        Cache.invalidate(Datasets.get)
+        log.info("CACHE INVALIDATED")
+
     def test_get_datasets(self, client: FlaskClient) -> None:
         # tests if dataset without cache are discarded
         # check if dds cache exist
@@ -26,6 +34,8 @@ class TestApp(BaseTests):
                     path = Path(CACHE_DIR, f)
                     path.unlink()
 
+        self.invalidate_dataset_cache()
+
         """Expected empty dataset catalog (get datasets before creating the cache)"""
         r = client.get(f"{API_URI}/datasets")
         assert r.status_code == 200
@@ -33,6 +43,29 @@ class TestApp(BaseTests):
         # check response type
         response_data = self.get_content(r)
         assert len(response_data) == 0
+
+        # manually create the dds cache
+        dds = broker.get_instance()
+        dataset_to_cache = dds.get_uncached_datasets()
+        for d in dataset_to_cache:
+            log.info(f"getting details for {d}")
+            dds.broker.get_details(d)
+            break
+        # invalidate the endpoint cache
+        create_app(name="Cache clearing")
+        Datasets = Meta.get_class("endpoints.datasets", "Datasets")
+        Cache.invalidate(Datasets.get)
+
+        """Expected no empty dataset catalog"""
+        r = client.get(f"{API_URI}/datasets")
+        assert r.status_code == 200
+
+        # check response type
+        response_data = self.get_content(r)
+        assert isinstance(response_data, list)
+        assert len(response_data) == 1
+
+        time.sleep(1)
 
         # manually create the dds cache
         dds = broker.get_instance()
@@ -52,7 +85,7 @@ class TestApp(BaseTests):
         # check response type
         response_data = self.get_content(r)
         assert isinstance(response_data, list)
-        assert len(response_data) > 0
+        assert len(response_data) > 1
 
     def test_get_applications(self, client: FlaskClient) -> None:
         r = client.get(f"{API_URI}/datasets?application=true")

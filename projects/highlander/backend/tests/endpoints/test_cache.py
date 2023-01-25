@@ -15,7 +15,7 @@ from restapi.utilities.meta import Meta
 
 
 class TestApp(BaseTests):
-    CACHE_FILE_NUMBER = 5
+    CACHE_FILE_NUMBER = 6
     DATASETS_NUMBER = 4
 
     def invalidate_dataset_cache(self):
@@ -55,6 +55,7 @@ class TestApp(BaseTests):
         for f in CACHE_DIR.iterdir():
             if f.is_file():
                 f.unlink()
+
         assert not any(CACHE_DIR.iterdir())
         admin_headers, _ = BaseTests.do_login(client, None, None)
         self.save("auth_header", admin_headers)
@@ -101,7 +102,6 @@ class TestApp(BaseTests):
         time.sleep(2)
         # check that the fake cache has been deleted
         assert not any(CACHE_DIR.iterdir())
-
         # check clean dataset which does not have a cache
         body["datasets"] = ["soil-erosion"]
         r = client.post(endpoint, json=body, headers=headers)
@@ -123,25 +123,27 @@ class TestApp(BaseTests):
         assert len(response_body) == 0
         r = client.post(endpoint, headers=headers)
         assert r.status_code == 202
+        response_body = self.get_content(r)
         # wait the task to be fulfilled
         time.sleep(5)
         # check that the cache files has been created
         cache_files = [x for x in CACHE_DIR.iterdir()]
         assert len(cache_files) == self.CACHE_FILE_NUMBER
-        # TODO: this test highlights a bug: dds.broker.cache_files is not updated if the file is created not by the backend until the container is reloaded
-        # TODO: solve the bug
+
         # # check that the datasets are seen by get dataset endpoint
         # # invalidate the cache
-        # self.invalidate_dataset_cache()
+        self.invalidate_dataset_cache()
         # # wait the task to be fulfilled
-        # time.sleep(2)
-        # r = client.get(get_dataset_endpoint)
-        # assert r.status_code == 200
-        # response_body = self.get_content(r)
-        # assert len(response_body) == self.DATASETS_NUMBER
+        time.sleep(2)
+        r = client.get(get_dataset_endpoint)
+        assert r.status_code == 200
+        response_body = self.get_content(r)
+        assert len(response_body) == self.DATASETS_NUMBER
         # # check task is not relaunched if all datasets has a cache
-        # log.info (f"not api point of view -  Cache already present: {[[x for x in CACHE_DIR.iterdir()]]}")
-        # r = client.post(endpoint, headers=headers)
-        # assert r.status_code == 200
-        # response_body = self.get_content(r)
-        # assert "Nothing to be done" in response_body
+        log.info(
+            f"not api point of view -  Cache already present: {[[x for x in CACHE_DIR.iterdir()]]}"
+        )
+        r = client.post(endpoint, headers=headers)
+        assert r.status_code == 200
+        response_body = self.get_content(r)
+        assert "Nothing to be done" in response_body
