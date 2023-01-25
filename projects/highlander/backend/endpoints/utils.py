@@ -115,7 +115,7 @@ class MapCropConfig:
             },
         },
         "era5-downscaled-over-italy": {
-            "VHR-REA_IT_1989_2020": {
+            "VHR-REA_IT_1981_2020": {
                 "url": "climate_stripes/T_2M_1989-2020_time_period_avg.nc",
                 "params": ["time_period"],
             },

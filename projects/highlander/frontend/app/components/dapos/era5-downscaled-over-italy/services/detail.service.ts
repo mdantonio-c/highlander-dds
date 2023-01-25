@@ -40,7 +40,7 @@ export class DetailService {
       );
     }
     return this.api.get(
-      `/api/datasets/era5-downscaled-over-italy/products/VHR-REA_IT_1989_2020/crop`,
+      `/api/datasets/era5-downscaled-over-italy/products/VHR-REA_IT_1981_2020/crop`,
       params,
       options
     );
