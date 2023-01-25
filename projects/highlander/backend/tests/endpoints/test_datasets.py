@@ -12,7 +12,7 @@ from restapi.utilities.meta import Meta
 
 __author__ = "Giuseppe Trotta (g.trotta@cineca.it)"
 DATASET_VHR = "era5-downscaled-over-italy"
-PRODUCT_VHR = "VHR-REA_IT_1989_2020_hourly"
+PRODUCT_VHR = "VHR-REA_IT_1981_2020_hourly"
 
 
 class TestApp(BaseTests):
