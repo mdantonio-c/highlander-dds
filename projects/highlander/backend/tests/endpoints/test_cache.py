@@ -6,25 +6,14 @@ from celery.result import AsyncResult
 from faker import Faker
 from flask import Flask
 from highlander.constants import CACHE_DIR
+from highlander.tests import TestParams as params
+from highlander.tests import invalidate_dataset_cache
 from restapi.connectors.celery import Ignore
-from restapi.server import create_app
-from restapi.services.cache import Cache
 from restapi.tests import API_URI, BaseTests, FlaskClient
 from restapi.utilities.logs import log
-from restapi.utilities.meta import Meta
 
 
 class TestApp(BaseTests):
-    CACHE_FILE_NUMBER = 5
-    DATASETS_NUMBER = 4
-
-    def invalidate_dataset_cache(self):
-        # invalidate the endpoint cache
-        create_app(name="Cache clearing")
-        Datasets = Meta.get_class("endpoints.datasets", "Datasets")
-        Cache.invalidate(Datasets.get)
-        log.info("CACHE INVALIDATED")
-
     def test_endpoint_access(self, client: FlaskClient, faker: Faker) -> None:
         # create a fake user and login with it
 
@@ -115,7 +104,7 @@ class TestApp(BaseTests):
         endpoint = f"{API_URI}/admin/cache"
         get_dataset_endpoint = f"{API_URI}/datasets"
         # clean dataset cache to have a clean response
-        self.invalidate_dataset_cache()
+        invalidate_dataset_cache()
         # check that cache files aren't created by get dataset endpoint
         r = client.get(get_dataset_endpoint)
         assert r.status_code == 200
@@ -125,20 +114,20 @@ class TestApp(BaseTests):
         assert r.status_code == 202
         response_body = self.get_content(r)
         # wait the task to be fulfilled
-        time.sleep(5)
+        time.sleep(6)
         # check that the cache files has been created
         cache_files = [x for x in CACHE_DIR.iterdir() if "cache_conf" not in x.name]
-        assert len(cache_files) == self.CACHE_FILE_NUMBER
+        assert len(cache_files) == params.CACHE_FILE_NUMBER
 
         # # check that the datasets are seen by get dataset endpoint
         # # invalidate the cache
-        self.invalidate_dataset_cache()
+        invalidate_dataset_cache()
         # # wait the task to be fulfilled
         time.sleep(2)
         r = client.get(get_dataset_endpoint)
         assert r.status_code == 200
         response_body = self.get_content(r)
-        assert len(response_body) == self.DATASETS_NUMBER
+        assert len(response_body) == params.DATASETS_NUMBER
         # # check task is not relaunched if all datasets has a cache
         log.info(
             f"not api point of view -  Cache already present: {[[x for x in CACHE_DIR.iterdir()]]}"

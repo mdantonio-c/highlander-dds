@@ -4,12 +4,11 @@ from typing import Any, Dict, Iterator, Optional
 import pytest
 from celery.result import AsyncResult
 from highlander.models.sqlalchemy import Request
+from highlander.tests import TestParams as params
 from restapi.connectors import sqlalchemy
 from restapi.tests import API_URI, BaseTests, FlaskClient
 
 __author__ = "Giuseppe Trotta (g.trotta@cineca.it)"
-DATASET_NAME = "era5-downscaled-over-italy"
-PRODUCT_NAME = "VHR-REA_IT_1981_2020_hourly"
 PRODUCT_FORMAT = "netcdf"
 
 
@@ -48,7 +47,9 @@ class TestApp(BaseTests):
         endpoint = f"{API_URI}/estimate-size"
 
         # submit size estimation request
-        r = client.post(f"{endpoint}/{DATASET_NAME}", json=data_filter, headers=headers)
+        r = client.post(
+            f"{endpoint}/{params.DATASET_VHR}", json=data_filter, headers=headers
+        )
         assert r.status_code == 200
 
         response_body = self.get_content(r)
@@ -84,7 +85,9 @@ class TestApp(BaseTests):
     ) -> Iterator[Request]:
         """submit data request"""
         endpoint = f"{API_URI}/requests"
-        r = client.post(f"{endpoint}/{DATASET_NAME}", json=data_filter, headers=headers)
+        r = client.post(
+            f"{endpoint}/{params.DATASET_VHR}", json=data_filter, headers=headers
+        )
         assert r.status_code == 202
 
         task_id = self.get_content(r)
@@ -104,7 +107,7 @@ class TestApp(BaseTests):
     @pytest.fixture
     def data_filter(self) -> Dict[str, Any]:
         data: Dict[str, Any] = {
-            "product_type": PRODUCT_NAME,
+            "product_type": params.PRODUCT_VHR,
             "format": PRODUCT_FORMAT,
             "variable": json.dumps(["air_temperature"]),
         }

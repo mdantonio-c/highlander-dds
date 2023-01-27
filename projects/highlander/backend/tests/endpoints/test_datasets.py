@@ -4,25 +4,15 @@ from typing import Any, List
 
 from highlander.connectors import broker
 from highlander.constants import CACHE_DIR
-from restapi.server import create_app
-from restapi.services.cache import Cache
+from highlander.tests import TestParams as params
+from highlander.tests import invalidate_dataset_cache
 from restapi.tests import API_URI, BaseTests, FlaskClient
 from restapi.utilities.logs import log
-from restapi.utilities.meta import Meta
 
 __author__ = "Giuseppe Trotta (g.trotta@cineca.it)"
-DATASET_VHR = "era5-downscaled-over-italy"
-PRODUCT_VHR = "VHR-REA_IT_1981_2020_hourly"
 
 
 class TestApp(BaseTests):
-    def invalidate_dataset_cache(self):
-        # invalidate the endpoint cache
-        create_app(name="Cache clearing")
-        Datasets = Meta.get_class("endpoints.datasets", "Datasets")
-        Cache.invalidate(Datasets.get)
-        log.info("CACHE INVALIDATED")
-
     def test_get_datasets(self, client: FlaskClient) -> None:
         # tests if dataset without cache are discarded
         # check if dds cache exist
@@ -34,7 +24,7 @@ class TestApp(BaseTests):
                     path = Path(CACHE_DIR, f)
                     path.unlink()
 
-        self.invalidate_dataset_cache()
+        invalidate_dataset_cache()
 
         """Expected empty dataset catalog (get datasets before creating the cache)"""
         r = client.get(f"{API_URI}/datasets")
@@ -52,9 +42,7 @@ class TestApp(BaseTests):
             dds.broker.get_details(d)
             break
         # invalidate the endpoint cache
-        create_app(name="Cache clearing")
-        Datasets = Meta.get_class("endpoints.datasets", "Datasets")
-        Cache.invalidate(Datasets.get)
+        invalidate_dataset_cache()
 
         """Expected no empty dataset catalog"""
         r = client.get(f"{API_URI}/datasets")
@@ -74,9 +62,7 @@ class TestApp(BaseTests):
             log.info(f"getting details for {d}")
             dds.broker.get_details(d)
         # invalidate the endpoint cache
-        create_app(name="Cache clearing")
-        Datasets = Meta.get_class("endpoints.datasets", "Datasets")
-        Cache.invalidate(Datasets.get)
+        invalidate_dataset_cache()
 
         """Expected no empty dataset catalog"""
         r = client.get(f"{API_URI}/datasets")
@@ -100,12 +86,14 @@ class TestApp(BaseTests):
 
     def test_get_dataset(self, client: FlaskClient) -> None:
         # expected era5-downscaled-over-italy dataset in test data
-        r = client.get(f"{API_URI}/datasets/{DATASET_VHR}")
+        r = client.get(f"{API_URI}/datasets/{params.DATASET_VHR}")
         assert r.status_code == 200
 
     def test_get_dataset_product(self, client: FlaskClient) -> None:
         # expected VHR-REA_IT_1989_2020_hourly product in test data
-        r = client.get(f"{API_URI}/datasets/{DATASET_VHR}/products/{PRODUCT_VHR}")
+        r = client.get(
+            f"{API_URI}/datasets/{params.DATASET_VHR}/products/{params.PRODUCT_VHR}"
+        )
         assert r.status_code == 200
 
     def test_get_dataset_image(self, client: FlaskClient) -> None:

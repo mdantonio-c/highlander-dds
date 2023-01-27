@@ -3,15 +3,13 @@ from pathlib import Path
 from faker import Faker
 from highlander.connectors import broker
 from highlander.endpoints.utils import MapCropConfig
-from restapi.server import create_app
-from restapi.services.cache import Cache
+from highlander.tests import TestParams as params
+from highlander.tests import invalidate_dataset_cache
 from restapi.tests import API_URI, BaseTests, FlaskClient
 from restapi.utilities.logs import log
-from restapi.utilities.meta import Meta
 
 __author__ = "Lucia Rodriguez Munoz (l.rodriguezmunoz@cineca.it)"
 
-DATASET_ID = "era5-downscaled-over-italy"
 STRIPES_OUTPUT_ROOT = Path("/catalog/climate_stripes/")
 
 
@@ -26,52 +24,50 @@ class TestApp(BaseTests):
         # check if the dataset have a cache
         dds = broker.get_instance()
         not_cached_datasets = dds.get_uncached_datasets()
-        if DATASET_ID in not_cached_datasets:
-            dds.broker.get_details(DATASET_ID)
+        if params.DATASET_VHR in not_cached_datasets:
+            dds.broker.get_details(params.DATASET_VHR)
             # invalidate the endpoint cache
-            create_app(name="Cache clearing")
-            Datasets = Meta.get_class("endpoints.datasets", "Datasets")
-            Cache.invalidate(Datasets.get)
+            invalidate_dataset_cache()
 
         # request without mandatory variable "time_period".
         query_params = "?administrative=Italy"
-        endpoint = f"{API_URI}/datasets/{DATASET_ID}/stripes{query_params}"
+        endpoint = f"{API_URI}/datasets/{params.DATASET_VHR}/stripes{query_params}"
         r = client.get(endpoint, headers=self.get("auth_header"))
         assert r.status_code == 400
 
         # request without mandatory variable "administrative".
         query_params = "?time_period=ANN"
-        endpoint = f"{API_URI}/datasets/{DATASET_ID}/stripes{query_params}"
+        endpoint = f"{API_URI}/datasets/{params.DATASET_VHR}/stripes{query_params}"
         r = client.get(endpoint, headers=self.get("auth_header"))
         assert r.status_code == 400
 
         # request without mandatory variable "area_id" when administrative is "region" or "province".
         query_params = "?time_period=ANN&administrative=regions"
-        endpoint = f"{API_URI}/datasets/{DATASET_ID}/stripes{query_params}"
+        endpoint = f"{API_URI}/datasets/{params.DATASET_VHR}/stripes{query_params}"
         r = client.get(endpoint, headers=self.get("auth_header"))
         assert r.status_code == 400
 
         # request with non-existing "time_period".
         query_params = "?time_period=DoesNotExist&administrative=Italy"
-        endpoint = f"{API_URI}/datasets/{DATASET_ID}/stripes{query_params}"
+        endpoint = f"{API_URI}/datasets/{params.DATASET_VHR}/stripes{query_params}"
         r = client.get(endpoint, headers=self.get("auth_header"))
         assert r.status_code == 400
 
         # request with non-existing "administrative".
         query_params = "?time_period=ANN&administrative=DoesNotExist"
-        endpoint = f"{API_URI}/datasets/{DATASET_ID}/stripes{query_params}"
+        endpoint = f"{API_URI}/datasets/{params.DATASET_VHR}/stripes{query_params}"
         r = client.get(endpoint, headers=self.get("auth_header"))
         assert r.status_code == 400
 
         # request with non-existing region.
         query_params = "?time_period=ANN&administrative=regions&sDoesNotExist"
-        endpoint = f"{API_URI}/datasets/{DATASET_ID}/stripes{query_params}"
+        endpoint = f"{API_URI}/datasets/{params.DATASET_VHR}/stripes{query_params}"
         r = client.get(endpoint, headers=self.get("auth_header"))
         assert r.status_code == 400
 
         # request with non-existing province.
         query_params = "?time_period=ANN&administrative=provinces$area_id=DoesNotExist"
-        endpoint = f"{API_URI}/datasets/{DATASET_ID}/stripes{query_params}"
+        endpoint = f"{API_URI}/datasets/{params.DATASET_VHR}/stripes{query_params}"
         r = client.get(endpoint, headers=self.get("auth_header"))
         assert r.status_code == 400
 
@@ -92,7 +88,7 @@ class TestApp(BaseTests):
         ):
             # request without mandatory variable "time_period".
             query_params = f"?administrative={administrative}&time_period={time_period}&area_id={area_id}"
-            endpoint = f"{API_URI}/datasets/{DATASET_ID}/stripes{query_params}"
+            endpoint = f"{API_URI}/datasets/{params.DATASET_VHR}/stripes{query_params}"
             r = client.get(endpoint, headers=self.get("auth_header"))
             assert r.status_code == 200
 
@@ -124,7 +120,7 @@ class TestApp(BaseTests):
         ):
             # request without mandatory variable "time_period".
             query_params = f"?administrative={administrative}&time_period={time_period}&area_id={area_id}"
-            endpoint = f"{API_URI}/datasets/{DATASET_ID}/stripes{query_params}"
+            endpoint = f"{API_URI}/datasets/{params.DATASET_VHR}/stripes{query_params}"
             r = client.get(endpoint, headers=self.get("auth_header"))
             assert r.status_code == 200
 
