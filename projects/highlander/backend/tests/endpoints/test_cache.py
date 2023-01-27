@@ -15,7 +15,7 @@ from restapi.utilities.meta import Meta
 
 
 class TestApp(BaseTests):
-    CACHE_FILE_NUMBER = 6
+    CACHE_FILE_NUMBER = 5
     DATASETS_NUMBER = 4
 
     def invalidate_dataset_cache(self):
@@ -127,7 +127,7 @@ class TestApp(BaseTests):
         # wait the task to be fulfilled
         time.sleep(5)
         # check that the cache files has been created
-        cache_files = [x for x in CACHE_DIR.iterdir()]
+        cache_files = [x for x in CACHE_DIR.iterdir() if "cache_conf" not in x.name]
         assert len(cache_files) == self.CACHE_FILE_NUMBER
 
         # # check that the datasets are seen by get dataset endpoint
