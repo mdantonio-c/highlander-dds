@@ -7,11 +7,17 @@ import {
   Output,
   EventEmitter,
 } from "@angular/core";
+import { saveAs as importedSaveAs } from "file-saver-es";
 import { DomSanitizer } from "@angular/platform-browser";
 import { DetailService } from "../services/detail.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
-import { BIOTEMPERATURES, BIOPRECIPITATIONS, INDICATORS, SPECIES } from "../data";
+import {
+  BIOTEMPERATURES,
+  BIOPRECIPITATIONS,
+  INDICATORS,
+  SPECIES,
+} from "../data";
 
 @Component({
   selector: "forest-suitability-detail",
@@ -20,6 +26,7 @@ import { BIOTEMPERATURES, BIOPRECIPITATIONS, INDICATORS, SPECIES } from "../data
 })
 export class MapDetailComponent implements OnChanges {
   @Input() cropDetails;
+  @Input() user;
   @Input() isPanelCollapsed;
 
   mapImage: any;
@@ -52,10 +59,10 @@ export class MapDetailComponent implements OnChanges {
           ).label;
           break;
         case "BIOPRP":
-            this.indicatorLabel = BIOPRECIPITATIONS.find(
-              (x) => x.code == this.cropDetails.indicator
-            ).label;
-            break;
+          this.indicatorLabel = BIOPRECIPITATIONS.find(
+            (x) => x.code == this.cropDetails.indicator
+          ).label;
+          break;
         case "FOREST":
           this.indicatorLabel = SPECIES.find(
             (x) => x.code == this.cropDetails.indicator
@@ -91,5 +98,26 @@ export class MapDetailComponent implements OnChanges {
           this.cdr.detectChanges();
         });
     }
+  }
+  getReport() {
+    setTimeout(() => {
+      this.spinner.show();
+    }, 0);
+    this.detailService
+      .createReport(this.cropDetails, this.productLabel, this.indicatorLabel)
+      .subscribe(
+        (response) => {
+          const contentType =
+            response.headers["content-type"] || "application/pdf";
+          const blob = new Blob([response.body], { type: contentType });
+          importedSaveAs(blob, "highlander_report.pdf");
+        },
+        (error) => {
+          this.notify.showError("Unable to create the report");
+        }
+      )
+      .add(() => {
+        this.spinner.hide();
+      });
   }
 }

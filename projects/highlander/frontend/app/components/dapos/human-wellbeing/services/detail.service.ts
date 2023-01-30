@@ -51,4 +51,44 @@ export class DetailService {
     }
     return forkJoin(observables);
   }
+  createReport(
+    detailsFilter: HumanWellbeingMapCrop,
+    productLabel: string,
+    dateLabel: string
+  ): Observable<any> {
+    const options = {
+      conf: {
+        responseType: "blob",
+        observe: "response",
+      },
+    };
+    let params = {
+      indicator: detailsFilter.indicator,
+      daily_metric: detailsFilter.daily_metric,
+      area_type: detailsFilter.area_type,
+      area_id: detailsFilter.area_id,
+    };
+    if (detailsFilter.year) {
+      params["year"] = detailsFilter.year;
+    }
+    if (detailsFilter.date) {
+      params["date"] = detailsFilter.date;
+    }
+
+    // create the label
+    params[
+      "label"
+    ] = `${productLabel} - ${detailsFilter.product} - Historical `;
+    if (dateLabel) {
+      params[
+        "label"
+      ] = `${productLabel} - ${detailsFilter.product} - Historical - Day: ${dateLabel}`;
+    }
+
+    return this.api.get(
+      `/api/datasets/human-wellbeing/products/${detailsFilter.product}/report`,
+      params,
+      options
+    );
+  }
 }

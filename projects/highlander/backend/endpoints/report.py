@@ -40,7 +40,8 @@ class PDF(FPDF):
     def report_title(self, label):
         self.set_font("Arial", "B", 20)
         self.set_fill_color(r=30, g=154, b=47)
-        self.cell(w=0, h=self.ch, txt=label, ln=1, align="C", fill=True)
+        self.multi_cell(w=0, h=self.ch, txt=label, align="C", fill=True)
+        self.ln(1)
         self.set_text_color(r=0, g=0, b=0)
         self.set_font("Arial", "", 12)
         self.cell(w=30, h=self.ch, txt="Date: ", ln=0)
@@ -62,6 +63,7 @@ class SubsetReportDetails(Schema):
     year = fields.Str(required=False)
     date = fields.Str(required=False)
     area_id = fields.Str(required=True)
+    label = fields.Str(required=False)
     area_type = fields.Str(required=True, validate=validate.OneOf(AREA_TYPES))
     indicator = fields.Str(required=False)
     time_period = fields.Str(required=False)
@@ -90,6 +92,7 @@ class Report(EndpointResource):
         product_id: str,
         area_type: str,
         area_id: str,
+        label: Optional[str] = None,
         indicator: Optional[str] = None,
         model_id: Optional[str] = None,
         year: Optional[str] = None,
@@ -143,9 +146,13 @@ class Report(EndpointResource):
 
         # create the labels
         # label params are the same of the output structure excluding the dataset name (first element) and the area type (last element)
-        label_params = output_structure[1:-1]
-        label_map = f"Map {area_id.title()} - {' - '.join( l.replace('-',' ').title() for l in label_params)}"
-        label_plot = f"Distribution of {area_id.title()} - {' - '.join( l.replace('-',' ').title() for l in label_params)}"
+        if not label:
+            label_params = output_structure[1:-1]
+            label = " - ".join(
+                l_par.replace("-", " ").title() for l_par in label_params
+            )
+        label_map = f"Map {area_id.title()} - {label}"
+        label_plot = f"Distribution of {label}"
 
         pdf = PDF()
         # get the dataset license

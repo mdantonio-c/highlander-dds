@@ -50,4 +50,39 @@ export class DetailService {
     }
     return forkJoin(observables);
   }
+  createReport(
+    detailsFilter: ForestSuitabilityMapCrop,
+    productLabel: string,
+    indicatorLabel: string
+  ): Observable<any> {
+    const options = {
+      conf: {
+        responseType: "blob",
+        observe: "response",
+      },
+    };
+    let params = {
+      indicator: detailsFilter.indicator,
+      area_type: detailsFilter.area_type,
+      area_id: detailsFilter.area_id,
+    };
+
+    let product = "";
+    if (detailsFilter.period === "1991_2020") {
+      product = `${detailsFilter.product}-hist`;
+    } else {
+      product = `${detailsFilter.product}-proj`;
+    }
+
+    // create the label
+    params[
+      "label"
+    ] = `${productLabel} - ${indicatorLabel} - ${detailsFilter.period} `;
+
+    return this.api.get(
+      `/api/datasets/land-suitability-for-forests/products/${product}/report`,
+      params,
+      options
+    );
+  }
 }

@@ -50,4 +50,40 @@ export class DetailService {
     }
     return forkJoin(observables);
   }
+
+  createReport(
+    detailsFilter: SoilErosionMapCrop,
+    productLabel: string
+  ): Observable<any> {
+    const options = {
+      conf: {
+        responseType: "blob",
+        observe: "response",
+      },
+    };
+    let params = {
+      indicator: detailsFilter.indicator,
+      model_id: detailsFilter.model,
+      area_type: detailsFilter.area_type,
+      area_id: detailsFilter.area_id,
+    };
+
+    let product = "";
+    if (detailsFilter.period === "1991_2020") {
+      product = detailsFilter.product;
+    } else {
+      product = `${detailsFilter.product}-anomalies`;
+    }
+
+    // create the label
+    params[
+      "label"
+    ] = `${productLabel} - ${detailsFilter.model} - ${detailsFilter.period} `;
+
+    return this.api.get(
+      `/api/datasets/soil-erosion/products/${product}/report`,
+      params,
+      options
+    );
+  }
 }

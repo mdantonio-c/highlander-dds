@@ -7,6 +7,7 @@ import {
 } from "@angular/core";
 import { Observable } from "rxjs";
 import { User } from "@rapydo/types";
+import { AuthService } from "@rapydo/services/auth";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 import {
@@ -128,6 +129,7 @@ export class SoilErosionComponent implements OnInit {
 
   constructor(
     private dataService: DataService,
+    private authService: AuthService,
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private ssr: SSRService,
@@ -141,6 +143,9 @@ export class SoilErosionComponent implements OnInit {
     if (this.ssr.isBrowser) {
       this.setCollapse(window.innerWidth);
     }
+    this.authService.isAuthenticated().subscribe((isAuth) => {
+      this.user = isAuth ? this.authService.getUser() : null;
+    });
   }
 
   onMapReady(map: L.Map) {
