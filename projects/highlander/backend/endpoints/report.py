@@ -152,7 +152,7 @@ class Report(EndpointResource):
                 l_par.replace("-", " ").title() for l_par in label_params
             )
         label_map = f"Map {area_id.title()} - {label}"
-        label_plot = f"Distribution of {label}"
+        label_plot = f"Distribution of {area_id.title()} - {label}"
 
         pdf = PDF()
         # get the dataset license
