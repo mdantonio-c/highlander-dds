@@ -1,3 +1,4 @@
+import os
 import time
 from pathlib import Path
 
@@ -147,3 +148,111 @@ class TestApp(BaseTests):
         assert r.status_code == 200
         response_body = self.get_content(r)
         assert "Nothing to be done" in response_body
+
+        # testing the cache creation directly with task
+        last_mod_cache = [
+            os.path.getmtime(x)
+            for x in CACHE_DIR.iterdir()
+            if "cache_conf" not in x.name
+        ]
+
+        # try to create a cache for datasets that already have a cache
+        self.send_task(
+            app,
+            "create_cache",
+            [
+                "era5-downscaled-over-italy",
+                "sub-seasonal",
+                "soil-erosion",
+                "human-wellbeing",
+            ],
+        )
+        if_mod_chahe = [
+            os.path.getmtime(x)
+            for x in CACHE_DIR.iterdir()
+            if "cache_conf" not in x.name
+        ]
+        assert last_mod_cache == if_mod_chahe
+
+        # remove by hand three files from the cache
+        rmvd_cache = [
+            os.path.join(CACHE_DIR, "sub-seasonal_sub-seasonal.cache"),
+            os.path.join(CACHE_DIR, "human-wellbeing_daily.cache"),
+            os.path.join(CACHE_DIR, "soil-erosion_rainfall-erosivity.cache"),
+        ]
+        for f in rmvd_cache:
+            os.unlink(f)
+
+        # asking a single dataset to the endpoint
+        dset_body = {"datasets": ["sub-seasonal"]}
+        r = client.post(endpoint, json=dset_body, headers=headers)
+        assert r.status_code == 202
+        time.sleep(5)
+
+        # checking that only for the requested dataset the cache file has been created
+        assert os.path.isfile(rmvd_cache[0])
+        assert not os.path.isfile(rmvd_cache[1])
+        assert not os.path.isfile(rmvd_cache[2])
+
+        # excluding a dataset in the request to the endpoint
+        dset_body = {"exclude": ["soil-erosion"]}
+        r = client.post(endpoint, json=dset_body, headers=headers)
+        assert r.status_code == 202
+        time.sleep(5)
+
+        self.invalidate_dataset_cache()
+        # check that cache files aren't created by get dataset endpoint
+        r = client.get(get_dataset_endpoint)
+        assert r.status_code == 200
+
+        # checking that the excluded dataset doesn't have the cache file
+        assert os.path.isfile(rmvd_cache[1])
+        assert not os.path.isfile(rmvd_cache[2])
+
+        # creation of the last dataset cache
+        dset_body = {"datasets": ["soil-erosion"]}
+        r = client.post(endpoint, json=dset_body, headers=headers)
+        assert r.status_code == 202
+
+        # checking that the last dataset cache file has been created
+        assert os.path.isfile(rmvd_cache[1])
+
+    def test_cache_clean(self, client: FlaskClient, faker: Faker, app: Flask) -> None:
+
+        # reading time creation for the cache files
+        creation_time = [
+            os.path.getctime(x)
+            for x in CACHE_DIR.iterdir()
+            if "cache_conf" not in x.name
+        ]
+
+        # check clean with cache full
+        self.invalidate_dataset_cache()
+        headers = self.get("auth_header")
+        endpoint = f"{API_URI}/admin/cache"
+        body = {"clean": True}
+        r = client.post(endpoint, json=body, headers=headers)
+        assert r.status_code == 202
+        time.sleep(5)
+        # check that all cache files have been recreated after cleaning
+        cache_files = [x for x in CACHE_DIR.iterdir() if "cache_conf" not in x.name]
+        re_creation_time = [
+            os.path.getctime(x)
+            for x in CACHE_DIR.iterdir()
+            if "cache_conf" not in x.name
+        ]
+        assert len(cache_files) == self.CACHE_FILE_NUMBER
+        assert creation_time[0] != re_creation_time[0]
+
+        # cleaning a single dataset from cache and checking its recreation
+        dset_body = {"clean": True, "datasets": ["human-wellbeing"]}
+        r = client.post(endpoint, json=dset_body, headers=headers)
+        assert r.status_code == 202
+        created_file = os.path.join(CACHE_DIR, "human-wellbeing_daily.cache")
+        time.sleep(5)
+        assert os.path.getctime(created_file) > re_creation_time[-1]
+
+        # deleting cache files
+        for f in CACHE_DIR.iterdir():
+            if f.is_file():
+                f.unlink()
