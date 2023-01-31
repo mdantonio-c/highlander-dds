@@ -18,12 +18,14 @@ class TestParams:
     MODEL_ID2 = "SL1"
     REGION_ID = "Friuli Venezia Giulia"
     PROVINCE_ID = "l'aquila"
+    STRIPES_TIME_PERIOD = "DJF"
 
     # for dataset cache
     CACHE_FILE_NUMBER = 5
     DATASETS_NUMBER = 4
 
     DATASET_VHR = "era5-downscaled-over-italy"
+    PRODUCT_MAPCROP_VHR = "VHR-REA_IT_1981_2020"
     PRODUCT_VHR = "VHR-REA_IT_1981_2020_hourly"
 
 

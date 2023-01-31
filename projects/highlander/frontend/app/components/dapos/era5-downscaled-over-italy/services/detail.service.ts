@@ -72,4 +72,31 @@ export class DetailService {
     );
     return forkJoin(obs);
   }
+  createReport(
+    detailsFilter: Era5MapCrop,
+    productLabel: string,
+    dateLabel: string
+  ): Observable<any> {
+    const options = {
+      conf: {
+        responseType: "blob",
+        observe: "response",
+      },
+    };
+    let params = {
+      indicator: detailsFilter.indicator,
+      time_period: detailsFilter.time_period,
+      area_type: detailsFilter.area_type,
+      area_id: detailsFilter.area_id,
+    };
+
+    // create the label
+    params["label"] = `${productLabel} - ${dateLabel} `;
+
+    return this.api.get(
+      `/api/datasets/era5-downscaled-over-italy/products/VHR-REA_IT_1981_2020/report`,
+      params,
+      options
+    );
+  }
 }

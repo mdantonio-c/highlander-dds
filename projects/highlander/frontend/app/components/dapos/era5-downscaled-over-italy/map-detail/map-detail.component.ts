@@ -9,6 +9,7 @@ import {
 } from "@angular/core";
 import * as moment from "moment";
 import { DomSanitizer } from "@angular/platform-browser";
+import { saveAs as importedSaveAs } from "file-saver-es";
 import { DetailService } from "../services/detail.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
@@ -23,6 +24,7 @@ import { DataService } from "../../../../services/data.service";
 })
 export class MapDetailComponent implements OnChanges {
   @Input() cropDetails;
+  @Input() user;
   @Input() isPanelCollapsed;
 
   mapImage: any;
@@ -46,10 +48,10 @@ export class MapDetailComponent implements OnChanges {
       //add the label to be display in the panel
       this.productLabel = INDICATORS.find(
         (x) => x.code == this.cropDetails.indicator
-      ).label;
+      ).plotLabel;
       this.dateLabel = TIME_PERIODS.find(
         (x) => x.code == this.cropDetails.time_period
-      ).label.substr(0,6);
+      ).label.substr(0, 6);
 
       // if (this.cropDetails.date) {
       //   this.dateLabel = moment(this.cropDetails.date).format("DD/MM/YYYY");
@@ -83,5 +85,26 @@ export class MapDetailComponent implements OnChanges {
           this.cdr.detectChanges();
         });
     }
+  }
+  getReport() {
+    setTimeout(() => {
+      this.spinner.show();
+    }, 0);
+    this.detailService
+      .createReport(this.cropDetails, this.productLabel, this.dateLabel)
+      .subscribe(
+        (response) => {
+          const contentType =
+            response.headers["content-type"] || "application/pdf";
+          const blob = new Blob([response.body], { type: contentType });
+          importedSaveAs(blob, "highlander_report.pdf");
+        },
+        (error) => {
+          this.notify.showError("Unable to create the report");
+        }
+      )
+      .add(() => {
+        this.spinner.hide();
+      });
   }
 }

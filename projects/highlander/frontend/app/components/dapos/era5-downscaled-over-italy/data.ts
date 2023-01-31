@@ -32,6 +32,7 @@ export const INDICATORS: CodeLabel[] = [
   {
     code: "T_2M",
     label: "Mean temperature 2m (1989-2020)",
+    plotLabel: "Mean temperature 2m",
     product: "mean-temperature-2m",
   },
 ];

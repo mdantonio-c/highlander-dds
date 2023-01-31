@@ -10,8 +10,6 @@ from restapi.utilities.logs import log
 
 __author__ = "Lucia Rodriguez Munoz (l.rodriguezmunoz@cineca.it)"
 
-STRIPES_OUTPUT_ROOT = Path("/catalog/climate_stripes/")
-
 
 class TestApp(BaseTests):
     def test_stripes_validation_on_query_params(
@@ -78,7 +76,11 @@ class TestApp(BaseTests):
         headers, _ = self.do_login(client, None, None)
         self.save("auth_header", headers)
 
-        time_periods = ["DJF", "DJF", "DJF"]
+        time_periods = [
+            params.STRIPES_TIME_PERIOD,
+            params.STRIPES_TIME_PERIOD,
+            params.STRIPES_TIME_PERIOD,
+        ]
         administratives = ["Italy", "regions", "provinces"]
         area_ids = ["", "Lombardia", "Bergamo"]
         area_names = ["Italy", "lombardia", "bergamo"]
@@ -94,7 +96,7 @@ class TestApp(BaseTests):
 
             output_filename = f"{area_name.replace(' ', '_').lower()}_stripes.png"
             output_path = f"{time_period}/{administrative}"
-            output_dir = Path(STRIPES_OUTPUT_ROOT, output_path)
+            output_dir = Path(MapCropConfig.STRIPES_OUTPUT_ROOT, output_path)
             output_filepath = Path(output_dir, output_filename)
 
             # check the naming convention has been respected
@@ -126,7 +128,7 @@ class TestApp(BaseTests):
 
             output_filename = f"{area_name.replace(' ', '_').lower()}_stripes.png"
             output_path = f"{time_period}/{administrative}"
-            output_dir = Path(STRIPES_OUTPUT_ROOT, output_path)
+            output_dir = Path(MapCropConfig.STRIPES_OUTPUT_ROOT, output_path)
             output_filepath = Path(output_dir, output_filename)
 
             # check the naming convention has been respected

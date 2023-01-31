@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional, Union
 import xarray as xr
 from flask import send_file, send_from_directory
 from highlander.connectors import broker
+from highlander.endpoints.utils import MapCropConfig as config
 from highlander.endpoints.utils import PlotUtils
 from marshmallow import ValidationError, pre_load
 from restapi import decorators
@@ -13,8 +14,6 @@ from restapi.models import Schema, fields, validate
 from restapi.rest.definition import EndpointResource, Response
 from restapi.services.authentication import User
 from restapi.utilities.logs import log
-
-STRIPES_OUTPUT_ROOT = Path("/catalog/climate_stripes/")
 
 # STRIPES_INPUT_ROOT = Path("/catalog/datasets/datasets/climate_stripes/")
 
@@ -80,11 +79,9 @@ class Stripes(EndpointResource):
             area_name = administrative
 
         # Create an output file name and path:
-        output_filename = f"{area_name.replace(' ', '_').lower()}_stripes.png"
-        output_path = f"{time_period}/{administrative}"
-        output_dir = Path(
-            STRIPES_OUTPUT_ROOT, output_path
-        )  # Needed to create the output folder if it does not exist.
+        output_dir, output_filename = config.getStripesOutputPath(
+            area_name, time_period, administrative
+        )
         output_filepath = Path(output_dir, output_filename)
 
         # Check if the stripes have already been created.

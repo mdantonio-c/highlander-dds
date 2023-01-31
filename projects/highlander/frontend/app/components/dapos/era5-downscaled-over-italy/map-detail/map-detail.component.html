@@ -28,4 +28,12 @@
       <img alt="boxplot" *ngIf="stripesImage" [src]="stripesImage" />
     </div>
   </div>
+  <button
+    class="btn btn-outline-primary btn-lg"
+    type="button"
+    *ngIf="loading && user"
+    (click)="getReport()"
+  >
+    Download report
+  </button>
 </div>

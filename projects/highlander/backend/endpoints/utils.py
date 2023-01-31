@@ -42,6 +42,7 @@ class MapCropConfig:
     }
 
     CROPS_OUTPUT_ROOT = Path("/catalog/crops/")
+    STRIPES_OUTPUT_ROOT = Path("/catalog/climate_stripes/")
 
     # variable used for the cases where the model name and the file name does not match
     MODELS_MAPPING = {"RF": "R"}
@@ -50,7 +51,7 @@ class MapCropConfig:
     MANDATORY_PARAM_MAP = {
         "soil-erosion": {"all_products": ["model_id"]},
         "human-wellbeing": {
-            "all_products": ["daily_metric"],
+            "all_products": ["daily_metric", "indicator"],
             "daily": ["year", "date"],
         },
         "era5-downscaled-over-italy": {"all_products": ["time_period"]},
@@ -466,6 +467,16 @@ class MapCropConfig:
             return None
 
         return output_structure
+
+    @staticmethod
+    def getStripesOutputPath(area_name: str, time_period: str, administrative: str):
+        output_filename = f"{area_name.replace(' ', '_').lower()}_stripes.png"
+        output_path = f"{time_period}/{administrative}"
+        output_dir = Path(
+            MapCropConfig.STRIPES_OUTPUT_ROOT, output_path
+        )  # Needed to create the output folder if it does not exist.
+
+        return output_dir, output_filename
 
 
 class PlotUtils:

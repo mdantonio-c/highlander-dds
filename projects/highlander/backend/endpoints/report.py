@@ -9,7 +9,7 @@ from highlander.connectors import broker
 from highlander.endpoints.utils import MapCropConfig as config
 from restapi import decorators
 from restapi.connectors import Connector
-from restapi.exceptions import NotFound, ServerError
+from restapi.exceptions import BadRequest, NotFound, ServerError
 from restapi.models import Schema, fields, validate
 from restapi.rest.definition import EndpointResource
 from restapi.services.authentication import User
@@ -105,8 +105,20 @@ class Report(EndpointResource):
         if not dataset_details["data"]:
             raise NotFound(f"dataset {dataset_id} not found")
 
-        # get the output structure
+        # check if all the params of the output structure are present
         endpoint_arguments = locals()
+        try:
+            for product, param_list in config.MANDATORY_PARAM_MAP[dataset_id].items():
+                if product == product_id or product == "all_products":
+                    for param in param_list:
+                        if not endpoint_arguments[param]:
+                            raise BadRequest(
+                                f"{param} parameter is needed for {product_id} product in {dataset_id}"
+                            )
+        except KeyError:
+            raise ServerError(f"{dataset_id} not found in Mandatory param map")
+
+        # get the output structure
         area_name = area_id.lower()
 
         output_structure = config.getOutputPath(
@@ -131,11 +143,18 @@ class Report(EndpointResource):
 
         # get the plot filename
         # TODO the plot for the report will be the boxplot
-        plot_filename = config.getOutputFilename(
-            "plot", "png", "distribution", area_name
-        )
-        # build the filepath for plot
-        plot_filepath = Path(output_dir, plot_filename)
+        if dataset_id != "era5-downscaled-over-italy":
+            plot_filename = config.getOutputFilename(
+                "plot", "png", "distribution", area_name
+            )
+            # build the filepath for plot
+            plot_filepath = Path(output_dir, plot_filename)
+        else:
+            plot_dir, plot_filename = config.getStripesOutputPath(
+                area_name, time_period, area_type
+            )
+            plot_filepath = Path(plot_dir, plot_filename)
+
         if not plot_filepath.is_file():
             raise NotFound(
                 "Plot file for requested report not found: Please use /crop api to create it"
@@ -146,13 +165,19 @@ class Report(EndpointResource):
 
         # create the labels
         # label params are the same of the output structure excluding the dataset name (first element) and the area type (last element)
+
         if not label:
             label_params = output_structure[1:-1]
             label = " - ".join(
                 l_par.replace("-", " ").title() for l_par in label_params
             )
-        label_map = f"Map {area_id.title()} - {label}"
-        label_plot = f"Distribution of {area_id.title()} - {label}"
+
+        if dataset_id != "era5-downscaled-over-italy":
+            label_map = f"Map {area_id.title()} - {label}"
+            label_plot = f"Distribution of {area_id.title()} - {label}"
+        else:
+            label_map = f"{area_id.title()} - Map of {label} for the 1989-2020 period"
+            label_plot = f"{area_id.title()} - Anomaly of {label} compared to the average of the period 1989-2020"
 
         pdf = PDF()
         # get the dataset license

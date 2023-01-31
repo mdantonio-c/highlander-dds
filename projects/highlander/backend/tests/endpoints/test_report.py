@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 
 from faker import Faker
@@ -20,7 +21,6 @@ class TestApp(BaseTests):
     def test_not_found_cases(self, client: FlaskClient, faker: Faker) -> None:
         headers, _ = BaseTests.do_login(client, None, None)
         self.save("auth_header", headers)
-        headers = self.get("auth_header")
 
         # check not existing dataset
         query_params = (
@@ -45,6 +45,14 @@ class TestApp(BaseTests):
         assert r.status_code == 500
         # restore the original map
         config.OUTPUT_STRUCTURE_MAP = original_map
+
+        # check if there are missing parameters
+        incomplete_query_params = f"area_type=regions&area_id={params.REGION_ID}"
+        incomplete_endpoint = f"{API_URI}/datasets/{params.DATASET_ID}/products/{params.PRODUCT_ID}/report?{incomplete_query_params}"
+        r = client.get(incomplete_endpoint, headers=headers)
+        assert r.status_code == 400
+        response_msg = self.get_content(r)
+        assert "parameter is needed" in response_msg
 
         # check not existing map
         r = client.get(endpoint, headers=headers)
@@ -71,6 +79,8 @@ class TestApp(BaseTests):
         )
         assert map_output_file.is_file()
 
+        self.save("map_filepath", map_output_file)
+
         # check not existing plot
         r = client.get(endpoint, headers=headers)
         assert r.status_code == 404
@@ -80,6 +90,12 @@ class TestApp(BaseTests):
             == "Plot file for requested report not found: Please use /crop api to create it"
         )
 
+        # check not existing plot for stripes
+
+    def test_get_report(self, client: FlaskClient, faker: Faker) -> None:
+
+        headers = self.get("auth_header")
+        map_output_file = self.get("map_filepath")
         # create the plot
         plotcrop_query_params = f"indicator={params.INDICATOR}&model_id={params.MODEL_ID}&area_type=regions&area_id={params.REGION_ID}&type=plot&plot_type=distribution"
         plotcrop_endpoint = f"{API_URI}/datasets/{params.DATASET_ID}/products/{params.PRODUCT_ID}/crop?{plotcrop_query_params}"
@@ -100,6 +116,10 @@ class TestApp(BaseTests):
         assert plot_output_file.is_file()
 
         # get the report
+        query_params = (
+            f"model_id={params.MODEL_ID}&area_type=regions&area_id={params.REGION_ID}"
+        )
+        endpoint = f"{API_URI}/datasets/{params.DATASET_ID}/products/{params.PRODUCT_ID}/report?{query_params}"
         r = client.get(endpoint, headers=headers)
         assert r.status_code == 200
         # check the response encoding
@@ -107,6 +127,56 @@ class TestApp(BaseTests):
         assert type(response_body) == str
         # I don't know how to test that the response is a correct pdf without installing some specific library..
 
+        # get the report for stripes
+        # create a fake stripes map (to create a real map there's a file missing in test suite dataset)
+        mapstripes_filename = (
+            f"{params.REGION_ID.lower().replace(' ', '_').lower()}_map.png"
+        )
+        mapstripes_output_dir = Path(
+            MapCropConfig.CROPS_OUTPUT_ROOT,
+            params.DATASET_VHR,
+            params.PRODUCT_MAPCROP_VHR,
+            params.STRIPES_TIME_PERIOD,
+            "regions",
+        )
+        mapstripes_output_dir.mkdir(parents=True, exist_ok=True)
+        assert mapstripes_output_dir.is_dir()
+        # copy the other map file
+        mapstripes_output_file = Path(mapstripes_output_dir, mapstripes_filename)
+        shutil.copy(map_output_file, mapstripes_output_file)
+        assert mapstripes_output_file.is_file()
+
+        # create the stripes plot
+        stripes_query_params = f"?administrative=regions&time_period={params.STRIPES_TIME_PERIOD}&area_id={params.REGION_ID}"
+        stripes_endpoint = (
+            f"{API_URI}/datasets/{params.DATASET_VHR}/stripes{stripes_query_params}"
+        )
+        r = client.get(stripes_endpoint, headers=headers)
+        assert r.status_code == 200
+
+        stripes_filename = (
+            f"{params.REGION_ID.lower().replace(' ', '_').lower()}_stripes.png"
+        )
+        stripes_output_file = Path(
+            MapCropConfig.STRIPES_OUTPUT_ROOT,
+            params.STRIPES_TIME_PERIOD,
+            "regions",
+            stripes_filename,
+        )
+        # check the file has been created
+        assert stripes_output_file.is_file()
+
+        # get the report
+        query_params = f"time_period={params.STRIPES_TIME_PERIOD}&area_type=regions&area_id={params.REGION_ID}"
+        endpoint = f"{API_URI}/datasets/{params.DATASET_VHR}/products/{params.PRODUCT_MAPCROP_VHR}/report?{query_params}"
+        r = client.get(endpoint, headers=headers)
+        assert r.status_code == 200
+        # check the response encoding
+        response_body = r.get_data().decode("latin-1")
+        assert type(response_body) == str
+
         # remove the created elements
         map_output_file.unlink()
         plot_output_file.unlink()
+        mapstripes_output_file.unlink()
+        stripes_output_file.unlink()
