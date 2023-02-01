@@ -189,7 +189,7 @@ class TestApp(BaseTests):
         assert r.status_code == 202
         time.sleep(5)
 
-        self.invalidate_dataset_cache()
+        invalidate_dataset_cache()
         # check that cache files aren't created by get dataset endpoint
         r = client.get(get_dataset_endpoint)
         assert r.status_code == 200
@@ -216,13 +216,13 @@ class TestApp(BaseTests):
         ]
 
         # check clean with cache full
-        self.invalidate_dataset_cache()
+        invalidate_dataset_cache()
         headers = self.get("auth_header")
         endpoint = f"{API_URI}/admin/cache"
         body = {"clean": True}
         r = client.post(endpoint, json=body, headers=headers)
         assert r.status_code == 202
-        time.sleep(5)
+        time.sleep(8)
         # check that all cache files have been recreated after cleaning
         cache_files = [x for x in CACHE_DIR.iterdir() if "cache_conf" not in x.name]
         re_creation_time = [
@@ -230,7 +230,7 @@ class TestApp(BaseTests):
             for x in CACHE_DIR.iterdir()
             if "cache_conf" not in x.name
         ]
-        assert len(cache_files) == self.CACHE_FILE_NUMBER
+        assert len(cache_files) == params.CACHE_FILE_NUMBER
         assert creation_time[0] != re_creation_time[0]
 
         # cleaning a single dataset from cache and checking its recreation
