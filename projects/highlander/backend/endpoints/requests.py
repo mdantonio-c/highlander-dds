@@ -251,7 +251,7 @@ class EstimateSize(EndpointResource):
         if dataset_name not in dds.get_datasets([dataset_name]):
             raise NotFound(f"Dataset <{dataset_name}> does not exist")
         try:
-            estimated_size = dds.broker.estimate_size(
+            estimated_size = dds.estimate_size_check(
                 dataset_name=dataset_name, request=args
             )
         except Exception as e:

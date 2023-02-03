@@ -172,7 +172,9 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
       .subscribe((val) => {
         if (val) {
           this.estimatedSize = val;
-        }
+        } else {
+          this.estimatedSize = -1;
+          }
       });
   }
 

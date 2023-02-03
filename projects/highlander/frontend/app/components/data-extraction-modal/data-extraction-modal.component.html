@@ -22,7 +22,7 @@
     class="mb-0"
     [animation]="true"
     [dismissible]="!autoSizeEstimation"
-    [type]="remaining >= 0 ? 'success' : 'warning'"
+    [type]="remaining >= 0 && estimatedSize >= 0 ? 'success' : 'warning'"
     (closed)="estimateAlertAlertClosed = true"
   >
     <strong>Size Estimate</strong>:
@@ -166,7 +166,7 @@
     type="submit"
     class="btn btn-primary btn-lg"
     form="ngForm"
-    [disabled]="autoSizeEstimation && (!estimatedSize || remaining < 0)"
+    [disabled]="autoSizeEstimation && (!estimatedSize || remaining < 0 || estimatedSize < 0)"
   >
     Job Submit »
   </button>
