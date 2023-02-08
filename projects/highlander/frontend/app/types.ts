@@ -175,6 +175,8 @@ export interface ForestSuitabilityFilter {
 
 export interface SuitabilityVegetationFilter {
   indicator: string;
+  forestSpecie?: string;
+  forestMap?: string;
 }
 
 export interface SuitabilityVegetationFeatureInfo {
@@ -187,6 +189,7 @@ export interface SuitabilityVegetationFeatureInfo {
 export interface SuitabilityVegetationFeatureInfoProperty {
   CompI_index?: number;
   Index_of_Aflatoxin?: number;
+  GRAY_INDEX?: number;
 }
 
 export interface SuitabilityVegetationChartData {

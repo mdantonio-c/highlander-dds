@@ -12,7 +12,8 @@ import { SuitabilityVegetationChartData } from "../../../../types";
 export class SuitabilityVegetationChart implements OnChanges {
   @Input() pointValues;
   @Input() isPointSelected;
-  @Input() indicator;
+  @Input() yLabel;
+  @Input() hasTimeranges;
 
   loading = false;
   chartData: SuitabilityVegetationChartData[];
@@ -24,7 +25,7 @@ export class SuitabilityVegetationChart implements OnChanges {
   constructor(
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnChanges() {
@@ -41,10 +42,18 @@ export class SuitabilityVegetationChart implements OnChanges {
 
   normalizeData() {
     let normalizedData = [];
-    for (let i = 0; i < TIMERANGES.length; i++) {
+    //case of indicators that have timerange
+    if (this.hasTimeranges) {
+      for (let i = 0; i < TIMERANGES.length; i++) {
+        let singleData = {};
+        singleData["name"] = TIMERANGES[i];
+        singleData["value"] = this.pointValues[i].toFixed(2);
+        normalizedData.push(singleData);
+      }
+    } else {
       let singleData = {};
-      singleData["name"] = TIMERANGES[i];
-      singleData["value"] = this.pointValues[i].toFixed(2);
+      singleData["name"] = "";
+      singleData["value"] = this.pointValues[0].toFixed(2);
       normalizedData.push(singleData);
     }
     return normalizedData;

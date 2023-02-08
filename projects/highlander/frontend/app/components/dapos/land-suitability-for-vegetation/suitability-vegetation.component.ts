@@ -17,7 +17,7 @@ import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
 import { SSRService } from "@rapydo/services/ssr";
 import { LegendConfig, LEGEND_DATA } from "../../../services/data";
-import { INDICATORS, BOUNDING_BOX, TIMERANGES } from "./data";
+import { INDICATORS, MAPS, BOUNDING_BOX, TIMERANGES } from "./data";
 
 import * as L from "leaflet";
 
@@ -55,9 +55,11 @@ export class SuitabilityVegetationComponent implements OnInit {
   pointValues: number[];
   pointMarker: L.Marker = null;
   isPointSelected: boolean = false;
-  indicator: string = null;
+  yLabel: string = null;
   selectedPointLat: number;
   selectedPointLon: number;
+  queryLayers: string[] = [];
+  hasTimeranges: boolean = true;
 
   LAYER_OSM = L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -66,7 +68,7 @@ export class SuitabilityVegetationComponent implements OnInit {
         '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Open Street Map</a>',
       maxZoom: MAX_ZOOM,
       minZoom: MIN_ZOOM,
-    }
+    },
   );
 
   layers: L.Layer[] = [this.LAYER_OSM];
@@ -113,7 +115,7 @@ export class SuitabilityVegetationComponent implements OnInit {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private ssr: SSRService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     this.mapsUrl = dataService.getMapsUrl();
     //console.log(`Map url: ${this.mapsUrl}`)
@@ -155,13 +157,64 @@ export class SuitabilityVegetationComponent implements OnInit {
 
   private setOverlaysToMap() {
     let overlays = {};
+    this.queryLayers = [];
     const ind = this.filter.indicator;
 
     let url = `${this.mapsUrl}/wms`;
 
-    TIMERANGES.forEach((m) => {
-      overlays[m] = L.tileLayer.wms(url, {
-        layers: `highlander:${ind}_${m}`,
+    let layers = "";
+    let style = "";
+    if (this.filter.indicator !== "forest") {
+      layers = `highlander:${this.filter.indicator}`;
+      let indicator = INDICATORS.find((x) => x.code === this.filter.indicator);
+      style = indicator.style;
+    } else {
+      layers = `highlander:${this.filter.forestMap}_${this.filter.forestSpecie}`;
+      let forestMap = MAPS.find((x) => x.code === this.filter.forestMap);
+      style = forestMap.style;
+    }
+    let layerControlElement = Array.from(
+      document.getElementsByClassName(
+        "leaflet-control-layers",
+      ) as HTMLCollectionOf<HTMLElement>,
+    );
+
+    //check if controls for timeranges are needed
+    this.hasTimeranges = true;
+    if (this.filter.indicator == "forest") {
+      if (
+        this.filter.forestMap == "delta-suit" ||
+        this.filter.forestMap == "rangesize-change"
+      ) {
+        this.hasTimeranges = false;
+      }
+    } else {
+      this.hasTimeranges = true;
+    }
+
+    if (this.hasTimeranges) {
+      TIMERANGES.forEach((m) => {
+        overlays[m] = L.tileLayer.wms(url, {
+          layers: `${layers}_${m}`,
+          version: "1.1.0",
+          format: "image/png",
+          opacity: 0.7,
+          transparent: true,
+          attribution: "&copy; Highlander",
+          maxZoom: MAX_ZOOM,
+          minZoom: MIN_ZOOM,
+          styles: `highlander:${style}`,
+        });
+        this.queryLayers.push(`${layers}_${m}`);
+      });
+      //console.log(overlays)
+      this.layersControl["baseLayers"] = overlays;
+      // make sure the layers controls are visible
+      layerControlElement[0].style.visibility = "visible";
+      overlays[TIMERANGES[0]].addTo(this.map);
+    } else {
+      overlays[this.filter.forestMap] = L.tileLayer.wms(url, {
+        layers: layers,
         version: "1.1.0",
         format: "image/png",
         opacity: 0.7,
@@ -169,11 +222,15 @@ export class SuitabilityVegetationComponent implements OnInit {
         attribution: "&copy; Highlander",
         maxZoom: MAX_ZOOM,
         minZoom: MIN_ZOOM,
+        styles: `highlander:${style}`,
       });
-    });
-    //console.log(overlays)
-    this.layersControl["baseLayers"] = overlays;
-    overlays[TIMERANGES[0]].addTo(this.map);
+      this.queryLayers.push(`${layers}`);
+      //console.log(overlays)
+      this.layersControl["baseLayers"] = overlays;
+      // hide the layer control (we have now a single overlay)
+      layerControlElement[0].style.visibility = "hidden";
+      overlays[this.filter.forestMap].addTo(this.map);
+    }
 
     this.map.setView(this.piemonteBounds.center, this.piemonteBounds.zoom);
     //this.map.on('click', this.getPointData.bind(this));
@@ -181,7 +238,15 @@ export class SuitabilityVegetationComponent implements OnInit {
 
   private initLegends(map: L.Map) {
     INDICATORS.forEach((ind) => {
-      this.legends[ind.code] = this.createLegendControl(ind.code);
+      if (ind.code != "forest") {
+        this.legends[ind.code] = this.createLegendControl(ind.code);
+        // console.log(`add legend <${ind.code}>`);
+      }
+    });
+
+    // the different forests maps have different legends
+    MAPS.forEach((fmap) => {
+      this.legends[fmap.code] = this.createLegendControl(fmap.code);
       // console.log(`add legend <${ind.code}>`);
     });
   }
@@ -219,24 +284,42 @@ export class SuitabilityVegetationComponent implements OnInit {
     console.log("apply filter", data);
     if (!this.filter) {
       this.filter = data;
-      this.indicator = data.indicator;
       this.setOverlaysToMap();
       // add a legend
-      if (this.legends[data.indicator]) {
+      if (data.indicator === "forest") {
+        if (this.legends[data.forestMap]) {
+          this.legends[data.forestMap].addTo(this.map);
+        }
+        this.yLabel = data.forestMap;
+      } else if (this.legends[data.indicator]) {
         this.legends[data.indicator].addTo(this.map);
+        this.yLabel = data.indicator;
       }
     }
 
     // INDICATORS
-    if (this.filter.indicator !== data.indicator) {
+    if (
+      this.filter.indicator !== data.indicator ||
+      this.filter.forestSpecie !== data.forestSpecie ||
+      this.filter.forestMap !== data.forestMap
+    ) {
       //console.log(`indicator changed to ${data.indicator}`);
 
+      let legend_to_remove =
+        this.filter.indicator !== "forest"
+          ? this.filter.indicator
+          : this.filter.forestMap;
       // remove the previous legend
-      this.map.removeControl(this.legends[this.filter.indicator]);
+      this.map.removeControl(this.legends[legend_to_remove]);
       // add the new legend
-      this.legends[data.indicator].addTo(this.map);
+      if (data.indicator === "forest") {
+        this.legends[data.forestMap].addTo(this.map);
+        this.yLabel = data.forestMap;
+      } else {
+        this.legends[data.indicator].addTo(this.map);
+        this.yLabel = data.indicator;
+      }
       this.filter = data;
-      this.indicator = data.indicator;
 
       let overlays = this.layersControl["baseLayers"];
       for (let name in overlays) {
@@ -275,31 +358,31 @@ export class SuitabilityVegetationComponent implements OnInit {
     let bbox = this.map.getBounds().toBBoxString();
     let width = this.map.getSize().x;
     let height = this.map.getSize().y;
-    let queryLayers = `highlander:${this.filter.indicator}_${TIMERANGES[0]}_WCS,highlander:${this.filter.indicator}_${TIMERANGES[1]}_WCS`;
+    let indicator = INDICATORS.find((x) => x.code === this.filter.indicator);
     this.dataService
-      .getFeatureInfo(bbox, width, height, x, y, queryLayers)
+      .getFeatureInfo(bbox, width, height, x, y, this.queryLayers.join(","))
       .subscribe(
         (response) => {
           let pointFeatureInfos: SuitabilityVegetationFeatureInfo[];
           pointFeatureInfos = response.features;
           this.pointValues = [];
           for (const m of pointFeatureInfos) {
-            this.filter.indicator === "CompI"
-              ? this.pointValues.push(m.properties.CompI_index)
-              : this.pointValues.push(m.properties.Index_of_Aflatoxin);
+            this.pointValues.push(m.properties[indicator.band]);
           }
           //console.log(this.pointValues)
           this.cdr.detectChanges();
         },
         (error) => {
           this.notify.showError(error);
-        }
+        },
       );
   }
 
   closeGraph() {
     //remove marker
-    this.map.removeLayer(this.pointMarker);
+    if (this.pointMarker) {
+      this.map.removeLayer(this.pointMarker);
+    }
     //remove point data
     this.pointValues = [];
     // close graph

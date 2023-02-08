@@ -15,6 +15,61 @@
             </option>
           </select>
         </div>
+        <!-- FOREST SPECIE -->
+        <div class="mb-3" *ngIf="filterForm.value.indicator == 'forest'">
+          <label class="col-form-label"><strong>Specie:</strong></label>
+          <select
+            id="specieGroup"
+            formControlName="forestSpecie"
+            class="form-select"
+            [ngClass]="{
+              'is-invalid':
+                !this.filterForm.get('forestSpecie').value &&
+                this.filterForm.get('indicator').value === 'forest'
+            }"
+          >
+            <option *ngFor="let i of forestSpecie" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+          <div
+            class="invalid-feedback"
+            *ngIf="
+              !this.filterForm.get('forestSpecie').value &&
+              this.filterForm.get('indicator').value === 'forest'
+            "
+          >
+            Choose a specie
+          </div>
+        </div>
+
+        <!-- FOREST MAPS -->
+        <div class="mb-3" *ngIf="filterForm.value.indicator == 'forest'">
+          <label class="col-form-label"><strong>Map:</strong></label>
+          <select
+            id="forestMapGroup"
+            formControlName="forestMap"
+            class="form-select"
+            [ngClass]="{
+              'is-invalid':
+                !this.filterForm.get('forestMap').value &&
+                this.filterForm.get('indicator').value === 'forest'
+            }"
+          >
+            <option *ngFor="let i of forestMap" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+          <div
+            class="invalid-feedback"
+            *ngIf="
+              !this.filterForm.get('forestMap').value &&
+              this.filterForm.get('indicator').value === 'forest'
+            "
+          >
+            Choose a type of map
+          </div>
+        </div>
       </form>
     </div>
   </div>

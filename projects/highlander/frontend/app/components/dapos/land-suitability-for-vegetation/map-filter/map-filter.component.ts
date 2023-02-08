@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { AuthService } from "@rapydo/services/auth";
-import { INDICATORS } from "../data";
+import { INDICATORS, SPECIES, MAPS } from "../data";
 
 @Component({
   selector: "suitability-vegetation-filter",
@@ -14,10 +14,14 @@ export class MapFilterComponent implements OnInit {
   @Output() onFilterChange: EventEmitter<null> = new EventEmitter<null>();
 
   readonly indicators = INDICATORS;
+  readonly forestSpecie = SPECIES;
+  readonly forestMap = MAPS;
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.filterForm = this.fb.group({
       indicator: ["CompI"],
+      forestSpecie: [""],
+      forestMap: [""],
     });
   }
 
@@ -33,6 +37,22 @@ export class MapFilterComponent implements OnInit {
 
   private onChanges(): void {
     this.filterForm.valueChanges.subscribe((val) => {
+      if (this.filterForm.get("indicator").value === "forest") {
+        if (
+          !this.filterForm.get("forestSpecie").value ||
+          !this.filterForm.get("forestMap").value
+        ) {
+          return;
+        }
+      } else {
+        this.filterForm.patchValue(
+          {
+            forestSpecie: "",
+            forestMap: "",
+          },
+          { emitEvent: false, onlySelf: true },
+        );
+      }
       this.onFilterChange.emit(val);
     });
   }
