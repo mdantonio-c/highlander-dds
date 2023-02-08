@@ -120,7 +120,7 @@ class Stripes(EndpointResource):
             if administrative == "regions" or administrative == "provinces":
                 try:
                     nc_data_to_plot = PlotUtils.cropArea(
-                        data_filepath, area_name, area, DATA_VARIABLE
+                        data_filepath, area_name, area, DATA_VARIABLE, decode_time=True
                     )
                 except Exception as exc:
                     raise ServerError(f"Errors in cropping the data: {exc}")

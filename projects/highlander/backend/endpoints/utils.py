@@ -500,9 +500,10 @@ class PlotUtils:
         data_variable: str,
         year_day: Optional[int] = "",
         has_time: bool = False,
+        decode_time: bool = False,
     ) -> Any:
         # read the netcdf file
-        data_to_crop = xr.open_dataset(netcdf_path, decode_times=False)
+        data_to_crop = xr.open_dataset(netcdf_path, decode_times=decode_time)
         # data_to_crop = xr.open_dataset(netcdf_path)
         # rfactor projections have different names for lat lon --> rename the variables
         if "latitude" in data_to_crop.coords:

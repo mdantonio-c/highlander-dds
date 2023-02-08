@@ -13,6 +13,10 @@ from dds_backend import DataBroker
 from restapi.connectors import Connector, ExceptionsList
 from restapi.utilities.logs import log
 
+from dds_backend.core.base.util import Query
+from dds_backend.core.base.log_utils import LogObject
+import dds_backend.core.base.util as ut
+
 wtypes = {
     "int32": "IntList",
     "int64": "IntList",
@@ -53,6 +57,49 @@ class BrokerExt(Connector):
 
     def is_connected(self) -> bool:
         return not self.disconnected
+
+    def estimate_size_check(
+        self,
+        dataset_name: str,
+        request: Optional[Mapping[str, Any]] = {},
+        log_obj: Optional[LogObject] = LogObject.new(),
+    ) -> str:
+
+        request = request.copy()
+        if "product_type" not in request:
+            raise ex.DMSKeyError("Key `product_type` is missing  in the request!")
+        request = self.broker._get_coord_from_area(request, log_obj=log_obj)
+        request = self.broker._get_coord_from_location(request, log_obj=log_obj)
+        product_type = request.pop("product_type")
+
+        queries = (
+            ut.Query.parse_dict(request, query_id="0") if request is not None else []
+        )
+        result = self.broker._retrieve(
+            dataset_name=dataset_name,
+            product_type=product_type,
+            queries=queries,
+            log_obj=log_obj,
+        )
+
+        # checking the coordinates in the cubes of result for non-zero lenght
+        err_size = 0
+
+        for i, cube in result._cubes_df.items():
+            prod_coord = 1
+            flag = 1
+            for k,v in cube.data.coords.dims.items():
+                if (cube.data.coords[k].size == 0):
+                    flag = 0
+                prod_coord = prod_coord * flag
+
+
+            err_size = err_size + prod_coord
+
+        if err_size == 0:
+            return -1
+        else:
+            return sum(cube.size() for cube in result._cubes_df)
 
     def reading_cache_config(self) -> Optional[List[str]]:
         if not os.path.exists(self.broker.cache_config_file):
