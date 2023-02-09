@@ -37,7 +37,7 @@ export class MapFilterComponent implements OnInit {
       this.onFilterChange.emit(this.filterForm.value);
     }, 1000);
   }
-
+  
   private onChanges(): void {
     this.filterForm.valueChanges.subscribe((val) => {
       this.onFilterChange.emit(val);

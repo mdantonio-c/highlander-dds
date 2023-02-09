@@ -3,16 +3,21 @@
     <div class="col-12">
       <hr class="mt-1 mb-3" />
     </div>
-    <div class="col-2 mb-2">
+    <div class="col-2 mb-2 filters">
       <crop-water-filter
-        class="collapse"
+        [class.collapsed]="isCollapsed"
         id="filters"
         [ngbCollapse]="isFilterCollapsed"
         [dataset]="dataset.id"
         (onFilterChange)="applyFilter($event)"
       ></crop-water-filter>
+      <label
+      class="toggle"
+      (click)="isCollapsed = !isCollapsed"
+      [class.collapsed]="isCollapsed"
+    ></label>
     </div>
-    <div class="col ps-3">
+    <div class="col px-3">
       <div id="map-wrapper" class="fill" style="position: relative">
         <ngx-spinner
           bdColor="rgba(255,255,255,0.8)"
