@@ -82,6 +82,8 @@ export class CropWaterComponent {
     protected spinner: NgxSpinnerService,
     private modalService: NgbModal,
   ) {}
+  
+  isCollapsed = true;
 
   onMapReady(map: L.Map) {
     this.map = map;

@@ -21,4 +21,10 @@ export class ApplicationsComponent implements OnInit {
         : this.categories.set(cItem, [ds]);
     });
   }
+
+  trackByFunc(index,value){
+
+    return value.id;
+    
+  }
 }
