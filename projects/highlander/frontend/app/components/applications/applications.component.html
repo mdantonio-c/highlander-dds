@@ -1,19 +1,49 @@
 <hr class="m-0" />
 <div class="row">
   <div class="col-2 sidebar-container">
-    <div id="list " class="list-group" >
-      <a class="list-group-item list-group-item-action nav-link" *ngFor="let category of categories | keyvalue; let i=index; trackBy:trackByFunc" href="/app/applications#list-item-{{i}}">{{ category.key | titlecase | slice:3}}</a>
+    <div id="list " class="list-group">
+      <a
+        class="list-group-item list-group-item-action nav-link"
+        *ngFor="
+          let category of categories | keyvalue;
+          let i = index;
+          trackBy: trackByFunc
+        "
+        href="/app/applications#list-item-{{ i }}"
+        >{{ category.key | titlecase | lastWord : "-" }}</a
+      >
     </div>
   </div>
   <div class="col">
-    <div class="category-box border-bottom d-flex p-2 justify-content-between flex-wrap" *ngFor="let category of categories | keyvalue; let i=index; trackBy:trackByFunc">
-      <h3 data-bs-spy="scroll" data-bs-target="#list" data-bs-smooth-scroll="true" tabindex="0" class="scrollspy-example category-title" id="list-item-{{i}}">{{ category.key | titlecase | slice:3}}</h3>
+    <div
+      class="category-box border-bottom d-flex p-2 justify-content-between flex-wrap"
+      *ngFor="
+        let category of categories | keyvalue;
+        let i = index;
+        trackBy: trackByFunc
+      "
+    >
+      <h3
+        data-bs-spy="scroll"
+        data-bs-target="#list"
+        data-bs-smooth-scroll="true"
+        tabindex="0"
+        class="scrollspy-example category-title"
+        id="list-item-{{ i }}"
+      >
+        {{ category.key | titlecase | lastWord : "-" }}
+      </h3>
       <div class="d-flex w-100 flex-wrap card-container">
-        <hld-dataset-card *ngFor="let dataset of category.value" class="mb-3" [dataset]="dataset"></hld-dataset-card></div>
+        <hld-dataset-card
+          *ngFor="let dataset of category.value"
+          class="mb-3"
+          [dataset]="dataset"
+        ></hld-dataset-card>
+      </div>
     </div>
   </div>
 </div>
-  <!--
+<!--
     <div
   class="category-box border-bottom d-flex p-2 justify-content-between flex-wrap"
   *ngFor="let category of categories | keyvalue"
