@@ -295,7 +295,9 @@ export class WaterCycleComponent implements OnInit {
       // remove the previous legend
       this.map.removeControl(this.legends[this.filter.variable]);
       // add the new legend
-      this.legends[data.variable].addTo(this.map);
+      if (data.drought !== "h") {
+        this.legends[data.variable].addTo(this.map);
+      }
 
       this.filter = data;
 
