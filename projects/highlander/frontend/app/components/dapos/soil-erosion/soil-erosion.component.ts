@@ -81,7 +81,7 @@ export class SoilErosionComponent implements OnInit {
         '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Open Street Map</a>',
       maxZoom: MAX_ZOOM,
       minZoom: MIN_ZOOM,
-    }
+    },
   );
 
   layers: L.Layer[] = [this.LAYER_OSM];
@@ -133,7 +133,7 @@ export class SoilErosionComponent implements OnInit {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private ssr: SSRService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     this.mapCropDetails = {};
     this.mapsUrl = dataService.getMapsUrl();
@@ -160,7 +160,7 @@ export class SoilErosionComponent implements OnInit {
       "baselayerchange",
       (e: L.LayerEvent, comp: SoilErosionComponent = ref) => {
         comp.getTheSelectedModel(e.layer["_leaflet_id"]);
-      }
+      },
     );
   }
 
@@ -191,7 +191,7 @@ export class SoilErosionComponent implements OnInit {
     INDICATORS.forEach((ind) => {
       PERIODS.forEach((per) => {
         this.legends[`${ind.code}_${per.code}`] = this.createLegendControl(
-          `${ind.code}_${per.code}`
+          `${ind.code}_${per.code}`,
         );
         //console.log(`add legend <${ind.code}_${per.code}>`);
       });
@@ -244,7 +244,7 @@ export class SoilErosionComponent implements OnInit {
 
       // remove the previous legend
       this.map.removeControl(
-        this.legends[`${this.filter.indicator}_${this.filter.period}`]
+        this.legends[`${this.filter.indicator}_${this.filter.period}`],
       );
       // add the new legend
       this.legends[`${data.indicator}_${data.period}`].addTo(this.map);
@@ -265,7 +265,7 @@ export class SoilErosionComponent implements OnInit {
 
       // remove the previous legend
       this.map.removeControl(
-        this.legends[`${this.filter.indicator}_${this.filter.period}`]
+        this.legends[`${this.filter.indicator}_${this.filter.period}`],
       );
       // add the new legend
       this.legends[`${data.indicator}_${data.period}`].addTo(this.map);
@@ -353,7 +353,7 @@ export class SoilErosionComponent implements OnInit {
 
   getTheSelectedModel(leaflet_id) {
     for (const [key, value] of Object.entries(
-      this.layersControl["baseLayers"]
+      this.layersControl["baseLayers"],
     )) {
       if (value["_leaflet_id"] == leaflet_id) {
         this.currentModel = key;
@@ -417,10 +417,12 @@ export class SoilErosionComponent implements OnInit {
 
   closeDetails() {
     this.isPanelCollapsed = true;
-    this.map.setView(L.latLng([42.0, 13.0]), 6);
     setTimeout(() => {
       this.map.invalidateSize();
     }, 0);
+    setTimeout(() => {
+      this.map.setView(L.latLng([42.0, 13.0]), 6);
+    }, 1);
   }
 
   toggleCollapse() {

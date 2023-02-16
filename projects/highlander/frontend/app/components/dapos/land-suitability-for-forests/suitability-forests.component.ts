@@ -79,7 +79,7 @@ export class SuitabilityForestComponent implements OnInit {
         '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Open Street Map</a>',
       maxZoom: MAX_ZOOM,
       minZoom: MIN_ZOOM,
-    }
+    },
   );
 
   layers: L.Layer[] = [this.LAYER_OSM];
@@ -128,7 +128,7 @@ export class SuitabilityForestComponent implements OnInit {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private ssr: SSRService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     this.mapCropDetails = {};
     this.mapsUrl = dataService.getMapsUrl();
@@ -396,10 +396,12 @@ export class SuitabilityForestComponent implements OnInit {
 
   closeDetails() {
     this.isPanelCollapsed = true;
-    this.map.setView(L.latLng([42.0, 13.0]), 6);
     setTimeout(() => {
       this.map.invalidateSize();
     }, 0);
+    setTimeout(() => {
+      this.map.setView(L.latLng([42.0, 13.0]), 6);
+    }, 1);
   }
 
   toggleCollapse() {

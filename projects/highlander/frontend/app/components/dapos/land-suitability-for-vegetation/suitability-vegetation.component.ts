@@ -395,10 +395,12 @@ export class SuitabilityVegetationComponent implements OnInit {
 
   closeDetails() {
     this.isPanelCollapsed = true;
-    this.map.setView(L.latLng([42.0, 13.0]), 6);
     setTimeout(() => {
       this.map.invalidateSize();
     }, 0);
+    setTimeout(() => {
+      this.map.setView(L.latLng([42.0, 13.0]), 6);
+    }, 1);
   }
 
   toggleCollapse() {
