@@ -33,9 +33,16 @@
 
 @media (min-width: 1293px) {
   .card-container {
-   column-gap: 4.5%;
+   column-gap: 5% !important;
   }
 }
+
+@media(max-width: 1204px) {
+  .sidebar-container {
+    width: 27%;
+  }
+}
+
 @media (max-width: 871px)  {
   .category-box {
     justify-content: center !important;

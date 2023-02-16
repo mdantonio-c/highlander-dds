@@ -1,6 +1,6 @@
 <hr class="m-0" />
 <div class="row">
-  <div class="col-2">
+  <div class="col-2 sidebar-container">
     <div id="list " class="list-group" >
       <a class="list-group-item list-group-item-action nav-link" *ngFor="let category of categories | keyvalue; let i=index; trackBy:trackByFunc" href="/app/applications#list-item-{{i}}">{{ category.key | titlecase | slice:3}}</a>
     </div>
