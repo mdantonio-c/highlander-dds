@@ -484,7 +484,7 @@ input[type="checkbox"]:checked {
     top: 0 !important;
   }
 
-  .collapse:not(.show) + .toggle {
+  .collapse + .toggle {
     display: block;
   }
 
@@ -543,7 +543,7 @@ input[type="checkbox"]:checked {
     max-width: 98%;
     width: 97%;
     margin-left: 2%;
-    margin-top: 48px;
+    margin-top: 8px;
     align-self: self-end;
 
     .chart-container {
@@ -568,6 +568,7 @@ input[type="checkbox"]:checked {
 
       .collapse {
         z-index: 99999;
+        display: none;
       }
 
       .toggle.collapsed {
