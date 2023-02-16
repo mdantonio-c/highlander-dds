@@ -64,3 +64,9 @@
 .filters {
   width: 24.667% !important;
 }
+
+@media (max-width: 496px) {
+  .filters {
+    width: 84% !important;
+  }
+}
