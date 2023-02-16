@@ -9,7 +9,8 @@
           let i = index;
           trackBy: trackByFunc
         "
-        href="/app/applications#list-item-{{ i }}"
+        routerLink="."
+        [fragment]="'list-item-' + i"
         >{{ category.key | titlecase | lastWord : "-" }}</a
       >
     </div>
@@ -28,8 +29,8 @@
         data-bs-target="#list"
         data-bs-smooth-scroll="true"
         tabindex="0"
-        class="scrollspy-example category-title"
-        id="list-item-{{ i }}"
+        class="category-title"
+        [attr.id]="'list-item-' + i"
       >
         {{ category.key | titlecase | lastWord : "-" }}
       </h3>
