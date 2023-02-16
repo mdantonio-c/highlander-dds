@@ -1,0 +1,55 @@
+<div id="parameters">
+  <div class="card bg-light">
+    <div class="card-body">
+      <form [formGroup]="filterForm">
+        <!-- DROUGHT -->
+        <div class="mb-3">
+          <label class="col-form-label"><strong>Drought:</strong></label>
+          <select
+            id="droughtGroup"
+            formControlName="drought"
+            class="form-select"
+          >
+            <option *ngFor="let d of droughts" [value]="d.code">
+              {{ d.label }}
+            </option>
+          </select>
+        </div>
+        <!-- VARIABLE -->
+        <div class="mb-3">
+          <label class="col-form-label"><strong>Variable:</strong></label>
+          <select
+            id="variableGroup"
+            formControlName="variable"
+            class="form-select"
+          >
+            <option *ngFor="let v of variables" [value]="v.code">
+              {{ v.label }}
+            </option>
+          </select>
+        </div>
+        <!-- ACCUMULATION PERIOD -->
+        <div class="mb-3">
+          <label class="col-form-label"
+            ><strong>Accumulation <br />Period:</strong></label
+          >
+          <select
+            id="accumulationGroup"
+            formControlName="accumulation"
+            class="form-select"
+            *ngIf="filterForm.value.drought !== 'h'"
+          >
+            <option *ngFor="let a of accumulations" [value]="a.code">
+              {{ a.label }}
+            </option>
+          </select>
+          <span
+            class="form-select form-disabled"
+            *ngIf="filterForm.value.drought == 'h'"
+            >3 months</span
+          >
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

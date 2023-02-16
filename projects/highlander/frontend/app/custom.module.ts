@@ -29,6 +29,7 @@ import { HumanWellbeingComponent } from "./components/dapos/human-wellbeing/huma
 import { Era5DownscaledOverItalyComponent } from "./components/dapos/era5-downscaled-over-italy/era5-downscaled-over-italy.component";
 import { SuitabilityForestComponent } from "./components/dapos/land-suitability-for-forests/suitability-forests.component";
 import { SuitabilityVegetationComponent } from "./components/dapos/land-suitability-for-vegetation/suitability-vegetation.component";
+import { WaterCycleComponent } from "./components/dapos/water-cycle/water-cycle.component";
 import { SuitabilityVegetationChart } from "./components/dapos/land-suitability-for-vegetation/suitability-vegetation-chart/suitability-vegetation-chart.component";
 
 import { MapFilterComponent as SoilErosionFilter } from "./components/dapos/soil-erosion/map-filter/map-filter.component";
@@ -42,6 +43,8 @@ import { StripesComponent as Era5Stripes } from "./components/dapos/era5-downsca
 import { MapFilterComponent as SuitabilityForestFilter } from "./components/dapos/land-suitability-for-forests/map-filter/map-filter.component";
 import { MapDetailComponent as SuitabilityForestDetail } from "./components/dapos/land-suitability-for-forests/map-detail/map-detail.component";
 import { MapFilterComponent as SuitabilityVegetationFilter } from "./components/dapos/land-suitability-for-vegetation/map-filter/map-filter.component";
+import { MapFilterComponent as WaterCycleFilter } from "./components/dapos/water-cycle/map-filter/map-filter.component";
+import { MapDetailComponent as WaterCycleDetail } from "./components/dapos/water-cycle/map-detail/map-detail.component";
 
 import { ReplacePipe } from "./pipes/replace.pipe";
 import { AbsPipe } from "./pipes/abs.pipe";
@@ -104,6 +107,7 @@ const routes: Routes = [
     HumanWellbeingComponent,
     SuitabilityForestComponent,
     SuitabilityVegetationComponent,
+    WaterCycleComponent,
     SuitabilityVegetationChart,
     Era5DownscaledOverItalyComponent,
     SoilErosionFilter,
@@ -117,6 +121,8 @@ const routes: Routes = [
     SuitabilityForestFilter,
     SuitabilityForestDetail,
     SuitabilityVegetationFilter,
+    WaterCycleFilter,
+    WaterCycleDetail,
     ReplacePipe,
     AbsPipe,
     FirstWordPipe,

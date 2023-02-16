@@ -179,6 +179,12 @@ export interface SuitabilityVegetationFilter {
   forestMap?: string;
 }
 
+export interface WaterCycleFilter {
+  drought: string;
+  variable: string;
+  accumulation: string;
+}
+
 export interface SuitabilityVegetationFeatureInfo {
   type: string;
   id: string;
