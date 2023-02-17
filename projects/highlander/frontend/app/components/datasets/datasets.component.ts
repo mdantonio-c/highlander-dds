@@ -39,14 +39,15 @@ export class DatasetsComponent implements OnInit {
     private notify: NotificationService,
     private cdr: ChangeDetectorRef,
     private spinner: NgxSpinnerService,
-    public ssr: SSRService
+    public ssr: SSRService,
   ) {
     router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event) => {
-        this.isApplication = (event as NavigationEnd).url.endsWith(
-          "applications"
-        );
+        let url = (event as NavigationEnd).url;
+        // get rid of the fragment part
+        url = url.split("#")[0];
+        this.isApplication = url.endsWith("applications");
         this.title = this.isApplication ? "Applications" : "Datasets";
       });
   }
@@ -84,7 +85,7 @@ export class DatasetsComponent implements OnInit {
         },
         (error) => {
           this.notify.showError(error);
-        }
+        },
       )
       .add(() => {
         this.spinner.hide();

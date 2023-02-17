@@ -22,9 +22,7 @@ export class ApplicationsComponent implements OnInit {
     });
   }
 
-  trackByFunc(index,value){
-
+  trackByFunc(index, value) {
     return value.id;
-    
   }
 }

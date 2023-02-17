@@ -52,6 +52,7 @@ import { ClickStopPropagation } from "./directives/click-stop-propagation";
 import { EventStopPropagation } from "./directives/event-stop-propagation";
 import { HolderjsDirective } from "./directives/holderjs";
 import { FirstWordPipe } from "./pipes/first-word.pipe";
+import { LastWordPipe } from "./pipes/last-word.pipe";
 import { CropDetailsComponent } from "./components/dapos/crop-water/crop-details/crop-details.component";
 import { UppercaseFilterPipe } from "./pipes/uppercase-filter.pipe";
 import { StripesComponent } from "./components/dapos/era5-downscaled-over-italy/stripes/stripes.component";
@@ -126,6 +127,7 @@ const routes: Routes = [
     ReplacePipe,
     AbsPipe,
     FirstWordPipe,
+    LastWordPipe,
     UppercaseFilterPipe,
     ClickStopPropagation,
     EventStopPropagation,
