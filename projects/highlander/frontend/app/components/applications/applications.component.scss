@@ -13,22 +13,46 @@
   margin-top: 5px;
 }
 
-/*.category-box:last-of-type {
-  justify-content: flex-start !important;
-  border-bottom: none !important;
-  gap: 9.5%;
-
-}*/
-
-
-.category-box > .w-100{
-  border:none !important;
-  --bs-accordion-border-width: 0;
+.card-container{
+  column-gap: 5% !important;
 }
 
-.list-group-item {
-	border: none !important;
-	top: 12px;
+  /* Custom responsive for applications pages*/
+.sidebar-container {
+  position: relative;
+  width: 250px;
+  top:0;
+    
+  + .col{
+      margin-left:10px;
+  }
+  .list-group {
+    position:sticky;
+    top:0;
+    width:250px;
+  
+    .list-group-item {
+      border:none !important;
+    }
+  }
+}
+
+.sidebar-toggle {
+  cursor: pointer;
+  background-image: url("/app/custom/assets/images/mb_exit.svg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 35px;
+  height: 35px;
+  transition: 0.6s;
+  position: absolute;
+
+  &.collapsed {
+    margin-left: 8px;
+    background-image: url("/app/custom/assets/images/menu_burger.svg");
+    left: 0;
+  }
 }
 
 @media (min-width: 1293px) {
@@ -43,10 +67,52 @@
   }
 }
 
-@media (max-width: 871px)  {
-  .category-box {
-    justify-content: center !important;
+@media (min-width: 865px)  {
+  .list-group{
+    display: block;
+  
+    &.collapsed{
+      display: block;
+    }
   }
+  .sidebar-toggle {
+    display: none;
+  }
+}
+
+@media (max-width: 864px) {
+  .sidebar-container {
+    width: 98%;
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    z-index: 1;
+    height:46px;
+    border-bottom: 1px solid rgba(211, 211, 211, 0.342);
+    padding-top:4px;
+    padding-bottom:4px;
+    
+    & + .col {
+      margin-left:0;
+    }
+   
+    .list-group{
+      display: block;
+      position: absolute;
+      z-index:99999;
+      top:34px;
+      width: 100%;
+      padding:6px;
+   
+        
+      &.collapsed{
+          display: none;
+      }
+    }
+  } 
+}
+@media (max-width: 755px)  {
+ 
   .card-container {
     column-gap: 10%;
   justify-content: center;
@@ -63,5 +129,5 @@
 @media (max-width: 560px)  {
   .card-container {
     justify-content: center;
-    }
   }
+}
