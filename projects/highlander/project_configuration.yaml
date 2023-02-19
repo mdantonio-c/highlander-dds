@@ -2,7 +2,7 @@
 project:
   title: Highlander
   description: "Data Delivery System"
-  version: "0.7"
+  version: "0.8"
   rapydo: "2.4"
 
 variables:
