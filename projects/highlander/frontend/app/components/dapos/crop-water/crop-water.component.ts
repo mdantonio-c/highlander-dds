@@ -5,7 +5,6 @@ import { NgxSpinnerService } from "ngx-spinner";
 import { NgbModal } from "@ng-bootstrap/ng-bootstrap";
 
 import * as L from "leaflet";
-import * as shp from "shpjs";
 import * as _ from "lodash";
 import { DataService } from "../../../services/data.service";
 import {
@@ -82,7 +81,7 @@ export class CropWaterComponent {
     protected spinner: NgxSpinnerService,
     private modalService: NgbModal,
   ) {}
-  
+
   isCollapsed = true;
 
   onMapReady(map: L.Map) {
@@ -242,25 +241,22 @@ export class CropWaterComponent {
           )}`
         : `${this.filter.area}_${this.filter.layer}`;
 
-    // get zipped shapefile
-    this.dataService.getZippedShapefile(datastore).subscribe(
-      (data) => {
-        const blob = new Blob([data], {
-          type: "application/zip",
-        });
-        this.SHPtoGEOJSON(
-          new File([blob], `${datastore}.zip`, {
-            lastModified: new Date().getTime(),
-            type: blob.type,
-          }),
-        );
-      },
-      (error) => {
-        console.log("error", error);
-        this.notify.showError("Error to load data layer.");
+    // get geojson
+    this.dataService
+      .getGeoJson(datastore)
+      .subscribe(
+        (geojson) => {
+          this.geojson = geojson;
+          this.renderOnMap();
+        },
+        (error) => {
+          console.log("error", error);
+          this.notify.showError("Error to load data layer.");
+        },
+      )
+      .add(() => {
         this.spinner.hide();
-      },
-    );
+      });
   }
 
   printLayerDescription(): string {
@@ -284,25 +280,6 @@ export class CropWaterComponent {
     return `${p.year}-${String(p.month).padStart(2, "0")}-${String(
       p.day,
     ).padStart(2, "0")}`;
-  }
-
-  private async SHPtoGEOJSON(file: File) {
-    await this.dataService
-      .readFileContent(file)
-      .toPromise()
-      .then((res) => {
-        shp(res)
-          .then((geojson) => {
-            // console.log(geojson);
-            this.geojson = geojson;
-            this.renderOnMap();
-          })
-          .catch((err) => {
-            console.error(err);
-            this.notify.showError("Error in displaying data on the map");
-            this.spinner.hide();
-          });
-      });
   }
 
   private getColorIndex(num: number, legend: LegendConfig): string {
@@ -356,14 +333,13 @@ export class CropWaterComponent {
   }
 
   private renderOnMap() {
-    console.log("render on the map");
+    // console.log("render on the map");
     const legend: LegendConfig = LEGEND_DATA[this.dataset.id].find(
       (x) =>
         x.id === this.filter.layer &&
         (!("applyTo" in x) || x.applyTo.includes(this.filter.area)),
     );
     const comp: CropWaterComponent = this;
-    // console.log(this.geojson);
     let crops = new Set();
     const jsonLayer = L.geoJSON(this.geojson, {
       style: (feature) => {
@@ -390,7 +366,7 @@ export class CropWaterComponent {
         }
       },
     });
-    console.log("all crop ids: ", ...crops);
+    // console.log("all crop ids: ", ...crops);
     this.geoData.addLayer(jsonLayer);
     this.geoData.addTo(this.map);
     this.spinner.hide();

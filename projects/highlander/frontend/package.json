@@ -12,8 +12,6 @@
     "@asymmetrik/ngx-leaflet": "13.0.2",
     "@asymmetrik/ngx-leaflet-draw": "13.0.3",
     "@asymmetrik/ngx-leaflet-markercluster": "13.0.1",
-    "shpjs": "4.0.2",
-    "@types/shpjs": "3.4.1",
     "@angular/cdk": "13.3.1",
     "@swimlane/ngx-charts": "20.1.0",
     "holderjs": "2.9.9"

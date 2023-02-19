@@ -85,7 +85,7 @@ export class DataService {
    */
   getDatasetProduct(
     datasetId: string,
-    productId: string
+    productId: string,
   ): Observable<ProductInfo> {
     return this.api.get(`/api/datasets/${datasetId}/products/${productId}`);
   }
@@ -144,7 +144,8 @@ export class DataService {
     const params = this.getOWSParams(
       "highlander",
       datastore,
-      "application/json"
+      "application/json",
+      "epsg:4326",
     );
     return this.http.get(`${this._maps_url}/ows`, { params: params });
   }
@@ -152,7 +153,8 @@ export class DataService {
   private getOWSParams(
     workspace: string,
     datastore: string,
-    outputFormat: string
+    outputFormat: string,
+    srsName?: string,
   ) {
     let params = new HttpParams();
     params = params.append("service", "WFS");
@@ -160,6 +162,9 @@ export class DataService {
     params = params.append("request", "GetFeature");
     params = params.append("typeName", `${workspace}:${datastore}`);
     params = params.append("outputFormat", outputFormat);
+    if (srsName) {
+      params = params.append("srsName", srsName);
+    }
     return params;
   }
 
@@ -171,17 +176,17 @@ export class DataService {
    */
   getRunPeriods(
     datasetId: string,
-    productId: string
+    productId: string,
   ): Observable<DateStruct[]> {
     const source$ = this.api
       .get<DateStruct[]>(
-        `/api/datasets/${datasetId}/products/${productId}/ready`
+        `/api/datasets/${datasetId}/products/${productId}/ready`,
       )
       .pipe(
         tap((val) => {
           this._runPeriods = val as DateStruct[];
         }),
-        share()
+        share(),
       );
     return this._runPeriods ? of(this._runPeriods) : source$;
   }
