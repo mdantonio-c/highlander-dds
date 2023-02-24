@@ -13,11 +13,8 @@ import { NgxSpinnerService } from "ngx-spinner";
 //TODO nuovi tipi dei filters e del crop
 import {
   DatasetInfo,
-  ProvinceFeature,
-  RegionFeature,
-  BasinFeature,
   WaterCycleFilter,
-  SoilErosionMapCrop,
+  WaterCycleMapCrop,
 } from "../../../types";
 import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
@@ -72,11 +69,13 @@ export class WaterCycleComponent implements OnInit {
   isFilterCollapsed = false;
   private collapsed = false;
   map: L.Map;
+  center = L.latLng([41.01, 15.64]);
+  defaultZoom = 9.5;
   private legends: { [key: string]: L.Control } = {};
   mapsUrl: string;
 
   bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
-  readonly timeRanges = ["historical", "future"];
+
   readonly LEGEND_POSITION = "bottomleft";
   readonly basins = [
     "Ofanto_Samuele_Cafiero",
@@ -107,9 +106,9 @@ export class WaterCycleComponent implements OnInit {
 
   options = {
     layers: [this.LAYER_OSM],
-    zoom: 9.5,
+    zoom: this.defaultZoom,
     fullscreenControl: true,
-    center: L.latLng([41.01, 15.64]),
+    center: this.center,
     timeDimension: false,
     timeDimensionControl: false,
     // maxBounds: this.bounds,
@@ -129,20 +128,18 @@ export class WaterCycleComponent implements OnInit {
     },
   };
 
-  //private administrativeArea: L.LayerGroup = new L.LayerGroup();
   private filter: WaterCycleFilter;
 
   administrative: string;
-  currentModel: string;
-  //TODO
-  mapCropDetails: SoilErosionMapCrop;
+  mapCropDetails: WaterCycleMapCrop;
   isPanelCollapsed: boolean = true;
   isHydrological: boolean = false;
+  selectedAreaBounds: L.LatLngBounds;
+  selectedAreaCenter: L.LatLng;
   selectedLayer;
 
   constructor(
     private dataService: DataService,
-    //private authService: AuthService,
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private ssr: SSRService,
@@ -156,9 +153,6 @@ export class WaterCycleComponent implements OnInit {
     if (this.ssr.isBrowser) {
       this.setCollapse(window.innerWidth);
     }
-    /* this.authService.isAuthenticated().subscribe((isAuth) => {
-      this.user = isAuth ? this.authService.getUser() : null;
-    }); */
   }
 
   onMapReady(map: L.Map) {
@@ -167,11 +161,13 @@ export class WaterCycleComponent implements OnInit {
       map.invalidateSize();
     }, 200);
     // add the basins layers
-    //let jsonBasins = new L.FeatureGroup()
     this.basins.forEach((b) => {
+      // use pane feature to be sure that the layers has the correct overlap order
+      this.map.createPane(b);
       this.dataService.getGeojsonLayer(b).subscribe((json) => {
         const jsonLayer = L.geoJSON(json, {
           style: JSON_STYLE,
+          pane: b,
           onEachFeature: (feature, layer) =>
             layer.on({
               mouseover: (e) => this.highlightFeature(e),
@@ -179,11 +175,9 @@ export class WaterCycleComponent implements OnInit {
               click: (e) => this.loadDetails(e),
             }),
         });
-        //jsonBasins.addLayer(jsonLayer)
         jsonLayer.addTo(this.map);
       });
     });
-    //jsonBasins.addTo(this.map);
 
     this.initLegends(map);
     // detect the change of model
@@ -191,7 +185,7 @@ export class WaterCycleComponent implements OnInit {
     map.on(
       "baselayerchange",
       (e: L.LayerEvent, comp: WaterCycleComponent = ref) => {
-        comp.getTheSelectedModel(e.layer["_leaflet_id"]);
+        comp.getTheSelectedDataset(e.layer["_leaflet_id"]);
       },
     );
   }
@@ -228,6 +222,7 @@ export class WaterCycleComponent implements OnInit {
         this.layerControlElement[0].style.visibility = "visible";
       }
       overlays[DATASETS[0].label].addTo(this.map);
+      this.mapCropDetails.dataset = DATASETS[0].code;
     } else {
       this.isHydrological = true;
       // hide the layer control
@@ -309,74 +304,15 @@ export class WaterCycleComponent implements OnInit {
       }
 
       this.setOverlaysToMap();
-    }
-
-    /*
-    // PERIOD
-    if (this.filter.period !== data.period) {
-      // console.log(`indicator changed to ${data.indicator}`);
-
-      // remove the previous legend
-      this.map.removeControl(
-        this.legends[`${this.filter.indicator}_${this.filter.period}`]
-      );
-      // add the new legend
-      this.legends[`${data.indicator}_${data.period}`].addTo(this.map);
-      this.filter = data;
-
-      let overlays = this.layersControl["baseLayers"];
-      for (let name in overlays) {
-        if (this.map.hasLayer(overlays[name])) {
-          this.map.removeLayer(overlays[name]);
-        }
+      //if the detail panel is opened, close it
+      if (!this.isPanelCollapsed) {
+        this.closeDetails();
       }
-      this.setOverlaysToMap();
     }
-
-    // ADMINISTRATIVE AREA
-    this.administrative = data.administrative;
-    // clear current administrative layer
-    if (this.map) {
-      this.administrativeArea.clearLayers();
-    }
-    if (data.administrative === "italy") {
-      if (this.map) {
-        this.map.setView(L.latLng([42.0, 13.0]), 6);
-      }
-      return;
-    }
-    this.dataService
-      .getGeojsonLayer(`italy-${data.administrative}`)
-      .subscribe((json) => {
-        const jsonLayer = L.geoJSON(json, {
-          style: NORMAL_STYLE,
-          onEachFeature: (feature, layer) =>
-            layer.on({
-              mouseover: (e) => this.highlightFeature(e),
-              mouseout: (e) => this.resetFeature(e),
-              click: (e) => this.loadDetails(e),
-            }),
-        });
-        this.administrativeArea.addLayer(jsonLayer);
-        this.administrativeArea.addTo(this.map);
-      });
-    //if the detail panel is opened, close it
-    this.closeDetails();
-
-    // update the map crop details model
-    // get the indicator
-    let indicator_code = this.filter.indicator;
-    const indicator = INDICATORS.find((x) => x.code == indicator_code);
-    this.mapCropDetails.indicator = indicator.code;
-    this.mapCropDetails.period = this.filter.period;
-    this.mapCropDetails.product = indicator.product;
-    this.mapCropDetails.area_type = this.administrative;
-    //force the ngonChanges of the child component
-    this.mapCropDetails = Object.assign({}, this.mapCropDetails); */
   }
 
   checkSelectedFeature(layer) {
-    let layerName = layer.feature.properties.name;
+    let layerName = layer.feature.properties.Label;
     if (this.mapCropDetails && layerName) {
       if (this.mapCropDetails.area_id !== layerName) {
         return false;
@@ -404,56 +340,48 @@ export class WaterCycleComponent implements OnInit {
     }
   }
 
-  getTheSelectedModel(leaflet_id) {
+  getTheSelectedDataset(leaflet_id) {
     for (const [key, value] of Object.entries(
       this.layersControl["baseLayers"],
     )) {
       if (value["_leaflet_id"] == leaflet_id) {
-        this.currentModel = key;
+        this.mapCropDetails.dataset = DATASETS.find((x) => x.label == key).code;
         break;
       }
     }
+    //force the ngonChanges of the child component
+    this.mapCropDetails = Object.assign({}, this.mapCropDetails);
     this.cdr.detectChanges();
     //console.log(`current model:${this.mapCropDetails.model}`)
   }
 
   private loadDetails(e) {
     const layer = e.target;
-    console.log(layer.feature.properties.Label);
-    /*setTimeout(() => {
-      this.map.invalidateSize();
-    }, 0);
+    //console.log(layer.feature.properties.Label);
+    this.mapCropDetails.area_id = layer.feature.properties.Label;
     if (this.selectedLayer) {
       // set the normal style to the previously selected layer
       this.selectedLayer.setStyle(NORMAL_STYLE);
     }
+
+    setTimeout(() => {
+      this.map.invalidateSize();
+    }, 0);
+
     const bounds = layer.getBounds();
+    this.selectedAreaBounds = bounds;
     const layerCenter = bounds.getCenter();
+    this.selectedAreaCenter = layerCenter;
 
     setTimeout(() => {
       this.map.setView(layerCenter);
     }, 1);
 
-    switch (this.administrative) {
-      case "regions":
-        this.mapCropDetails.area_id = (
-          layer.feature.properties as RegionFeature
-        ).name;
-        //console.log("region: "+this.mapCropDetails.area_id);
-        break;
-      case "provinces":
-        this.mapCropDetails.area_id = (
-          layer.feature.properties as ProvinceFeature
-        ).name;
-        //console.log("province: "+this.mapCropDetails.area_id);
-        break;
-      case "basins":
-        this.mapCropDetails.area_id = (
-          layer.feature.properties as BasinFeature
-        ).name;
-        //console.log("province: "+this.mapCropDetails.area_id);
-        break;
-    }
+    // update the map crop details model
+    this.mapCropDetails.drought = this.filter.drought;
+    this.mapCropDetails.variable = this.filter.variable;
+    this.mapCropDetails.accumulation = this.filter.accumulation;
+
     //force the ngonChanges of the child component
     this.mapCropDetails = Object.assign({}, this.mapCropDetails);
     this.isPanelCollapsed = false;
@@ -464,17 +392,21 @@ export class WaterCycleComponent implements OnInit {
     setTimeout(() => {
       this.selectedLayer = layer;
     }, 0);
-    this.cdr.detectChanges();*/
+    this.cdr.detectChanges();
   }
 
   isCollapsed = true;
 
   closeDetails() {
     this.isPanelCollapsed = true;
-    this.map.setView(L.latLng([42.0, 13.0]), 6);
+    this.selectedLayer.setStyle(NORMAL_STYLE);
     setTimeout(() => {
       this.map.invalidateSize();
     }, 0);
+
+    setTimeout(() => {
+      this.map.setView(this.center, this.defaultZoom);
+    }, 1);
   }
 
   toggleCollapse() {

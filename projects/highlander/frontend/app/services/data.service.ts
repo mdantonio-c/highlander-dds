@@ -39,7 +39,9 @@ export class DataService {
    * @param dataset_id
    */
   getDataset(dataset_id: string): Observable<DatasetInfo> {
-    return this.api.get<DatasetInfo>(`/api/datasets/${dataset_id}`);
+    return this.api.get<DatasetInfo>(
+      `/api/datasets/${dataset_id}?application=true`,
+    );
   }
 
   /**

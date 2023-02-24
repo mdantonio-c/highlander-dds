@@ -62,6 +62,7 @@ class DatasetInfo(Schema):
         required=True,
     )
     url = fields.Str()
+    source_path = fields.Str()
 
 
 class NumpyDateTime(fields.Field):

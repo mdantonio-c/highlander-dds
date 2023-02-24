@@ -43,6 +43,7 @@ export interface DatasetInfo {
   application?: boolean;
   category?: string;
   url?: string;
+  source_path?: string;
   use_case?: string;
   exclude?: boolean;
 }
@@ -198,7 +199,7 @@ export interface SuitabilityVegetationFeatureInfoProperty {
   GRAY_INDEX?: number;
 }
 
-export interface SuitabilityVegetationChartData {
+export interface ChartData {
   name: string;
   value: number;
 }
@@ -236,6 +237,14 @@ export interface ForestSuitabilityMapCrop {
   area_type?: string;
   area_id?: string;
   indicator?: string;
+}
+
+export interface WaterCycleMapCrop {
+  drought?: string;
+  variable?: string;
+  accumulation?: string;
+  area_id?: string;
+  dataset?: string;
 }
 
 export interface HumanWellbeingFilter {

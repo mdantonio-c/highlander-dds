@@ -7,22 +7,54 @@
     size="medium"
   >
   </ngx-spinner>
-  <div class="no-results-plain" *ngIf="!loading">
-    <h2>No Details Available</h2>
-    <p>Try to apply a different set of filters</p>
-  </div>
-  <div class="details-text-container" *ngIf="loading">
+  <div class="details-text-container">
     <h3>
       {{ cropDetails.area_id | titlecase }}
     </h3>
-    {{ productLabel }} - {{ cropDetails.model }} - {{ cropDetails.period }}
+    {{ droughtLabel }} drought - {{ variableLabel }} <br />
+    <i>Accumulation period: </i> {{ accumulationLabel }}
   </div>
-  <div class="details-image-container" *ngIf="loading">
-    <div class="image-detail">
-      <img alt="cropped map" *ngIf="mapImage" [src]="mapImage" />
+  <div class="details-image-container">
+    <div class="row-2 py-3 image-detail">
+      <div id="detail-map-wrapper" class="fill">
+        <div
+          class="map"
+          leaflet
+          [leafletOptions]="options"
+          [style.display]="isHydro ? 'none' : 'block'"
+          (leafletMapReady)="onMapReady($event)"
+          (leafletMapZoomEnd)="onMapZoomEnd($event)"
+        ></div>
+      </div>
     </div>
-    <div class="image-detail">
-      <img alt="boxplot" *ngIf="plotImage" [src]="plotImage" />
+    <div #containerRef class="image-detail" *ngIf="dataLoaded; else noData">
+      <ngx-charts-bar-vertical
+        [view]="[containerRef.offsetWidth, 400]"
+        [animations]="true"
+        [scheme]="colorScheme"
+        [results]="chartData"
+        [xAxis]="true"
+        [yAxis]="true"
+        [legend]="false"
+        [showXAxisLabel]="false"
+        [xAxisTickFormatting]="xAxisTickFormat"
+        [showYAxisLabel]="true"
+        [showGridLines]="true"
+        [roundEdges]="true"
+        [yAxisLabel]="yLabel"
+        [showDataLabel]="false"
+      >
+      </ngx-charts-bar-vertical>
     </div>
   </div>
+  <ng-template #noData>
+    <div class="row mt-4">
+      <div class="col">
+        <div class="no-results">
+          <h2>No Data</h2>
+          <p>Try to apply a different filter</p>
+        </div>
+      </div>
+    </div>
+  </ng-template>
 </div>

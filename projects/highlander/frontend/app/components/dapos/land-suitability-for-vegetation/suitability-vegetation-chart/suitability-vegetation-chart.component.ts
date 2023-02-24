@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, ChangeDetectorRef } from "@angular/core";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 import { TIMERANGES } from "../data";
-import { SuitabilityVegetationChartData } from "../../../../types";
+import { ChartData } from "../../../../types";
 
 @Component({
   selector: "suitability-vegetation-chart",
@@ -16,7 +16,7 @@ export class SuitabilityVegetationChart implements OnChanges {
   @Input() hasTimeranges;
 
   loading = false;
-  chartData: SuitabilityVegetationChartData[];
+  chartData: ChartData[];
   // chart options
   colorScheme = {
     domain: ["#1a7dc1", "#aae3f5"],

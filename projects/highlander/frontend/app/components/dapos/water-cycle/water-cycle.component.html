@@ -50,13 +50,6 @@
             <b>Click on the map to select a basin</b>
           </div>
           <div id="map" style="height: 300px"></div>
-          <!--          &lt;!&ndash; Period &ndash;&gt;
-          <div class="leaflet-bottom leaflet-right mb-4 me-1">
-            <div class="leaflet-box">
-              Period:
-              <span class="fw-bold">1991-2020</span>
-            </div>
-          </div>-->
         </div>
       </div>
     </div>
@@ -78,13 +71,14 @@
             </button>
           </div>
           <div class="card-body">
-            <!--<water-cycle-map-detail
+            <water-cycle-map-detail
               [cropDetails]="mapCropDetails"
-              [modelId]="currentModel"
-              [user]="user"
               [isPanelCollapsed]="isPanelCollapsed"
+              [areaBounds]="selectedAreaBounds"
+              [areaCenter]="selectedAreaCenter"
+              [isHydro]="isHydrological"
             >
-            </water-cycle-map-detail>-->
+            </water-cycle-map-detail>
           </div>
         </div>
       </div>

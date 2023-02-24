@@ -102,15 +102,18 @@ export const DATASETS: CodeLabel[] = [
 
 export const BASINS: CodeLabel[] = [
   {
-    code: "OSSC",
-    label: "Ofanto_Samuele_Cafiero",
+    code: "Ofanto_Samuele_Cafiero",
+    label: "Ofanto a S. Samuele di Cafiero",
+    zoom: 8.5,
   },
   {
-    code: "OMV",
-    label: "Ofanto_Monteverde_Scalo",
+    code: "Ofanto_Monteverde_Scalo",
+    label: "Ofanto a Monteverde Scalo",
+    zoom: 8.5,
   },
   {
-    code: "OC",
-    label: "Ofanto_Cairano_Scalo",
+    code: "Ofanto_Cairano_Scalo",
+    label: "Ofanto a Cairano Scalo",
+    zoom: 10,
   },
 ];

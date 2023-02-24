@@ -68,12 +68,29 @@ class Dataset(EndpointResource):
             404: "Dataset does not exist",
         },
     )
+    @decorators.use_kwargs(
+        {"application": fields.Bool(required=False)}, location="query"
+    )
     @decorators.marshal_with(DatasetInfo, code=200)
-    def get(self, dataset_id: str) -> Response:
+    def get(self, dataset_id: str, application: bool = False) -> Response:
         log.debug("Get dataset <{}>", dataset_id)
         dds = broker.get_instance()
         details = dds.get_dataset_details([dataset_id])["data"]
         if not details:
+            if application:
+                # check in the external catalog
+                try:
+                    cat_ext = CatalogExt(path=CATALOG_EXT_DIR)
+                    out = cat_ext.get_datasets()
+                    for d in out:
+                        if d.get("id", None) == dataset_id:
+                            details = d
+                            break
+                except ValueError:
+                    # for missing or invalid cat_ext
+                    pass
+                if details:
+                    return self.response(details)
             raise NotFound(f"Dataset ID<{dataset_id}> not found")
         return self.response(details[0])
 
