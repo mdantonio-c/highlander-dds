@@ -350,8 +350,14 @@ export class SuitabilityVegetationComponent implements OnInit {
     pointDataMarker.addTo(this.map);
     this.pointMarker = pointDataMarker;
     this.isPointSelected = true;
+    this.isPanelCollapsed = false;
     this.selectedPointLon = e.latlng.lng;
     this.selectedPointLat = e.latlng.lat;
+
+    setTimeout(() => {
+      this.map.setView(e.latlng);
+      this.map.invalidateSize();
+    }, 100);
 
     let x = this.map.layerPointToContainerPoint(e.layerPoint).x;
     let y = this.map.layerPointToContainerPoint(e.layerPoint).y;
@@ -387,21 +393,18 @@ export class SuitabilityVegetationComponent implements OnInit {
     this.pointValues = [];
     // close graph
     this.isPointSelected = false;
+    this.isPanelCollapsed = true;
     //trigger change detection
     this.cdr.detectChanges();
-  }
-
-  isCollapsed = true;
-
-  closeDetails() {
-    this.isPanelCollapsed = true;
     setTimeout(() => {
       this.map.invalidateSize();
     }, 0);
     setTimeout(() => {
-      this.map.setView(L.latLng([42.0, 13.0]), 6);
+      this.map.setView(this.piemonteBounds.center, this.piemonteBounds.zoom);
     }, 1);
   }
+
+  isCollapsed = true;
 
   toggleCollapse() {
     this.isFilterCollapsed = !this.isFilterCollapsed;

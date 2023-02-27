@@ -14,6 +14,8 @@ export class SuitabilityVegetationChart implements OnChanges {
   @Input() isPointSelected;
   @Input() yLabel;
   @Input() hasTimeranges;
+  @Input() selectedPointLat;
+  @Input() selectedPointLon;
 
   loading = false;
   chartData: ChartData[];

@@ -1,36 +1,49 @@
-<ngx-spinner
-  [name]="'chart-spinner'"
-  bdColor="rgba(255,255,255,0.8)"
-  color="#6c757d"
-  zIndex="1000"
-  [fullScreen]="false"
-  size="medium"
->
-</ngx-spinner>
-<div #containerRef *ngIf="pointValues; else noData">
-  <ngx-charts-bar-vertical
-    [view]="[containerRef.offsetWidth, 400]"
-    [animations]="true"
-    [scheme]="colorScheme"
-    [results]="chartData"
-    [xAxis]="true"
-    [yAxis]="true"
-    [legend]="false"
-    [showXAxisLabel]="false"
-    [showYAxisLabel]="true"
-    [showGridLines]="true"
-    [roundEdges]="true"
-    [yAxisLabel]="yLabel"
-    [showDataLabel]="true"
+<div class="container-fluid details-container py-0">
+  <ngx-spinner
+    [name]="'chart-spinner'"
+    bdColor="rgba(255,255,255,0.8)"
+    color="#6c757d"
+    zIndex="1000"
+    [fullScreen]="false"
+    size="medium"
   >
-  </ngx-charts-bar-vertical>
-</div>
-<ng-template #noData>
-  <div class="row mt-4">
-    <div class="col">
-      <div class="no-results-plain">
-        <h2>No Data</h2>
-      </div>
+  </ngx-spinner>
+  <div class="details-text-container pt-2">
+    <h3>
+      Selected point :
+      <span class="text"
+        >lat {{ selectedPointLat.toFixed(2) }}, lon
+        {{ selectedPointLon.toFixed(2) }}</span
+      >
+    </h3>
+  </div>
+  <div class="details-image-container">
+    <div #containerRef class="image-detail" *ngIf="pointValues; else noData">
+      <ngx-charts-bar-vertical
+        [view]="[containerRef.offsetWidth, 400]"
+        [animations]="true"
+        [scheme]="colorScheme"
+        [results]="chartData"
+        [xAxis]="true"
+        [yAxis]="true"
+        [legend]="false"
+        [showXAxisLabel]="false"
+        [showYAxisLabel]="true"
+        [showGridLines]="true"
+        [roundEdges]="true"
+        [yAxisLabel]="yLabel"
+        [showDataLabel]="false"
+      >
+      </ngx-charts-bar-vertical>
     </div>
   </div>
-</ng-template>
+  <ng-template #noData>
+    <div class="row mt-4">
+      <div class="col">
+        <div class="no-results-plain">
+          <h2>No Data</h2>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</div>
