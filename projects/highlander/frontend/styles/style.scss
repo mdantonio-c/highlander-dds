@@ -564,7 +564,7 @@ input[type="checkbox"]:checked {
       margin-left: 15px;
       margin-top: 14px;
       position: absolute;
-      z-index:99999;
+      z-index:1002;
 
       .collapse {
         z-index: 99999;
@@ -585,6 +585,7 @@ input[type="checkbox"]:checked {
       }
       & + .px-3 .map {
         top: 25px;
+        margin-bottom: 16px;
       }
     }
   }

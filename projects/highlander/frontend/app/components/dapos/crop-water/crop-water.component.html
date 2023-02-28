@@ -17,8 +17,8 @@
       [class.collapsed]="isCollapsed"
       ></label>
     </div>
-    <div class="col px-3">
-      <div id="map-wrapper" class="fill" style="position: relative">
+    <div class="col px-3" (click)="isCollapsed = true">
+      <div id="map-wrapper" class="fill" style="position: relative" >
         <ngx-spinner
           bdColor="rgba(255,255,255,0.8)"
           color="#6c757d"
