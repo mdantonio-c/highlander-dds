@@ -101,6 +101,18 @@ export class DataService {
     return this.api.get(`/api/geojson/${filename}`);
   }
 
+  getLegend(layer: string) {
+    let params = {
+      version: "1.1.1",
+      request: "GetLegendGraphic",
+      format: "application/json",
+      layer: layer,
+    };
+    return this.http.get(`${this._maps_url}/highlander/wms`, {
+      params: params,
+    });
+  }
+
   getFeatureInfo(bbox, width, height, x, y, queryLayers): Observable<any> {
     let params = {
       service: "WMS",

@@ -19,7 +19,6 @@ import {
 import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
 import { SSRService } from "@rapydo/services/ssr";
-import { LegendConfig, LEGEND_DATA } from "../../../services/data";
 import {
   INDICATORS,
   BIOTEMPERATURES,
@@ -149,7 +148,6 @@ export class SuitabilityForestComponent implements OnInit {
     setTimeout(function () {
       map.invalidateSize();
     }, 200);
-    this.initLegends(map);
   }
 
   private setOverlaysToMap() {
@@ -188,34 +186,45 @@ export class SuitabilityForestComponent implements OnInit {
     });
     this.layersControl["baseLayers"] = overlays;
     overlays[layers].addTo(this.map);
+    // add the legend
+    this.addLegend(layers);
   }
 
-  private initLegends(map: L.Map) {
-    INDICATORS.forEach((ind) => {
-      this.legends[ind.code] = this.createLegendControl(ind.code);
-      // console.log(`add legend <${ind.code}>`);
-    });
+  addLegend(layer: string) {
+    this.dataService.getLegend(layer).subscribe(
+      (response) => {
+        const legendTitle = response["Legend"][0]["rules"][0]["title"];
+        const legendContent =
+          response["Legend"][0]["rules"][0]["symbolizers"][0]["Raster"][
+            "colormap"
+          ]["entries"];
+        this.legends[this.filter.indicator] = this.createLegendControl(
+          legendTitle,
+          legendContent,
+        );
+        this.legends[this.filter.indicator].addTo(this.map);
+        console.log(response["Legend"][0]);
+        //console.log(legendContent)
+      },
+      (error) => {
+        this.notify.showError(error);
+      },
+    );
   }
 
-  private createLegendControl(id: string): L.Control {
-    // the legend is the same for both the periods (historical and projections)
-    let config: LegendConfig = LEGEND_DATA.find((x) => x.id === id);
-    if (!config) {
-      console.error(`Legend data NOT found for ID<${id}>`);
-      this.notify.showError("Bad legend configuration");
-      return;
-    }
+  private createLegendControl(title, content): L.Control {
     const legend = new L.Control({ position: this.LEGEND_POSITION });
     legend.onAdd = () => {
-      let div = L.DomUtil.create("div", config.legend_type);
+      let div = L.DomUtil.create("div", "legend_box");
       div.style.clear = "unset";
-      div.innerHTML += `<h6>${config.title}</h6>`;
-      for (let i = 0; i < config.labels.length; i++) {
+      //div.innerHTML += '<img src='+url+' alt="legend">';
+      div.innerHTML += `<h6>${title}</h6>`;
+      for (let i = 0; i < content.length; i++) {
         div.innerHTML +=
           '<i style="background:' +
-          config.colors[i] +
+          content[i]["color"] +
           '"></i><span>' +
-          config.labels[i] +
+          content[i]["label"] +
           "</span><br>";
       }
       return div;
@@ -232,10 +241,6 @@ export class SuitabilityForestComponent implements OnInit {
     if (!this.filter) {
       this.filter = data;
       this.setOverlaysToMap();
-      // add a legend
-      if (this.legends[data.indicator]) {
-        this.legends[data.indicator].addTo(this.map);
-      }
     }
 
     // INDICATORS
@@ -250,8 +255,7 @@ export class SuitabilityForestComponent implements OnInit {
 
       // remove the previous legend
       this.map.removeControl(this.legends[this.filter.indicator]);
-      // add the new legend
-      this.legends[data.indicator].addTo(this.map);
+
       this.filter = data;
 
       // remove the previous layers
