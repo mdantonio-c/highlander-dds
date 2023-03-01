@@ -57,6 +57,10 @@ import { CropDetailsComponent } from "./components/dapos/crop-water/crop-details
 import { UppercaseFilterPipe } from "./pipes/uppercase-filter.pipe";
 import { StripesComponent } from "./components/dapos/era5-downscaled-over-italy/stripes/stripes.component";
 
+import { ContactsComponent } from "./components/contacts/contacts";
+
+import { DocumentationComponent } from "./components/documentation/documentation";
+
 const routes: Routes = [
   { path: "app/datasets", component: DatasetsComponent },
   { path: "app/applications", component: DatasetsComponent },
@@ -76,6 +80,8 @@ const routes: Routes = [
   },
   { path: "app", redirectTo: "/app/datasets", pathMatch: "full" },
   { path: "", redirectTo: "/app/datasets", pathMatch: "full" },
+  { path: "public/contacts", component: ContactsComponent },
+  { path: "public/documentation", component: DocumentationComponent },
 ];
 
 @NgModule({
@@ -88,6 +94,8 @@ const routes: Routes = [
     NgxChartsModule,
   ],
   declarations: [
+    DocumentationComponent,
+    ContactsComponent,
     DatasetsComponent,
     ApplicationsComponent,
     DatasetCardComponent,
