@@ -218,6 +218,7 @@ export interface HumanWellbeingMapCrop {
   area_type?: string;
   area_id?: string;
   indicator?: string;
+  time_period?: string;
   daily_metric?: string;
   year?: string;
   date?: string;
@@ -251,7 +252,9 @@ export interface HumanWellbeingFilter {
   indicator: string;
   administrative: string;
   daily_metric: string;
-  timePeriod: string;
+  period: string;
+  histTimePeriod: string;
+  futureTimePeriod: string;
   day?: Date;
 }
 

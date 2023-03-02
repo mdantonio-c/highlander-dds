@@ -28,7 +28,7 @@ class MapCropConfig:
     GEOJSON_PATH = "/catalog/assets"
 
     PRODUCT_EXCEPTION = {
-        "human-wellbeing": {"multi-year": "daily"},
+        "human-wellbeing": {"multi-year": "daily", "anomalies": "daily"},
         "soil-erosion": {
             "rainfall-erosivity-anomalies": "rainfall-erosivity-proj",
             "soil-loss-anomalies": "soil-loss-proj",
@@ -53,6 +53,7 @@ class MapCropConfig:
         "human-wellbeing": {
             "all_products": ["daily_metric", "indicator"],
             "daily": ["year", "date"],
+            "anomalies": ["time_period"],
         },
         "era5-downscaled-over-italy": {"all_products": ["time_period"]},
         "land-suitability-for-forests": {"all_products": ["indicator"]},
@@ -73,6 +74,13 @@ class MapCropConfig:
                 "area_type",
             ],
             "multi-year": ["dataset_id", "product_id", "indicator", "area_type"],
+            "anomalies": [
+                "dataset_id",
+                "product_id",
+                "indicator",
+                "time_period",
+                "area_type",
+            ],
         },
         "era5-downscaled-over-italy": {
             "all_products": ["dataset_id", "product_id", "time_period", "area_type"],
@@ -113,6 +121,10 @@ class MapCropConfig:
                     "indicator",
                     "daily_metric",
                 ],
+            },
+            "anomalies": {
+                "url": "human-wellbeing/anomalies/indicator_2021-2050vs1991-2020_daily_metric_VHR-PRO_time_period_ymean.nc",
+                "params": ["indicator", "daily_metric", "time_period"],
             },
         },
         "era5-downscaled-over-italy": {

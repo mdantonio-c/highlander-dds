@@ -32,7 +32,20 @@ export const DAILY_METRICS = [
   { code: "daymean", label: "Mean" },
 ];
 
-export const TIME_PERIODS = [
+export const HISTORICAL_TIME_PERIODS = [
   { code: "multi-year", label: "Multi-year" },
   { code: "daily", label: "Day" },
+];
+
+export const FUTURE_TIME_PERIODS = [
+  { code: "ANN", label: "Annual" },
+  { code: "DJF", label: "Winter" },
+  { code: "MAM", label: "Spring" },
+  { code: "JJA", label: "Summer" },
+  { code: "SON", label: "Autumn" },
+];
+
+export const PERIODS = [
+  { code: "1991_2020", label: "1991-2020" },
+  { code: "2021_2050", label: "2021-2050" },
 ];

@@ -14,7 +14,7 @@ import { DetailService } from "../services/detail.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 import { environment } from "@rapydo/../environments/environment";
-import { ADMINISTRATIVE_AREAS, INDICATORS } from "../data";
+import { ADMINISTRATIVE_AREAS, INDICATORS, FUTURE_TIME_PERIODS } from "../data";
 import { DataService } from "../../../../services/data.service";
 
 @Component({
@@ -31,6 +31,7 @@ export class MapDetailComponent implements OnChanges {
   plotImage: any;
   productLabel: string;
   dateLabel: string;
+  timePeriodLabel: string = "";
 
   loading = false;
   constructor(
@@ -38,7 +39,7 @@ export class MapDetailComponent implements OnChanges {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private sanitizer: DomSanitizer,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnChanges() {
@@ -47,11 +48,18 @@ export class MapDetailComponent implements OnChanges {
       console.log("get details for:", this.cropDetails);
       //add the label to be display in the panel
       this.productLabel = INDICATORS.find(
-        (x) => x.code == this.cropDetails.indicator
+        (x) => x.code == this.cropDetails.indicator,
       ).label;
 
       if (this.cropDetails.date) {
         this.dateLabel = moment(this.cropDetails.date).format("DD/MM/YYYY");
+      }
+
+      if (this.cropDetails.product == "anomalies") {
+        const timePeriod = FUTURE_TIME_PERIODS.find(
+          (x) => x.code == this.cropDetails.time_period,
+        ).label;
+        this.timePeriodLabel = `- ${timePeriod}`;
       }
 
       setTimeout(() => {
@@ -64,10 +72,10 @@ export class MapDetailComponent implements OnChanges {
           (blobs) => {
             console.log("get all blobs");
             this.mapImage = this.sanitizer.bypassSecurityTrustUrl(
-              URL.createObjectURL(blobs[0])
+              URL.createObjectURL(blobs[0]),
             );
             this.plotImage = this.sanitizer.bypassSecurityTrustUrl(
-              URL.createObjectURL(blobs[1])
+              URL.createObjectURL(blobs[1]),
             );
           },
           (error) => {
@@ -75,7 +83,7 @@ export class MapDetailComponent implements OnChanges {
             error.text().then((value) => {
               this.notify.showError(value);
             });
-          }
+          },
         )
         .add(() => {
           this.spinner.hide();
@@ -89,7 +97,12 @@ export class MapDetailComponent implements OnChanges {
       this.spinner.show();
     }, 0);
     this.detailService
-      .createReport(this.cropDetails, this.productLabel, this.dateLabel)
+      .createReport(
+        this.cropDetails,
+        this.productLabel,
+        this.dateLabel,
+        this.timePeriodLabel,
+      )
       .subscribe(
         (response) => {
           const contentType =
@@ -99,7 +112,7 @@ export class MapDetailComponent implements OnChanges {
         },
         (error) => {
           this.notify.showError("Unable to create the report");
-        }
+        },
       )
       .add(() => {
         this.spinner.hide();

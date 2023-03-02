@@ -66,7 +66,6 @@ export class HumanWellbeingComponent implements OnInit {
   mapsUrl: string;
 
   bounds = new L.LatLngBounds(new L.LatLng(30, -20), new L.LatLng(55, 40));
-  readonly timeRanges = ["historical", "future"];
   readonly LEGEND_POSITION = "bottomleft";
 
   LAYER_OSM = L.tileLayer(
@@ -83,9 +82,6 @@ export class HumanWellbeingComponent implements OnInit {
   layersControl = {
     baseLayers: {},
     overlays: null,
-  };
-  layersControlOptions = {
-    collapsed: false,
   };
   mLayers = L.layerGroup([]);
 
@@ -158,15 +154,23 @@ export class HumanWellbeingComponent implements OnInit {
     const metric = this.filter.daily_metric;
     let layers = null;
     let url = null;
-    if (this.filter.timePeriod == "multi-year") {
-      layers = `highlander:${ind}_1989-2020_${metric}_VHR-REA_multiyearmean`;
-      url = `${this.mapsUrl}/wms`;
-    } else {
-      layers = `highlander:${ind}_${this.year}_${metric}-grid_regular`;
-      url = `${this.mapsUrl}/wms?time=${this.date}`;
+    switch (this.filter.period) {
+      case "1991_2020":
+        if (this.filter.histTimePeriod == "multi-year") {
+          layers = `highlander:${ind}_1989-2020_${metric}_VHR-REA_multiyearmean`;
+          url = `${this.mapsUrl}/wms`;
+        } else {
+          layers = `highlander:${ind}_${this.year}_${metric}-grid_regular`;
+          url = `${this.mapsUrl}/wms?time=${this.date}`;
+        }
+        break;
+      case "2021_2050":
+        layers = `highlander:${ind}_anomalies_${metric}_${this.filter.futureTimePeriod}`;
+        url = `${this.mapsUrl}/wms`;
+        break;
     }
 
-    overlays[`Historical`] = L.tileLayer.wms(url, {
+    overlays[layers] = L.tileLayer.wms(url, {
       layers: layers,
       version: "1.1.0",
       format: "image/png",
@@ -179,7 +183,7 @@ export class HumanWellbeingComponent implements OnInit {
 
     this.layersControl["baseLayers"] = overlays;
     // for the moment only a single overlay is available
-    overlays[`Historical`].addTo(this.map);
+    overlays[layers].addTo(this.map);
   }
 
   private initLegends(map: L.Map) {
@@ -233,6 +237,7 @@ export class HumanWellbeingComponent implements OnInit {
     // INDICATORS and DAILY METRICS
     if (
       this.filter.indicator !== data.indicator ||
+      this.filter.period !== data.period ||
       this.filter.daily_metric !== data.daily_metric
     ) {
       //console.log(`indicator changed to ${data.indicator}`);
@@ -251,21 +256,38 @@ export class HumanWellbeingComponent implements OnInit {
       }
       this.setOverlaysToMap();
     }
-    // TIME PERIOD AND DAY
+    // TIME PERIOD AND DAY for historical
     if (
-      this.filter.timePeriod !== data.timePeriod ||
+      (data.period == "1991_2020" &&
+        this.filter.histTimePeriod !== data.histTimePeriod) ||
       this.filter.day !== data.day
     ) {
       // change the filter and the overlay
       this.filter = data;
       // get the date
-      if (this.filter.day && this.filter.timePeriod == "daily") {
+      if (this.filter.day && this.filter.histTimePeriod == "daily") {
         this.year = moment(this.filter.day).format("YYYY");
         this.date = moment(this.filter.day).format("YYYY-MM-DD");
       } else {
         this.year = null;
         this.date = null;
       }
+
+      let overlays = this.layersControl["baseLayers"];
+      for (let name in overlays) {
+        if (this.map.hasLayer(overlays[name])) {
+          this.map.removeLayer(overlays[name]);
+        }
+      }
+      this.setOverlaysToMap();
+    }
+    // TIME PERIOD for future
+    if (
+      data.period == "2021_2050" &&
+      this.filter.futureTimePeriod !== data.futureTimePeriod
+    ) {
+      // change the filter and the overlay
+      this.filter = data;
 
       let overlays = this.layersControl["baseLayers"];
       for (let name in overlays) {
@@ -310,7 +332,13 @@ export class HumanWellbeingComponent implements OnInit {
     let indicator_code = this.filter.indicator;
     const indicator = INDICATORS.find((x) => x.code == indicator_code);
     this.mapCropDetails.indicator = indicator.code;
-    this.mapCropDetails.product = this.filter.timePeriod; //daily and multi-year are the two HW products
+    if (this.filter.period == "1991_2020") {
+      this.mapCropDetails.product = this.filter.histTimePeriod; //daily and multi-year are the two HW products
+    } else {
+      this.mapCropDetails.product = "anomalies";
+      this.mapCropDetails.time_period = this.filter.futureTimePeriod;
+    }
+
     this.mapCropDetails.area_type = this.administrative;
     this.mapCropDetails.daily_metric = this.filter.daily_metric;
     this.mapCropDetails.year = this.year;

@@ -15,11 +15,8 @@
     <h3>
       {{ cropDetails.area_id | titlecase }}
     </h3>
-    {{ productLabel | titlecase }} - {{ cropDetails.product }} - Historical
-    <span *ngIf="cropDetails.date">
-      <br />
-      Day: {{ dateLabel }}
-    </span>
+    {{ productLabel | titlecase }} - {{ cropDetails.product }} -
+    {{ cropDetails.daily_metric }} {{ timePeriodLabel | lowercase }}
   </div>
   <div class="details-image-container" *ngIf="loading">
     <div class="image-detail">

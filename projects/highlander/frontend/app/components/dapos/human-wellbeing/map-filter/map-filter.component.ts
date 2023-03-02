@@ -7,7 +7,9 @@ import {
   ADMINISTRATIVE_AREAS,
   INDICATORS,
   DAILY_METRICS,
-  TIME_PERIODS,
+  HISTORICAL_TIME_PERIODS,
+  FUTURE_TIME_PERIODS,
+  PERIODS,
 } from "../data";
 
 @Component({
@@ -25,7 +27,9 @@ export class MapFilterComponent implements OnInit {
   readonly landUseBased = [];
   readonly userSelectedItems = [];
   readonly dailyMetrics = DAILY_METRICS;
-  readonly timePeriods = TIME_PERIODS;
+  readonly histTimePeriods = HISTORICAL_TIME_PERIODS;
+  readonly futureTimePeriods = FUTURE_TIME_PERIODS;
+  readonly periods = PERIODS;
   readonly day = [];
 
   maxDate: NgbDateStruct = {
@@ -43,15 +47,17 @@ export class MapFilterComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private notify: NotificationService
+    private notify: NotificationService,
   ) {
     this.filterForm = this.fb.group({
       indicator: ["WC"],
       administrative: ["italy"],
       landUseBased: [""],
       userSelected: [""],
+      period: ["1991_2020"],
       daily_metric: ["daymax"],
-      timePeriod: ["multi-year"],
+      histTimePeriod: ["multi-year"],
+      futureTimePeriod: ["ANN"],
       day: [""],
     });
   }
@@ -69,19 +75,20 @@ export class MapFilterComponent implements OnInit {
   private onChanges(): void {
     this.filterForm.valueChanges.subscribe((val) => {
       if (
-        this.filterForm.get("timePeriod").value === "daily" &&
+        this.filterForm.get("histTimePeriod").value === "daily" &&
         !this.filterForm.get("day").value
       ) {
         return;
       }
-      if (this.filterForm.get("timePeriod").value === "multi-year") {
+      if (this.filterForm.get("histTimePeriod").value === "multi-year") {
         this.filterForm.patchValue(
           {
             day: null,
           },
-          { emitEvent: false, onlySelf: true }
+          { emitEvent: false, onlySelf: true },
         );
       }
+
       this.onFilterChange.emit(val);
     });
   }

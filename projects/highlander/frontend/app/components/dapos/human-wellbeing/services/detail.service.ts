@@ -12,7 +12,7 @@ export class DetailService {
 
   getDetail(
     detailsFilter: HumanWellbeingMapCrop,
-    detailType: string
+    detailType: string,
   ): Observable<Blob> {
     const options = {
       conf: {
@@ -32,6 +32,9 @@ export class DetailService {
     if (detailsFilter.date) {
       params["date"] = detailsFilter.date;
     }
+    if (detailsFilter.product == "anomalies") {
+      params["time_period"] = detailsFilter.time_period;
+    }
 
     if (detailType == "plot") {
       params["plot_type"] = "distribution";
@@ -39,7 +42,7 @@ export class DetailService {
     return this.api.get(
       `/api/datasets/human-wellbeing/products/${detailsFilter.product}/crop`,
       params,
-      options
+      options,
     );
   }
 
@@ -54,7 +57,8 @@ export class DetailService {
   createReport(
     detailsFilter: HumanWellbeingMapCrop,
     productLabel: string,
-    dateLabel: string
+    dateLabel: string,
+    timePeriodlabel: string,
   ): Observable<any> {
     const options = {
       conf: {
@@ -74,21 +78,24 @@ export class DetailService {
     if (detailsFilter.date) {
       params["date"] = detailsFilter.date;
     }
+    if (detailsFilter.product == "anomalies") {
+      params["time_period"] = detailsFilter.time_period;
+    }
 
-    // create the label
+    // check if a time period is needed
     params[
       "label"
-    ] = `${productLabel} - ${detailsFilter.product} - Historical `;
+    ] = `${productLabel} - ${detailsFilter.product} ${timePeriodlabel} `;
     if (dateLabel) {
       params[
         "label"
-      ] = `${productLabel} - ${detailsFilter.product} - Historical - Day: ${dateLabel}`;
+      ] = `${productLabel} - ${detailsFilter.product} - Day: ${dateLabel}`;
     }
 
     return this.api.get(
       `/api/datasets/human-wellbeing/products/${detailsFilter.product}/report`,
       params,
-      options
+      options,
     );
   }
 }

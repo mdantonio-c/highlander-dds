@@ -28,6 +28,16 @@
             </option>
           </select>
         </div>
+        <!-- PERIOD -->
+        <div class="mb-3">
+          <label class="col-form-label"><strong>Period:</strong></label>
+          <select id="periodGroup" formControlName="period" class="form-select">
+            <option *ngFor="let i of periods" [value]="i.code">
+              {{ i.label }}
+            </option>
+          </select>
+        </div>
+
         <!-- DAILY METRICS -->
         <div class="mb-3">
           <label class="col-form-label"><strong>Daily metric:</strong> </label>
@@ -50,10 +60,10 @@
           </div>
         </div>
         <!-- DAY-->
-        <div class="mb-3">
+        <div class="mb-3" *ngIf="filterForm.value.period == '1991_2020'">
           <label class="col-form-label"><strong>Time period:</strong> </label>
           <div
-            *ngFor="let i of timePeriods"
+            *ngFor="let i of histTimePeriods"
             id="timePeriodGroup"
             class="form-check"
           >
@@ -62,7 +72,7 @@
               class="form-check-input"
               type="radio"
               id="flexRadioDefault2"
-              formControlName="timePeriod"
+              formControlName="histTimePeriod"
               [value]="i.code"
             />
             <label class="form-check-label" for="flexRadioDefault2">
@@ -70,8 +80,35 @@
             </label>
           </div>
         </div>
+        <div class="mb-3" *ngIf="filterForm.value.period == '2021_2050'">
+          <label class="col-form-label"><strong>Time period:</strong> </label>
+          <div
+            *ngFor="let i of futureTimePeriods"
+            id="futureTimePeriodGroup"
+            class="form-check"
+          >
+            <input
+              mdbRadio
+              class="form-check-input"
+              type="radio"
+              id="flexRadioDefault3"
+              formControlName="futureTimePeriod"
+              [value]="i.code"
+            />
+            <label class="form-check-label" for="flexRadioDefault2">
+              {{ i.label }}
+            </label>
+          </div>
+        </div>
+
         <!-- DAY SELECTION -->
-        <div class="mb-3" *ngIf="filterForm.value.timePeriod == 'daily'">
+        <div
+          class="mb-3"
+          *ngIf="
+            filterForm.value.histTimePeriod == 'daily' &&
+            filterForm.value.period == '1991_2020'
+          "
+        >
           <div class="input-group">
             <input
               class="form-control"
@@ -86,7 +123,7 @@
               [ngClass]="{
                 'is-invalid':
                   !this.filterForm.get('day').value &&
-                  this.filterForm.get('timePeriod').value === 'daily'
+                  this.filterForm.get('histTimePeriod').value === 'daily'
               }"
             />
             <ng-template #footerTemplate>
@@ -110,7 +147,7 @@
             class="invalid-feedback"
             *ngIf="
               !this.filterForm.get('day').value &&
-              this.filterForm.get('timePeriod').value === 'daily'
+              this.filterForm.get('histTimePeriod').value === 'daily'
             "
           >
             Please choose a date.
