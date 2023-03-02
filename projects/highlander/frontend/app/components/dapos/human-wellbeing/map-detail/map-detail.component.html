@@ -17,6 +17,10 @@
     </h3>
     {{ productLabel | titlecase }} - {{ cropDetails.product }} -
     {{ cropDetails.daily_metric }} {{ timePeriodLabel | lowercase }}
+    <span *ngIf="cropDetails.date">
+      <br />
+      Day: {{ dateLabel }}
+    </span>
   </div>
   <div class="details-image-container" *ngIf="loading">
     <div class="image-detail">

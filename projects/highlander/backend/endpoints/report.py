@@ -16,6 +16,7 @@ from restapi.services.authentication import User
 from restapi.utilities.logs import log
 
 AREA_TYPES = ["regions", "provinces", "basins"]
+DAILY_METRICS = ["daymax", "daymin", "daymean"]
 LOGO_URL = Path(config.GEOJSON_PATH, "highlander-logo.png")
 EU_LOGO_URL = Path(config.GEOJSON_PATH, "en_horizontal_cef_logo_2.png")
 
@@ -66,6 +67,7 @@ class SubsetReportDetails(Schema):
     label = fields.Str(required=False)
     area_type = fields.Str(required=True, validate=validate.OneOf(AREA_TYPES))
     indicator = fields.Str(required=False)
+    daily_metric = fields.Str(required=False, validate=validate.OneOf(DAILY_METRICS))
     time_period = fields.Str(required=False)
 
 
@@ -97,6 +99,7 @@ class Report(EndpointResource):
         model_id: Optional[str] = None,
         year: Optional[str] = None,
         date: Optional[str] = None,
+        daily_metric: Optional[str] = None,
         time_period: Optional[str] = None,
     ) -> Any:
         # get the dataset

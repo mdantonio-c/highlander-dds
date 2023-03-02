@@ -72,24 +72,26 @@ export class DetailService {
       area_type: detailsFilter.area_type,
       area_id: detailsFilter.area_id,
     };
-    if (detailsFilter.year) {
-      params["year"] = detailsFilter.year;
-    }
-    if (detailsFilter.date) {
-      params["date"] = detailsFilter.date;
-    }
+
     if (detailsFilter.product == "anomalies") {
       params["time_period"] = detailsFilter.time_period;
+    } else {
+      if (detailsFilter.year) {
+        params["year"] = detailsFilter.year;
+      }
+      if (detailsFilter.date) {
+        params["date"] = detailsFilter.date;
+      }
     }
 
     // check if a time period is needed
     params[
       "label"
-    ] = `${productLabel} - ${detailsFilter.product} ${timePeriodlabel} `;
-    if (dateLabel) {
+    ] = `${productLabel} - ${detailsFilter.product} - ${detailsFilter.daily_metric} ${timePeriodlabel} `;
+    if (dateLabel && detailsFilter.product !== "anomalies") {
       params[
         "label"
-      ] = `${productLabel} - ${detailsFilter.product} - Day: ${dateLabel}`;
+      ] = `${productLabel} - ${detailsFilter.product} - ${detailsFilter.daily_metric} - Day: ${dateLabel}`;
     }
 
     return this.api.get(
