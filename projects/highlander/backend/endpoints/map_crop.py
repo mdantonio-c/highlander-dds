@@ -119,7 +119,7 @@ class MapCrop(EndpointResource):
             if (
                 dataset_id in config.PRODUCT_EXCEPTION.keys()
                 and product_id in config.PRODUCT_EXCEPTION[dataset_id].keys()
-                and p["id"] == config.PRODUCT_EXCEPTION[dataset_id][product_id]
+                and config.PRODUCT_EXCEPTION[dataset_id][product_id] in p["id"]
             ):
                 product_details = p
                 break
