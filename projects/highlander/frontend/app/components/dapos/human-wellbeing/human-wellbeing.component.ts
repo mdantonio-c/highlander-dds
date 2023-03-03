@@ -160,7 +160,7 @@ export class HumanWellbeingComponent implements OnInit {
           layers = `highlander:${ind}_1989-2020_${metric}_VHR-REA_multiyearmean`;
           url = `${this.mapsUrl}/wms`;
         } else {
-          layers = `highlander:${ind}_${this.year}_${metric}-grid_regular`;
+          layers = `highlander:${ind}_${this.year}_${metric}_VHR-REA_regular`;
           url = `${this.mapsUrl}/wms?time=${this.date}`;
         }
         break;
