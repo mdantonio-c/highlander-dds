@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
 import pandas as pd  # type: ignore
 import regionmask  # type: ignore
+import requests
 import seaborn as sns  # type: ignore
 import xarray as xr  # type: ignore
 from matplotlib import cm
@@ -221,6 +222,54 @@ class MapCropConfig:
         "Quercus_pubescens": "Quercus_pubescens",
         "Quercus_robur": "Quercus_robur",
         "Quercus_suber": "Quercus_suber",
+    }
+
+    # name of geoserver layers for the different datasets and their different products (needed to get the legend intervals)
+    GEOSERVER_LAYER_MAP = {
+        # for now are mapped only the products with legends not directly related to the single products
+        "human-wellbeing": {
+            "daily": {
+                "layer": "highlander:indicator_year_daily_metric_VHR-REA_regular",
+                "params": ["indicator", "year", "daily_metric"],
+            },
+            "multi-year": {
+                "layer": "highlander:indicator_1989-2020_daily_metric_VHR-REA_multiyearmean",
+                "params": [
+                    "indicator",
+                    "daily_metric",
+                ],
+            },
+            "anomalies": {
+                "layer": "highlander:indicator_anomalies_daily_metric_time_period",
+                "params": ["indicator", "daily_metric", "time_period"],
+            },
+        },
+        "land-suitability-for-forests": {
+            "bioclimatic-precipitations-hist": {
+                "layer": "highlander:indicator_1991_2020",
+                "params": ["indicator"],
+            },
+            "bioclimatic-precipitations-proj": {
+                "layer": "highlander:indicator_2021_2050",
+                "params": ["indicator"],
+            },
+            "bioclimatic-temperatures-hist": {
+                "layer": "highlander:indicator_1991_2020",
+                "params": ["indicator"],
+            },
+            "bioclimatic-temperatures-proj": {
+                "layer": "highlander:indicator_2021_2050",
+                "params": ["indicator"],
+            },
+            "forest-species-suitability-hist": {
+                "layer": "highlander:indicator_1991_2020",
+                "params": ["indicator"],
+            },
+            "forest-species-suitability-proj": {
+                "layer": "highlander:indicator_2021_2050",
+                "params": ["indicator"],
+            },
+        },
     }
 
     # map of themes and level for cropped map
@@ -493,6 +542,45 @@ class MapCropConfig:
 
 class PlotUtils:
     @staticmethod
+    def getLegendLevels(layer_name):
+        log.debug(f"legends for layer {layer_name}")
+        legend_levels: Optional[List[float]] = []
+        get_legend_params = {
+            "version": "1.1.1",
+            "request": "GetLegendGraphic",
+            "format": "application/json",
+            "layer": layer_name,
+        }
+        maps_url = os.environ.get("MAPS_URL", None)
+        if not maps_url:
+            return legend_levels
+        # get legends from geoserver
+        r = requests.get(f"{maps_url}/highlander/wms", params=get_legend_params)
+        if r.status_code != 200:
+            log.warning(
+                f"Get legend from geoserver request failed. Status code: {r.status_code}"
+            )
+            return legend_levels
+
+        # parse the geoserver response
+        response = r.json()
+        try:
+            legend_content = response["Legend"][0]["rules"][0]["symbolizers"][0][
+                "Raster"
+            ]["colormap"]["entries"]
+        except KeyError:
+            log.warning("Error in parsing geoserver response")
+            return legend_levels
+
+        # get the level intervals
+        for entry in legend_content:
+            quantity = entry["quantity"]
+            legend_levels.append(float(quantity))
+
+        log.debug(legend_levels)
+        return legend_levels
+
+    @staticmethod
     def getArea(area_id: str, administrative: str):
         # get the geojson file
         geojson_file = Path(MapCropConfig.GEOJSON_PATH, f"italy-{administrative}.json")
@@ -555,6 +643,7 @@ class PlotUtils:
         product: str,
         main_product: str,
         outputfile: Path,
+        geoserver_layer: str,
     ) -> None:
         """
         This function plot with the xarray tool the field of netcdf
@@ -608,7 +697,16 @@ class PlotUtils:
                     legend_product = product
 
             cmap = eval(MapCropConfig.MAP_STYLES[legend_product]["colormap"])
-            levels = MapCropConfig.MAP_STYLES[legend_product]["levels"]
+            levels = []
+            if geoserver_layer:
+                try:
+                    levels = PlotUtils.getLegendLevels(geoserver_layer)
+                except Exception as e:
+                    log.warning(f"unable to get levels from geoserver: {e}")
+                    pass
+            if not levels:
+                # use the default
+                levels = MapCropConfig.MAP_STYLES[legend_product]["levels"]
             norm = mpl.colors.BoundaryNorm(levels, cmap.N)
 
         except Exception as e:

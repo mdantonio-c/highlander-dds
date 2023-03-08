@@ -253,6 +253,21 @@ class MapCrop(EndpointResource):
         output_dir.mkdir(parents=True, exist_ok=True)
         try:
             if type == "map":
+                # get the layer name to get the legends
+                try:
+                    layer_name = config.GEOSERVER_LAYER_MAP[dataset_id][product_id][
+                        "layer"
+                    ]
+                    # substitute the parameters
+                    if "params" in config.GEOSERVER_LAYER_MAP[dataset_id][product_id]:
+                        for p in config.GEOSERVER_LAYER_MAP[dataset_id][product_id][
+                            "params"
+                        ]:
+                            layer_name = layer_name.replace(p, endpoint_variables[p])
+                except KeyError:
+                    layer_name = ""
+                    pass
+
                 # plot the cropped map
                 PlotUtils.plotMapNetcdf(
                     nc_cropped.values,
@@ -262,6 +277,7 @@ class MapCrop(EndpointResource):
                     nc_cropped.long_name,
                     product_id,
                     filepath,
+                    layer_name,
                 )
             else:
                 # plot the boxplot

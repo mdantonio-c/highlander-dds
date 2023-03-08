@@ -12,6 +12,7 @@ services:
       BROKER_PORT: ${BROKER_PORT}
       BROKER_CATALOG_DIR: ${BROKER_CATALOG_DIR}
       CARTOPY_DATA_DIR: ${CARTOPY_DATA_DIR}
+      MAPS_URL: ${MAPS_URL}
   celery:
     build: ${PROJECT_DIR}/builds/backend
     image: hl-dds/backend:${RAPYDO_VERSION}
