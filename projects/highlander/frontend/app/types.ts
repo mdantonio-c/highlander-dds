@@ -44,6 +44,7 @@ export interface DatasetInfo {
   category?: string;
   url?: string;
   source_path?: string;
+  dataset_info_url?: string;
   use_case?: string;
   exclude?: boolean;
 }
