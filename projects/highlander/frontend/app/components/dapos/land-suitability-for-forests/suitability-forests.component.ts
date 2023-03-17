@@ -15,6 +15,7 @@ import {
   ForestSuitabilityMapCrop,
   ProvinceFeature,
   RegionFeature,
+  BasinFeature,
 } from "../../../types";
 import { environment } from "@rapydo/../environments/environment";
 import { DataService } from "../../../services/data.service";
@@ -381,6 +382,11 @@ export class SuitabilityForestComponent implements OnInit {
           layer.feature.properties as ProvinceFeature
         ).name;
         //console.log("province: "+this.mapCropDetails.area_id);
+        break;
+      case "basins":
+        this.mapCropDetails.area_id = (
+          layer.feature.properties as BasinFeature
+        ).name;
         break;
     }
     //force the ngonChanges of the child component

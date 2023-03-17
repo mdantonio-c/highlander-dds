@@ -9,11 +9,20 @@
             id="indicatorGroup"
             formControlName="indicator"
             class="form-select"
+            [ngClass]="{
+              'is-invalid': this.filterForm.get('indicator').value === 'FTY'
+            }"
           >
             <option *ngFor="let i of indicators" [value]="i.code">
               {{ i.label }}
             </option>
           </select>
+          <div
+            class="invalid-feedback"
+            *ngIf="this.filterForm.get('indicator').value === 'FTY'"
+          >
+            choose an indicator
+          </div>
         </div>
 
         <!-- BIOCLIMATIC VARIABLE -->

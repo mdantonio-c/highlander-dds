@@ -575,7 +575,12 @@ class PlotUtils:
         # get the level intervals
         for entry in legend_content:
             quantity = entry["quantity"]
-            legend_levels.append(float(quantity))
+            try:
+                float_quantity = float(quantity)
+            except Exception:
+                log.warning(f"quantity {quantity} cannot be typed as a float")
+                continue
+            legend_levels.append(float_quantity)
 
         log.debug(legend_levels)
         return legend_levels

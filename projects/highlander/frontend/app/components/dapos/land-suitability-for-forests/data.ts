@@ -1,11 +1,11 @@
 import { CodeLabel, IndicatorsCodeLabel } from "../../../types";
 
 export const INDICATORS: IndicatorsCodeLabel[] = [
-  {
+  /*  {
     code: "FTY",
     label: "Forest types",
     product: "forest-type",
-  },
+  },*/
   {
     code: "FOREST",
     label: "Forest species suitability",
@@ -192,6 +192,7 @@ export const ADMINISTRATIVE_AREAS = [
   { code: "italy", label: "Italy" },
   { code: "regions", label: "Regions" },
   { code: "provinces", label: "Provinces" },
+  { code: "basins", label: "Hydrographic Basins" },
 ];
 
 export const PERIODS = [
