@@ -164,6 +164,7 @@ export interface Era5Filter {
   indicator: string;
   time_period: string;
   administrative: string;
+  period: string;
 }
 
 export interface ForestSuitabilityFilter {
@@ -231,6 +232,13 @@ export interface Era5MapCrop {
   area_id?: string;
   indicator?: string;
   time_period?: string;
+  period?: string;
+}
+
+export interface Era5Stripes {
+  indicator?: string;
+  time_period?: string;
+  period?: string;
 }
 
 export interface ForestSuitabilityMapCrop {

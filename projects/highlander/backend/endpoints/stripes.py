@@ -17,17 +17,22 @@ from restapi.utilities.logs import log
 
 # STRIPES_INPUT_ROOT = Path("/catalog/datasets/datasets/climate_stripes/")
 
-ADMINISTRATIVES = ["Italy", "regions", "provinces"]
+ADMINISTRATIVES = ["Italy", "regions", "provinces", "basins"]
 
 TIME_PERIODS = ["ANN", "DJF", "JJA", "MAM", "SON"]
 
+REFERENCE_PERIODS = ["1981-2010", "1991-2020"]
 
-DATA_VARIABLE = "T_2M"
+INDICATORS = ["T_2M", "TMAX_2M", "TMIN_2M"]
 
 
 class StripesDetails(Schema):
     # Definition of query arguments.
+    indicator = fields.Str(required=True, validate=validate.OneOf(INDICATORS))
     time_period = fields.Str(required=True, validate=validate.OneOf(TIME_PERIODS))
+    reference_period = fields.Str(
+        required=True, validate=validate.OneOf(REFERENCE_PERIODS)
+    )
     administrative = fields.Str(required=True, validate=validate.OneOf(ADMINISTRATIVES))
     area_id = fields.Str(required=False)
 
@@ -63,24 +68,26 @@ class Stripes(EndpointResource):
         self,
         dataset_id: str,
         time_period: str,
+        indicator: str,
+        reference_period: str,
         administrative: str,
         area_id: Optional[str] = None,
     ) -> Response:
 
         # Normalise area_id names to standard format that cope with the different geojson structures.
-        if administrative == "regions" or administrative == "provinces":
+        if administrative != "Italy":
             area_name, area = PlotUtils.getArea(area_id, administrative)
 
             if area.empty:
                 raise NotFound(f"Area {area_name} not found in {administrative}")
 
-        elif administrative == "Italy":
+        else:
             # I define an area_name also for italy case to be able to create a single output file definition.
             area_name = administrative
 
         # Create an output file name and path:
         output_dir, output_filename = config.getStripesOutputPath(
-            area_name, time_period, administrative
+            area_name, indicator, reference_period, time_period, administrative
         )
         output_filepath = Path(output_dir, output_filename)
 
@@ -106,7 +113,7 @@ class Stripes(EndpointResource):
                 raise NotFound(f"Unable to get dataset url root: {exc}")
 
             # Check if input data exists.
-            input_filename = f"T_2M_1989-2020_{time_period}_anomalies.nc"
+            input_filename = f"{indicator}_1981-2020_{time_period}_anomalies_vs_{reference_period}.nc"
             data_filepath = Path(
                 product_urlpath_root, "climate_stripes", input_filename
             )
@@ -117,10 +124,10 @@ class Stripes(EndpointResource):
                 )
 
             # If necessary crop the area.
-            if administrative == "regions" or administrative == "provinces":
+            if administrative != "Italy":
                 try:
                     nc_data_to_plot = PlotUtils.cropArea(
-                        data_filepath, area_name, area, DATA_VARIABLE, decode_time=True
+                        data_filepath, area_name, area, indicator, decode_time=True
                     )
                 except Exception as exc:
                     raise ServerError(f"Errors in cropping the data: {exc}")
@@ -133,9 +140,9 @@ class Stripes(EndpointResource):
                         for x in nc_data_to_plot.time.values
                     ]
             # Otherwise simply load data
-            elif administrative == "Italy":
+            else:
                 nc_data = xr.open_dataset(data_filepath)
-                nc_data_to_plot = nc_data[DATA_VARIABLE][:]
+                nc_data_to_plot = nc_data[indicator][:]
                 nc_data_to_plot_mean = nc_data_to_plot.mean(axis=(1, 2)).values.reshape(
                     (1, len(nc_data_to_plot.time))
                 )

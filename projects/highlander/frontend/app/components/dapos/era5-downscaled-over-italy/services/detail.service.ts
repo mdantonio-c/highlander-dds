@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, forkJoin, of } from "rxjs";
 import { ApiService } from "@rapydo/services/api";
-import { Era5MapCrop } from "../../../../types";
+import { Era5MapCrop, Era5Stripes } from "../../../../types";
 
 @Injectable({
   providedIn: "root",
@@ -22,6 +22,7 @@ export class DetailService {
       area_type: detailsFilter.area_type,
       type: detailType,
       area_id: detailsFilter.area_id,
+      reference_period: detailsFilter.period,
     };
     console.log("print params");
     console.log(params);
@@ -31,18 +32,20 @@ export class DetailService {
         time_period: detailsFilter.time_period,
         administrative: detailsFilter.area_type,
         area_id: detailsFilter.area_id,
+        indicator: detailsFilter.indicator,
+        reference_period: detailsFilter.period,
       };
       // call the stripes API
       return this.api.get(
         `/api/datasets/era5-downscaled-over-italy/stripes`,
         params,
-        options
+        options,
       );
     }
     return this.api.get(
       `/api/datasets/era5-downscaled-over-italy/products/VHR-REA_IT_1981_2020/crop`,
       params,
-      options
+      options,
     );
   }
 
@@ -55,7 +58,7 @@ export class DetailService {
     return forkJoin(observables);
   }
 
-  getStripes(timePeriod: string): Observable<any[]> {
+  getStripes(stripesDetails: Era5Stripes): Observable<any[]> {
     const options = {
       conf: {
         responseType: "blob",
@@ -63,19 +66,21 @@ export class DetailService {
     };
     let params = {
       administrative: "Italy",
-      time_period: timePeriod,
+      time_period: stripesDetails.time_period,
+      indicator: stripesDetails.indicator,
+      reference_period: stripesDetails.period,
     };
     const obs = this.api.get(
       `/api/datasets/era5-downscaled-over-italy/stripes`,
       params,
-      options
+      options,
     );
     return forkJoin(obs);
   }
   createReport(
     detailsFilter: Era5MapCrop,
     productLabel: string,
-    dateLabel: string
+    dateLabel: string,
   ): Observable<any> {
     const options = {
       conf: {
@@ -88,6 +93,7 @@ export class DetailService {
       time_period: detailsFilter.time_period,
       area_type: detailsFilter.area_type,
       area_id: detailsFilter.area_id,
+      reference_period: detailsFilter.period,
     };
 
     // create the label
@@ -96,7 +102,7 @@ export class DetailService {
     return this.api.get(
       `/api/datasets/era5-downscaled-over-italy/products/VHR-REA_IT_1981_2020/report`,
       params,
-      options
+      options,
     );
   }
 }

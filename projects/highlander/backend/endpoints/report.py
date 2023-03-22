@@ -69,6 +69,7 @@ class SubsetReportDetails(Schema):
     indicator = fields.Str(required=False)
     daily_metric = fields.Str(required=False, validate=validate.OneOf(DAILY_METRICS))
     time_period = fields.Str(required=False)
+    reference_period = fields.Str(required=False)
 
 
 class Report(EndpointResource):
@@ -101,6 +102,7 @@ class Report(EndpointResource):
         date: Optional[str] = None,
         daily_metric: Optional[str] = None,
         time_period: Optional[str] = None,
+        reference_period: Optional[str] = None,
     ) -> Any:
         # get the dataset
         dds = broker.get_instance()
@@ -154,7 +156,7 @@ class Report(EndpointResource):
             plot_filepath = Path(output_dir, plot_filename)
         else:
             plot_dir, plot_filename = config.getStripesOutputPath(
-                area_name, time_period, area_type
+                area_name, indicator, reference_period, time_period, area_type
             )
             plot_filepath = Path(plot_dir, plot_filename)
 
@@ -179,8 +181,10 @@ class Report(EndpointResource):
             label_map = f"Map {area_id.title()} - {label}"
             label_plot = f"Distribution of {area_id.title()} - {label}"
         else:
-            label_map = f"{area_id.title()} - Map of {label} for the 1989-2020 period"
-            label_plot = f"{area_id.title()} - Anomaly of {label} compared to the average of the period 1989-2020"
+            label_map = (
+                f"{area_id.title()} - Map of {label} for the {reference_period} period"
+            )
+            label_plot = f"{area_id.title()} - Anomaly of {label} compared to the average of the period {reference_period}"
 
         pdf = PDF()
         # get the dataset license

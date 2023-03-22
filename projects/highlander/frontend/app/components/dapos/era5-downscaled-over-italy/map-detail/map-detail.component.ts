@@ -25,11 +25,12 @@ import { DataService } from "../../../../services/data.service";
 export class MapDetailComponent implements OnChanges {
   @Input() cropDetails;
   @Input() user;
-  @Input() isPanelCollapsed;
+  @Input() isDetailVisible;
 
   mapImage: any;
   stripesImage: any;
   productLabel: string;
+  indicatorLabel: string;
   dateLabel: string;
 
   loading = false;
@@ -38,20 +39,24 @@ export class MapDetailComponent implements OnChanges {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private sanitizer: DomSanitizer,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnChanges() {
-    if (!this.isPanelCollapsed) {
+    if (this.isDetailVisible) {
       this.loading = true;
       console.log("get details for:", this.cropDetails);
       //add the label to be display in the panel
-      this.productLabel = INDICATORS.find(
-        (x) => x.code == this.cropDetails.indicator
-      ).plotLabel;
+      const indicatorObject = INDICATORS.find(
+        (x) => x.code == this.cropDetails.indicator,
+      );
+
+      this.productLabel = indicatorObject.plotLabel;
       this.dateLabel = TIME_PERIODS.find(
-        (x) => x.code == this.cropDetails.time_period
-      ).label.substr(0, 6);
+        (x) => x.code == this.cropDetails.time_period,
+      ).label.substring(0, 6);
+
+      this.indicatorLabel = indicatorObject.label.split(" ")[0];
 
       // if (this.cropDetails.date) {
       //   this.dateLabel = moment(this.cropDetails.date).format("DD/MM/YYYY");
@@ -67,10 +72,10 @@ export class MapDetailComponent implements OnChanges {
           (blobs) => {
             console.log("get all blobs");
             this.mapImage = this.sanitizer.bypassSecurityTrustUrl(
-              URL.createObjectURL(blobs[0])
+              URL.createObjectURL(blobs[0]),
             );
             this.stripesImage = this.sanitizer.bypassSecurityTrustUrl(
-              URL.createObjectURL(blobs[1])
+              URL.createObjectURL(blobs[1]),
             );
           },
           (error) => {
@@ -78,7 +83,7 @@ export class MapDetailComponent implements OnChanges {
             error.text().then((value) => {
               this.notify.showError(value);
             });
-          }
+          },
         )
         .add(() => {
           this.spinner.hide();
@@ -101,7 +106,7 @@ export class MapDetailComponent implements OnChanges {
         },
         (error) => {
           this.notify.showError("Unable to create the report");
-        }
+        },
       )
       .add(() => {
         this.spinner.hide();

@@ -22,10 +22,12 @@ import { DataService } from "../../../../services/data.service";
   styleUrls: ["./stripes.component.scss"],
 })
 export class StripesComponent implements OnChanges {
-  @Input() timePeriod;
+  @Input() stripesDetails;
+  @Input() administrative;
 
   stripesImage: any;
   dateLabel: string;
+  indicatorLabel: string;
 
   loading = false;
   constructor(
@@ -33,40 +35,46 @@ export class StripesComponent implements OnChanges {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private sanitizer: DomSanitizer,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnChanges() {
-    this.loading = true;
-    console.log("get stripes for :", this.timePeriod.time_period);
+    if (this.administrative == "italy") {
+      this.loading = true;
+      console.log("get stripes for :", this.stripesDetails.time_period);
 
-    this.dateLabel = TIME_PERIODS.find(
-      (x) => x.code == this.timePeriod
-    ).label.substr(0,6);
+      this.dateLabel = TIME_PERIODS.find(
+        (x) => x.code == this.stripesDetails.time_period,
+      ).label.substring(0, 6);
 
-    setTimeout(() => {
-      this.spinner.show();
-    }, 0);
+      this.indicatorLabel = INDICATORS.find(
+        (x) => x.code == this.stripesDetails.indicator,
+      ).label.split(" ")[0];
 
-    this.detailService
-      .getStripes(this.timePeriod)
-      .subscribe(
-        (blobs) => {
-          console.log("get all blobs");
-          this.stripesImage = this.sanitizer.bypassSecurityTrustUrl(
-            URL.createObjectURL(blobs[0])
-          );
-        },
-        (error) => {
-          this.loading = false;
-          error.text().then((value) => {
-            this.notify.showError(value);
-          });
-        }
-      )
-      .add(() => {
-        this.spinner.hide();
-        this.cdr.detectChanges();
-      });
+      setTimeout(() => {
+        this.spinner.show();
+      }, 0);
+
+      this.detailService
+        .getStripes(this.stripesDetails)
+        .subscribe(
+          (blobs) => {
+            console.log("get all blobs");
+            this.stripesImage = this.sanitizer.bypassSecurityTrustUrl(
+              URL.createObjectURL(blobs[0]),
+            );
+          },
+          (error) => {
+            this.loading = false;
+            error.text().then((value) => {
+              this.notify.showError(value);
+            });
+          },
+        )
+        .add(() => {
+          this.spinner.hide();
+          this.cdr.detectChanges();
+        });
+    }
   }
 }
