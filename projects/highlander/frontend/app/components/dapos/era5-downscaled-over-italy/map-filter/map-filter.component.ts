@@ -4,7 +4,8 @@ import { AuthService } from "@rapydo/services/auth";
 import {
   ADMINISTRATIVE_AREAS,
   TIME_PERIODS,
-  INDICATORS
+  INDICATORS,
+  REFERENCE_PERIODS,
 } from "../data";
 
 @Component({
@@ -20,12 +21,14 @@ export class MapFilterComponent implements OnInit {
   readonly indicators = INDICATORS;
   readonly seasons = TIME_PERIODS;
   readonly administratives = ADMINISTRATIVE_AREAS;
+  readonly periods = REFERENCE_PERIODS;
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
     this.filterForm = this.fb.group({
       indicator: ["T_2M"],
       time_period: ["ANN"],
       administrative: ["italy"],
+      period: ["1981-2010"],
     });
   }
   ngOnInit() {
@@ -37,7 +40,7 @@ export class MapFilterComponent implements OnInit {
       this.onFilterChange.emit(this.filterForm.value);
     }, 1000);
   }
-  
+
   private onChanges(): void {
     this.filterForm.valueChanges.subscribe((val) => {
       this.onFilterChange.emit(val);

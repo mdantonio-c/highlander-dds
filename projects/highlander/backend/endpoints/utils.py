@@ -56,7 +56,9 @@ class MapCropConfig:
             "daily": ["year", "date"],
             "anomalies": ["time_period"],
         },
-        "era5-downscaled-over-italy": {"all_products": ["time_period"]},
+        "era5-downscaled-over-italy": {
+            "all_products": ["time_period", "indicator", "reference_period"]
+        },
         "land-suitability-for-forests": {"all_products": ["indicator"]},
     }
 
@@ -84,7 +86,14 @@ class MapCropConfig:
             ],
         },
         "era5-downscaled-over-italy": {
-            "all_products": ["dataset_id", "product_id", "time_period", "area_type"],
+            "all_products": [
+                "dataset_id",
+                "product_id",
+                "indicator",
+                "reference_period",
+                "time_period",
+                "area_type",
+            ],
         },
         "land-suitability-for-forests": {
             "all_products": ["dataset_id", "product_id", "indicator", "area_type"],
@@ -130,8 +139,8 @@ class MapCropConfig:
         },
         "era5-downscaled-over-italy": {
             "VHR-REA_IT_1981_2020": {
-                "url": "climate_stripes/T_2M_1989-2020_time_period_avg.nc",
-                "params": ["time_period"],
+                "url": "climate_stripes/indicator_reference_period_monmean_time_period.nc",
+                "params": ["indicator", "reference_period", "time_period"],
             },
         },
         "land-suitability-for-forests": {
@@ -269,6 +278,12 @@ class MapCropConfig:
                 "layer": "highlander:indicator_2021_2050",
                 "params": ["indicator"],
             },
+        },
+        "era5-downscaled-over-italy": {
+            "VHR-REA_IT_1981_2020": {
+                "layer": "highlander:indicator_reference_period_monmean_time_period",
+                "params": ["indicator", "reference_period", "time_period"],
+            }
         },
     }
 
@@ -530,9 +545,15 @@ class MapCropConfig:
         return output_structure
 
     @staticmethod
-    def getStripesOutputPath(area_name: str, time_period: str, administrative: str):
+    def getStripesOutputPath(
+        area_name: str,
+        indicator: str,
+        reference_period: str,
+        time_period: str,
+        administrative: str,
+    ):
         output_filename = f"{area_name.replace(' ', '_').lower()}_stripes.png"
-        output_path = f"{time_period}/{administrative}"
+        output_path = Path(indicator, reference_period, time_period, administrative)
         output_dir = Path(
             MapCropConfig.STRIPES_OUTPUT_ROOT, output_path
         )  # Needed to create the output folder if it does not exist.
@@ -575,7 +596,12 @@ class PlotUtils:
         # get the level intervals
         for entry in legend_content:
             quantity = entry["quantity"]
-            legend_levels.append(float(quantity))
+            try:
+                float_quantity = float(quantity)
+            except Exception:
+                log.warning(f"quantity {quantity} cannot be typed as a float")
+                continue
+            legend_levels.append(float_quantity)
 
         log.debug(legend_levels)
         return legend_levels

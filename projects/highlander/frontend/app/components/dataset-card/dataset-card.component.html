@@ -91,6 +91,14 @@
         class="btn btn-outline-primary card-link rounded-0"
         >Dataset info</a
       >
+      <a
+        *ngIf="externalInfoPage"
+        href
+        [href]="dataset.dataset_info_url"
+        target="_blank"
+        class="btn btn-outline-primary card-link rounded-0"
+        >Dataset info</a
+      >
     </ng-template>
   </div>
 </div>

@@ -44,6 +44,7 @@ export interface DatasetInfo {
   category?: string;
   url?: string;
   source_path?: string;
+  dataset_info_url?: string;
   use_case?: string;
   exclude?: boolean;
 }
@@ -163,6 +164,7 @@ export interface Era5Filter {
   indicator: string;
   time_period: string;
   administrative: string;
+  period: string;
 }
 
 export interface ForestSuitabilityFilter {
@@ -230,6 +232,13 @@ export interface Era5MapCrop {
   area_id?: string;
   indicator?: string;
   time_period?: string;
+  period?: string;
+}
+
+export interface Era5Stripes {
+  indicator?: string;
+  time_period?: string;
+  period?: string;
 }
 
 export interface ForestSuitabilityMapCrop {

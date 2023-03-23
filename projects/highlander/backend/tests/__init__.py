@@ -19,6 +19,8 @@ class TestParams:
     REGION_ID = "Friuli Venezia Giulia"
     PROVINCE_ID = "l'aquila"
     STRIPES_TIME_PERIOD = "DJF"
+    STRIPES_INDICATOR = "T_2M"
+    STRIPES_REF_PERIOD = "1981-2010"
 
     # for dataset cache
     CACHE_FILE_NUMBER = 5

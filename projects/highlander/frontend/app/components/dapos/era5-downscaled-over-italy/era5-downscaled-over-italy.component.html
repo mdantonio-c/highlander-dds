@@ -29,7 +29,7 @@
     <div class="col-auto details-card">
       <div
         #collapse="ngbCollapse"
-        [ngbCollapse]="isPanelCollapsed"
+        [ngbCollapse]="!isDetailVisible"
         class="chart-container"
       >
         <div class="card bg-light" style="min-width: 300px">
@@ -38,7 +38,7 @@
               type="button"
               class="btn btn-sm float-end"
               (click)="closeDetails()"
-              [attr.aria-expanded]="!isPanelCollapsed"
+              [attr.aria-expanded]="isDetailVisible"
             >
               <b style="font-size: x-large">&times;</b>
             </button>
@@ -47,7 +47,7 @@
             <era5-map-detail
               [cropDetails]="mapCropDetails"
               [user]="user"
-              [isPanelCollapsed]="isPanelCollapsed"
+              [isDetailVisible]="isDetailVisible"
             >
             </era5-map-detail>
           </div>
@@ -58,7 +58,10 @@
       <div class="chart-container">
         <div class="card bg-light" style="min-width: 300px">
           <div class="card-body">
-            <climate-stripes [timePeriod]="timePeriod"></climate-stripes>
+            <climate-stripes
+              [stripesDetails]="stripesDetails"
+              [administrative]="this.administrative"
+            ></climate-stripes>
           </div>
         </div>
       </div>

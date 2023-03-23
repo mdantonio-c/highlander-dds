@@ -91,7 +91,7 @@ export class MapDetailComponent implements OnChanges {
   chartData: ChartData[];
   // chart options
   colorScheme = {
-    domain: ["#1a7dc1", "#aae3f5"],
+    domain: ["rgba(16,80,122,0.98)", "#1a7dc1", "#aae3f5"],
   };
 
   private jsonBasins: L.LayerGroup = new L.LayerGroup();

@@ -34,6 +34,7 @@ class SubsetDetails(Schema):
     indicator = fields.Str(required=True)
     daily_metric = fields.Str(required=False, validate=validate.OneOf(DAILY_METRICS))
     time_period = fields.Str(required=False)
+    reference_period = fields.Str(required=False)
     type = fields.Str(required=True, validate=validate.OneOf(TYPES))
     plot_type = fields.Str(required=False, validate=validate.OneOf(PLOT_TYPES))
     plot_format = fields.Str(required=False, validate=validate.OneOf(FORMATS))
@@ -96,6 +97,7 @@ class MapCrop(EndpointResource):
         date: Optional[str] = None,
         daily_metric: Optional[str] = None,
         time_period: Optional[str] = None,
+        reference_period: Optional[str] = None,
         area_id: Optional[str] = None,
         area_coords: Optional[List[float]] = None,
         plot_type: Optional[str] = None,

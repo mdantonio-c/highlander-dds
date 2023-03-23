@@ -45,9 +45,14 @@
         >
           <div
             class="disclaimer shadow p-2 mt-2 rounded"
-            *ngIf="isHydrological"
+            *ngIf="isPanelCollapsed"
           >
-            <b>Click on the map to select a basin</b>
+            <span *ngIf="isHydrological"
+              ><b>Click to select a subcatchment</b></span
+            >
+            <span *ngIf="!isHydrological"
+              ><b>Click on the subcatchment to see details</b></span
+            >
           </div>
           <div id="map" style="height: 300px"></div>
         </div>

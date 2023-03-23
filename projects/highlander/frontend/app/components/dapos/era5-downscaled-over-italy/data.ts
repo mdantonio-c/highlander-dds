@@ -31,9 +31,21 @@ import { CodeLabel } from "../../../types";
 export const INDICATORS: CodeLabel[] = [
   {
     code: "T_2M",
-    label: "Mean temperature 2m (1989-2020)",
+    label: "Mean air temperature 2m (1981-2020)",
     plotLabel: "Mean temperature 2m",
     product: "mean-temperature-2m",
+  },
+  {
+    code: "TMAX_2M",
+    label: "Maximum air temperature 2m (1981-2020)",
+    plotLabel: "Maximum temperature 2m",
+    product: "maximum-temperature-2m",
+  },
+  {
+    code: "TMIN_2M",
+    label: "Minimum air temperature 2m (1981-2020)",
+    plotLabel: "Minimum temperature 2m",
+    product: "minimum-temperature-2m",
   },
 ];
 
@@ -49,4 +61,10 @@ export const ADMINISTRATIVE_AREAS = [
   { code: "italy", label: "Italy" },
   { code: "regions", label: "Regions" },
   { code: "provinces", label: "Provinces" },
+  { code: "basins", label: "Hydrographic Basins" },
+];
+
+export const REFERENCE_PERIODS = [
+  { code: "1981-2010", label: "1981-2010" },
+  { code: "1991-2020", label: "1991-2020" },
 ];

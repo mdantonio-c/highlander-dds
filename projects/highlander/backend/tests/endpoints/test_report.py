@@ -136,6 +136,8 @@ class TestApp(BaseTests):
             MapCropConfig.CROPS_OUTPUT_ROOT,
             params.DATASET_VHR,
             params.PRODUCT_MAPCROP_VHR,
+            params.STRIPES_INDICATOR,
+            params.STRIPES_REF_PERIOD,
             params.STRIPES_TIME_PERIOD,
             "regions",
         )
@@ -147,7 +149,7 @@ class TestApp(BaseTests):
         assert mapstripes_output_file.is_file()
 
         # create the stripes plot
-        stripes_query_params = f"?administrative=regions&time_period={params.STRIPES_TIME_PERIOD}&area_id={params.REGION_ID}"
+        stripes_query_params = f"?administrative=regions&time_period={params.STRIPES_TIME_PERIOD}&area_id={params.REGION_ID}&indicator={params.STRIPES_INDICATOR}&reference_period={params.STRIPES_REF_PERIOD}"
         stripes_endpoint = (
             f"{API_URI}/datasets/{params.DATASET_VHR}/stripes{stripes_query_params}"
         )
@@ -159,6 +161,8 @@ class TestApp(BaseTests):
         )
         stripes_output_file = Path(
             MapCropConfig.STRIPES_OUTPUT_ROOT,
+            params.STRIPES_INDICATOR,
+            params.STRIPES_REF_PERIOD,
             params.STRIPES_TIME_PERIOD,
             "regions",
             stripes_filename,
@@ -167,7 +171,7 @@ class TestApp(BaseTests):
         assert stripes_output_file.is_file()
 
         # get the report
-        query_params = f"time_period={params.STRIPES_TIME_PERIOD}&area_type=regions&area_id={params.REGION_ID}"
+        query_params = f"time_period={params.STRIPES_TIME_PERIOD}&area_type=regions&area_id={params.REGION_ID}&indicator={params.STRIPES_INDICATOR}&reference_period={params.STRIPES_REF_PERIOD}"
         endpoint = f"{API_URI}/datasets/{params.DATASET_VHR}/products/{params.PRODUCT_MAPCROP_VHR}/report?{query_params}"
         r = client.get(endpoint, headers=headers)
         assert r.status_code == 200

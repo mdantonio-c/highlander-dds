@@ -89,13 +89,18 @@ class TestApp(BaseTests):
             time_periods, administratives, area_ids, area_names
         ):
             # request without mandatory variable "time_period".
-            query_params = f"?administrative={administrative}&time_period={time_period}&area_id={area_id}"
+            query_params = f"?administrative={administrative}&time_period={time_period}&area_id={area_id}&indicator={params.STRIPES_INDICATOR}&reference_period={params.STRIPES_REF_PERIOD}"
             endpoint = f"{API_URI}/datasets/{params.DATASET_VHR}/stripes{query_params}"
             r = client.get(endpoint, headers=self.get("auth_header"))
             assert r.status_code == 200
 
             output_filename = f"{area_name.replace(' ', '_').lower()}_stripes.png"
-            output_path = f"{time_period}/{administrative}"
+            output_path = Path(
+                params.STRIPES_INDICATOR,
+                params.STRIPES_REF_PERIOD,
+                time_period,
+                administrative,
+            )
             output_dir = Path(MapCropConfig.STRIPES_OUTPUT_ROOT, output_path)
             output_filepath = Path(output_dir, output_filename)
 
@@ -121,13 +126,18 @@ class TestApp(BaseTests):
             time_periods, administratives, area_ids, area_names
         ):
             # request without mandatory variable "time_period".
-            query_params = f"?administrative={administrative}&time_period={time_period}&area_id={area_id}"
+            query_params = f"?administrative={administrative}&time_period={time_period}&area_id={area_id}&indicator={params.STRIPES_INDICATOR}&reference_period={params.STRIPES_REF_PERIOD}"
             endpoint = f"{API_URI}/datasets/{params.DATASET_VHR}/stripes{query_params}"
             r = client.get(endpoint, headers=self.get("auth_header"))
             assert r.status_code == 200
 
             output_filename = f"{area_name.replace(' ', '_').lower()}_stripes.png"
-            output_path = f"{time_period}/{administrative}"
+            output_path = Path(
+                params.STRIPES_INDICATOR,
+                params.STRIPES_REF_PERIOD,
+                time_period,
+                administrative,
+            )
             output_dir = Path(MapCropConfig.STRIPES_OUTPUT_ROOT, output_path)
             output_filepath = Path(output_dir, output_filename)
 

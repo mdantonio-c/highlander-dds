@@ -16,14 +16,16 @@
       {{ cropDetails.area_id | titlecase }}
     </h3>
     <!-- {{ productLabel | titlecase }} of the period 1989-2020 -->
-    Mean {{ dateLabel | lowercase }} temperature for the 1989-2020 period
+    {{ indicatorLabel | lowercase }} {{ dateLabel | lowercase }} temperature for
+    the {{ cropDetails.period }} period
   </div>
   <div class="details-image-container" *ngIf="loading">
     <div class="image-detail">
       <img alt="cropped map" *ngIf="mapImage" [src]="mapImage" />
     </div>
-    Anomaly of average {{ dateLabel | lowercase }} temperature <br />
-    compared to the average of the period 1989-2020
+    Anomaly of average {{ dateLabel | lowercase }}
+    {{ indicatorLabel | lowercase }} temperature <br />
+    compared to the average of the period {{ cropDetails.period }}
     <div class="image-detail">
       <img alt="boxplot" *ngIf="stripesImage" [src]="stripesImage" />
     </div>
