@@ -31,19 +31,19 @@ import { CodeLabel } from "../../../types";
 export const INDICATORS: CodeLabel[] = [
   {
     code: "T_2M",
-    label: "Mean air temperature 2m (1981-2020)",
+    label: "Mean air temperature 2m",
     plotLabel: "Mean temperature 2m",
     product: "mean-temperature-2m",
   },
   {
     code: "TMAX_2M",
-    label: "Maximum air temperature 2m (1981-2020)",
+    label: "Maximum air temperature 2m",
     plotLabel: "Maximum temperature 2m",
     product: "maximum-temperature-2m",
   },
   {
     code: "TMIN_2M",
-    label: "Minimum air temperature 2m (1981-2020)",
+    label: "Minimum air temperature 2m",
     plotLabel: "Minimum temperature 2m",
     product: "minimum-temperature-2m",
   },
