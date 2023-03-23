@@ -48,7 +48,7 @@ export class CropWaterComponent {
   dataset: DatasetInfo;
   isFilterCollapsed = false;
   map: L.Map;
-  private legends: { [key: string]: L.Control } = {};
+  private legendControl: L.Control;
   zoom: number = 12;
   center: L.LatLng = L.latLng([44.49895, 11.32759]); // default Bologna City
   readonly LEGEND_POSITION = "bottomright";
@@ -88,12 +88,6 @@ export class CropWaterComponent {
     this.map = map;
     // position to selected area
     this.map.setView(this.center, this.zoom);
-
-    this.initLegends(map);
-    // add a legend
-    /*if (this.legends[this.filter.layer]) {
-      this.legends[this.filter.layer].addTo(map);
-    }*/
   }
 
   onMapZoomEnd($event) {
@@ -105,25 +99,10 @@ export class CropWaterComponent {
     this.center = this.map.getCenter();
   }
 
-  private initLegends(map: L.Map) {
-    LAYERS[this.dataset.id].forEach((l) => {
-      this.legends[l.code] = this.createLegendControl(l.code);
-      console.log(`add legend <${l.code}>`);
-    });
-  }
-
-  private createLegendControl(id: string): L.Control {
-    let config: LegendConfig = LEGEND_DATA[this.dataset.id].find(
-      (x) => x.id === id,
-    );
-    if (!config) {
-      console.error(`Legend data NOT found for ID<${id}>`);
-      this.notify.showError("Bad legend configuration");
-      return;
-    }
+  private createLegendControl(legendConfig: LegendConfig): L.Control {
     const legend = new L.Control({ position: this.LEGEND_POSITION });
     legend.onAdd = () => {
-      let div = L.DomUtil.create("div", config.legend_type);
+      let div = L.DomUtil.create("div", legendConfig.legend_type);
       if (!L.Browser.touch) {
         L.DomEvent.disableClickPropagation(div);
         L.DomEvent.on(div, "mousewheel", L.DomEvent.stopPropagation);
@@ -131,11 +110,11 @@ export class CropWaterComponent {
         L.DomEvent.on(div, "click", L.DomEvent.stopPropagation);
       }
 
-      div.innerHTML += `<h6>${config.title}</h6>`;
-      config.items.forEach((i) => {
+      div.innerHTML += `<h6>${legendConfig.title}</h6>`;
+      legendConfig.items.forEach((i) => {
         div.innerHTML +=
           '<div id="' +
-          `${id}_${i.id}` +
+          `${i.id}` +
           '"><i style="background:' +
           i.color +
           '"></i><span>' +
@@ -187,9 +166,14 @@ export class CropWaterComponent {
       this.map.setView(this.center, this.zoom);
 
       // remove the previous legend
-      if (previousLayer && data.layer !== previousLayer) {
-        this.map.removeControl(this.legends[previousLayer]);
+      if (this.legendControl) {
+        // when the variable legendControl is populated, the control is added to the map
+        // it means that if the variable is not null there is a legend controller on the map
+        this.map.removeControl(this.legendControl);
       }
+      // if (previousLayer && data.layer !== previousLayer) {
+      //   this.map.removeControl(this.legends[previousLayer]);
+      // }
 
       // FIXME update ONLY on area and period
       const update =
@@ -200,9 +184,6 @@ export class CropWaterComponent {
           this.dataset.id === "irri-proj");
       // load layer on the map
       this.loadGeoData(update);
-
-      // add the new legend
-      this.legends[data.layer].addTo(this.map);
 
       // add attribution
       this.map.attributionControl.addAttribution("&copy; Highlander");
@@ -339,6 +320,11 @@ export class CropWaterComponent {
         x.id === this.filter.layer &&
         (!("applyTo" in x) || x.applyTo.includes(this.filter.area)),
     );
+    if (!legend) {
+      console.error(`Legend data NOT found for ID<${this.filter.layer}>`);
+      this.notify.showError("Bad legend configuration");
+      return;
+    }
     const comp: CropWaterComponent = this;
     let crops = new Set();
     const jsonLayer = L.geoJSON(this.geojson, {
@@ -367,6 +353,11 @@ export class CropWaterComponent {
       },
     });
     // console.log("all crop ids: ", ...crops);
+    // create the legend
+    this.legendControl = this.createLegendControl(legend);
+    // add the legend
+    this.legendControl.addTo(this.map);
+
     this.geoData.addLayer(jsonLayer);
     this.geoData.addTo(this.map);
     this.spinner.hide();
