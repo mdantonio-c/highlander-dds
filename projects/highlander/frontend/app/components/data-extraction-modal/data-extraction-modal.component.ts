@@ -131,6 +131,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
       tap(() => {
         this.spinner.show("extSpinner");
         this.loading = true;
+        this.estimatedSize = null;
       }),
       switchMap(() => {
         return this.dataService
@@ -174,7 +175,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
           this.estimatedSize = val;
         } else {
           this.estimatedSize = -1;
-          }
+        }
       });
   }
 
@@ -216,6 +217,10 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
         tap((val) => (this.estimateAlertAlertClosed = false)),
       ),
     ).subscribe((val) => {
+      if (!this.estimatedSize) {
+        // unable to calculate size estimation
+        return;
+      }
       if (this.remaining && this.remaining >= 0) {
         this.passEntry.emit(this.buildRequest());
         this.activeModal.close();
