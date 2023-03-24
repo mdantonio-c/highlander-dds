@@ -191,6 +191,8 @@ class MapCropConfig:
         "AT": "at",
         # era5
         "T_2M": "T_2M",
+        "TMAX_2M": "TMAX_2M",
+        "TMIN_2M": "TMIN_2M",
         # suitability for forest
         "BIO1": "bio1",
         "BIO2": "bio2",
@@ -434,6 +436,38 @@ class MapCropConfig:
             ],  # 50,],
         },
         "2m temperature": {
+            "colormap": "mpl.cm.nipy_spectral",
+            "levels": [
+                -15,
+                -10,
+                -5,
+                0,
+                5,
+                10,
+                15,
+                20,
+                25,
+                30,
+                35,
+            ],
+        },
+        "2m maximum temperature": {
+            "colormap": "mpl.cm.nipy_spectral",
+            "levels": [
+                -15,
+                -10,
+                -5,
+                0,
+                5,
+                10,
+                15,
+                20,
+                25,
+                30,
+                35,
+            ],
+        },
+        "2m minimum temperature": {
             "colormap": "mpl.cm.nipy_spectral",
             "levels": [
                 -15,
