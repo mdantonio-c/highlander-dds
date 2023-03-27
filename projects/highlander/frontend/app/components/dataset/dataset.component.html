@@ -18,16 +18,16 @@
       </ol>
     </div>
     <div class="w-100">
-      <div class="description-box my-4">
+      <div class="description-box mb-4">
         <img
           src="{{
             backendURI + '/api/datasets/' + dataset.id + '/content?type=image'
           }}"
           alt="no img"
-          class="m-3 dataset-image img-fluid float-start"
+          class="dataset-image img-fluid float-start"
           *ngIf="dataset.image"
         />
-        <p class="text-justify m-2 p-2" [innerHTML]="dataset.description"></p>
+        <p class="text-justify" [innerHTML]="dataset.description"></p>
       </div>
       <hr />
       <div class="d-flex">

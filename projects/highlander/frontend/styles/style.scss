@@ -327,6 +327,7 @@ input[type="checkbox"]:checked {
   object-fit: cover;
   width: 320px;
   height: auto;
+  margin-right: 30px;
 }
 
 .description-box + hr {
@@ -357,6 +358,28 @@ input[type="checkbox"]:checked {
     text-indent: 0px !important;
   }
 }
+
+/*custom table IoT*/
+.table-bordered {
+  border-collapse: collapse;
+  width: 70%;
+  td, th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+
+  th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #1A7DC1;
+    color: white;
+  }
+   tr:nth-child(even){background-color: #f2f2f2;}
+
+   tr:hover {background-color: #ddd;}
+}
+
 /*custom icon*/
 .fa-map-marker-alt {
   color: #1a7dc1 !important;
