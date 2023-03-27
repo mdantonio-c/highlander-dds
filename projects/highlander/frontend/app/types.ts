@@ -306,6 +306,11 @@ export interface RegionFeature {
   area: number;
 }
 
+export interface MunicipalitiesFeature {
+  id: number;
+  name: string;
+}
+
 export interface BasinFeature {
   name: string;
 }

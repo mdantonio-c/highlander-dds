@@ -61,6 +61,7 @@ export const ADMINISTRATIVE_AREAS = [
   { code: "italy", label: "Italy" },
   { code: "regions", label: "Regions" },
   { code: "provinces", label: "Provinces" },
+  { code: "municipalities", label: "Municipalities" },
   { code: "basins", label: "Hydrographic Basins" },
 ];
 

@@ -18,6 +18,7 @@ import {
   ProvinceFeature,
   RegionFeature,
   BasinFeature,
+  MunicipalitiesFeature,
 } from "../../../types";
 import { environment } from "@rapydo/../environments/environment";
 import * as L from "leaflet";
@@ -366,6 +367,12 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
         this.mapCropDetails.area_id = (
           layer.feature.properties as BasinFeature
         ).name;
+        break;
+      case "municipalities":
+        this.mapCropDetails.area_id = (
+          layer.feature.properties as MunicipalitiesFeature
+        ).name;
+        //console.log("province: "+this.mapCropDetails.area_id);
         break;
     }
     //force the ngonChanges of the child component

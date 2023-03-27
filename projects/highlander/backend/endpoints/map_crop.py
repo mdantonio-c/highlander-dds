@@ -16,7 +16,7 @@ from restapi.models import Schema, fields, validate
 from restapi.rest.definition import EndpointResource, Response
 from restapi.utilities.logs import log
 
-AREA_TYPES = ["regions", "provinces", "basins", "bbox", "polygon"]
+AREA_TYPES = ["regions", "provinces", "basins", "municipalities", "bbox", "polygon"]
 DAILY_METRICS = ["daymax", "daymin", "daymean"]
 TYPES = ["map", "plot"]
 PLOT_TYPES = ["boxplot", "distribution"]

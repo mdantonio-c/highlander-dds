@@ -15,6 +15,7 @@ import {
   ProvinceFeature,
   RegionFeature,
   BasinFeature,
+  MunicipalitiesFeature,
   SoilErosionFilter,
   SoilErosionMapCrop,
 } from "../../../types";
@@ -393,6 +394,12 @@ export class SoilErosionComponent implements OnInit {
         ).name;
         //console.log("province: "+this.mapCropDetails.area_id);
         break;
+        case "municipalities":
+          this.mapCropDetails.area_id = (
+            layer.feature.properties as MunicipalitiesFeature
+          ).name;
+          //console.log("province: "+this.mapCropDetails.area_id);
+          break;
       case "basins":
         this.mapCropDetails.area_id = (
           layer.feature.properties as BasinFeature

@@ -649,7 +649,6 @@ class PlotUtils:
 
         # Get the area. Check if it exists and if it does not,then  raise an error.
         area = areas[areas["name"] == area_name]
-
         return area_name, area
 
     @staticmethod

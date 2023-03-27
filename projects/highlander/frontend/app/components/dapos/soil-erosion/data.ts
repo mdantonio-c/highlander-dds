@@ -18,6 +18,7 @@ export const ADMINISTRATIVE_AREAS = [
   { code: "regions", label: "Regions" },
   { code: "provinces", label: "Provinces" },
   { code: "basins", label: "Hydrographic Basins" },
+  { code: "municipalities", label: "Municipalities" },
   // { code: "municipalities", label: "Municipalities" },
 ];
 

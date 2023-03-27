@@ -17,7 +17,7 @@ from restapi.utilities.logs import log
 
 # STRIPES_INPUT_ROOT = Path("/catalog/datasets/datasets/climate_stripes/")
 
-ADMINISTRATIVES = ["Italy", "regions", "provinces", "basins"]
+ADMINISTRATIVES = ["Italy", "regions", "provinces", "basins", "municipalities"]
 
 TIME_PERIODS = ["ANN", "DJF", "JJA", "MAM", "SON"]
 
