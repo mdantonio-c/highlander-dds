@@ -51,7 +51,7 @@ const SELECT_STYLE = {
 @Component({
   selector: "app-era5-downscaled-over-italy",
   templateUrl: "./era5-downscaled-over-italy.component.html",
-  styleUrls: ["./era5-downscaled-over-italy.component.scss"],
+  styleUrls: ["./era5-downscaled-over-italy.component.scss", "../shared.scss"],
 })
 export class Era5DownscaledOverItalyComponent implements OnInit {
   @Input()

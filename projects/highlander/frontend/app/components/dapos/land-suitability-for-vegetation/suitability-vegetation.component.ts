@@ -34,7 +34,7 @@ const JSON_STYLE = {
 @Component({
   selector: "app-suitability-vegetation",
   templateUrl: "./suitability-vegetation.component.html",
-  styleUrls: ["./suitability-vegetation.component.scss"],
+  styleUrls: ["./suitability-vegetation.component.scss", "../shared.scss"],
 })
 export class SuitabilityVegetationComponent implements OnInit {
   @Input()

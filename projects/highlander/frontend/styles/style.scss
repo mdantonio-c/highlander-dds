@@ -141,40 +141,10 @@ input[type="file"]:focus {
   }
 }
 
-/*.custom-control {
-  position: relative;
-  z-index: 1;
-  display: block;
-  min-height: 1.5rem;
-  padding-left: 1.5rem;
-  -webkit-print-color-adjust: exact;
-  color-adjust: exact;
-}*/
 input[type="checkbox"],
 input[type="radio"] {
   box-sizing: border-box;
   padding: 0;
-}
-/*.custom-control-input {
-  position: absolute;
-  left: 0;
-  z-index: -1;
-  width: 1rem;
-  height: 1.25rem;
-  opacity: 0;
-}*/
-
-/*sign in eye icon fix*/
-#formly_2_password_password_1 + .toggle,
-#formly_4_password_password_1 + .toggle {
-  /* float: right; */
-  margin-right: 0;
-  margin-top: 0;
-  position: absolute;
-  z-index: 999999;
-  color: gray;
-  right: 10px;
-  top: 10px;
 }
 
 /* Custom ngx-datatable styles */
@@ -211,6 +181,7 @@ input[type="radio"] {
     text-align: justify;
   }
 }
+
 /* style my-requests sidebar */
 .sidenav {
   .nav-pills {
@@ -257,7 +228,7 @@ input[type="radio"] {
   border-radius: 0 !important;
 }
 
-/*img*/
+/* img */
 
 .hld-preview-thumbnail {
   border-radius: 171px;
@@ -288,7 +259,7 @@ app-dataset .btn {
   border-color: #1a7dc1 !important;
 }
 
-/*buttons & checkbox/radio*/
+/* buttons & checkbox/radio */
 
 .leaflet-control-zoom-out,
 .leaflet-control-zoom-in {
@@ -297,12 +268,6 @@ app-dataset .btn {
   color: #1a7dc1 !important;
 }
 
-/*.leaflet-touch .leaflet-bar a {
-  margin-bottom: 2px;
-  width: 34px !important;
-  height: 33px !important;
-  line-height: 29px;
-}*/
 .leaflet-control-zoom {
   border: none !important;
 }
@@ -311,16 +276,6 @@ app-dataset .btn {
   display: block;
   margin-top: 0;
 }
-
-/*input[type="radio"]:checked,
-input[type="checkbox"]:checked {
-  color: #1a7dc1 !important;
-  background-color: #1a7dc1 !important;
-  fill: #1a7dc1;
-  appearance: none;
-  border: 7px solid #1a7dc1;
-  border-radius: 7px;
-}*/
 
 /*custom dataset page*/
 .dataset-image {
@@ -363,7 +318,8 @@ input[type="checkbox"]:checked {
 .table-bordered {
   border-collapse: collapse;
   width: 70%;
-  td, th {
+  td,
+  th {
     border: 1px solid #ddd;
     padding: 8px;
   }
@@ -372,12 +328,16 @@ input[type="checkbox"]:checked {
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: left;
-    background-color: #1A7DC1;
+    background-color: #1a7dc1;
     color: white;
   }
-   tr:nth-child(even){background-color: #f2f2f2;}
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
 
-   tr:hover {background-color: #ddd;}
+  tr:hover {
+    background-color: #ddd;
+  }
 }
 
 /*custom icon*/
@@ -418,14 +378,6 @@ input[type="checkbox"]:checked {
   img {
     max-width: 349px;
   }
-  /*.card-horizontal {
-    display: flex;
-    flex: 1 1 auto;
-    .card-title {
-      font-size: 80%;
-      font-weight: 400;
-    }
-  }*/
 }
 
 @media screen and (max-width: 990px) {
@@ -499,30 +451,6 @@ input[type="checkbox"]:checked {
   }
 }
 
-/* Custom responsive for applications pages*/
-.filters {
-  max-width: 30% !important;
-
-  .show {
-    top: 0 !important;
-  }
-
-  .collapse + .toggle {
-    display: block;
-  }
-
-  .collapse:not(.collapsed):not(.chart-container) {
-    display: block;
-
-    top: 44px;
-    transition: 0.6s;
-    width: 100%;
-    word-break: break-word;
-  }
-
- 
-}
-
 .chart-container {
   &.collaspe {
     display: none !important;
@@ -535,28 +463,6 @@ input[type="checkbox"]:checked {
 
   .details-text-container {
     margin-top: -10px !important;
-  }
-}
-
-.toggle {
-  cursor: pointer;
-  background-image: url("/app/custom/assets/images/mb_exit.svg");
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: contain;
-  width: 35px;
-  height: 35px;
-  transition: 0.6s;
-  margin-top: -5px;
-  display: none;
-  position: absolute;
-  top:0;
-
-  &.collapsed {
-    margin-left: 8px;
-    background-image: url("/app/custom/assets/images/menu_burger.svg");
-    left: 0;
-    display: none;
   }
 }
 
@@ -574,54 +480,6 @@ input[type="checkbox"]:checked {
     }
   }
 }
-  @media (max-width: 988px) {
-    .col-2.filters {
-      max-width: 90% !important;
-      width: 100% !important;
-    }
-    
-    .filters {
-      display: block;
-      max-width: 50%;
-      flex: 0 0 100%;
-      margin-left: 15px;
-      margin-top: 14px;
-      position: absolute;
-      z-index:1002;
-
-      .collapse {
-        z-index: 99999;
-        display: none;
-      }
-
-      .toggle.collapsed {
-        margin-left: 0;
-      }
-
-      .col-12 {
-        margin-bottom: 30px;
-      }
-
-      .collapse:not(.collapsed, .chart-container) {
-        width: 100%;
-        margin-top: 35px;
-      }
-      & + .px-3 .map {
-        top: 25px;
-        margin-bottom: 16px;
-      }
-    }
-  }
-
-  @media (max-width: 496px) {
-    .col-2.filters {
-      max-width: 84% !important;
-    }
-  }
-    
-  
-
-
 
 /* Custom size Bootstrap form-switch */
 .form-switch.form-switch-sm {

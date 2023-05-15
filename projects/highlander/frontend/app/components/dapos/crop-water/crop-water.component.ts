@@ -41,7 +41,7 @@ const NULL_STYLE = {
 @Component({
   selector: "app-crop-water",
   templateUrl: "./crop-water.component.html",
-  styleUrls: ["./crop-water.component.scss"],
+  styleUrls: ["./crop-water.component.scss", "../shared.scss"],
 })
 export class CropWaterComponent {
   @Input()

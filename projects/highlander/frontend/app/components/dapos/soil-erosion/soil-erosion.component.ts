@@ -57,7 +57,7 @@ const SELECT_STYLE = {
 @Component({
   selector: "app-soil-erosion",
   templateUrl: "./soil-erosion.component.html",
-  styleUrls: ["./soil-erosion.component.scss"],
+  styleUrls: ["./soil-erosion.component.scss", "../shared.scss"],
 })
 export class SoilErosionComponent implements OnInit {
   @Input()
@@ -394,12 +394,12 @@ export class SoilErosionComponent implements OnInit {
         ).name;
         //console.log("province: "+this.mapCropDetails.area_id);
         break;
-        case "municipalities":
-          this.mapCropDetails.area_id = (
-            layer.feature.properties as MunicipalitiesFeature
-          ).name;
-          //console.log("province: "+this.mapCropDetails.area_id);
-          break;
+      case "municipalities":
+        this.mapCropDetails.area_id = (
+          layer.feature.properties as MunicipalitiesFeature
+        ).name;
+        //console.log("province: "+this.mapCropDetails.area_id);
+        break;
       case "basins":
         this.mapCropDetails.area_id = (
           layer.feature.properties as BasinFeature

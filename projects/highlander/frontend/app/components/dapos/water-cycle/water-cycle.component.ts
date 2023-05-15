@@ -58,7 +58,7 @@ const SELECT_STYLE = {
 @Component({
   selector: "app-water-cycle",
   templateUrl: "./water-cycle.component.html",
-  styleUrls: ["./water-cycle.component.scss"],
+  styleUrls: ["./water-cycle.component.scss", "../shared.scss"],
 })
 export class WaterCycleComponent implements OnInit {
   @Input()
