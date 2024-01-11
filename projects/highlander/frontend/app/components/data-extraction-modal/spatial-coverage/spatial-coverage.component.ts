@@ -205,15 +205,15 @@ export class SpatialCoverageComponent {
     if (Object.values(this.area).some((v) => v === null)) {
       console.error("Bad area", this.area);
       this.notify.showError(
-        "The area CANNOT be drawn on the map as the coords are invalid"
+        "The area CANNOT be drawn on the map as the coords are invalid",
       );
       return;
     }
     const poly = new L.Rectangle(
       L.latLngBounds(
         L.latLng(this.area.south, this.area.east),
-        L.latLng(this.area.north, this.area.west)
-      )
+        L.latLng(this.area.north, this.area.west),
+      ),
     );
     // zoom the map to the rectangle bounds
     this.fitBounds(poly);
@@ -243,8 +243,8 @@ export class SpatialCoverageComponent {
     const poly = new L.Rectangle(
       L.latLngBounds(
         L.latLng(val.south, val.east),
-        L.latLng(val.north, val.west)
-      )
+        L.latLng(val.north, val.west),
+      ),
     );
 
     // add to the map

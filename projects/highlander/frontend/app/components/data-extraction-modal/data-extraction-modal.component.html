@@ -166,7 +166,10 @@
     type="submit"
     class="btn btn-primary btn-lg"
     form="ngForm"
-    [disabled]="autoSizeEstimation && (!estimatedSize || remaining < 0 || estimatedSize < 0)"
+    [disabled]="
+      autoSizeEstimation &&
+      (!estimatedSize || remaining < 0 || estimatedSize < 0)
+    "
   >
     Job Submit »
   </button>

@@ -18,7 +18,7 @@ export class DaposComponent {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
   ) {
     this.dataset = this.router.getCurrentNavigation().extras
       .state as DatasetInfo;
@@ -43,7 +43,7 @@ export class DaposComponent {
           (error) => {
             this.router.navigate(["app/404"]);
             this.notify.showError(error);
-          }
+          },
         )
         .add(() => {
           this.spinner.hide();

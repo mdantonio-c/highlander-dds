@@ -110,13 +110,13 @@
                       <ul>
                         <li>
                           <strong>N</strong>:
-                          {{ row.args.area.north | number: "1.3-3" }},
+                          {{ row.args.area.north | number : "1.3-3" }},
                           <strong>E</strong>:
-                          {{ row.args.area.east | number: "1.3-3" }},
+                          {{ row.args.area.east | number : "1.3-3" }},
                           <strong>S</strong>:
-                          {{ row.args.area.south | number: "1.3-3" }},
+                          {{ row.args.area.south | number : "1.3-3" }},
                           <strong>W</strong>:
-                          {{ row.args.area.west | number: "1.3-3" }}
+                          {{ row.args.area.west | number : "1.3-3" }}
                           <a
                             href="http://openstreetmap.org/?minlon={{
                               row.args.area.west
@@ -137,9 +137,9 @@
                       <ul>
                         <li>
                           <strong>LAT</strong>:
-                          {{ row.args.location.latitude | number: "1.3-3" }},
+                          {{ row.args.location.latitude | number : "1.3-3" }},
                           <strong>LNG</strong>:
-                          {{ row.args.location.longitude | number: "1.3-3" }}
+                          {{ row.args.location.longitude | number : "1.3-3" }}
                           <a
                             href="http://openstreetmap.org/?mlat={{
                               row.args.location.latitude
@@ -161,7 +161,7 @@
                       class="mb-0"
                       *ngIf="!declaredFields.includes(extra.key)"
                     >
-                      <dt>{{ extra.key | titlecase | replace: "_":" " }}</dt>
+                      <dt>{{ extra.key | titlecase | replace : "_" : " " }}</dt>
                       <dd>
                         <ul>
                           <li>{{ extra.value }}</li>
@@ -242,7 +242,7 @@
       [minWidth]="160"
     >
       <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
-        <span>{{ value | amFromUtc | date: "yyyy-MM-dd HH:mm:ss" }}</span>
+        <span>{{ value | amFromUtc | date : "yyyy-MM-dd HH:mm:ss" }}</span>
       </ng-template>
     </ngx-datatable-column>
     <!-- End date -->
@@ -257,7 +257,7 @@
     >
       <ng-template let-value="value" let-row="row" ngx-datatable-cell-template>
         <span *ngIf="value; else noValue">{{
-          value | amFromUtc | date: "yyyy-MM-dd HH:mm:ss"
+          value | amFromUtc | date : "yyyy-MM-dd HH:mm:ss"
         }}</span>
       </ng-template>
     </ngx-datatable-column>

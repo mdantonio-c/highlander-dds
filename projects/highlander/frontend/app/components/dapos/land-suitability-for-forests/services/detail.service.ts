@@ -13,7 +13,7 @@ export class DetailService {
 
   getDetail(
     detailsFilter: ForestSuitabilityMapCrop,
-    detailType: string
+    detailType: string,
   ): Observable<Blob> {
     const options = {
       conf: {
@@ -38,7 +38,7 @@ export class DetailService {
     return this.api.get(
       `/api/datasets/land-suitability-for-forests/products/${product}/crop`,
       params,
-      options
+      options,
     );
   }
 
@@ -53,7 +53,7 @@ export class DetailService {
   createReport(
     detailsFilter: ForestSuitabilityMapCrop,
     productLabel: string,
-    indicatorLabel: string
+    indicatorLabel: string,
   ): Observable<any> {
     const options = {
       conf: {
@@ -82,7 +82,7 @@ export class DetailService {
     return this.api.get(
       `/api/datasets/land-suitability-for-forests/products/${product}/report`,
       params,
-      options
+      options,
     );
   }
 }

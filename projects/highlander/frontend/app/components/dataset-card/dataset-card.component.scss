@@ -21,11 +21,11 @@
     scrollbar-color: #1a7dc1 rgba(56, 56, 56, 0.473);
 
     &::-webkit-scrollbar {
-    width: 4px;
+      width: 4px;
     }
     &::-webkit-scrollbar-track {
-    border-radius: 20px;
-    background-color: rgba(56, 56, 56, 0.473);
+      border-radius: 20px;
+      background-color: rgba(56, 56, 56, 0.473);
     }
 
     &::-webkit-scrollbar-thumb {
@@ -67,8 +67,8 @@
   .card-img-overlay {
     width: auto;
     height: 130px;
-    padding:0 2px 10px 2px;
-    
+    padding: 0 2px 10px 2px;
+
     &:hover .breadcrumb {
       width: 28px;
       visibility: visible;
@@ -77,39 +77,38 @@
     .breadcrumb {
       width: 0;
       margin-right: -2px;
-      position: relative; 
+      position: relative;
       transition: all 0.5s ease-in-out;
-      visibility:hidden;
+      visibility: hidden;
 
       a {
-        margin:auto;
-      } 
+        margin: auto;
+      }
     }
   }
   .breadcrumb {
     font-size: 13px;
     color: #1a7dc1;
-    background-color: #E9ECEF;
+    background-color: #e9ecef;
 
     .breadcrumb-item {
       width: 100%;
     }
   }
-  
-  
 }
 
 @media screen and (max-width: 905px) {
   .dataset-card {
     width: 15rem !important;
   }
-  .dataset-card a, .dataset-card a .fa-up-right-from-square {
+  .dataset-card a,
+  .dataset-card a .fa-up-right-from-square {
     color: #1a7dc1;
     font-size: 14px;
   }
 }
 
-@media (max-width: 755px)  {
+@media (max-width: 755px) {
   .dataset-card {
     width: 22rem !important;
     img {
@@ -119,5 +118,5 @@
     .card-img-overlay {
       height: 180px;
     }
-  } 
+  }
 }

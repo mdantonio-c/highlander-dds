@@ -1,32 +1,32 @@
 .card-body {
-    padding: 0.8rem !important;
+  padding: 0.8rem !important;
+}
+
+.col-form-label {
+  word-break: break-all;
+  color: #1a7dc1 !important;
+  text-transform: uppercase;
+
+  strong {
+    font-weight: 400;
   }
-  
+}
+
+@media (max-width: 1364px) {
+  .form-control {
+    font-size: 13px !important;
+  }
+
   .col-form-label {
-    word-break: break-all;
-    color: #1a7dc1 !important;
-    text-transform: uppercase;
-  
-    strong {
-      font-weight: 400;
-    }
+    font-size: 13px;
   }
-  
-  @media (max-width: 1364px) {
-    .form-control {
-      font-size: 13px !important;
-    }
-  
-    .col-form-label {
-      font-size: 13px;
-    }
+}
+@media (max-width: 1004px) {
+  .form-control {
+    font-size: 12px !important;
   }
-  @media (max-width: 1004px) {
-    .form-control {
-      font-size: 12px !important;
-    }
-  
-    .col-form-label {
-      font-size: 12px;
-    }
+
+  .col-form-label {
+    font-size: 12px;
   }
+}

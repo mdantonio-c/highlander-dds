@@ -65,7 +65,7 @@ export class MapSideNavComponent implements OnInit {
       {
         onlySelf: true,
         emitEvent: false,
-      }
+      },
     );
   }
 
@@ -87,7 +87,7 @@ export class MapSideNavComponent implements OnInit {
       {
         onlySelf: true,
         emitEvent: false,
-      }
+      },
     );
   }
 

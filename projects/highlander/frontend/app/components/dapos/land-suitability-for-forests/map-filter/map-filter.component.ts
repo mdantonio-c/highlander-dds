@@ -59,7 +59,7 @@ export class MapFilterComponent implements OnInit {
                 bioclimaticPrecipitation: null,
                 // bioclimaticVariable: null,
               },
-              { emitEvent: false, onlySelf: true }
+              { emitEvent: false, onlySelf: true },
             );
             return;
           }
@@ -91,7 +91,7 @@ export class MapFilterComponent implements OnInit {
             {
               administrative: "italy",
             },
-            { emitEvent: false, onlySelf: true }
+            { emitEvent: false, onlySelf: true },
           );
           break;
       }

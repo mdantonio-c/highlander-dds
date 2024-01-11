@@ -23,7 +23,7 @@ export class ApplicationsComponent implements OnInit {
   }
 
   isCollapsed = true;
-  
+
   trackByFunc(index, value) {
     return value.id;
   }

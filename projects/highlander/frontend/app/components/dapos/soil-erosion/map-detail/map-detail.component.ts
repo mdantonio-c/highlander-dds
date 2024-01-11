@@ -27,7 +27,7 @@ export class MapDetailComponent implements OnChanges {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private sanitizer: DomSanitizer,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnChanges() {
@@ -38,7 +38,7 @@ export class MapDetailComponent implements OnChanges {
       console.log("get details for:", this.cropDetails);
       //add the label to be display in the panel
       this.productLabel = INDICATORS.find(
-        (x) => x.product == this.cropDetails.product
+        (x) => x.product == this.cropDetails.product,
       ).label;
 
       setTimeout(() => {
@@ -50,10 +50,10 @@ export class MapDetailComponent implements OnChanges {
         .subscribe(
           (blobs) => {
             this.mapImage = this.sanitizer.bypassSecurityTrustUrl(
-              URL.createObjectURL(blobs[0])
+              URL.createObjectURL(blobs[0]),
             );
             this.plotImage = this.sanitizer.bypassSecurityTrustUrl(
-              URL.createObjectURL(blobs[1])
+              URL.createObjectURL(blobs[1]),
             );
           },
           (error) => {
@@ -61,7 +61,7 @@ export class MapDetailComponent implements OnChanges {
             error.text().then((value) => {
               this.notify.showError(value);
             });
-          }
+          },
         )
         .add(() => {
           this.spinner.hide();
@@ -85,7 +85,7 @@ export class MapDetailComponent implements OnChanges {
         },
         (error) => {
           this.notify.showError("Unable to create the report");
-        }
+        },
       )
       .add(() => {
         this.spinner.hide();

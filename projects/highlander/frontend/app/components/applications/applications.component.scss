@@ -13,26 +13,26 @@
   margin-top: 5px;
 }
 
-.card-container{
+.card-container {
   column-gap: 5% !important;
 }
 
-  /* Custom responsive for applications pages*/
+/* Custom responsive for applications pages*/
 .sidebar-container {
   position: relative;
   width: 250px;
-  top:0;
-    
-  + .col{
-      margin-left:10px;
+  top: 0;
+
+  + .col {
+    margin-left: 10px;
   }
   .list-group {
-    position:sticky;
-    top:0;
-    width:250px;
-  
+    position: sticky;
+    top: 0;
+    width: 250px;
+
     .list-group-item {
-      border:none !important;
+      border: none !important;
     }
   }
 }
@@ -57,21 +57,21 @@
 
 @media (min-width: 1293px) {
   .card-container {
-   column-gap: 5% !important;
+    column-gap: 5% !important;
   }
 }
 
-@media(max-width: 1204px) {
+@media (max-width: 1204px) {
   .sidebar-container {
     width: 27%;
   }
 }
 
-@media (min-width: 865px)  {
-  .list-group{
+@media (min-width: 865px) {
+  .list-group {
     display: block;
-  
-    &.collapsed{
+
+    &.collapsed {
       display: block;
     }
   }
@@ -87,46 +87,43 @@
     top: 0;
     background-color: #fff;
     z-index: 1;
-    height:46px;
+    height: 46px;
     border-bottom: 1px solid rgba(211, 211, 211, 0.342);
-    padding-top:4px;
-    padding-bottom:4px;
-    
+    padding-top: 4px;
+    padding-bottom: 4px;
+
     & + .col {
-      margin-left:0;
+      margin-left: 0;
     }
-   
-    .list-group{
+
+    .list-group {
       display: block;
       position: absolute;
-      z-index:99999;
-      top:34px;
+      z-index: 99999;
+      top: 34px;
       width: 100%;
-      padding:6px;
-   
-        
-      &.collapsed{
-          display: none;
+      padding: 6px;
+
+      &.collapsed {
+        display: none;
       }
     }
-  } 
+  }
 }
-@media (max-width: 755px)  {
- 
+@media (max-width: 755px) {
   .card-container {
     column-gap: 10%;
-  justify-content: center;
+    justify-content: center;
   }
 }
 
-@media (max-width: 600px)  {
-.card-container {
-  column-gap:0.5%;
+@media (max-width: 600px) {
+  .card-container {
+    column-gap: 0.5%;
   }
 }
 
-
-@media (max-width: 560px)  {
+@media (max-width: 560px) {
   .card-container {
     justify-content: center;
   }

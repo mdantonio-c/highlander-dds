@@ -30,7 +30,7 @@ export class DatasetComponent implements OnInit {
     private notify: NotificationService,
     private ref: ChangeDetectorRef,
     private spinner: NgxSpinnerService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
   ) {
     this.dataset = this.router.getCurrentNavigation().extras
       .state as DatasetInfo;
@@ -65,20 +65,20 @@ export class DatasetComponent implements OnInit {
             this.dataset = data;
             if (this.dataset.products && this.dataset.products.length) {
               this.selectedProduct = this.dataset.products.find(
-                (e) => e.id === this.dataset.default
+                (e) => e.id === this.dataset.default,
               );
             }
           },
           (error) => {
             this.notify.showError(error);
-          }
+          },
         )
         .add(() => {
           this.spinner.hide();
         });
     } else if (this.dataset.products && this.dataset.products.length) {
       this.selectedProduct = this.dataset.products.find(
-        (e) => e.id === this.dataset.default
+        (e) => e.id === this.dataset.default,
       );
     }
   }
@@ -94,7 +94,7 @@ export class DatasetComponent implements OnInit {
         },
         (error) => {
           this.notify.showError(error);
-        }
+        },
       )
       .add(() => {
         this.spinner.hide();
@@ -120,7 +120,7 @@ export class DatasetComponent implements OnInit {
   changeProduct(newVal: ProductReference) {
     console.log(`change product to ${newVal.id}`);
     this.selectedProduct = this.dataset.products.find(
-      (e) => e.id === newVal.id
+      (e) => e.id === newVal.id,
     );
   }
 }

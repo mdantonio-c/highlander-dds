@@ -8,14 +8,14 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional
 
+import dds_backend.core.base.util as ut
 import numpy as np
 from dds_backend import DataBroker
+from dds_backend.core.base.ex import DMSKeyError
+from dds_backend.core.base.log_utils import LogObject
+from dds_backend.core.base.util import Query
 from restapi.connectors import Connector, ExceptionsList
 from restapi.utilities.logs import log
-
-from dds_backend.core.base.util import Query
-from dds_backend.core.base.log_utils import LogObject
-import dds_backend.core.base.util as ut
 
 wtypes = {
     "int32": "IntList",
@@ -67,7 +67,7 @@ class BrokerExt(Connector):
 
         request = request.copy()
         if "product_type" not in request:
-            raise ex.DMSKeyError("Key `product_type` is missing  in the request!")
+            raise DMSKeyError("Key `product_type` is missing  in the request!")
         request = self.broker._get_coord_from_area(request, log_obj=log_obj)
         request = self.broker._get_coord_from_location(request, log_obj=log_obj)
         product_type = request.pop("product_type")
@@ -88,11 +88,10 @@ class BrokerExt(Connector):
         for i, cube in result._cubes_df.items():
             prod_coord = 1
             flag = 1
-            for k,v in cube.data.coords.dims.items():
-                if (cube.data.coords[k].size == 0):
+            for k, v in cube.data.coords.dims.items():
+                if cube.data.coords[k].size == 0:
                     flag = 0
                 prod_coord = prod_coord * flag
-
 
             err_size = err_size + prod_coord
 

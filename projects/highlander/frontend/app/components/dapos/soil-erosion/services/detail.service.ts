@@ -12,7 +12,7 @@ export class DetailService {
 
   getDetail(
     detailsFilter: SoilErosionMapCrop,
-    detailType: string
+    detailType: string,
   ): Observable<Blob> {
     const options = {
       conf: {
@@ -38,7 +38,7 @@ export class DetailService {
     return this.api.get(
       `/api/datasets/soil-erosion/products/${product}/crop`,
       params,
-      options
+      options,
     );
   }
 
@@ -53,7 +53,7 @@ export class DetailService {
 
   createReport(
     detailsFilter: SoilErosionMapCrop,
-    productLabel: string
+    productLabel: string,
   ): Observable<any> {
     const options = {
       conf: {
@@ -83,7 +83,7 @@ export class DetailService {
     return this.api.get(
       `/api/datasets/soil-erosion/products/${product}/report`,
       params,
-      options
+      options,
     );
   }
 }

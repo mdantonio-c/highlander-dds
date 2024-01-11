@@ -1,7 +1,6 @@
 .page-with-sidebar {
   padding-left: 20px;
-  width:100% !important;
-
+  width: 100% !important;
 }
 
 .sidenav {
@@ -9,7 +8,7 @@
   z-index: 1;
   left: 10px;
   padding: 8px 0;
-  align-self: flex-start
+  align-self: flex-start;
 }
 
 .main {

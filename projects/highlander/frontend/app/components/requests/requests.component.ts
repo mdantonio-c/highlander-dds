@@ -27,7 +27,7 @@ export class RequestsComponent extends BasePaginationComponent<Request> {
   constructor(
     protected injector: Injector,
     public dataService: DataService,
-    private router: Router
+    private router: Router,
   ) {
     super(injector);
     this.init("request", "/api/requests", "Requests");
@@ -69,7 +69,7 @@ export class RequestsComponent extends BasePaginationComponent<Request> {
       },
       (error) => {
         this.notify.showError(`Unable to download file: ${filename}`);
-      }
+      },
     );
   }
 

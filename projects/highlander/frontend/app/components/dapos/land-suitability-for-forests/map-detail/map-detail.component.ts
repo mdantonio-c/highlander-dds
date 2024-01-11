@@ -40,7 +40,7 @@ export class MapDetailComponent implements OnChanges {
     protected notify: NotificationService,
     protected spinner: NgxSpinnerService,
     private sanitizer: DomSanitizer,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnChanges() {
@@ -49,23 +49,23 @@ export class MapDetailComponent implements OnChanges {
       console.log("get details for:", this.cropDetails);
       //add the label to be display in the panel
       const product = INDICATORS.find(
-        (x) => x.product == this.cropDetails.product
+        (x) => x.product == this.cropDetails.product,
       );
       this.productLabel = product.label;
       switch (product.code) {
         case "BIOTEMP":
           this.indicatorLabel = BIOTEMPERATURES.find(
-            (x) => x.code == this.cropDetails.indicator
+            (x) => x.code == this.cropDetails.indicator,
           ).label;
           break;
         case "BIOPRP":
           this.indicatorLabel = BIOPRECIPITATIONS.find(
-            (x) => x.code == this.cropDetails.indicator
+            (x) => x.code == this.cropDetails.indicator,
           ).label;
           break;
         case "FOREST":
           this.indicatorLabel = SPECIES.find(
-            (x) => x.code == this.cropDetails.indicator
+            (x) => x.code == this.cropDetails.indicator,
           ).label;
           break;
       }
@@ -80,10 +80,10 @@ export class MapDetailComponent implements OnChanges {
           (blobs) => {
             console.log("get all blobs");
             this.mapImage = this.sanitizer.bypassSecurityTrustUrl(
-              URL.createObjectURL(blobs[0])
+              URL.createObjectURL(blobs[0]),
             );
             this.plotImage = this.sanitizer.bypassSecurityTrustUrl(
-              URL.createObjectURL(blobs[1])
+              URL.createObjectURL(blobs[1]),
             );
           },
           (error) => {
@@ -91,7 +91,7 @@ export class MapDetailComponent implements OnChanges {
             error.text().then((value) => {
               this.notify.showError(value);
             });
-          }
+          },
         )
         .add(() => {
           this.spinner.hide();
@@ -114,7 +114,7 @@ export class MapDetailComponent implements OnChanges {
         },
         (error) => {
           this.notify.showError("Unable to create the report");
-        }
+        },
       )
       .add(() => {
         this.spinner.hide();
