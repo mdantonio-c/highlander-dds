@@ -14,8 +14,8 @@ RUN usermod -u ${CURRENT_UID} developer \
 COPY packages/*.whl /tmp/
 
 RUN pip3 install --upgrade pandas==1.5.0 \
-    pip3 install --upgrade xarray==0.16.0 \
-    pip3 install --upgrade netcdf4==1.5.8 \
+    && pip3 install --upgrade xarray==0.16.0 \
+    && pip3 install --upgrade netcdf4==1.5.8 \
     && pip3 install --no-cache-dir /tmp/dds_backend-0.5b1-py3-none-any.whl /tmp/intake_cmcc-0.5b1-py3-none-any.whl
 
 ENV CATALOG_DIR="/catalog"
