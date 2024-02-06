@@ -11,13 +11,6 @@ RUN test -n "$CURRENT_GID"
 RUN usermod -u ${CURRENT_UID} developer \
     && groupmod -og ${CURRENT_GID} developer
 
-COPY packages/*.whl /tmp/
-
-RUN pip3 install --upgrade pandas==1.5.0 \
-    && pip3 install --upgrade xarray==0.16.0 \
-    && pip3 install --upgrade netcdf4==1.5.8 \
-    && pip3 install --no-cache-dir /tmp/dds_backend-0.5b1-py3-none-any.whl /tmp/intake_cmcc-0.5b1-py3-none-any.whl
-
 ENV CATALOG_DIR="/catalog"
 
 #########################################################
@@ -39,7 +32,7 @@ RUN apt-get update -qq \
     && cmake .. && cmake --build . && cmake --build . --target install \
     && cp ./bin/* /bin \
     # finally install cartopy
-    && pip3 install --upgrade --no-cache-dir Cartopy \
+    # && pip3 install --upgrade --no-cache-dir Cartopy==0.22.0 \
     && apt-get autoremove -y && apt-get clean
 
 # prepare the cartopy data dir
@@ -77,10 +70,19 @@ RUN chown "developer:developer" -R ${CARTOPY_DATA_DIR}
 #########################################################
 # REGIONMASK SEABORN MPL_TOOLKITS and FPDF
 #########################################################
-RUN pip3 install --upgrade --no-cache-dir regionmask \
-    && pip3 install --upgrade --no-cache-dir seaborn \
-    && pip3 install --upgrade --no-cache-dir matplotlib \
-    && pip3 install --upgrade numpy==1.22.4 \
-    && pip3 install fpdf
+#RUN pip3 install --upgrade --no-cache-dir regionmask \
+#    && pip3 install --upgrade --no-cache-dir seaborn \
+#    && pip3 install --upgrade --no-cache-dir matplotlib \
+#    && pip3 install --upgrade numpy==1.22.4 \
+#    && pip3 install fpdf
+#
+#RUN pip3 install cron_converter
+#
+#COPY packages/*.whl /tmp/
+#
+#RUN pip3 install --upgrade pandas==1.5.0 \
+#    && pip3 install --no-cache-dir /tmp/dds_backend-0.5b1-py3-none-any.whl /tmp/intake_cmcc-0.5b1-py3-none-any.whl
 
-RUN pip3 install cron_converter
+COPY packages/*.whl /tmp/
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
