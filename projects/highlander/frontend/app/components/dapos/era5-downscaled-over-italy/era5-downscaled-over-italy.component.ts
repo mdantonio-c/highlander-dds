@@ -4,6 +4,7 @@ import {
   Input,
   HostListener,
   ChangeDetectorRef,
+  Injector,
 } from "@angular/core";
 import { User } from "@rapydo/types";
 import { AuthService } from "@rapydo/services/auth";
@@ -11,7 +12,7 @@ import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 import { SSRService } from "@rapydo/services/ssr";
 import { SharedService } from "@rapydo/services/shared-service";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Params } from "@angular/router";
 import {
   DatasetInfo,
   Era5Filter,
@@ -21,12 +22,13 @@ import {
   RegionFeature,
   BasinFeature,
   MunicipalitiesFeature,
-} from "../../../types";
+} from "@app/types";
+import { ViewModes } from "../dapos.config";
 import { environment } from "@rapydo/../environments/environment";
+import { DataService } from "@app/services/data.service";
 import * as L from "leaflet";
-import { DataService } from "../../../services/data.service";
-import { INDICATORS } from "../era5-downscaled-over-italy/data";
 import { map } from "rxjs";
+import { BaseMapComponent } from "../base-map.component";
 
 const MAX_ZOOM = 8;
 const MIN_ZOOM = 5;
@@ -56,7 +58,10 @@ const SELECT_STYLE = {
   templateUrl: "./era5-downscaled-over-italy.component.html",
   styleUrls: ["./era5-downscaled-over-italy.component.scss", "../shared.scss"],
 })
-export class Era5DownscaledOverItalyComponent implements OnInit {
+export class Era5DownscaledOverItalyComponent
+  extends BaseMapComponent
+  implements OnInit
+{
   @Input()
   dataset: DatasetInfo;
   user: User;
@@ -64,7 +69,6 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
   loading = false;
   isFilterCollapsed = false;
   private collapsed = false;
-  map: L.Map;
   private legends: { [key: string]: L.Control } = {};
   mapsUrl: string;
 
@@ -127,15 +131,13 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
   selectedLayer;
 
   constructor(
+    injector: Injector,
     private dataService: DataService,
     private authService: AuthService,
-    private notify: NotificationService,
-    private sharedService: SharedService,
-    private spinner: NgxSpinnerService,
-    private route: ActivatedRoute,
     private ssr: SSRService,
     private cdr: ChangeDetectorRef,
   ) {
+    super(injector);
     this.mapCropDetails = {};
     this.stripesDetails = {};
     this.mapsUrl = dataService.getMapsUrl();
@@ -148,17 +150,27 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
     this.authService.isAuthenticated().subscribe((isAuth) => {
       this.user = isAuth ? this.authService.getUser() : null;
     });
-    this.route.queryParamMap
-      .pipe(
-        map((params) => {
-          const value = params.get("iframe");
-          return value ? value.toLocaleLowerCase() === "true" : false;
-        }),
-      )
-      .subscribe((iframe) => {
-        if (!iframe) return;
-        this.sharedService.emitChange(true);
-      });
+    this.route.queryParams.subscribe((params: Params) => {
+      const view: string = params["view"];
+      if (view) {
+        // check for valid view mode
+        if (Object.values(ViewModes).includes(view)) {
+          this.viewMode = ViewModes[view];
+          if (this.viewMode === ViewModes.base) {
+            // need to do something for base view mode?
+          }
+        }
+      } else {
+        console.warn(`Invalid view param: ${view}`);
+      }
+      const lang: string = params["lang"];
+      if (lang) {
+        if (["it", "en"].includes(lang)) {
+          this.lang = lang;
+        }
+        console.log(`lang: ${this.lang}`);
+      }
+    });
   }
 
   onMapReady(map: L.Map) {
@@ -321,6 +333,7 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
     //force the ngonChanges of the child component
     this.mapCropDetails = Object.assign({}, this.mapCropDetails);
   }
+
   checkSelectedFeature(layer) {
     let layerName = layer.feature.properties.name;
     if (this.mapCropDetails && layerName) {
