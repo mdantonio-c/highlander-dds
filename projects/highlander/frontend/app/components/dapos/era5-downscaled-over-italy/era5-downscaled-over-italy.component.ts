@@ -10,6 +10,8 @@ import { AuthService } from "@rapydo/services/auth";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 import { SSRService } from "@rapydo/services/ssr";
+import { SharedService } from "@rapydo/services/shared-service";
+import { ActivatedRoute } from "@angular/router";
 import {
   DatasetInfo,
   Era5Filter,
@@ -24,6 +26,7 @@ import { environment } from "@rapydo/../environments/environment";
 import * as L from "leaflet";
 import { DataService } from "../../../services/data.service";
 import { INDICATORS } from "../era5-downscaled-over-italy/data";
+import { map } from "rxjs";
 
 const MAX_ZOOM = 8;
 const MIN_ZOOM = 5;
@@ -126,8 +129,10 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
   constructor(
     private dataService: DataService,
     private authService: AuthService,
-    protected notify: NotificationService,
-    protected spinner: NgxSpinnerService,
+    private notify: NotificationService,
+    private sharedService: SharedService,
+    private spinner: NgxSpinnerService,
+    private route: ActivatedRoute,
     private ssr: SSRService,
     private cdr: ChangeDetectorRef,
   ) {
@@ -143,6 +148,17 @@ export class Era5DownscaledOverItalyComponent implements OnInit {
     this.authService.isAuthenticated().subscribe((isAuth) => {
       this.user = isAuth ? this.authService.getUser() : null;
     });
+    this.route.queryParamMap
+      .pipe(
+        map((params) => {
+          const value = params.get("iframe");
+          return value ? value.toLocaleLowerCase() === "true" : false;
+        }),
+      )
+      .subscribe((iframe) => {
+        if (!iframe) return;
+        this.sharedService.emitChange(true);
+      });
   }
 
   onMapReady(map: L.Map) {
