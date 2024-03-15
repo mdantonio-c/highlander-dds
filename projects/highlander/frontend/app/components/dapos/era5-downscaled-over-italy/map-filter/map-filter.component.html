@@ -4,7 +4,9 @@
       <form [formGroup]="filterForm">
         <!-- INDICATOR -->
         <div class="mb-3">
-          <label class="col-form-label"><strong>Indicator:</strong></label>
+          <label class="col-form-label">
+            <strong>{{ "indicator" | translate : lang | titlecase }}:</strong>
+          </label>
           <select
             id="indicatorGroup"
             formControlName="indicator"

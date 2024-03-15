@@ -55,10 +55,10 @@ import { FirstWordPipe } from "./pipes/first-word.pipe";
 import { LastWordPipe } from "./pipes/last-word.pipe";
 import { CropDetailsComponent } from "./components/dapos/crop-water/crop-details/crop-details.component";
 import { UppercaseFilterPipe } from "./pipes/uppercase-filter.pipe";
+import { TranslatePipe } from "./pipes/translate.pipe";
+
 import { StripesComponent } from "./components/dapos/era5-downscaled-over-italy/stripes/stripes.component";
-
 import { ContactsComponent } from "./components/contacts/contacts";
-
 import { DocumentationComponent } from "./components/documentation/documentation";
 
 const routes: Routes = [
@@ -137,6 +137,7 @@ const routes: Routes = [
     FirstWordPipe,
     LastWordPipe,
     UppercaseFilterPipe,
+    TranslatePipe,
     ClickStopPropagation,
     EventStopPropagation,
     HolderjsDirective,

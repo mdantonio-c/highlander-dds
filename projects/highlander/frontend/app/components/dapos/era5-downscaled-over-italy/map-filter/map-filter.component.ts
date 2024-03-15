@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from "@angular/core";
+import { Component, OnInit, Input, Output, EventEmitter } from "@angular/core";
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { AuthService } from "@rapydo/services/auth";
 import {
@@ -7,6 +7,7 @@ import {
   INDICATORS,
   REFERENCE_PERIODS,
 } from "../data";
+import { ViewModes } from "../../dapos.config";
 
 @Component({
   selector: "hld-era5-filter",
@@ -14,6 +15,9 @@ import {
   styleUrls: ["./map-filter.component.scss"],
 })
 export class MapFilterComponent implements OnInit {
+  @Input() lang = "en";
+  @Input("viewMode") mode = ViewModes.adv;
+
   filterForm: FormGroup;
   user;
   @Output() onFilterChange: EventEmitter<null> = new EventEmitter<null>();

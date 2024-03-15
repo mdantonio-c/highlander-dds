@@ -1,21 +1,10 @@
-import {
-  Component,
-  Input,
-  OnChanges,
-  ChangeDetectorRef,
-  SimpleChanges,
-  Output,
-  EventEmitter,
-} from "@angular/core";
-import * as moment from "moment";
+import { Component, Input, OnChanges, ChangeDetectorRef } from "@angular/core";
 import { DomSanitizer } from "@angular/platform-browser";
 import { saveAs as importedSaveAs } from "file-saver-es";
 import { DetailService } from "../services/detail.service";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
-import { environment } from "@rapydo/../environments/environment";
 import { ADMINISTRATIVE_AREAS, INDICATORS, TIME_PERIODS } from "../data";
-import { DataService } from "../../../../services/data.service";
 
 @Component({
   selector: "era5-map-detail",

@@ -5,8 +5,10 @@
     </div>
     <div class="col-2 mb-2 filters">
       <hld-era5-filter
-        [class.collapsed]="isCollapsed"
         id="filters"
+        [lang]="lang"
+        [viewMode]="viewMode"
+        [class.collapsed]="isCollapsed"
         [ngbCollapse]="isFilterCollapsed"
         (onFilterChange)="applyFilter($event)"
       ></hld-era5-filter>
