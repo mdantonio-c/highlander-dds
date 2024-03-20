@@ -168,6 +168,7 @@ class DatasetContent(EndpointResource):
         },
     )
     @decorators.use_kwargs({"type": fields.Str(required=True)}, location="query")
+    @decorators.cache(timeout=0)
     def get(self, dataset_id: str, type: str) -> Response:
         log.debug("Get {} for dataset <{}>", type, dataset_id)
         try:
