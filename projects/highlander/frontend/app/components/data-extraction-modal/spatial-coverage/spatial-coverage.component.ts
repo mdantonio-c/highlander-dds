@@ -181,14 +181,11 @@ export class SpatialCoverageComponent {
 
     // reset to the actual selected area (ON EDIT CANCEL)
     // detect 'Cancel' when editable and selected areas are different
-    if (
-      e.layer instanceof L.Rectangle &&
-      !_.isEqual(this.selectedArea, this.editableArea)
-    ) {
+    if (this.editableArea && !_.isEqual(this.selectedArea, this.editableArea)) {
       this.updateArea(this.selectedArea, false);
       this.editableArea = { ...this.selectedArea };
     } else if (
-      e.layer instanceof L.Marker &&
+      this.editableLocation &&
       !_.isEqual(this.selectedLocation, this.editableLocation)
     ) {
       this.updateLocation(this.selectedLocation);
@@ -235,7 +232,7 @@ export class SpatialCoverageComponent {
    * @param propagate if true, propagate set spatial coverage and size estimate
    */
   updateArea(val: SpatialArea, propagate = true) {
-    console.log(`Draw updated area on the map. Propagate? ${propagate}`);
+    // console.log(`Draw updated area on the map. Propagate? ${propagate}`);
     // clean up
     this.resetAll();
 
@@ -250,15 +247,16 @@ export class SpatialCoverageComponent {
     // add to the map
     this.drawnItems.addLayer(poly);
 
+    this.editableArea = {
+      north: val.north,
+      east: val.east,
+      south: val.south,
+      west: val.west,
+    };
+
     if (propagate) {
       // update selected area
-      this.selectedArea = {
-        north: val.north,
-        east: val.east,
-        south: val.south,
-        west: val.west,
-      };
-      this.editableArea = { ...this.selectedArea };
+      this.selectedArea = { ...this.editableArea };
       // emit output changes
       this.areaChanged.emit(val);
     }

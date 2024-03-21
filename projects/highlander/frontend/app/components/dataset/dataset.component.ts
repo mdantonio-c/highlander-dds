@@ -106,7 +106,7 @@ export class DatasetComponent implements OnInit {
     console.log(`open data extraction for product ID: <${productId}>`);
     const modalRef = this.modalService.open(DataExtractionModalComponent, {
       backdrop: "static",
-      size: "lg",
+      size: "xl",
       keyboard: false,
       scrollable: true,
     });

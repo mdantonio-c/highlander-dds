@@ -285,7 +285,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
   }
 
   setSpatialCoverage(area: SpatialArea) {
-    // console.log('set spatial coverage', area);
+    console.log("set spatial coverage", area);
     this.filterForm.controls.point.setValue(null, {
       onlySelf: true,
       emitEvent: false,
@@ -294,7 +294,7 @@ export class DataExtractionModalComponent implements OnInit, OnDestroy {
   }
 
   setLocationCoverage(loc: SpatialPoint) {
-    // console.log('set location coverage', loc);
+    console.log("set location coverage", loc);
     this.filterForm.controls.area.setValue(null, {
       onlySelf: true,
       emitEvent: false,
