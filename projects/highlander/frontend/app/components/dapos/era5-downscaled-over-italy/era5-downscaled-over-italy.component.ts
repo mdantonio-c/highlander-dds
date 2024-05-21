@@ -144,6 +144,7 @@ export class Era5DownscaledOverItalyComponent
   }
 
   ngOnInit() {
+    super.ngOnInit();
     if (this.ssr.isBrowser) {
       this.setCollapse(window.innerWidth);
     }
