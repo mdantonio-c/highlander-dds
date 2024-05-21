@@ -14,6 +14,18 @@ export class TranslationService {
       language: "it",
       values: {
         indicator: "indicatore",
+        "time period": "intervallo temporale",
+        "reference period": "periodo di riferimento",
+        "territorial units": "unità territoriali",
+        "anomaly of": "Anomalia della",
+        "annual mean temperature": "temperatura media annuale",
+        "winter mean temperature": "temperatura media invernale",
+        "spring mean temperature": "temperatura media primaverile",
+        "summer mean temperature": "temperatura media estiva",
+        "autumn mean temperature": "temperatura media autunnale",
+        "no stripes available": "nessuna stripe disponibile",
+        "try to apply a different set of filters":
+          "prova ad applicare un diverso set di filtri",
       },
     },
   };

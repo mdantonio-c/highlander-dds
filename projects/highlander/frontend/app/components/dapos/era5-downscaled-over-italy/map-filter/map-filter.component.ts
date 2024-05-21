@@ -20,6 +20,7 @@ export class MapFilterComponent implements OnInit {
 
   filterForm: FormGroup;
   user;
+  modes = ViewModes;
   @Output() onFilterChange: EventEmitter<null> = new EventEmitter<null>();
 
   readonly indicators = INDICATORS;

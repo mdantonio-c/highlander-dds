@@ -19,7 +19,9 @@
         </div>
         <!-- SEASON -->
         <div class="mb-3">
-          <label class="col-form-label"><strong>Time period:</strong></label>
+          <label class="col-form-label">
+            <strong>{{ "time period" | translate : lang | titlecase }}:</strong>
+          </label>
           <select
             id="seasonGroup"
             formControlName="time_period"
@@ -32,9 +34,11 @@
         </div>
         <!-- REFERENCE PERIOD -->
         <div class="mb-3">
-          <label class="col-form-label"
-            ><strong>REFERENCE PERIOD:</strong></label
-          >
+          <label class="col-form-label">
+            <strong
+              >{{ "reference period" | translate : lang | titlecase }}:</strong
+            >
+          </label>
           <select id="periodGroup" formControlName="period" class="form-select">
             <option *ngFor="let i of periods" [value]="i.code">
               {{ i.label }}
@@ -42,9 +46,9 @@
           </select>
         </div>
         <!-- ADMINISTRATIVE -->
-        <div class="mb-3">
+        <div class="mb-3" *ngIf="mode === modes.adv">
           <label class="col-form-label"
-            ><strong>TERRITORIAL UNITS:</strong></label
+            ><strong>territorial units:</strong></label
           >
           <select
             id="administrativeGroup"

@@ -22,6 +22,7 @@ import { DataService } from "../../../../services/data.service";
   styleUrls: ["./stripes.component.scss"],
 })
 export class StripesComponent implements OnChanges {
+  @Input() lang = "en";
   @Input() stripesDetails;
   @Input() administrative;
 
