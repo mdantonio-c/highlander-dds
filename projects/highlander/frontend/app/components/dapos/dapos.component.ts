@@ -1,9 +1,10 @@
-import { Component, ViewChild } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import { Component, Input } from "@angular/core";
+import { ActivatedRoute, Router, Params } from "@angular/router";
 import { DatasetInfo } from "../../types";
 import { NotificationService } from "@rapydo/services/notification";
 import { NgxSpinnerService } from "ngx-spinner";
 import { DataService } from "../../services/data.service";
+import { ViewModes } from "./dapos.config";
 
 @Component({
   selector: "app-dapos",
@@ -12,6 +13,7 @@ import { DataService } from "../../services/data.service";
 })
 export class DaposComponent {
   dataset: DatasetInfo;
+  lang = "en";
 
   constructor(
     private dataService: DataService,
@@ -49,5 +51,15 @@ export class DaposComponent {
           this.spinner.hide();
         });
     }
+
+    this.route.queryParams.subscribe((params: Params) => {
+      const lang: string = params["lang"];
+      if (lang) {
+        if (["it", "en"].includes(lang)) {
+          this.lang = lang;
+        }
+        console.log(`lang: ${this.lang}`);
+      }
+    });
   }
 }

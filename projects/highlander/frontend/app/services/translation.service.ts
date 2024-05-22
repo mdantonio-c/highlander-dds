@@ -26,6 +26,15 @@ export class TranslationService {
         "no stripes available": "nessuna stripe disponibile",
         "try to apply a different set of filters":
           "prova ad applicare un diverso set di filtri",
+        "downscaling of era5 @2.2 km over italy":
+          "Downscaling di ERA5 @2.2 km sull'Italia",
+      },
+    },
+    en: {
+      language: "en",
+      values: {
+        "downscaling of era5 @2.2 km over italy":
+          "Downscaling of ERA5 @2.2 km over Italy",
       },
     },
   };

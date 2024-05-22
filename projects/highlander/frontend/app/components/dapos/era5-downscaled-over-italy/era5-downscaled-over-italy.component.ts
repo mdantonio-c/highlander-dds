@@ -62,8 +62,9 @@ export class Era5DownscaledOverItalyComponent
   extends BaseMapComponent
   implements OnInit
 {
-  @Input()
-  dataset: DatasetInfo;
+  @Input() dataset: DatasetInfo;
+  @Input() lang = "en";
+
   user: User;
   readonly backendURI = environment.backendURI;
   loading = false;
@@ -163,13 +164,6 @@ export class Era5DownscaledOverItalyComponent
         }
       } else {
         console.warn(`Invalid view param: ${view}`);
-      }
-      const lang: string = params["lang"];
-      if (lang) {
-        if (["it", "en"].includes(lang)) {
-          this.lang = lang;
-        }
-        console.log(`lang: ${this.lang}`);
       }
     });
   }

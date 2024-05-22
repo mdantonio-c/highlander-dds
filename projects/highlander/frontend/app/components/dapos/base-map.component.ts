@@ -16,7 +16,6 @@ export abstract class BaseMapComponent implements OnInit, OnDestroy {
   modes = ViewModes;
   viewMode = ViewModes.adv;
   iframeMode = false;
-  lang = "en";
 
   protected notify: NotificationService;
   protected spinner: NgxSpinnerService;
