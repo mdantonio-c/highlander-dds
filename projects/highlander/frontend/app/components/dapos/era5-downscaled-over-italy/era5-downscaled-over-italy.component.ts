@@ -123,7 +123,7 @@ export class Era5DownscaledOverItalyComponent
   private administrativeArea: L.LayerGroup = new L.LayerGroup();
   private filter: Era5Filter;
 
-  administrative: string;
+  administrative: string | null;
   // date: string = null;
   // year: string = null;
   mapCropDetails: Era5MapCrop;
@@ -159,7 +159,17 @@ export class Era5DownscaledOverItalyComponent
         if (Object.values(ViewModes).includes(view)) {
           this.viewMode = ViewModes[view];
           if (this.viewMode === ViewModes.base) {
-            // need to do something for base view mode?
+            // need to do something for base view mode
+            this.administrative = null;
+            this.dataService
+              .getGeojsonLayer("italy-regions")
+              .subscribe((json) => {
+                const jsonLayer = L.geoJSON(json, {
+                  style: NORMAL_STYLE,
+                });
+                this.administrativeArea.addLayer(jsonLayer);
+                this.administrativeArea.addTo(this.map);
+              });
           }
         }
       } else {
@@ -284,12 +294,14 @@ export class Era5DownscaledOverItalyComponent
     }
 
     // ADMINISTRATIVE AREA
-    this.administrative = data.administrative;
+    if (this.viewMode !== ViewModes.base) {
+      this.administrative = data.administrative;
+    }
     // clear current administrative layer
-    if (this.map) {
+    if (this.map && this.administrative) {
       this.administrativeArea.clearLayers();
     }
-    if (data.administrative === "italy") {
+    if (this.administrative === "italy") {
       if (this.map) {
         this.map.setView(L.latLng([42.0, 13.0]), 6);
       }
