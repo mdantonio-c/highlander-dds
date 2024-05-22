@@ -13,7 +13,7 @@
             class="form-select"
           >
             <option *ngFor="let i of indicators" [value]="i.code">
-              {{ i.label }}
+              {{ i.code | translate : lang | capitalize : "sentenceCase" }}
             </option>
           </select>
         </div>
@@ -28,7 +28,7 @@
             class="form-select"
           >
             <option *ngFor="let i of seasons" [value]="i.code">
-              {{ i.label }}
+              {{ i.code | translate : lang }}
             </option>
           </select>
         </div>

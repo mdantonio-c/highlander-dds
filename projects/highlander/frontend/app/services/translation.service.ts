@@ -23,6 +23,14 @@ export class TranslationService {
         "spring mean temperature": "temperatura media primaverile",
         "summer mean temperature": "temperatura media estiva",
         "autumn mean temperature": "temperatura media autunnale",
+        ann: "Annuale",
+        djf: "Inverno (Dic-Gen-Feb)",
+        mam: "Primavera (Mar-Apr-Mag)",
+        jja: "Estate (Giu-Lug-Ago)",
+        son: "Autunno (Set-Ott-Nov)",
+        t_2m: "temperatura media dell'aria a 2m",
+        tmax_2m: "temperatura massima dell'aria a 2m",
+        tmin_2m: "temperatura minima dell'aria 2m",
         "no stripes available": "nessuna stripe disponibile",
         "try to apply a different set of filters":
           "prova ad applicare un diverso set di filtri",
@@ -33,6 +41,14 @@ export class TranslationService {
     en: {
       language: "en",
       values: {
+        ann: "Annual",
+        djf: "Winter (Dec-Jan-Feb)",
+        mam: "Spring (Mar-Apr-May)",
+        jja: "Summer (Jun-Jul-Aug)",
+        son: "Autumn (Sep-Oct-Nov)",
+        t_2m: "mean air temperature 2m",
+        tmax_2m: "maximum air temperature 2m",
+        tmin_2m: "minimum air temperature 2m",
         "downscaling of era5 @2.2 km over italy":
           "Downscaling of ERA5 @2.2 km over Italy",
       },
