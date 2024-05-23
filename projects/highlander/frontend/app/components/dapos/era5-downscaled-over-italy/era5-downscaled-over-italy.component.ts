@@ -160,7 +160,6 @@ export class Era5DownscaledOverItalyComponent
           this.viewMode = ViewModes[view];
           if (this.viewMode === ViewModes.base) {
             // need to do something for base view mode
-            this.administrative = null;
             this.dataService
               .getGeojsonLayer("italy-regions")
               .subscribe((json) => {
@@ -294,11 +293,9 @@ export class Era5DownscaledOverItalyComponent
     }
 
     // ADMINISTRATIVE AREA
-    if (this.viewMode !== ViewModes.base) {
-      this.administrative = data.administrative;
-    }
+    this.administrative = data.administrative;
     // clear current administrative layer
-    if (this.map && this.administrative) {
+    if (this.map && this.viewMode !== ViewModes.base) {
       this.administrativeArea.clearLayers();
     }
     if (this.administrative === "italy") {
