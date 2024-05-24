@@ -57,7 +57,7 @@ export class StripesComponent implements OnChanges {
       }, 0);
 
       this.detailService
-        .getStripes(this.stripesDetails)
+        .getStripes(this.stripesDetails, this.lang)
         .subscribe(
           (blobs) => {
             console.log("get all blobs");

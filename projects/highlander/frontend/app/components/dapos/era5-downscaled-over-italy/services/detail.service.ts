@@ -58,7 +58,7 @@ export class DetailService {
     return forkJoin(observables);
   }
 
-  getStripes(stripesDetails: Era5Stripes): Observable<any[]> {
+  getStripes(stripesDetails: Era5Stripes, lang?: string): Observable<any[]> {
     const options = {
       conf: {
         responseType: "blob",
@@ -70,6 +70,9 @@ export class DetailService {
       indicator: stripesDetails.indicator,
       reference_period: stripesDetails.period,
     };
+    if (lang) {
+      params["lang"] = lang;
+    }
     const obs = this.api.get(
       `/api/datasets/era5-downscaled-over-italy/stripes`,
       params,
