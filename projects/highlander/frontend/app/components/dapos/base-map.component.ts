@@ -14,7 +14,8 @@ import { ViewModes } from "./dapos.config";
 export abstract class BaseMapComponent implements OnInit, OnDestroy {
   map: L.Map;
   modes = ViewModes;
-  viewMode = ViewModes.adv;
+  @Input() viewMode = ViewModes.adv;
+  @Input() lang = "en";
   iframeMode = false;
 
   protected notify: NotificationService;

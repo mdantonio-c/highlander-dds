@@ -14,6 +14,8 @@ import { ViewModes } from "./dapos.config";
 export class DaposComponent {
   dataset: DatasetInfo;
   lang = "en";
+  viewMode: ViewModes | null;
+  modes = ViewModes;
 
   constructor(
     private dataService: DataService,
@@ -59,6 +61,16 @@ export class DaposComponent {
           this.lang = lang;
         }
         console.log(`lang: ${this.lang}`);
+      }
+      const view: string = params["view"];
+      if (view) {
+        // check for valid view mode
+        if (Object.values(ViewModes).includes(view)) {
+          this.viewMode = ViewModes[view];
+          console.log(`view mode: ${this.viewMode}`);
+        } else {
+          console.warn(`Invalid view param: ${view}`);
+        }
       }
     });
   }

@@ -1,5 +1,5 @@
 <ng-container *ngIf="dataset">
-  <div class="page-header">
+  <div class="page-header" *ngIf="viewMode === modes.adv">
     <div class="container-fluid px-4 pt-0">
       <div class="page-header-content">
         <div class="row gx-4 align-items-center justify-content-between box">
@@ -33,6 +33,7 @@
       *ngSwitchCase="'era5-downscaled-over-italy'"
       [dataset]="dataset"
       [lang]="lang"
+      [viewMode]="viewMode"
     >
     </app-era5-downscaled-over-italy>
     <app-suitability-forests

@@ -63,7 +63,6 @@ export class Era5DownscaledOverItalyComponent
   implements OnInit
 {
   @Input() dataset: DatasetInfo;
-  @Input() lang = "en";
 
   user: User;
   readonly backendURI = environment.backendURI;
@@ -152,29 +151,16 @@ export class Era5DownscaledOverItalyComponent
     this.authService.isAuthenticated().subscribe((isAuth) => {
       this.user = isAuth ? this.authService.getUser() : null;
     });
-    this.route.queryParams.subscribe((params: Params) => {
-      const view: string = params["view"];
-      if (view) {
-        // check for valid view mode
-        if (Object.values(ViewModes).includes(view)) {
-          this.viewMode = ViewModes[view];
-          if (this.viewMode === ViewModes.base) {
-            // need to do something for base view mode
-            this.dataService
-              .getGeojsonLayer("italy-regions")
-              .subscribe((json) => {
-                const jsonLayer = L.geoJSON(json, {
-                  style: NORMAL_STYLE,
-                });
-                this.administrativeArea.addLayer(jsonLayer);
-                this.administrativeArea.addTo(this.map);
-              });
-          }
-        }
-      } else {
-        console.warn(`Invalid view param: ${view}`);
-      }
-    });
+    if (this.viewMode === ViewModes.base) {
+      // need to do something for base view mode
+      this.dataService.getGeojsonLayer("italy-regions").subscribe((json) => {
+        const jsonLayer = L.geoJSON(json, {
+          style: NORMAL_STYLE,
+        });
+        this.administrativeArea.addLayer(jsonLayer);
+        this.administrativeArea.addTo(this.map);
+      });
+    }
   }
 
   onMapReady(map: L.Map) {
