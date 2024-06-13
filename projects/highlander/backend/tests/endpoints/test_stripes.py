@@ -84,17 +84,18 @@ class TestApp(BaseTests):
         administratives = ["Italy", "regions", "provinces"]
         area_ids = ["", "Lombardia", "Bergamo"]
         area_names = ["Italy", "lombardia", "bergamo"]
+        languages = ["it", "en"]
 
-        for time_period, administrative, area_id, area_name in zip(
-            time_periods, administratives, area_ids, area_names
+        for time_period, administrative, area_id, area_name, lang in zip(
+            time_periods, administratives, area_ids, area_names, languages
         ):
             # request without mandatory variable "time_period".
-            query_params = f"?administrative={administrative}&time_period={time_period}&area_id={area_id}&indicator={params.STRIPES_INDICATOR}&reference_period={params.STRIPES_REF_PERIOD}"
+            query_params = f"?administrative={administrative}&time_period={time_period}&area_id={area_id}&lang={lang}&indicator={params.STRIPES_INDICATOR}&reference_period={params.STRIPES_REF_PERIOD}"
             endpoint = f"{API_URI}/datasets/{params.DATASET_VHR}/stripes{query_params}"
             r = client.get(endpoint, headers=self.get("auth_header"))
             assert r.status_code == 200
 
-            output_filename = f"{area_name.replace(' ', '_').lower()}_stripes.png"
+            output_filename = f"{area_name.replace(' ', '_').lower()}_stripes{'_'+lang if lang and lang != 'en' else ''}.png"
             output_path = Path(
                 params.STRIPES_INDICATOR,
                 params.STRIPES_REF_PERIOD,

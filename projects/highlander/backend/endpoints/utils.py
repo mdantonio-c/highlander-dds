@@ -585,8 +585,9 @@ class MapCropConfig:
         reference_period: str,
         time_period: str,
         administrative: str,
+        lang: Optional[str] = None,
     ):
-        output_filename = f"{area_name.replace(' ', '_').lower()}_stripes.png"
+        output_filename = f"{area_name.replace(' ', '_').lower()}_stripes{'_'+lang if lang and lang != 'en' else ''}.png"
         output_path = Path(indicator, reference_period, time_period, administrative)
         output_dir = Path(
             MapCropConfig.STRIPES_OUTPUT_ROOT, output_path
@@ -857,15 +858,28 @@ class PlotUtils:
         fig3.savefig(outputfile)
 
     @staticmethod
-    def plotStripes(array, yearsList: list, region_id: str, fileOutput: str):
-        region_id = f"{region_id.replace('_', ' ').title()}"
+    def plotStripes(
+        array,
+        yearsList: list,
+        region_id: str,
+        fileOutput: str,
+        lang: Optional[str] = None,
+    ):
+        if lang and region_id == "Italy" and lang == "it":
+            region_id = "Italia"
+        else:
+            region_id = f"{region_id.replace('_', ' ').title()}"
         fig, ax = plt.subplots(figsize=(20, 8))
         fig.subplots_adjust(bottom=0.25, left=0.25)  # make room for labels
         mpl.rcParams["font.size"] = 25
         min_val = math.floor(array.min())  # np.round(array.min()*10)/10
         max_val = math.ceil(array.max())  # np.round(array.max()*10)/10
         stripes = plt.pcolormesh(array, vmin=min_val, vmax=max_val, cmap="bwr")
-        plt.colorbar(stripes, label="Air temperature [°C]")
+        if lang and lang == "it":
+            label = "Temperatura dell'aria [°C]"
+        else:
+            label = "Air temperature [°C]"
+        plt.colorbar(stripes, label=label)
         ax.set_title(region_id, alpha=1)
         ax.set_xticks(np.arange(array.shape[1]) + 0.5, minor=False)
         ax.set_xticklabels(yearsList, rotation=90, size=15)

@@ -25,6 +25,8 @@ REFERENCE_PERIODS = ["1981-2010", "1991-2020"]
 
 INDICATORS = ["T_2M", "TMAX_2M", "TMIN_2M"]
 
+LANGUAGES = ["it", "en"]
+
 
 class StripesDetails(Schema):
     # Definition of query arguments.
@@ -35,6 +37,7 @@ class StripesDetails(Schema):
     )
     administrative = fields.Str(required=True, validate=validate.OneOf(ADMINISTRATIVES))
     area_id = fields.Str(required=False)
+    lang = fields.Str(required=False, validate=validate.OneOf(LANGUAGES))
 
     # Validation. Check whether an area_id is given when administrative is  "regions" or "provinces".
     @pre_load
@@ -72,6 +75,7 @@ class Stripes(EndpointResource):
         reference_period: str,
         administrative: str,
         area_id: Optional[str] = None,
+        lang: Optional[str] = "en",
     ) -> Response:
 
         # Normalise area_id names to standard format that cope with the different geojson structures.
@@ -87,7 +91,7 @@ class Stripes(EndpointResource):
 
         # Create an output file name and path:
         output_dir, output_filename = config.getStripesOutputPath(
-            area_name, indicator, reference_period, time_period, administrative
+            area_name, indicator, reference_period, time_period, administrative, lang
         )
         output_filepath = Path(output_dir, output_filename)
 
@@ -161,6 +165,7 @@ class Stripes(EndpointResource):
                     nc_data_to_plot_years,
                     area_name,
                     output_filepath,
+                    lang,
                 )
             except Exception as exc:
                 raise ServerError(f"Errors in plotting the data: {exc}")
