@@ -55,12 +55,7 @@ export abstract class BaseMapComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy() {
-    // FIXME remove on map not working
-    /*if (this.map) {
-      this.map.remove();
-    }*/
-  }
+  ngOnDestroy() {}
 
   protected abstract onMapReady(map: L.Map);
 
