@@ -77,7 +77,7 @@ def create_cache(self: Task[[List[str]], None], datasets: List[str]) -> None:
     Procedure for automatic cache creation.
 
     @param self: reference to this task
-    @param apply_to: Mandatory list of dataset names for which to create the cache
+    @param datasets: Mandatory list of dataset names for which to create the cache
     """
     log.info("create cache for datasets: {}", datasets)
     dds = broker.get_instance()
