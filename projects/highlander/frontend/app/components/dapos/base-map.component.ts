@@ -1,4 +1,11 @@
-import { Component, OnInit, Input, OnDestroy, Injector } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Input,
+  OnDestroy,
+  Injector,
+  ChangeDetectorRef,
+} from "@angular/core";
 import * as L from "leaflet";
 import { NotificationService } from "@rapydo/services/notification";
 import { SharedService } from "@rapydo/services/shared-service";
@@ -12,7 +19,7 @@ import { ViewModes } from "./dapos.config";
   template: "",
 })
 export abstract class BaseMapComponent implements OnInit, OnDestroy {
-  map: L.Map;
+  protected map!: L.Map;
   modes = ViewModes;
   @Input() viewMode = ViewModes.adv;
   @Input() lang = "en";
@@ -23,6 +30,7 @@ export abstract class BaseMapComponent implements OnInit, OnDestroy {
   protected router: Router;
   protected route: ActivatedRoute;
   protected sharedService: SharedService;
+  protected cdr: ChangeDetectorRef;
 
   protected constructor(injector: Injector) {
     this.notify = injector.get(NotificationService);
@@ -30,6 +38,7 @@ export abstract class BaseMapComponent implements OnInit, OnDestroy {
     this.router = injector.get(Router);
     this.route = injector.get(ActivatedRoute);
     this.sharedService = injector.get(SharedService);
+    this.cdr = injector.get(ChangeDetectorRef);
   }
 
   ngOnInit(): void {
@@ -47,9 +56,10 @@ export abstract class BaseMapComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (null != this.map) {
+    // FIXME remove on map not working
+    /*if (this.map) {
       this.map.remove();
-    }
+    }*/
   }
 
   protected abstract onMapReady(map: L.Map);

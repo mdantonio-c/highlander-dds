@@ -135,7 +135,6 @@ export class Era5DownscaledOverItalyComponent
     private dataService: DataService,
     private authService: AuthService,
     private ssr: SSRService,
-    private cdr: ChangeDetectorRef,
   ) {
     super(injector);
     this.mapCropDetails = {};
@@ -164,6 +163,10 @@ export class Era5DownscaledOverItalyComponent
   }
 
   onMapReady(map: L.Map) {
+    if (this.map) {
+      // Remove the existing map if it exists
+      this.map.remove();
+    }
     this.map = map;
     setTimeout(function () {
       map.invalidateSize();
