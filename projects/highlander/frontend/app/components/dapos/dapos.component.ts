@@ -14,7 +14,7 @@ import { ViewModes } from "./dapos.config";
 export class DaposComponent {
   dataset: DatasetInfo;
   lang = "en";
-  viewMode: ViewModes | null;
+  viewMode: ViewModes = ViewModes.adv;
   modes = ViewModes;
 
   constructor(
