@@ -16,7 +16,7 @@ import { ViewModes } from "../../dapos.config";
 })
 export class MapFilterComponent implements OnInit {
   @Input() lang = "en";
-  @Input("viewMode") mode = ViewModes.adv;
+  @Input("viewMode") mode;
 
   filterForm: FormGroup;
   user;
@@ -44,6 +44,9 @@ export class MapFilterComponent implements OnInit {
     setTimeout(() => {
       this.onFilterChange.emit(this.filterForm.value);
     }, 1000);
+    if (this.mode === undefined) {
+      this.mode = ViewModes.adv;
+    }
   }
 
   private onChanges(): void {
