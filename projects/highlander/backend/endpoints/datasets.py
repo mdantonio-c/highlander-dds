@@ -72,6 +72,7 @@ class Dataset(EndpointResource):
         {"application": fields.Bool(required=False)}, location="query"
     )
     @decorators.marshal_with(DatasetInfo, code=200)
+    @decorators.cache(timeout=0)
     def get(self, dataset_id: str, application: bool = False) -> Response:
         log.debug("Get dataset <{}>", dataset_id)
         dds = broker.get_instance()
@@ -152,7 +153,8 @@ class DatasetProductReady(EndpointResource):
                 )
         else:
             raise NotYetImplemented(
-                f"Extraction of 'run periods' for <{dataset_id}:{product_id}> NOT yet implemented"
+                f"Extraction of 'run periods' for <{dataset_id}:{product_id}> NOT yet "
+                f"implemented"
             )
         return self.response(data)
 
@@ -169,32 +171,36 @@ class DatasetContent(EndpointResource):
     )
     @decorators.use_kwargs({"type": fields.Str(required=True)}, location="query")
     @decorators.cache(timeout=0)
-    def get(self, dataset_id: str, type: str) -> Response:
-        log.debug("Get {} for dataset <{}>", type, dataset_id)
+    def get(self, dataset_id: str, dataset_type: str) -> Response:
+        log.debug("Get {} for dataset <{}>", dataset_type, dataset_id)
         try:
             dds = broker.get_instance()
             content_filename = None
             try:
-                content_filename = dds.get_dataset_content_filename(dataset_id, type)
+                content_filename = dds.get_dataset_content_filename(
+                    dataset_id, dataset_type
+                )
             except LookupError:
                 log.debug("Dataset <{}> NOT managed locally", dataset_id)
                 try:
                     cat_ext = CatalogExt(path=CATALOG_EXT_DIR)
                     content_filename = cat_ext.get_dataset_content_filename(
-                        dataset_id, type
+                        dataset_id, dataset_type
                     )
                 except ValueError:
                     # for missing or invalid cat_ext
                     pass
             if not content_filename:
                 raise Warning(
-                    f"Content <{type}> NOT configured for dataset <{dataset_id}>"
+                    f"Content <{dataset_type}> NOT configured for dataset "
+                    f"<{dataset_id}>"
                 )
             # expected content in folder with the same type name
-            content = CATALOG_DIR.joinpath(f"{type}s", content_filename)
+            content = CATALOG_DIR.joinpath(f"{dataset_type}s", content_filename)
             if not content.exists():
                 raise LookupError(
-                    f"Content file <{content_filename}> NOT found for dataset <{dataset_id}>"
+                    f"Content file <{content_filename}> NOT found for dataset "
+                    f"<{dataset_id}>"
                 )
             return send_from_directory(content.parent, content.name)
         except (LookupError, Warning) as e:

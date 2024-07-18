@@ -6,7 +6,9 @@ from highlander.connectors import broker
 from highlander.constants import CACHE_DIR
 from highlander.exceptions import CacheException
 from restapi.connectors.celery import CeleryExt, Task
+from restapi.services.cache import Cache
 from restapi.utilities.logs import log
+from restapi.utilities.meta import Meta
 
 
 @CeleryExt.task(idempotent=True)
@@ -66,6 +68,11 @@ def clean_cache(self: Task[[List[str]], None], apply_to: List[str] = []) -> None
             continue
         log.info(f"DDS cache for {ds} created successfully")
     log.info(f"cache updated with {cache_failures} errors")
+    # unless all cache updates fail, invalidate di HTTP cache for dataset endpoint
+    if cache_failures < len(to_be_updated):
+        # invalidate endpoint cache
+        dataset_endpoint = Meta.get_class("endpoints.datasets", "Dataset")
+        Cache.invalidate(dataset_endpoint.get)
     if cache_failures > 0:
         self.update_state(task_id=self.request.id, state=states.FAILURE)
         raise CacheException(dataset_failed)
@@ -104,7 +111,8 @@ def create_cache(self: Task[[List[str]], None], datasets: List[str]) -> None:
                 already_cached = False
         if already_cached:
             log.warning(
-                f"Skipping {ds}: already has a cache. To recreate the cache use the option 'clean'"
+                f"Skipping {ds}: already has a cache. To recreate the cache use the "
+                f"option 'clean'"
             )
             continue
 
