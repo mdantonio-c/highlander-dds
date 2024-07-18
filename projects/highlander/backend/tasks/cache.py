@@ -15,7 +15,7 @@ def clean_cache(self: Task[[List[str]], None], apply_to: List[str] = []) -> None
     Procedure for automatic cache cleaning.
 
     @param self: reference to this task
-    @param apply_to: Optional list of dataset products in the form of {dataset}_{product}
+    @param apply_to: Optional list of dataset products in the form of dataset_product
     """
     log.info("clean cache for datasets: {}", apply_to or "ALL")
 
@@ -67,8 +67,10 @@ def clean_cache(self: Task[[List[str]], None], apply_to: List[str] = []) -> None
         log.info(f"DDS cache for {ds} created successfully")
     log.info(f"cache updated with {cache_failures} errors")
     if cache_failures > 0:
-        # self.update_state(task_id=self.request.id, state=states.FAILURE)
+        self.update_state(task_id=self.request.id, state=states.FAILURE)
         raise CacheException(dataset_failed)
+    else:
+        self.update_state(task_id=self.request.id, state=states.SUCCESS)
 
 
 @CeleryExt.task(idempotent=True)
