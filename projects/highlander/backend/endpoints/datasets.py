@@ -169,7 +169,9 @@ class DatasetContent(EndpointResource):
             404: "Dataset related content not found",
         },
     )
-    @decorators.use_kwargs({"type": fields.Str(required=True)}, location="query")
+    @decorators.use_kwargs(
+        {"dataset_type": fields.Str(required=True, data_key="type")}, location="query"
+    )
     @decorators.cache(timeout=0)
     def get(self, dataset_id: str, dataset_type: str) -> Response:
         log.debug("Get {} for dataset <{}>", dataset_type, dataset_id)
