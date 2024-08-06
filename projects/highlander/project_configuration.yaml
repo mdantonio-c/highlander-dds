@@ -6,19 +6,6 @@ project:
   rapydo: "2.4"
 
 variables:
-  # roles:
-  #   normal_user: YourCustomName
-  #   staff_user: YourCustomName
-  #   # staff_user: disabled
-  #   group_coordinator: YourCustomName
-  #   admin_root: YourCustomName
-  #   extra_role: YourExtraRole
-
-  submodules:
-    geoserver:
-      online_url: https://github.com/giuseppetrotta/docker-geoserver
-      branch: 2.21.0
-
   env:
     BACKEND_BUILD_MODE: backend-legacy39
     FRONTEND_FRAMEWORK: angular

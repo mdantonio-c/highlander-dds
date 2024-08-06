@@ -35,24 +35,20 @@ services:
     build: ${PROJECT_DIR}/builds/backend
     image: hl-dds/backend:${RAPYDO_VERSION}
   geoserver:
-    image: hl-geoserver:${PROJECT_VERSION}
     build:
-      context: ${SUBMODULE_DIR}/geoserver
+      context: ${PROJECT_DIR}/builds/geoserver
       args:
         GEOSERVER_UID: ${CURRENT_UID}
         GEOSERVER_GID: ${CURRENT_GID}
-        IMAGE_VERSION: 9.0-jdk11-openjdk-slim-buster
+        GEOSERVER_PLUGINS: "netcdf-out"
+    image: hl-geoserver:${PROJECT_VERSION}
     environment:
       ACTIVATE: ${ACTIVATE_GEOSERVER}
-      STABLE_EXTENSIONS: netcdf-plugin
-      TOMCAT_EXTRAS: false
-      EXISTING_DATA_DIR: ${GEOSERVER_EXISTING_DATA_DIR}
       GEOSERVER_ADMIN_USER: ${GEOSERVER_ADMIN_USER}
       GEOSERVER_ADMIN_PASSWORD: ${GEOSERVER_ADMIN_PASSWORD}
-      RECREATE_DATADIR: ${GEOSERVER_RECREATE_DATADIR}
+      GEOSERVER_WMS_TITLE: "Highlander Map Server"
     volumes:
-      - ${DATA_DIR}/geoserver/data_dir:/opt/geoserver/data_dir
-      - ${DATA_DIR}/geoserver/settings:/settings
+      - ${DATA_DIR}/geoserver/data_dir:/opt/geoserver
     networks:
       default:
         aliases:
