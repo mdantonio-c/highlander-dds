@@ -40,7 +40,7 @@ services:
       args:
         GEOSERVER_UID: ${CURRENT_UID}
         GEOSERVER_GID: ${CURRENT_GID}
-        GEOSERVER_PLUGINS: "netcdf-out"
+        GEOSERVER_PLUGINS: "css netcdf vectortiles gdal libjpeg-turbo printing control-flow"
     image: hl-geoserver:${PROJECT_VERSION}
     environment:
       ACTIVATE: ${ACTIVATE_GEOSERVER}
@@ -48,7 +48,7 @@ services:
       GEOSERVER_ADMIN_PASSWORD: ${GEOSERVER_ADMIN_PASSWORD}
       GEOSERVER_WMS_TITLE: "Highlander Map Server"
     volumes:
-      - ${DATA_DIR}/geoserver/data_dir:/opt/geoserver
+      - ${DATA_DIR}/geoserver/data_dir:/opt/geoserver/data_dir
     networks:
       default:
         aliases:

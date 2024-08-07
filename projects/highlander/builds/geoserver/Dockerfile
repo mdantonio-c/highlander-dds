@@ -4,9 +4,8 @@ FROM docker.io/tomcat:$TOMCAT_VERSION
 LABEL org.opencontainers.image.authors="g.trotta@cineca.it"
 
 ARG GEOSERVER_VERSION="2.24.4"
-ARG GEOSERVER_DATA_DIR="/opt/geoserver"
-#ARG GEOSERVER_PLUGINS="css grib netcdf pyramid vectortiles wps ysld"
-ARG GEOSERVER_PLUGINS="netcdf-out"
+ARG GEOSERVER_DATA_DIR="/opt/geoserver/data_dir"
+ARG GEOSERVER_PLUGINS="css netcdf vectortiles gdal libjpeg-turbo printing control-flow wps"
 ARG GEOSERVER_FONTS="lato notosans opensans poppins roboto ubuntu"
 
 ARG GEOSERVER_UID
