@@ -5,7 +5,7 @@ LABEL org.opencontainers.image.authors="g.trotta@cineca.it"
 
 ARG GEOSERVER_VERSION="2.24.4"
 ARG GEOSERVER_DATA_DIR="/opt/geoserver/data_dir"
-ARG GEOSERVER_PLUGINS="css netcdf vectortiles gdal libjpeg-turbo printing control-flow wps"
+ARG GEOSERVER_PLUGINS="css netcdf vectortiles gdal libjpeg-turbo printing control-flow"
 ARG GEOSERVER_FONTS="lato notosans opensans poppins roboto ubuntu"
 
 ARG GEOSERVER_UID

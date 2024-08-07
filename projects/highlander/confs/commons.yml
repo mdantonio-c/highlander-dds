@@ -40,7 +40,7 @@ services:
       args:
         GEOSERVER_UID: ${CURRENT_UID}
         GEOSERVER_GID: ${CURRENT_GID}
-        GEOSERVER_PLUGINS: "css netcdf vectortiles gdal libjpeg-turbo printing control-flow"
+        GEOSERVER_PLUGINS: "css netcdf vectortiles gdal libjpeg-turbo printing control-flow wps csw monitor"
     image: hl-geoserver:${PROJECT_VERSION}
     environment:
       ACTIVATE: ${ACTIVATE_GEOSERVER}
